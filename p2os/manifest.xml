@@ -1,0 +1,19 @@
+<package>
+  <description brief="p2os">
+     P2OS driver for ros
+  </description>
+  <author>dfseifer@usc.edu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://pr.willowgarage.com/wiki/ros</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+  <depend package="robot_msgs"/>
+  <depend package="deprecated_msgs"/>
+  <depend package="tf"/>
+  <export>
+    <cpp cflags="-I${prefix}/include -I${prefix}/msg/cpp"/>
+  </export>
+</package>
+
+

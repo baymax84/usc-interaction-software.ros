@@ -1,0 +1,7 @@
+<launch>
+  <master auto="start"/>
+    <node pkg="joy" type="joy" />
+    <node pkg="teleop_base" type="teleop_base" />
+    <node pkg="p2os" type="p2os" />
+    <node pkg="gui" type="gui" />
+</launch>
