@@ -9,6 +9,16 @@
 bandit::Bandit g_bandit;
 
 // This callback is invoked when we get a new joint command
+void jointIndCB(const bandit_msgs::JointConstPtr& j)
+{
+  // Set the joint position
+  g_bandit.setJointPos(j->id, j->angle);
+
+  // Push out positions to bandit
+  g_bandit.sendJointPos();
+}
+
+// This callback is invoked when we get a new joint command
 void jointCB(const bandit_msgs::JointArrayConstPtr& j)
 {
   // Iterate through all joints in Joint Array
@@ -87,6 +97,7 @@ int main(int argc, char** argv)
     // Now that things are supposeldy up and running, subscribe to
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 0, jointCB);
+    ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 0, jointIndCB);
 
     while (nh.ok())
     {
