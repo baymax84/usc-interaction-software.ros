@@ -30,6 +30,7 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
     g_bandit.setJointPos(joint_iter->id, joint_iter->angle);
   }
   // Push out positions to bandit
+
   g_bandit.sendJointPos();
 }
 
@@ -71,6 +72,8 @@ int main(int argc, char** argv)
     // receives a valid state update from bandit
     g_bandit.registerStateCB(boost::bind(&stateCB, boost::ref(joint_pub)));
     
+    ROS_INFO( "connecting to bandit on port: [%s]\n", port.c_str() );
+
     // Open the port
     g_bandit.openPort(port.c_str());
 
@@ -94,10 +97,35 @@ int main(int argc, char** argv)
       ROS_ERROR("Some modules failed to configure\n");
 
 
+    // Push out initial state
+    g_bandit.setJointPos(0,  0.0); //"head pitch",        
+    g_bandit.setJointPos(1,  0.0); //"head pan",          
+    g_bandit.setJointPos(2,  0.0); //"left shoulder F/B", 
+    g_bandit.setJointPos(3,  0.0); //"left shoulder I/O", 
+    g_bandit.setJointPos(4,  0.0); //"left elbow twist",  
+    g_bandit.setJointPos(5,  0.0); //"left elbow",        
+    g_bandit.setJointPos(6,  0.0); //"left wrist twist",  
+    g_bandit.setJointPos(7,  0.5);  //"left wrist tilt",   
+    g_bandit.setJointPos(8,  0.5);  //"left hand grab",    
+    g_bandit.setJointPos(9,  0.0); //"right shoulder F/B",
+    g_bandit.setJointPos(10, 0.0); // "right shoulder I/O"
+    g_bandit.setJointPos(11, 0.0); // "right elbow twist",
+    g_bandit.setJointPos(12, 0.0); // "right elbow",      
+    g_bandit.setJointPos(13, 0.0); // "right wrist twist",
+    g_bandit.setJointPos(14, 0.5);  // "right wrist tilt", 
+    g_bandit.setJointPos(15, 0.5);  // "right hand grab",  
+    g_bandit.setJointPos(16, 0.5);  // "eyebrows",         
+    g_bandit.setJointPos(17, 0.5);  // "mouth top",        
+    g_bandit.setJointPos(18, 0.5);  // "mouth bottom", 
+
+    // Send bandit position commands:
+    g_bandit.sendJointPos();
+
+
     // Now that things are supposeldy up and running, subscribe to
     // joint messages
-    ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 0, jointCB);
-    ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 0, jointIndCB);
+    ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
+    ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
 
     while (nh.ok())
     {
