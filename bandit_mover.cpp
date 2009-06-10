@@ -8,7 +8,7 @@ int main( int argc, char* argv[] )
   ros::init(argc,argv,"bandit_mover");
   ros::NodeHandle n;
   
-  ros::Publisher joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",1000);
+  ros::Publisher joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",1000);
   ros::Rate loop_rate(10);
 
   bandit_msgs::JointArray joint_array;
@@ -23,10 +23,10 @@ int main( int argc, char* argv[] )
     if( j.angle > DTOR(30) ) j.angle = 0;
     ROS_INFO( "setting joint [%d] to angle [%0.2f]", j.id, j.angle );
 
-    joint_array.joints.clear();
-    joint_array.joints.push_back(j);
+    //joint_array.joints.clear();
+    //joint_array.joints.push_back(j);
 
-    joint_publisher.publish( joint_array );
+    joint_publisher.publish( j );
 
     ros::spinOnce();
     loop_rate.sleep();
