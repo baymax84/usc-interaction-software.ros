@@ -15,7 +15,7 @@ void jointIndCB(const bandit_msgs::JointConstPtr& j)
   g_bandit.setJointPos(j->id, j->angle);
 
   // Push out positions to bandit
-  g_bandit.sendJointPos();
+  g_bandit.sendAllJointPos();
 }
 
 // This callback is invoked when we get a new joint command
@@ -31,7 +31,7 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
   }
   // Push out positions to bandit
 
-  g_bandit.sendJointPos();
+  g_bandit.sendAllJointPos();
 }
 
 // This callback is invoked when we get new state from bandit
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
   // Retrieve port from parameter server
   std::string port;
-  nh.param("~/port", port, std::string("/dev/ttyUSB0"));
+  nh.param("~/port", port, std::string("/dev/ttyS0"));
 
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 0);
 
@@ -83,19 +83,30 @@ int main(int argc, char** argv)
     for (int i = 0; i < 19; i++)
     {
       // These default PID gains and offsets should be read from a config file
-      if (g_bandit.getJointType(i) == bandit::SMART_SERVO)
+      if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
         g_bandit.setJointPIDConfig(i, 100, 0, 0, -4000, 4001, 50, 0); 
     }
 
-    // Synchronize PID gains and wait 5 seconds for confirmation.
-    // (I don't like the fact that this is calling
-    // processPendingMessages() behind the scenes.  That's my bad.
-    // Ticket already submitted in trac.)
-    if (g_bandit.syncAllPIDConfigs(5000000))
-      ROS_INFO("All modules confirmed PID configuration.\n");
-    else 
-      ROS_ERROR("Some modules failed to configure\n");
+    // Synchronize PID gains
+    // we set the first time back in time to guarantee it gets hit
+    ros::Time try_again = ros::Time::now() - ros::Duration(.1);
+    int tries = 0;
+    do
+    {
+      if (try_again < ros::Time::now())
+      {
+        g_bandit.sendAllPIDConfigs();        
+        try_again = try_again + ros::Duration(1.0);
+        if (++tries % 10 == 0)
+          ROS_ERROR("Failed to configure PID settings after %d tries", tries);
+      }
+      
+      g_bandit.processIO(10000);
+      g_bandit.processPackets();
 
+    }  while (!g_bandit.checkAllPIDConfigs());
+
+    ROS_INFO("All PID settings configured successfully");
 
     // Push out initial state
     g_bandit.setJointPos(0,  0.0); //"head pitch",        
@@ -119,7 +130,7 @@ int main(int argc, char** argv)
     g_bandit.setJointPos(18, 0.5);  // "mouth bottom", 
 
     // Send bandit position commands:
-    g_bandit.sendJointPos();
+    g_bandit.sendAllJointPos();
 
 
     // Now that things are supposeldy up and running, subscribe to
@@ -130,9 +141,8 @@ int main(int argc, char** argv)
     while (nh.ok())
     {
       // Process any pending messages from bandit
-      if (!g_bandit.processPendingMessage(500000))
-        ROS_WARN("Timed out waiting for messages from bandit\n");
-      // Handle any ROS stuff we need to do
+      g_bandit.processIO(10000);
+      g_bandit.processPackets();
       ros::spinOnce();
     }
 
