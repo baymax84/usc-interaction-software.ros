@@ -77,6 +77,9 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->odom.stall = (unsigned char)(this->lwstall || this->rwstall);
   data->odom.header.frame_id = "robot";
 
+  // battery
+  data->batt.energy_remaining = battery / 10;
+
 /*
   ///////////////////////////////////////////////////////////////
   // compass
