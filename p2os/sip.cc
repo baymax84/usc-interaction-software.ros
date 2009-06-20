@@ -81,7 +81,7 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->batt.energy_remaining = battery / 10.0;
 
   // motor state
-  //data->motors.state = motors;
+  data->motors.state = (status % 0x10) / 2;
 
 /*
   ///////////////////////////////////////////////////////////////
