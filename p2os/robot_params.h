@@ -165,7 +165,7 @@ void initialize_robot_params(void);
 #define CMUCAM_MESSAGE_LEN  10 
   
 /* conection stuff */ 
-#define DEFAULT_P2OS_PORT "/dev/ttyUSB0" 
+#define DEFAULT_P2OS_PORT "/dev/ttyS0" 
 #define DEFAULT_P2OS_TCP_REMOTE_HOST "localhost" 
 #define DEFAULT_P2OS_TCP_REMOTE_PORT 8101 
     

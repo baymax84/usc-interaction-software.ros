@@ -61,6 +61,7 @@ P2OSNode::P2OSNode()
   // !!! port !!!
   std::string def = DEFAULT_P2OS_PORT;
   n->param( "~port", psos_serial_port, def );
+  ROS_INFO( "using serial port: [%s]", psos_serial_port.c_str() );
   n->param( "~use_tcp", psos_use_tcp, false );
   std::string host = DEFAULT_P2OS_TCP_REMOTE_HOST;
   n->param( "~tcp_remote_host", psos_tcp_host, host );
@@ -134,6 +135,7 @@ void
 P2OSNode::cmdvel_cb()
 {
   vel_dirty = true;
+  ROS_INFO( "new speed: [%f,%f]", cmdvel.vel.vx*1e3, rint(RTOD(cmdvel.ang_vel.vz)));
 }
 
 void
@@ -343,12 +345,15 @@ P2OSNode::Setup()
     switch(receivedpacket.packet[3])
     {
       case SYNC0:
+        printf( "SYNC0\n" );
         psos_state = AFTER_FIRST_SYNC;
         break;
       case SYNC1:
+        printf( "SYNC1\n" );
         psos_state = AFTER_SECOND_SYNC;
         break;
       case SYNC2:
+        printf( "SYNC2\n" );
         psos_state = READY;
         break;
       default:

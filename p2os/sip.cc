@@ -78,7 +78,10 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->odom.header.frame_id = "robot";
 
   // battery
-  data->batt.energy_remaining = battery / 10;
+  data->batt.energy_remaining = battery / 10.0;
+
+  // motor state
+  //data->motors.state = motors;
 
 /*
   ///////////////////////////////////////////////////////////////
