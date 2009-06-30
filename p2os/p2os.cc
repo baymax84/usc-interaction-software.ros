@@ -134,7 +134,8 @@ P2OSNode::ToggleMotorPower(unsigned char val)
 {
   unsigned char command[4];
   P2OSPacket packet;
-
+  printf( "motor state: %d\n", p2os_data.motors.state );
+  p2os_data.motors.state = (int) val;  
   command[0] = ENABLE;
   command[1] = ARGINT;
   command[2] = val;
