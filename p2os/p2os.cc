@@ -35,7 +35,6 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
   n->publish( "odom", p2os_data.odom );
   p2os_data.batt.header.stamp = ts;
   n->publish( "battery_state", p2os_data.batt );
-  p2os_data.motors.header.stamp = ts;
   n->publish( "motor_state", p2os_data.motors );
 
   // put sonar data
