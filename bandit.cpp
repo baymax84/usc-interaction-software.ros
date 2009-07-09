@@ -8,12 +8,27 @@
 
 bandit::Bandit g_bandit;
 
+#define DTOR( a ) a * M_PI / 180.0
+#define RTOD( a ) a * 180.0 / M_PI
+
+int joints[19];
+
+// Tells a joint to move in the same or opposite direction of the normal Bandit movement
+int direction[19];
+// Home positions of the joints for Bandit
+double home[19];
+
 // This callback is invoked when we get a new joint command
 void jointIndCB(const bandit_msgs::JointConstPtr& j)
 {
   // Set the joint position
-  g_bandit.setJointPos(j->id, j->angle);
+  int newid = j->id;
+  printf( "j->angle: %f\n", j->angle );
+  // scale to home
+  double pos = DTOR(direction[j->id]*(RTOD(j->angle)+home[j->id]));
 
+  g_bandit.setJointPos(newid, pos );
+  printf( "setting [%d] to [%0.2f]\n", newid, RTOD(pos) );
   // Push out positions to bandit
   g_bandit.sendAllJointPos();
 }
@@ -27,7 +42,7 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
        joint_iter++)
   {
     // Set the joint position
-    g_bandit.setJointPos(joint_iter->id, joint_iter->angle);
+    g_bandit.setJointPos(joint_iter->id, direction[joint_iter->id]*(joint_iter->angle+home[joint_iter->id]));
   }
   // Push out positions to bandit
 
@@ -62,9 +77,68 @@ int main(int argc, char** argv)
 
   // Retrieve port from parameter server
   std::string port;
-  nh.param("~/port", port, std::string("/dev/ttyS0"));
+  nh.param("~/port", port, std::string("/dev/ttyS1"));
 
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 0);
+
+    std::string homestring, dirsstring;
+
+    nh.param( "~home", homestring, std::string("0,0,-54,-84,-117,51,0,65,88,62,74,121,-57,0,0,0,0,0,0"));
+    nh.param( "~dirs", dirsstring, std::string("-1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
+
+    for( int i = 0; i < 19; i++ )
+    {
+      direction[i] = 1;
+      home[i] = 0;
+    }
+
+    std::string::size_type i = 0;
+    std::string::size_type j = homestring.find(',');
+
+    int ii = 0;
+    printf( "homes: \n\n" );
+    while( j != std::string::npos )
+    {
+      std::string s = homestring.substr(i,j-i);
+      home[ii++] = atoi(s.c_str() );
+      printf( "%s:%f\n", s.c_str(), home[ii-1] );
+      i= ++j;
+      j = homestring.find(',',j);
+    }
+
+    printf( "\n" );
+
+    i = 0;
+    j = dirsstring.find(',');
+    ii = 0;
+    printf( "dirss: \n\n" );
+    while( j != std::string::npos )
+    {
+      std::string s = dirsstring.substr(i,j-i);
+      direction[ii++] = atoi(s.c_str() );
+      printf( "%s:%d\n", s.c_str(), direction[ii-1] );
+      i= ++j;
+      j = dirsstring.find(',',j);
+    }
+    printf( "\n" );
+   // this maps the joints from the original driver to what's used in the gazebo model
+  joints[0]  = 12;
+  joints[1]  = 5;
+  joints[2]  = 10;
+  joints[3]  = 9;
+  joints[4]  = 8;
+  joints[5]  = 6;
+  joints[6]  = 7;
+  joints[7]  = 7; // left wrist bend - does nothing right now
+  joints[8]  = 7; // left hand open/close - does nothing right now
+  joints[9]  = 4;
+  joints[10] = 3;
+  joints[11] = 2;
+  joints[12] = 0;
+  joints[13] = 1;
+  joints[14] = 1; // right wrist bend - does nothing right now
+  joints[15] = 1; // right hand open/close - does nothing right now
+
 
   try 
   {
