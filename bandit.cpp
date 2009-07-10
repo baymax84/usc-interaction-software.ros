@@ -11,12 +11,14 @@ bandit::Bandit g_bandit;
 #define DTOR( a ) a * M_PI / 180.0
 #define RTOD( a ) a * 180.0 / M_PI
 
+/*
 int joints[19];
 
 // Tells a joint to move in the same or opposite direction of the normal Bandit movement
 int direction[19];
 // Home positions of the joints for Bandit
 double home[19];
+*/
 
 // This callback is invoked when we get a new joint command
 void jointIndCB(const bandit_msgs::JointConstPtr& j)
@@ -25,7 +27,8 @@ void jointIndCB(const bandit_msgs::JointConstPtr& j)
   int newid = j->id;
   printf( "j->angle: %f\n", j->angle );
   // scale to home
-  double pos = DTOR(direction[j->id]*(RTOD(j->angle)+home[j->id]));
+  double pos = j->angle;
+  //double pos = DTOR(direction[j->id]*(RTOD(j->angle)+home[j->id]));
 
   g_bandit.setJointPos(newid, pos );
   printf( "setting [%d] to [%0.2f]\n", newid, RTOD(pos) );
@@ -41,8 +44,9 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
        joint_iter != j->joints.end();
        joint_iter++)
   {
+    double pos = joint_iter->angle;
     // Set the joint position
-    g_bandit.setJointPos(joint_iter->id, direction[joint_iter->id]*(joint_iter->angle+home[joint_iter->id]));
+    g_bandit.setJointPos(joint_iter->id, pos);
   }
   // Push out positions to bandit
 
@@ -80,7 +84,7 @@ int main(int argc, char** argv)
   nh.param("~/port", port, std::string("/dev/ttyS1"));
 
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 0);
-
+/*
     std::string homestring, dirsstring;
 
     nh.param( "~home", homestring, std::string("0,0,-54,-84,-117,51,0,65,88,62,74,121,-57,0,0,0,0,0,0"));
@@ -138,7 +142,7 @@ int main(int argc, char** argv)
   joints[13] = 1;
   joints[14] = 1; // right wrist bend - does nothing right now
   joints[15] = 1; // right hand open/close - does nothing right now
-
+*/
 
   try 
   {
