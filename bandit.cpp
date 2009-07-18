@@ -26,8 +26,8 @@ void jointIndCB(const bandit_msgs::JointConstPtr& j)
   // Set the joint position
   int newid = j->id;
   printf( "j->angle: %f\n", RTOD(j->angle) );
+
   // scale to home
-  //double pos = j->angle;
   double dpos = direction[j->id]*RTOD(j->angle)+home[j->id];
   double pos = DTOR( dpos );
 
@@ -45,13 +45,24 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
        joint_iter != j->joints.end();
        joint_iter++)
   {
-    double pos = joint_iter->angle;
+    // Set the joint position
+    int newid = joint_iter->id;
+    printf( "j->angle: %f\n", RTOD(joint_iter->angle) );
+
+    // scale to home
+    double dpos = direction[joint_iter->id]*RTOD(joint_iter->angle)+home[newid];
+    double pos = DTOR( dpos );
+    printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+
     // Set the joint position
     g_bandit.setJointPos(joint_iter->id, pos);
   }
   // Push out positions to bandit
 
   g_bandit.sendAllJointPos();
+
+
+  printf( "=====================\n");
 }
 
 // This callback is invoked when we get new state from bandit
@@ -88,8 +99,10 @@ int main(int argc, char** argv)
 
     std::string homestring, dirsstring;
 
-    nh.param( "~home", homestring, std::string("0,0,-54,-84,-117,45,54,-93,0,60,66,115,-55,-57,172,33,0,0,0"));
+    nh.param( "~home", homestring, std::string("0,0,-64,-74,-115,51,-1,65,88,55,85,116,-57,0,0,0,0,0"));
     nh.param( "~dirs", dirsstring, std::string("-1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
+    //nh.param( "~home", homestring, std::string("0,0,-54,-84,-117,45,54,-93,0,60,66,115,-55,-57,172,33,0,0,0"));
+    //nh.param( "~dirs", dirsstring, std::string("-1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
 
     for( int i = 0; i < 19; i++ )
     {
