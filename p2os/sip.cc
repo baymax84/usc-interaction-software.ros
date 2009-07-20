@@ -31,6 +31,7 @@
 
 #include "sip.h"
 #include "tf/tf.h"
+#include "tf/transform_datatypes.h"
 
 
 void SIP::FillStandard(ros_p2os_data_t* data)
@@ -60,7 +61,7 @@ void SIP::FillStandard(ros_p2os_data_t* data)
     py += this->ypos / 1e3;
     pa = DTOR(this->angle);
   }
-	tf::poseTFToMsg(tf::Pose(tf::Quaternion(pa,0,0),tf::Vector3(px,py,0)),data->position.pos);
+	tf::PoseTFToMsg(tf::Pose(tf::Quaternion(pa,0,0),tf::Vector3(px,py,0)),data->position.pos);
 
   // add rates
   data->position.vel.vel.vx = ((lvel + rvel) / 2) / 1e3;

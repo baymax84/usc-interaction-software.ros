@@ -198,6 +198,8 @@ P2OSNode::Setup()
   int bauds[] = {B9600, B38400, B19200, B115200, B57600};
   int numbauds = sizeof(bauds);
   int currbaud = 0;
+  sippacket = NULL;
+  lastPulseTime = 0.0;
 
   struct termios term;
   unsigned char command;
