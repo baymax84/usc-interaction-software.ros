@@ -28,14 +28,13 @@ void
 P2OSNode::StandardSIPPutData(ros::Time ts)
 {
 
-  ros::Node *n = ros::Node::instance();
   p2os_data.position.header.stamp = ts;
-  n->publish( "pose", p2os_data.position );
+  pose_pub.publish(p2os_data.position );
   p2os_data.odom.header.stamp = ts;
-  n->publish( "odom", p2os_data.odom );
+  odom_pub.publish(p2os_data.odom );
   p2os_data.batt.header.stamp = ts;
-  n->publish( "battery_state", p2os_data.batt );
-  n->publish( "motor_state", p2os_data.motors );
+  batt_pub.publish( p2os_data.batt );
+  mstate_pub.publish(p2os_data.motors );
 
   // put sonar data
   // put aio data

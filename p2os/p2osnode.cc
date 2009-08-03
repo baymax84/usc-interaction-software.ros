@@ -22,9 +22,7 @@
  */
 
 #include <iostream>
-
-#include "ros/time.h"
-#include "ros/node.h"
+#include "ros/ros.h"
 #include "robot_msgs/Pose.h"
 #include "robot_msgs/PoseStamped.h"
 #include "p2os/MotorState.h"
@@ -37,71 +35,71 @@
 #include <fcntl.h>
 #include <string.h>
 
-P2OSNode::P2OSNode()
+P2OSNode::P2OSNode( ros::NodeHandle nh )
 {
   // read in config options
-  ros::Node* n = ros::Node::instance();
+  n = nh;
 
   // bumpstall
-  n->param( "~bumpstall", bumpstall, -1 );
+  n.param( "~bumpstall", bumpstall, -1 );
   // pulse
-  n->param( "~pulse", pulse, -1.0 );
+  n.param( "~pulse", pulse, -1.0 );
   // rot_kp
-  n->param( "~rot_kp", rot_kp, -1 );
+  n.param( "~rot_kp", rot_kp, -1 );
   // rot_kv
-  n->param( "~rot_kv", rot_kv, -1 );
+  n.param( "~rot_kv", rot_kv, -1 );
   // rot_ki
-  n->param( "~rot_ki", rot_ki, -1 );
+  n.param( "~rot_ki", rot_ki, -1 );
   // trans_kp
-  n->param( "~trans_kp", trans_kp, -1 );
+  n.param( "~trans_kp", trans_kp, -1 );
   // trans_kv
-  n->param( "~trans_kv", trans_kv, -1 );
+  n.param( "~trans_kv", trans_kv, -1 );
   // trans_ki
-  n->param( "~trans_ki", trans_ki, -1 );
+  n.param( "~trans_ki", trans_ki, -1 );
   // !!! port !!!
   std::string def = DEFAULT_P2OS_PORT;
-  n->param( "~port", psos_serial_port, def );
+  n.param( "~port", psos_serial_port, def );
   ROS_INFO( "using serial port: [%s]", psos_serial_port.c_str() );
-  n->param( "~use_tcp", psos_use_tcp, false );
+  n.param( "~use_tcp", psos_use_tcp, false );
   std::string host = DEFAULT_P2OS_TCP_REMOTE_HOST;
-  n->param( "~tcp_remote_host", psos_tcp_host, host );
-  n->param( "~tcp_remote_port", psos_tcp_port, DEFAULT_P2OS_TCP_REMOTE_PORT );
+  n.param( "~tcp_remote_host", psos_tcp_host, host );
+  n.param( "~tcp_remote_port", psos_tcp_port, DEFAULT_P2OS_TCP_REMOTE_PORT );
   // radio
-  n->param( "~radio", radio_modemp, 0 );
+  n.param( "~radio", radio_modemp, 0 );
   // joystick
-  n->param( "~joystick", joystick, 0 );
+  n.param( "~joystick", joystick, 0 );
   // direct_wheel_vel_control
-  n->param( "~direct_wheel_vel_control", direct_wheel_vel_control, 0 );
+  n.param( "~direct_wheel_vel_control", direct_wheel_vel_control, 0 );
   // max xpeed
   double spd;
-  n->param( "~max_xspeed", spd, MOTOR_DEF_MAX_SPEED);
+  n.param( "~max_xspeed", spd, MOTOR_DEF_MAX_SPEED);
   motor_max_speed = (int)rint(1e3*spd);
   // max_yawspeed
-  n->param( "~max_yawspeed", spd, MOTOR_DEF_MAX_TURNSPEED);
+  n.param( "~max_yawspeed", spd, MOTOR_DEF_MAX_TURNSPEED);
   motor_max_turnspeed = (short)rint(RTOD(spd));
   // max_xaccel
-  n->param( "~max_xaccel", spd, 0.0);
+  n.param( "~max_xaccel", spd, 0.0);
   motor_max_trans_accel = (short)rint(1e3*spd);
   // max_xdecel
-  n->param( "~max_xdecel", spd, 0.0);
+  n.param( "~max_xdecel", spd, 0.0);
   motor_max_trans_decel = (short)rint(1e3*spd);
   // max_yawaccel
-  n->param( "~max_yawaccel", spd, 0.0);
+  n.param( "~max_yawaccel", spd, 0.0);
   motor_max_rot_accel = (short)rint(RTOD(spd));
   // max_yawdecel
-  n->param( "~max_yawdecel", spd, 0.0);
+  n.param( "~max_yawdecel", spd, 0.0);
   motor_max_rot_decel = (short)rint(RTOD(spd));
 
 
   // advertise services
-  n->advertise<robot_msgs::PoseWithRatesStamped>("pose",1000);
-  n->advertise<deprecated_msgs::RobotBase2DOdom>( "odom", 1000 );
-  n->advertise<robot_msgs::BatteryState>("battery_state",1000);
-  n->advertise<p2os::MotorState>("motor_state",1000);
+  pose_pub = n.advertise<robot_msgs::PoseWithRatesStamped>("pose",1000);
+  odom_pub = n.advertise<deprecated_msgs::RobotBase2DOdom>( "odom", 1000 );
+  batt_pub = n.advertise<robot_msgs::BatteryState>("battery_state",1000);
+  mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
 
   // subscribe to services
-  n->subscribe( "cmd_vel", cmdvel, &P2OSNode::cmdvel_cb, this, 1 );
-  n->subscribe( "cmd_motor_state",cmdmotor_state_,&P2OSNode::cmdmotor_state,this,1);
+  cmdvel_sub = n.subscribe( "cmd_vel", 1, (boost::function < void(const robot_msgs::PoseDotConstPtr&)>) boost::bind( &P2OSNode::cmdvel_cb, this, _1 ));
+  cmdmstate_sub = n.subscribe( "cmd_motor_state",1,(boost::function <void(const p2os::MotorStateConstPtr&)>) boost::bind(&P2OSNode::cmdmotor_state,this,_1));
   
   // initialize robot parameters (player legacy)
   initialize_robot_params();
@@ -112,9 +110,10 @@ P2OSNode::~P2OSNode()
 }
 
 void
-P2OSNode::cmdmotor_state()
+P2OSNode::cmdmotor_state( const p2os::MotorStateConstPtr &msg)
 {
   motor_dirty = true;
+  cmdmotor_state_ = *msg;
 }
 
 void
@@ -132,10 +131,11 @@ P2OSNode::set_motor_state()
 }
 
 void
-P2OSNode::cmdvel_cb()
+P2OSNode::cmdvel_cb( const robot_msgs::PoseDotConstPtr &msg)
 {
   vel_dirty = true;
-  ROS_INFO( "new speed: [%f,%f]", cmdvel.vel.vx*1e3, rint(RTOD(cmdvel.ang_vel.vz)));
+  ROS_DEBUG( "new speed: [%f,%f]", msg->vel.vx*1e3, rint(RTOD(msg->ang_vel.vz)));
+  cmdvel_ = *msg;
 }
 
 void
@@ -145,8 +145,8 @@ P2OSNode::set_vel()
   unsigned char motorcommand[4];
   P2OSPacket motorpacket;
 
-  int vx = (int) (cmdvel.vel.vx*1e3);
-  int va = (int)rint(RTOD(cmdvel.ang_vel.vz));
+  int vx = (int) (cmdvel_.vel.vx*1e3);
+  int va = (int)rint(RTOD(cmdvel_.ang_vel.vz));
 
   {
     // non-direct wheel control
@@ -427,16 +427,21 @@ P2OSNode::Setup()
 
   printf( "param_idx: [%d]\n", param_idx );
 
-  // first, receive a packet so we know we're connected.
-  if(!sippacket)
-    sippacket = new SIP(param_idx);
+	
+  //sleep(1);
 
+  // first, receive a packet so we know we're connected.
+  if(!sippacket) 
+  {
+    sippacket = new SIP(param_idx);
+  }
+/*
   sippacket->x_offset = 0;
   sippacket->y_offset = 0;
   sippacket->angle_offset = 0;
 
   SendReceive((P2OSPacket*)NULL,false);
-
+*/
   // turn off the sonars at first
   this->ToggleSonarPower(0);
   // if requested, set max accel/decel limits
@@ -603,21 +608,20 @@ P2OSNode::Shutdown()
 void
 P2OSNode::spin()
 {
-  ros::Node* node = ros::Node::instance();
   int last_sonar_subscrcount=0;
   double currentTime;
   struct timeval timeVal;
  
-  while( node->ok() )
+  while( n.ok() )
   {
     // we want to turn on the sonars if another node has subscribed to the sonar topic
-
-    if(last_sonar_subscrcount == 0 && node->numSubscribers("sonar") > 0 )
+/*
+    if(last_sonar_subscrcount == 0 && n.numSubscribers("sonar") > 0 )
       this->ToggleSonarPower(1);
-    else if(last_sonar_subscrcount > 0 && node->numSubscribers("sonar") == 0 )
+    else if(last_sonar_subscrcount > 0 && n.numSubscribers("sonar") == 0 )
       this->ToggleSonarPower(0);
     last_sonar_subscrcount = node->numSubscribers("sonar");
-
+*/
     // Process Messages Placeholder
 
     // handle the following messages:
@@ -658,15 +662,16 @@ P2OSNode::spin()
     // checks of the serial port - peek in sendreceive, maybe? Because if there
     // is no data waiting this will sit around waiting until one comes
     SendReceive (NULL, true);
+    ros::spinOnce();
   }
 }
 
 int main( int argc, char** argv )
 {
-  ros::init(argc,argv);
-  ros::Node n("p2os");
+  ros::init(argc,argv, "p2os");
+  ros::NodeHandle n;
 
-  P2OSNode *p = new P2OSNode();
+  P2OSNode *p = new P2OSNode(n);
 
   if( p->Setup() != 0 )
   {

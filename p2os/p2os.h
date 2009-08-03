@@ -60,7 +60,7 @@ class SIP;
 class P2OSNode
 {
   public:
-    P2OSNode();
+    P2OSNode( ros::NodeHandle n );
     virtual ~P2OSNode();
     
   public:
@@ -83,12 +83,16 @@ class P2OSNode
     void SendPulse (void);
     void spin();
     void set_vel();
-    void cmdvel_cb();
+    void cmdvel_cb( const robot_msgs::PoseDotConstPtr &);
 
     void set_motor_state();
-    void cmdmotor_state();
+    void cmdmotor_state( const p2os::MotorStateConstPtr &);
 
   protected:
+    ros::NodeHandle n;
+    ros::Publisher pose_pub, odom_pub, batt_pub, mstate_pub;
+    ros::Subscriber cmdvel_sub, cmdmstate_sub;
+
     SIP* sippacket;
     std::string psos_serial_port;
     std::string psos_tcp_host;
@@ -113,7 +117,7 @@ class P2OSNode
     double lastPulseTime; // Last time of sending a pulse or command to the robot
 
   public:
-    robot_msgs::PoseDot cmdvel;
+    robot_msgs::PoseDot cmdvel_;
     p2os::MotorState    cmdmotor_state_;
 	  ros_p2os_data_t p2os_data;
 
