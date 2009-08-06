@@ -93,6 +93,8 @@ class P2OSNode
     ros::Publisher pose_pub, odom_pub, batt_pub, mstate_pub;
     ros::Subscriber cmdvel_sub, cmdmstate_sub;
 
+    ros::Time veltime;
+
     SIP* sippacket;
     std::string psos_serial_port;
     std::string psos_tcp_host;

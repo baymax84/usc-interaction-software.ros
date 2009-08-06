@@ -216,7 +216,7 @@ void SIP::Print()
   }
   puts("");
 
-  printf("status: 0x%x analog: %d param_id: %d ", status, analog, param_idx);
+  ROS_INFO("status: 0x%x analog: %d param_id: %d ", status, analog, param_idx);
   printf("digin: ");
   for(i=0;i<8;i++) {
     printf("%d", (digin >> (7-i) ) & 0x01);

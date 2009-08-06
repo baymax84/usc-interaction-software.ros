@@ -101,6 +101,8 @@ P2OSNode::P2OSNode( ros::NodeHandle nh )
   cmdvel_sub = n.subscribe( "cmd_vel", 1, (boost::function < void(const robot_msgs::PoseDotConstPtr&)>) boost::bind( &P2OSNode::cmdvel_cb, this, _1 ));
   cmdmstate_sub = n.subscribe( "cmd_motor_state",1,(boost::function <void(const p2os::MotorStateConstPtr&)>) boost::bind(&P2OSNode::cmdmotor_state,this,_1));
   
+  veltime = ros::Time::now();
+
   // initialize robot parameters (player legacy)
   initialize_robot_params();
 }
@@ -133,14 +135,33 @@ P2OSNode::set_motor_state()
 void
 P2OSNode::cmdvel_cb( const robot_msgs::PoseDotConstPtr &msg)
 {
-  vel_dirty = true;
-  ROS_DEBUG( "new speed: [%f,%f]", msg->vel.vx*1e3, rint(RTOD(msg->ang_vel.vz)));
-  cmdvel_ = *msg;
+
+  if( fabs( msg->vel.vx - cmdvel_.vel.vx ) > 0.01 || fabs( msg->ang_vel.vz-cmdvel_.ang_vel.vz) > 0.01 )
+  {
+    veltime = ros::Time::now();
+    ROS_INFO( "new speed: [%0.2f,%0.2f](%0.3f)", msg->vel.vx*1e3, msg->ang_vel.vz, veltime.toSec() );
+    vel_dirty = true;
+    cmdvel_ = *msg;
+  }
+  else
+  {
+    ros::Duration veldur = ros::Time::now() - veltime;
+    if( veldur.toSec() > 2.0 && ((fabs(cmdvel_.vel.vx) > 0.01) || (fabs(cmdvel_.ang_vel.vz) > 0.01)) )
+    {
+      ROS_INFO( "maintaining old speed: %0.3f|%0.3f", veltime.toSec(), ros::Time::now().toSec() );
+      vel_dirty = true;
+      veltime = ros::Time::now();
+    }
+  }
+
 }
 
 void
 P2OSNode::set_vel()
 {
+  ROS_INFO( "setting vel: [%0.2f,%0.2f]", cmdvel_.vel.vx, cmdvel_.ang_vel.vz );
+  vel_dirty = false;
+
   unsigned short absSpeedDemand, absturnRateDemand;
   unsigned char motorcommand[4];
   P2OSPacket motorpacket;
@@ -636,8 +657,10 @@ P2OSNode::spin()
     // (9) actarray stuff (I'm not going to do this)
     // (10) bumper req geom (I'm not going to do this)
     // (11) get gripper geom (ask Nate)
-    if( vel_dirty )    
+    if( vel_dirty ) 
+    {
       set_vel();
+    }
     if( motor_dirty )
       set_motor_state();
 
