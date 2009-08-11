@@ -22,9 +22,10 @@
  */
 
 #include <iostream>
+
 #include "ros/ros.h"
-#include "robot_msgs/Pose.h"
-#include "robot_msgs/PoseStamped.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "p2os/MotorState.h"
 #include "deprecated_msgs/RobotBase2DOdom.h"
 #include "tf/transform_datatypes.h"
@@ -92,13 +93,14 @@ P2OSNode::P2OSNode( ros::NodeHandle nh )
 
 
   // advertise services
-  pose_pub = n.advertise<robot_msgs::PoseWithRatesStamped>("pose",1000);
+  pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
   odom_pub = n.advertise<deprecated_msgs::RobotBase2DOdom>( "odom", 1000 );
-  batt_pub = n.advertise<robot_msgs::BatteryState>("battery_state",1000);
+  batt_pub = n.advertise<pr2_msgs::BatteryState>("battery_state",1000);
   mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
 
+
   // subscribe to services
-  cmdvel_sub = n.subscribe( "cmd_vel", 1, (boost::function < void(const robot_msgs::PoseDotConstPtr&)>) boost::bind( &P2OSNode::cmdvel_cb, this, _1 ));
+  cmdvel_sub = n.subscribe( "cmd_vel", 1, (boost::function < void(const geometry_msgs::TwistConstPtr&)>) boost::bind( &P2OSNode::cmdvel_cb, this, _1 ));
   cmdmstate_sub = n.subscribe( "cmd_motor_state",1,(boost::function <void(const p2os::MotorStateConstPtr&)>) boost::bind(&P2OSNode::cmdmotor_state,this,_1));
   
   veltime = ros::Time::now();
@@ -133,20 +135,20 @@ P2OSNode::set_motor_state()
 }
 
 void
-P2OSNode::cmdvel_cb( const robot_msgs::PoseDotConstPtr &msg)
+P2OSNode::cmdvel_cb( const geometry_msgs::TwistConstPtr &msg)
 {
 
-  if( fabs( msg->vel.vx - cmdvel_.vel.vx ) > 0.01 || fabs( msg->ang_vel.vz-cmdvel_.ang_vel.vz) > 0.01 )
+  if( fabs( msg->linear.x - cmdvel_.linear.x ) > 0.01 || fabs( msg->angular.z-cmdvel_.angular.z) > 0.01 )
   {
     veltime = ros::Time::now();
-    ROS_INFO( "new speed: [%0.2f,%0.2f](%0.3f)", msg->vel.vx*1e3, msg->ang_vel.vz, veltime.toSec() );
+    ROS_INFO( "new speed: [%0.2f,%0.2f](%0.3f)", msg->linear.x*1e3, msg->angular.z, veltime.toSec() );
     vel_dirty = true;
     cmdvel_ = *msg;
   }
   else
   {
     ros::Duration veldur = ros::Time::now() - veltime;
-    if( veldur.toSec() > 2.0 && ((fabs(cmdvel_.vel.vx) > 0.01) || (fabs(cmdvel_.ang_vel.vz) > 0.01)) )
+    if( veldur.toSec() > 2.0 && ((fabs(cmdvel_.linear.x) > 0.01) || (fabs(cmdvel_.angular.z) > 0.01)) )
     {
       ROS_INFO( "maintaining old speed: %0.3f|%0.3f", veltime.toSec(), ros::Time::now().toSec() );
       vel_dirty = true;
@@ -159,15 +161,15 @@ P2OSNode::cmdvel_cb( const robot_msgs::PoseDotConstPtr &msg)
 void
 P2OSNode::set_vel()
 {
-  ROS_INFO( "setting vel: [%0.2f,%0.2f]", cmdvel_.vel.vx, cmdvel_.ang_vel.vz );
+  ROS_INFO( "setting vel: [%0.2f,%0.2f]", cmdvel_.linear.x, cmdvel_.angular.z );
   vel_dirty = false;
 
   unsigned short absSpeedDemand, absturnRateDemand;
   unsigned char motorcommand[4];
   P2OSPacket motorpacket;
 
-  int vx = (int) (cmdvel_.vel.vx*1e3);
-  int va = (int)rint(RTOD(cmdvel_.ang_vel.vz));
+  int vx = (int) (cmdvel_.linear.x*1e3);
+  int va = (int)rint(RTOD(cmdvel_.angular.z));
 
   {
     // non-direct wheel control

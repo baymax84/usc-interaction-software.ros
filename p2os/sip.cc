@@ -61,20 +61,20 @@ void SIP::FillStandard(ros_p2os_data_t* data)
     py += this->ypos / 1e3;
     pa = DTOR(this->angle);
   }
-	tf::poseTFToMsg(tf::Pose(tf::Quaternion(pa,0,0),tf::Vector3(px,py,0)),data->position.pos);
+	tf::poseTFToMsg(tf::Pose(tf::Quaternion(pa,0,0),tf::Vector3(px,py,0)),data->position.pose.pose);
 
   // add rates
-  data->position.vel.vel.vx = ((lvel + rvel) / 2) / 1e3;
-  data->position.vel.ang_vel.vz = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
+  data->position.twist.twist.linear.x = ((lvel + rvel) / 2) / 1e3;
+  data->position.twist.twist.angular.z = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
 
   // now for regular odom message
   data->odom.pos.x = px;
   data->odom.pos.y = py;
   data->odom.pos.th = pa;
 
-  data->odom.vel.x = data->position.vel.vel.vx;
+  data->odom.vel.x = data->position.twist.twist.linear.x;
   data->odom.vel.y = 0.0;
-  data->odom.vel.th = data->position.vel.ang_vel.vz;
+  data->odom.vel.th = data->position.twist.twist.angular.z;
   data->odom.stall = (unsigned char)(this->lwstall || this->rwstall);
   data->odom.header.frame_id = "robot";
 

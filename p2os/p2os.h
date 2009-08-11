@@ -33,16 +33,16 @@
 #include "robot_params.h"
 
 #include "deprecated_msgs/RobotBase2DOdom.h"
-#include "robot_msgs/PoseWithRatesStamped.h"
-#include "robot_msgs/PoseDot.h"
-#include "robot_msgs/BatteryState.h"
+#include "nav_msgs/Odometry.h"
+#include "geometry_msgs/Twist.h"
+#include "pr2_msgs/BatteryState.h"
 #include "p2os/MotorState.h"
 
 typedef struct ros_p2os_data
 {
-	robot_msgs::PoseWithRatesStamped  position;
+	nav_msgs::Odometry  position;
   deprecated_msgs::RobotBase2DOdom  odom;
-  robot_msgs::BatteryState          batt;
+  pr2_msgs::BatteryState          batt;
   p2os::MotorState                  motors;
 } ros_p2os_data_t;
 
@@ -83,7 +83,7 @@ class P2OSNode
     void SendPulse (void);
     void spin();
     void set_vel();
-    void cmdvel_cb( const robot_msgs::PoseDotConstPtr &);
+    void cmdvel_cb( const geometry_msgs::TwistConstPtr &);
 
     void set_motor_state();
     void cmdmotor_state( const p2os::MotorStateConstPtr &);
@@ -119,7 +119,8 @@ class P2OSNode
     double lastPulseTime; // Last time of sending a pulse or command to the robot
 
   public:
-    robot_msgs::PoseDot cmdvel_;
+
+    geometry_msgs::Twist cmdvel_;
     p2os::MotorState    cmdmotor_state_;
 	  ros_p2os_data_t p2os_data;
 
