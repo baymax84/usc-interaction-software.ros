@@ -27,7 +27,6 @@
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "p2os/MotorState.h"
-#include "deprecated_msgs/RobotBase2DOdom.h"
 #include "tf/transform_datatypes.h"
 
 //#include "config.h"
@@ -94,7 +93,6 @@ P2OSNode::P2OSNode( ros::NodeHandle nh )
 
   // advertise services
   pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
-  odom_pub = n.advertise<deprecated_msgs::RobotBase2DOdom>( "odom", 1000 );
   batt_pub = n.advertise<pr2_msgs::BatteryState>("battery_state",1000);
   mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
 

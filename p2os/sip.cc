@@ -67,17 +67,6 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->position.twist.twist.linear.x = ((lvel + rvel) / 2) / 1e3;
   data->position.twist.twist.angular.z = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
 
-  // now for regular odom message
-  data->odom.pos.x = px;
-  data->odom.pos.y = py;
-  data->odom.pos.th = pa;
-
-  data->odom.vel.x = data->position.twist.twist.linear.x;
-  data->odom.vel.y = 0.0;
-  data->odom.vel.th = data->position.twist.twist.angular.z;
-  data->odom.stall = (unsigned char)(this->lwstall || this->rwstall);
-  data->odom.header.frame_id = "robot";
-
   // battery
   data->batt.energy_remaining = battery / 10.0;
 

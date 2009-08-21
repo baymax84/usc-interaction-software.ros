@@ -32,7 +32,6 @@
 #include "packet.h"
 #include "robot_params.h"
 
-#include "deprecated_msgs/RobotBase2DOdom.h"
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
 #include "pr2_msgs/BatteryState.h"
@@ -41,8 +40,7 @@
 typedef struct ros_p2os_data
 {
 	nav_msgs::Odometry  position;
-  deprecated_msgs::RobotBase2DOdom  odom;
-  pr2_msgs::BatteryState          batt;
+	pr2_msgs::BatteryState batt;
   p2os::MotorState                  motors;
 } ros_p2os_data_t;
 
@@ -90,7 +88,7 @@ class P2OSNode
 
   protected:
     ros::NodeHandle n;
-    ros::Publisher pose_pub, odom_pub, batt_pub, mstate_pub;
+    ros::Publisher pose_pub, batt_pub, mstate_pub;
     ros::Subscriber cmdvel_sub, cmdmstate_sub;
 
     ros::Time veltime;
