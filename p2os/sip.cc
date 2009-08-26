@@ -68,7 +68,7 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->position.twist.twist.angular.z = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
 
   // battery
-  data->batt.energy_remaining = battery / 10.0;
+  //data->batt.energy_remaining = battery / 10.0;
 
   // motor state
   //data->motors.state = status;
