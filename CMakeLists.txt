@@ -6,6 +6,6 @@ INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
 LINK_LIBRARIES(${FLTK_LIBRARIES})
 
 rospack(bandit)
-rospack_add_executable(bandit_node bandit.cpp)
+rospack_add_executable(bandit_node bandit_node.cpp)
 rospack_add_executable(bandit_mover bandit_mover.cpp)
 

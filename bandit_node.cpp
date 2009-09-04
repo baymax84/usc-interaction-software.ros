@@ -25,14 +25,16 @@ void jointIndCB(const bandit_msgs::JointConstPtr& j)
 {
   // Set the joint position
   int newid = j->id;
-  printf( "j->angle: %f\n", RTOD(j->angle) );
+  //printf( "j->angle: %f\n", RTOD(j->angle) );
+  ROS_INFO( "j->angle: %f\n", RTOD(j->angle) );
 
   // scale to home
   double dpos = direction[j->id]*RTOD(j->angle)+home[j->id];
   double pos = DTOR( dpos );
 
   g_bandit.setJointPos(newid, pos );
-  printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+  //printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+  ROS_INFO( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
   // Push out positions to bandit
   g_bandit.sendAllJointPos();
 }
@@ -47,12 +49,14 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
   {
     // Set the joint position
     int newid = joint_iter->id;
-    printf( "j->angle: %f\n", RTOD(joint_iter->angle) );
+    //printf( "j->angle: %f\n", RTOD(joint_iter->angle) );
+    ROS_INFO( "j->angle: %f\n", RTOD(joint_iter->angle) );
 
     // scale to home
     double dpos = direction[joint_iter->id]*RTOD(joint_iter->angle)+home[newid];
     double pos = DTOR( dpos );
-    printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+    //printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+    ROS_INFO( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
 
     // Set the joint position
     g_bandit.setJointPos(joint_iter->id, pos);
@@ -77,6 +81,7 @@ void stateCB(ros::Publisher& joint_pub)
     // Set the id and angle
     joint.id = i;
     joint.angle = g_bandit.getJointPos(i);
+    //joint.angle = DTOR((RTOD(g_bandit.getJointPos(i)) - home[i]) * direction[i]);
 
     // Add to array
     j.joints.push_back(joint);
