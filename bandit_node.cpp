@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <bandit_msgs/JointArray.h>
+#include <bandit_msgs/Params.h>
 
 #include <bandit/bandit.h>
 
@@ -19,6 +20,16 @@ int direction[19];
 // Home positions of the joints for Bandit
 double home[19];
 /**/
+
+bandit_msgs::Params::Response param_res;
+
+bool param(bandit_msgs::Params::Request    &req,
+           bandit_msgs::Params::Response   &res )
+{
+  res = param_res;
+  return true;
+}
+
 
 // This callback is invoked when we get a new joint command
 void jointIndCB(const bandit_msgs::JointConstPtr& j)
@@ -182,7 +193,14 @@ int main(int argc, char** argv)
     {
       // These default PID gains and offsets should be read from a config file
       if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
-        g_bandit.setJointPIDConfig(i, 100, 0, 0, -4000, 4001, 50, 0); 
+        g_bandit.setJointPIDConfig(i, 100, 0, 0, -4000, 4001, 50, 0);
+      
+      //populate service response message
+      param_res.name.push_back(g_bandit.getJointName(i));
+      param_res.id.push_back(i);
+      param_res.min.push_back(-180.0);
+      param_res.max.push_back( 180.0);
+      param_res.pos.push_back( 0 );
     }
 
     // Synchronize PID gains
@@ -235,7 +253,7 @@ int main(int argc, char** argv)
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
     ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
-
+    ros::ServiceServer service = nh.advertiseService("params", param );
     while (nh.ok())
     {
       // Process any pending messages from bandit
