@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "bandit_msgs/JointArray.h"
+#include "bandit_msgs/Params.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
@@ -10,11 +11,17 @@
 #define DTOR( a ) a * M_PI / 180.0
 
 ros::Publisher joint_publisher;
+bandit_msgs::Params::Response res;
 
 void slider_cb( Fl_Widget* o, void* )
 {
   const char* label = o->label();
-  int num = atoi(label);
+  int num = 0;
+
+  for( int i = 0; i < res.name.size(); i++ )
+  {
+    if( res.name[i] == label ) num = i;
+  }
   
   Fl_Valuator* oo = (Fl_Valuator*) o;
 
@@ -34,13 +41,32 @@ int main( int argc, char* argv[] )
   joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",1000);
   ros::Rate loop_rate(10);
 
+  bandit_msgs::Params::Request req;
+
+
+  // wait until Params is received
+  while( n.ok() )
+  {
+    if( ros::service::call("/params", req,res ) )
+    {
+      break;
+    }
+
+    printf( "." ); fflush(stdout);
+
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+
   bandit_msgs::JointArray joint_array;
   bandit_msgs::Joint j;
 
   int slider_w = 400;
   int slider_h = 20;
   int padding = 20;
-  int num_sliders = 19;
+  int num_sliders = res.name.size();
+
+  printf( "size: %d\n", res.name.size() );
 
   int win_w = padding*2+slider_w;
   int win_h = padding*(1+num_sliders)+num_sliders*slider_h;
@@ -53,10 +79,11 @@ int main( int argc, char* argv[] )
 
   for( int i = 0; i < num_sliders; i++ )
   {
-    sprintf( names[i], "%d", i );
-    sliders[i] = new Fl_Value_Slider( padding, (i+1)*padding+i*slider_h,slider_w, slider_h, names[i] );
+    printf( "adding slider[%d] %s, (%f,%f)\n", res.id[i], res.name[i].c_str(), res.min[i], res.max[i] );
+
+    sliders[i] = new Fl_Value_Slider( padding, (i+1)*padding+i*slider_h,slider_w, slider_h, res.name[i].c_str() );
     sliders[i]->type(FL_HORIZONTAL);
-    sliders[i]->bounds(-180.0, 180.0 );
+    sliders[i]->bounds(res.min[i], res.max[i] );
     sliders[i]->callback( slider_cb );
   }
 
