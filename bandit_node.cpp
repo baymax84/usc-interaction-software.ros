@@ -13,13 +13,6 @@ bandit::Bandit g_bandit;
 #define RTOD( a ) a * 180.0 / M_PI
 
 
-int joints[19];
-
-// Tells a joint to move in the same or opposite direction of the normal Bandit movement
-int direction[19];
-// Home positions of the joints for Bandit
-double home[19];
-/**/
 
 bandit_msgs::Params::Response param_res;
 
@@ -35,17 +28,14 @@ bool param(bandit_msgs::Params::Request    &req,
 void jointIndCB(const bandit_msgs::JointConstPtr& j)
 {
   // Set the joint position
-  int newid = j->id;
-  //printf( "j->angle: %f\n", RTOD(j->angle) );
   ROS_INFO( "j->angle: %f\n", RTOD(j->angle) );
 
   // scale to home
-  double dpos = direction[j->id]*RTOD(j->angle)+home[j->id];
-  double pos = DTOR( dpos );
+  //double dpos = direction[j->id]*RTOD(j->angle)+home[j->id];
+  //double pos = DTOR( dpos );
 
-  g_bandit.setJointPos(newid, pos );
-  //printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
-  ROS_INFO( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+  g_bandit.setJointPos(j->id, j->angle);
+
   // Push out positions to bandit
   g_bandit.sendAllJointPos();
 }
@@ -59,18 +49,15 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
        joint_iter++)
   {
     // Set the joint position
-    int newid = joint_iter->id;
     //printf( "j->angle: %f\n", RTOD(joint_iter->angle) );
     ROS_INFO( "j->angle: %f\n", RTOD(joint_iter->angle) );
 
     // scale to home
-    double dpos = direction[joint_iter->id]*RTOD(joint_iter->angle)+home[newid];
-    double pos = DTOR( dpos );
-    //printf( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
-    ROS_INFO( "setting [%d] to [%0.2f(%.2f)]\n", newid, RTOD(pos), pos );
+    //double dpos = direction[joint_iter->id]*RTOD(joint_iter->angle)+home[joint_iter->id];
+    //double pos = DTOR( dpos );
 
     // Set the joint position
-    g_bandit.setJointPos(joint_iter->id, pos);
+    g_bandit.setJointPos(joint_iter->id, joint_iter->angle);
   }
   // Push out positions to bandit
 
@@ -92,7 +79,6 @@ void stateCB(ros::Publisher& joint_pub)
     // Set the id and angle
     joint.id = i;
     joint.angle = g_bandit.getJointPos(i);
-    //joint.angle = DTOR((RTOD(g_bandit.getJointPos(i)) - home[i]) * direction[i]);
 
     // Add to array
     j.joints.push_back(joint);
@@ -104,6 +90,13 @@ void stateCB(ros::Publisher& joint_pub)
 
 int main(int argc, char** argv)
 {
+  // Tells a joint to move in the same or opposite direction
+  // of the normal Bandit movement
+  int direction[19];
+  
+  // Home positions of the joints for Bandit
+  double home[19];
+
   ros::init(argc, argv, "bandit");
   ros::NodeHandle nh;
 
@@ -157,6 +150,7 @@ int main(int argc, char** argv)
     printf( "\n" );
     
    // this maps the joints from the original driver to what's used in the gazebo model
+/*
   joints[0]  = 12;
   joints[1]  = 5;
   joints[2]  = 10;
@@ -173,6 +167,7 @@ int main(int argc, char** argv)
   joints[13] = 1;
   joints[14] = 1; // right wrist bend - does nothing right now
   joints[15] = 1; // right hand open/close - does nothing right now
+*/
 
 
   try 
@@ -253,7 +248,7 @@ int main(int argc, char** argv)
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
     ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
-    ros::ServiceServer service = nh.advertiseService("params", param );
+    ros::ServiceServer service = nh.advertiseService("params", param);
     while (nh.ok())
     {
       // Process any pending messages from bandit
