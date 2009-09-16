@@ -8,7 +8,7 @@
 #include <FL/Fl_Value_Slider.H>
 #include <stdio.h>
 
-#define DTOR( a ) a * M_PI / 180.0
+#define DTOR( a ) ( ( a ) * M_PI / 180.0f )
 
 ros::Publisher joint_publisher;
 bandit_msgs::Params::Response res;
