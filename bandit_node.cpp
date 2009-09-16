@@ -198,10 +198,18 @@ int main(int argc, char** argv)
       
       //populate service response message
       param_res.name.push_back(g_bandit.getJointName(i));
-      param_res.id.push_back(i);
-      param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));
-      param_res.max.push_back(RTOD(g_bandit.getJointMax(i)));
-      param_res.pos.push_back(RTOD(g_bandit.getJointPos(i)));
+      if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
+      {
+        param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));
+        param_res.max.push_back(RTOD(g_bandit.getJointMax(i)));
+        param_res.pos.push_back(RTOD(g_bandit.getJointPos(i)));
+      }
+      else
+      {
+        param_res.min.push_back(g_bandit.getJointMin(i));
+        param_res.max.push_back(g_bandit.getJointMax(i));
+        param_res.pos.push_back(g_bandit.getJointPos(i));
+      }
     }
 
     // Synchronize PID gains
