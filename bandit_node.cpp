@@ -84,6 +84,8 @@ void stateCB(ros::Publisher& joint_pub)
     j.joints.push_back(joint);
   }
 
+  ROS_INFO( "publishing..." );
+
   // Publish to other nodes
   joint_pub.publish(j);
 }
@@ -104,7 +106,7 @@ int main(int argc, char** argv)
   std::string port;
   nh.param("~/port", port, std::string("/dev/ttyS1"));
 
-  ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 0);
+  ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
