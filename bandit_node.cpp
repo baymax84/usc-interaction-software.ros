@@ -108,10 +108,8 @@ int main(int argc, char** argv)
 
     std::string homestring, dirsstring;
 
-    nh.param( "~home", homestring, std::string("0,0,-64,-74,-115,51,-1,65,88,55,85,116,-57,0,0,0,0,0"));
-    nh.param( "~dirs", dirsstring, std::string("-1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
-    //nh.param( "~home", homestring, std::string("0,0,-54,-84,-117,45,54,-93,0,60,66,115,-55,-57,172,33,0,0,0"));
-    //nh.param( "~dirs", dirsstring, std::string("-1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
+    nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0,0,59,75,26,-58,-2,0,0,0,0"));
+    nh.param( "~dirs", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
 
     for( int i = 0; i < 19; i++ )
     {
@@ -127,9 +125,10 @@ int main(int argc, char** argv)
     while( j != std::string::npos )
     {
       std::string s = homestring.substr(i,j-i);
-      home[ii++] = atof(s.c_str() );
-      printf( "%d:%s:%f\n", ii-1, s.c_str(), home[ii-1] );
-      i= ++j;
+      home[ii] = atof(s.c_str());
+      printf( "%d:%s:%f\n", ii, s.c_str(), home[ii] );
+      ++ii;
+      i = ++j;
       j = homestring.find(',',j);
     }
 
@@ -142,8 +141,9 @@ int main(int argc, char** argv)
     while( j != std::string::npos )
     {
       std::string s = dirsstring.substr(i,j-i);
-      direction[ii++] = atoi(s.c_str() );
-      printf( "%d:%s:%d\n", ii-1,s.c_str(), direction[ii-1] );
+      direction[ii] = atoi(s.c_str() );
+      printf( "%d:%s:%d\n", ii,s.c_str(), direction[ii] );
+      ++i;
       i= ++j;
       j = dirsstring.find(',',j);
     }
@@ -189,6 +189,10 @@ int main(int argc, char** argv)
       // These default PID gains and offsets should be read from a config file
       if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
         g_bandit.setJointPIDConfig(i, 100, 0, 0, -4000, 4001, 50, 0);
+
+      //set joint offsets and directions
+      g_bandit.setJointDirection(i, direction[i]);
+      g_bandit.setJointOffset(i, home[i]);
       
       //populate service response message
       param_res.name.push_back(g_bandit.getJointName(i));
