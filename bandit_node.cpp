@@ -197,6 +197,7 @@ int main(int argc, char** argv)
       g_bandit.setJointOffset(i, DTOR(home[i]));
       
       //populate service response message
+      param_res.id.push_back(i);
       param_res.name.push_back(g_bandit.getJointName(i));
       if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
       {
