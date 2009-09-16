@@ -137,13 +137,13 @@ int main(int argc, char** argv)
     i = 0;
     j = dirsstring.find(',');
     ii = 0;
-    printf( "dirss: \n\n" );
+    printf( "directions: \n\n" );
     while( j != std::string::npos )
     {
       std::string s = dirsstring.substr(i,j-i);
-      direction[ii] = atoi(s.c_str() );
-      printf( "%d:%s:%d\n", ii,s.c_str(), direction[ii] );
-      ++i;
+      direction[ii] = atoi(s.c_str());
+      printf( "%d:%s:%d\n", ii, s.c_str(), direction[ii] );
+      ++ii;
       i= ++j;
       j = dirsstring.find(',',j);
     }
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 
       //set joint offsets and directions
       g_bandit.setJointDirection(i, direction[i]);
-      g_bandit.setJointOffset(i, home[i]);
+      g_bandit.setJointOffset(i, DTOR(home[i]));
       
       //populate service response message
       param_res.name.push_back(g_bandit.getJointName(i));
