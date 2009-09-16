@@ -198,9 +198,9 @@ int main(int argc, char** argv)
       //populate service response message
       param_res.name.push_back(g_bandit.getJointName(i));
       param_res.id.push_back(i);
-      param_res.min.push_back(-180.0);
-      param_res.max.push_back( 180.0);
-      param_res.pos.push_back( 0 );
+      param_res.min.push_back(g_bandit.getJointMin(i));
+      param_res.max.push_back(g_bandit.getJointMax(i));
+      param_res.pos.push_back(g_bandit.getJointPos(i));
     }
 
     // Synchronize PID gains
