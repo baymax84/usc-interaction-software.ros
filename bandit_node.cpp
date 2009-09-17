@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 
     std::string homestring, dirsstring;
 
-    nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0,0,59,75,26,-58,-2,0,0,0,0,0"));
-    nh.param( "~dirs", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,1"));
+    nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25"));
+    nh.param( "~dirs", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1"));
 
     for( int i = 0; i < 19; i++ )
     {
