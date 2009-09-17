@@ -194,6 +194,7 @@ int main(int argc, char** argv)
 
       //set joint offsets and directions
       g_bandit.setJointDirection(i, direction[i]);
+      //g_bandit.setJointOffset(i, DTOR(home[i]));
       if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
         g_bandit.setJointOffset(i, DTOR(home[i]));
       else
@@ -202,6 +203,9 @@ int main(int argc, char** argv)
       //populate service response message
       param_res.id.push_back(i);
       param_res.name.push_back(g_bandit.getJointName(i));
+      //param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));
+      //param_res.max.push_back(RTOD(g_bandit.getJointMax(i)));
+      //param_res.pos.push_back(RTOD(g_bandit.getJointPos(i)));
       if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
       {
         param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));

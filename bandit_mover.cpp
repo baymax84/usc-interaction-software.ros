@@ -29,6 +29,7 @@ void slider_cb( Fl_Widget* o, void* )
 
   bandit_msgs::Joint j;
   j.id = num;
+  //j.angle = DTOR( oo->value() );
   if ((num == 7) || (num == 8) || (num > 13))
     j.angle = oo->value();
   else
