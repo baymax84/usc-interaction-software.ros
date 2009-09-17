@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 
     std::string homestring, dirsstring;
 
-    nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25"));
-    nh.param( "~dirs", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1"));
+    nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25,"));
+    nh.param( "~direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
 
     for( int i = 0; i < 19; i++ )
     {
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
     std::string::size_type j = homestring.find(',');
 
     int ii = 0;
-    printf( "homes: \n\n" );
+    printf( "home: \n\n" );
     while( j != std::string::npos )
     {
       std::string s = homestring.substr(i,j-i);
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     i = 0;
     j = dirsstring.find(',');
     ii = 0;
-    printf( "directions: \n\n" );
+    printf( "direction: \n\n" );
     while( j != std::string::npos )
     {
       std::string s = dirsstring.substr(i,j-i);
@@ -194,7 +194,10 @@ int main(int argc, char** argv)
 
       //set joint offsets and directions
       g_bandit.setJointDirection(i, direction[i]);
-      g_bandit.setJointOffset(i, DTOR(home[i]));
+      if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
+        g_bandit.setJointOffset(i, DTOR(home[i]));
+      else
+        g_bandit.setJointOffset(i, home[i]);
       
       //populate service response message
       param_res.id.push_back(i);
