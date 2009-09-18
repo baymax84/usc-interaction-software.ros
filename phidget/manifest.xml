@@ -1,0 +1,16 @@
+<package>
+  <description brief="phidget">
+     Phidget Interface Kit
+  </description>
+  <author>dfseifer@usc.edu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://pr.willowgarage.com/wiki/b3ia</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+  <export>
+    <cpp cflags="-I${prefix}/include -I${prefix}/msg/cpp" oflags="-L${prefix}/lib -lphidget21"/>
+  </export>
+</package>
+
+
