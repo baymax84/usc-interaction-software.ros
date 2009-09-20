@@ -242,25 +242,25 @@ int main(int argc, char** argv)
     ROS_INFO("All PID settings configured successfully");
 
     // Push out initial state
-    g_bandit.setJointPos(0,  0.0); //"head pitch",        
-    g_bandit.setJointPos(1,  0.0); //"head pan",          
-    g_bandit.setJointPos(2,  0.0); //"left shoulder F/B", 
-    g_bandit.setJointPos(3,  0.0); //"left shoulder I/O", 
-    g_bandit.setJointPos(4,  0.0); //"left elbow twist",  
-    g_bandit.setJointPos(5,  0.0); //"left elbow",        
-    g_bandit.setJointPos(6,  0.0); //"left wrist twist",  
-    g_bandit.setJointPos(7,  0.5);  //"left wrist tilt",   
-    g_bandit.setJointPos(8,  0.5);  //"left hand grab",    
-    g_bandit.setJointPos(9,  0.0); //"right shoulder F/B",
-    g_bandit.setJointPos(10, 0.0); // "right shoulder I/O"
-    g_bandit.setJointPos(11, 0.0); // "right elbow twist",
-    g_bandit.setJointPos(12, 0.0); // "right elbow",      
-    g_bandit.setJointPos(13, 0.0); // "right wrist twist",
-    g_bandit.setJointPos(14, 0.5);  // "right wrist tilt", 
-    g_bandit.setJointPos(15, 0.5);  // "right hand grab",  
-    g_bandit.setJointPos(16, 0.5);  // "eyebrows",         
-    g_bandit.setJointPos(17, 0.5);  // "mouth top",        
-    g_bandit.setJointPos(18, 0.5);  // "mouth bottom", 
+    g_bandit.setJointPos(0,  0.0f);  // "head pitch",        
+    g_bandit.setJointPos(1,  0.0f);  // "head pan",          
+    g_bandit.setJointPos(2,  0.0f);  // "left shoulder F/B", 
+    g_bandit.setJointPos(3,  0.0f);  // "left shoulder I/O", 
+    g_bandit.setJointPos(4,  0.0f);  // "left elbow twist",  
+    g_bandit.setJointPos(5,  0.0f);  // "left elbow",        
+    g_bandit.setJointPos(6,  0.0f);  // "left wrist twist",  
+    g_bandit.setJointPos(7,  0.0f);  // "left wrist tilt",   
+    g_bandit.setJointPos(8,  0.0f);  // "left hand grab",    
+    g_bandit.setJointPos(9,  0.0f);  // "right shoulder F/B",
+    g_bandit.setJointPos(10, 0.0f);  // "right shoulder I/O"
+    g_bandit.setJointPos(11, 0.0f);  // "right elbow twist",
+    g_bandit.setJointPos(12, 0.0f);  // "right elbow",      
+    g_bandit.setJointPos(13, 0.0f);  // "right wrist twist",
+    g_bandit.setJointPos(14, 0.0f);  // "right wrist tilt", 
+    g_bandit.setJointPos(15, 0.0f);  // "right hand grab",  
+    g_bandit.setJointPos(16, 0.0f);  // "eyebrows",         
+    g_bandit.setJointPos(17, 0.0f);  // "mouth top",        
+    g_bandit.setJointPos(18, 0.0f);  // "mouth bottom"
 
     // Send bandit position commands:
     g_bandit.sendAllJointPos();
