@@ -21,7 +21,7 @@
  *
  */
 
-#include "ros/node.h"
+#include "ros/ros.h"
 #include "p2os.h"
 
 void
