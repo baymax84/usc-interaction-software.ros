@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
   // wait until Params is received
   while( n.ok() )
   {
-    if( ros::service::call("/params", req,res ) )
+    if( ros::service::call("params", req,res ) )
     {
       break;
     }
