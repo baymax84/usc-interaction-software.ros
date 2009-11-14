@@ -84,7 +84,7 @@ void stateCB(ros::Publisher& joint_pub)
     j.joints.push_back(joint);
   }
 
-  ROS_INFO( "publishing..." );
+  //ROS_INFO( "publishing..." );
 
   // Publish to other nodes
   joint_pub.publish(j);
@@ -104,14 +104,15 @@ int main(int argc, char** argv)
 
   // Retrieve port from parameter server
   std::string port;
-  nh.param("~/port", port, std::string("/dev/ttyS1"));
+  nh.param("bandit_port", port, std::string("/dev/ttyS1"));
 
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
-    nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25,"));
-    nh.param( "~direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    //nh.param( "bandit_home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25,"));
+    nh.param( "bandit_home", homestring, std::string("0,-11,-60,-72,-28,42,-4,0.5,0.6,59,83,26,-58,-2,0.38,-0.2,0.5,0.25,0.25,"));
+    nh.param( "bandit_direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
 
     for( int i = 0; i < 19; i++ )
     {
