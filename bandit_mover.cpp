@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include "sensor_msgs/JointState.h"
 #include "bandit_msgs/JointArray.h"
 #include "bandit_msgs/Params.h"
 
@@ -11,21 +12,41 @@
 #define DTOR( a ) ( ( a ) * M_PI / 180.0f )
 
 ros::Publisher joint_publisher;
+ros::Publisher joint_state_publisher;
+
+std::vector<std::string> joint_names;
+
 bandit_msgs::Params::Response res;
 
 void slider_cb( Fl_Widget* o, void* )
 {
   const char* label = o->label();
   int num = 0;
+	printf("^"); fflush(stdout);
 
   for( int i = 0; i < res.name.size(); i++ )
   {
     if( res.name[i] == label ) num = i;
   }
   
+	printf("$"); fflush(stdout);
+
+
   Fl_Valuator* oo = (Fl_Valuator*) o;
 
-  printf( "setting %d: %f\n", num, oo->value() );
+
+	
+	printf("!"); fflush(stdout);
+
+	sensor_msgs::JointState js;
+	js.header.frame_id="/world";
+	js.name.push_back(joint_names[num] + "_joint");
+	js.position.push_back(DTOR(oo->value()));
+	js.velocity.push_back(0.0);
+	js.effort.push_back(0);
+  printf( "setting %d: %s\n", num, js.name[0].c_str() );
+	joint_state_publisher.publish(js);
+	printf("@"); fflush(stdout);
 
   bandit_msgs::Joint j;
   j.id = num;
@@ -43,6 +64,12 @@ int main( int argc, char* argv[] )
   ros::init(argc,argv,"bandit_mover");
   ros::NodeHandle n;
   joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",1000);
+	joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
+
+
+	joint_names.push_back("bandit_head_pan");
+	joint_names.push_back("bandit_head_tilt");
+
   ros::Rate loop_rate(10);
 
   bandit_msgs::Params::Request req;
@@ -96,7 +123,9 @@ int main( int argc, char* argv[] )
 
   while( n.ok() && Fl::check() )
   {
+		printf( "+" ); fflush( stdout );
     ros::spinOnce();
+		printf( "-" ); fflush( stdout );
     loop_rate.sleep();
   }
 
