@@ -8,4 +8,5 @@ LINK_LIBRARIES(${FLTK_LIBRARIES})
 rospack(bandit)
 rospack_add_executable(bandit_node bandit_node.cpp)
 rospack_add_executable(bandit_mover bandit_mover.cpp)
+rospack_add_executable(fake_bandit fake_bandit.cpp)
 

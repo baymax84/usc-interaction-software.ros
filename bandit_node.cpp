@@ -266,13 +266,13 @@ int main(int argc, char** argv)
     // Send bandit position commands:
     g_bandit.sendAllJointPos();
 
-
     // Now that things are supposeldy up and running, subscribe to
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
     ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
     ros::ServiceServer service = nh.advertiseService("params", param);
-    while (nh.ok())
+ 
+   while (nh.ok())
     {
       // Process any pending messages from bandit
       g_bandit.processIO(10000);
