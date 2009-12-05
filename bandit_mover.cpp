@@ -37,7 +37,7 @@ void slider_cb( Fl_Widget* o, void* )
 
 	
 	printf("!"); fflush(stdout);
-
+/*
 	sensor_msgs::JointState js;
 	js.header.frame_id="/world";
 	js.name.push_back(joint_names[num] + "_joint");
@@ -47,7 +47,7 @@ void slider_cb( Fl_Widget* o, void* )
   printf( "setting %d: %s\n", num, js.name[0].c_str() );
 	joint_state_publisher.publish(js);
 	printf("@"); fflush(stdout);
-
+*/
   bandit_msgs::Joint j;
   j.id = num;
   //j.angle = DTOR( oo->value() );
@@ -64,7 +64,7 @@ int main( int argc, char* argv[] )
   ros::init(argc,argv,"bandit_mover");
   ros::NodeHandle n;
   joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",1000);
-	joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
+	//joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
 
 
 	joint_names.push_back("bandit_head_pan");
