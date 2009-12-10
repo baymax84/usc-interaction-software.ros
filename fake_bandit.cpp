@@ -48,7 +48,10 @@ int main( int argc, char* argv[] )
   add_param( 1, "bandit_head_tilt_joint", -15, 15, 0 );
   add_param( 2, "left_torso_shoulder_mounting_joint", -90, 90, 0 );
   add_param( 3, "right_torso_shoulder_mounting_joint", -90, 90, 0 );
-  add_param( 4, "left_bicep_body_joint", -90 90 0);
+	add_param( 4, "left_bicep_mounting_joint", -90, 90, 0 );
+	add_param( 5, "right_bicep_mounting_joint", -90, 90, 0 );
+  add_param( 6, "left_forearm_body_joint", -90, 90, 0);
+  add_param( 7, "right_forearm_body_joint", -90, 90, 0);
 	ros::ServiceServer service = n.advertiseService("params", param);
   ros::Rate loop_rate(1);
   
