@@ -52,6 +52,12 @@ int main( int argc, char* argv[] )
 	add_param( 5, "right_bicep_mounting_joint", -90, 90, 0 );
   add_param( 6, "left_forearm_body_joint", -90, 90, 0);
   add_param( 7, "right_forearm_body_joint", -90, 90, 0);
+  add_param( 8, "left_forearm_wrist_joint", -90, 90, 0);
+  add_param( 9, "right_forearm_wrist_joint", -90, 90, 0);
+  add_param( 10, "left_wrist_body_joint", -90, 90, 0);
+  add_param( 11, "right_wrist_body_joint", -90, 90, 0);
+  add_param( 12, "left_hand_thumb_joint", -90, 90, 0);
+  add_param( 13, "right_hand_thumb_joint", -90, 90, 0);
 	ros::ServiceServer service = n.advertiseService("params", param);
   ros::Rate loop_rate(1);
   
