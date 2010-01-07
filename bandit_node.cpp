@@ -6,7 +6,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/ref.hpp>
-
+#include <stdio.h>
 bandit::Bandit g_bandit;
 
 #define DTOR( a ) a * M_PI / 180.0
