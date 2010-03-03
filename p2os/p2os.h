@@ -88,6 +88,7 @@ class P2OSNode
 
   protected:
     ros::NodeHandle n;
+		ros::NodeHandle nh_private;
     ros::Publisher pose_pub, batt_pub, mstate_pub;
     ros::Subscriber cmdvel_sub, cmdmstate_sub;
 

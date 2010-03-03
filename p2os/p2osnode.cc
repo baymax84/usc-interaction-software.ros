@@ -41,53 +41,53 @@ P2OSNode::P2OSNode( ros::NodeHandle nh )
   n = nh;
 
   // bumpstall
-  n.param( "~bumpstall", bumpstall, -1 );
+  n.param( "bumpstall", bumpstall, -1 );
   // pulse
-  n.param( "~pulse", pulse, -1.0 );
+  n.param( "pulse", pulse, -1.0 );
   // rot_kp
-  n.param( "~rot_kp", rot_kp, -1 );
+  n.param( "rot_kp", rot_kp, -1 );
   // rot_kv
-  n.param( "~rot_kv", rot_kv, -1 );
+  n.param( "rot_kv", rot_kv, -1 );
   // rot_ki
-  n.param( "~rot_ki", rot_ki, -1 );
+  n.param( "rot_ki", rot_ki, -1 );
   // trans_kp
-  n.param( "~trans_kp", trans_kp, -1 );
+  n.param( "trans_kp", trans_kp, -1 );
   // trans_kv
-  n.param( "~trans_kv", trans_kv, -1 );
+  n.param( "trans_kv", trans_kv, -1 );
   // trans_ki
-  n.param( "~trans_ki", trans_ki, -1 );
+  n.param( "trans_ki", trans_ki, -1 );
   // !!! port !!!
   std::string def = DEFAULT_P2OS_PORT;
-  n.param( "~port", psos_serial_port, def );
+  n.param( "port", psos_serial_port, def );
   ROS_INFO( "using serial port: [%s]", psos_serial_port.c_str() );
-  n.param( "~use_tcp", psos_use_tcp, false );
+  n.param( "use_tcp", psos_use_tcp, false );
   std::string host = DEFAULT_P2OS_TCP_REMOTE_HOST;
-  n.param( "~tcp_remote_host", psos_tcp_host, host );
-  n.param( "~tcp_remote_port", psos_tcp_port, DEFAULT_P2OS_TCP_REMOTE_PORT );
+  n.param( "tcp_remote_host", psos_tcp_host, host );
+  n.param( "tcp_remote_port", psos_tcp_port, DEFAULT_P2OS_TCP_REMOTE_PORT );
   // radio
-  n.param( "~radio", radio_modemp, 0 );
+  n.param( "radio", radio_modemp, 0 );
   // joystick
-  n.param( "~joystick", joystick, 0 );
+  n.param( "joystick", joystick, 0 );
   // direct_wheel_vel_control
-  n.param( "~direct_wheel_vel_control", direct_wheel_vel_control, 0 );
+  n.param( "direct_wheel_vel_control", direct_wheel_vel_control, 0 );
   // max xpeed
   double spd;
-  n.param( "~max_xspeed", spd, MOTOR_DEF_MAX_SPEED);
+  n.param( "max_xspeed", spd, MOTOR_DEF_MAX_SPEED);
   motor_max_speed = (int)rint(1e3*spd);
   // max_yawspeed
-  n.param( "~max_yawspeed", spd, MOTOR_DEF_MAX_TURNSPEED);
+  n.param( "max_yawspeed", spd, MOTOR_DEF_MAX_TURNSPEED);
   motor_max_turnspeed = (short)rint(RTOD(spd));
   // max_xaccel
-  n.param( "~max_xaccel", spd, 0.0);
+  n.param( "max_xaccel", spd, 0.0);
   motor_max_trans_accel = (short)rint(1e3*spd);
   // max_xdecel
-  n.param( "~max_xdecel", spd, 0.0);
+  n.param( "max_xdecel", spd, 0.0);
   motor_max_trans_decel = (short)rint(1e3*spd);
   // max_yawaccel
-  n.param( "~max_yawaccel", spd, 0.0);
+  n.param( "max_yawaccel", spd, 0.0);
   motor_max_rot_accel = (short)rint(RTOD(spd));
   // max_yawdecel
-  n.param( "~max_yawdecel", spd, 0.0);
+  n.param( "max_yawdecel", spd, 0.0);
   motor_max_rot_decel = (short)rint(RTOD(spd));
 
 
