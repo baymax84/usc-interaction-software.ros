@@ -1,7 +1,7 @@
 /*
  *  P2OS for ROS
  *  Copyright (C) 2009
- *     David Feil-Seifer, Brian Gerkey, Kasper Stoy, 
+ *     David Feil-Seifer, Brian Gerkey, Kasper Stoy,
  *      Richard Vaughan, & Andrew Howard
  *
  *
@@ -35,7 +35,8 @@
 #include <fcntl.h>
 #include <string.h>
 
-P2OSNode::P2OSNode( ros::NodeHandle nh )
+P2OSNode::P2OSNode( ros::NodeHandle nh ) :
+        gripper_dirty_(false)
 {
   // read in config options
   n = nh;
@@ -95,12 +96,15 @@ P2OSNode::P2OSNode( ros::NodeHandle nh )
   pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
   batt_pub = n.advertise<pr2_msgs::BatteryState>("battery_state",1000);
   mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
-
+  gripstate_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
 
   // subscribe to services
   cmdvel_sub = n.subscribe( "cmd_vel", 1, (boost::function < void(const geometry_msgs::TwistConstPtr&)>) boost::bind( &P2OSNode::cmdvel_cb, this, _1 ));
   cmdmstate_sub = n.subscribe( "cmd_motor_state",1,(boost::function <void(const p2os::MotorStateConstPtr&)>) boost::bind(&P2OSNode::cmdmotor_state,this,_1));
-  
+
+  gripper_sub_ = n.subscribe("gripper_control", 1, &P2OSNode::gripperCallback,
+                             this);
+
   veltime = ros::Time::now();
 
   // initialize robot parameters (player legacy)
@@ -130,6 +134,32 @@ P2OSNode::set_motor_state()
   command[3] = 0;
   packet.Build(command,4);
   SendReceive(&packet,false);
+}
+
+void
+P2OSNode::set_gripper_state()
+{
+    // Send the gripper command
+    unsigned char grip_val = (unsigned char) gripper_state_.grip.state;
+    unsigned char grip_command[4];
+    P2OSPacket grip_packet;
+    grip_command[0] = GRIPPER;
+    grip_command[1] = ARGINT;
+    grip_command[2] = grip_val;
+    grip_command[3] = 0;
+    grip_packet.Build(grip_command,4);
+    SendReceive(&grip_packet,false);
+
+    // Send the lift command
+    unsigned char lift_val = (unsigned char) gripper_state_.lift.state;
+    unsigned char lift_command[4];
+    P2OSPacket lift_packet;
+    lift_command[0] = GRIPPER;
+    lift_command[1] = ARGINT;
+    lift_command[2] = lift_val;
+    lift_command[3] = 0;
+    lift_packet.Build(lift_command,4);
+    SendReceive(&lift_packet,false);
 }
 
 void
@@ -212,6 +242,14 @@ P2OSNode::set_vel()
   }
 }
 
+void
+P2OSNode::gripperCallback(const p2os::GripperStateConstPtr &msg)
+{
+    gripper_dirty_ = true;
+    gripper_state_ = *msg;
+}
+
+
 int
 P2OSNode::Setup()
 {
@@ -260,7 +298,7 @@ P2OSNode::Setup()
     this->psos_fd = -1;
     return(1);
   }
-  
+
   cfmakeraw( &term );
   cfsetispeed(&term, bauds[currbaud]);
   cfsetospeed(&term, bauds[currbaud]);
@@ -448,11 +486,11 @@ P2OSNode::Setup()
 
   printf( "param_idx: [%d]\n", param_idx );
 
-	
+
   //sleep(1);
 
   // first, receive a packet so we know we're connected.
-  if(!sippacket) 
+  if(!sippacket)
   {
     sippacket = new SIP(param_idx);
   }
@@ -594,7 +632,7 @@ P2OSNode::Setup()
 
 }
 
-int 
+int
 P2OSNode::Shutdown()
 {
   unsigned char command[20],buffer[20];
@@ -629,10 +667,10 @@ P2OSNode::Shutdown()
 void
 P2OSNode::spin()
 {
-  int last_sonar_subscrcount=0;
+  int last_sonar_subscrcount = 0;
   double currentTime;
   struct timeval timeVal;
- 
+
   while( n.ok() )
   {
     // we want to turn on the sonars if another node has subscribed to the sonar topic
@@ -657,7 +695,7 @@ P2OSNode::spin()
     // (9) actarray stuff (I'm not going to do this)
     // (10) bumper req geom (I'm not going to do this)
     // (11) get gripper geom (ask Nate)
-    if( vel_dirty ) 
+    if( vel_dirty )
     {
       set_vel();
     }
@@ -666,11 +704,18 @@ P2OSNode::spin()
 
     vel_dirty = false;
     motor_dirty = false;
+
+    if( gripper_dirty_ )
+    {
+        set_gripper_state();
+    }
+
     // Check if need to send a pulse to the robot
     if (this->pulse != -1)
     {
       gettimeofday (&timeVal, NULL);
-      currentTime = static_cast<double> (timeVal.tv_sec) + (static_cast<double> (timeVal.tv_usec) / 1e6);
+      currentTime = static_cast<double> (timeVal.tv_sec) +
+              (static_cast<double> (timeVal.tv_usec) / 1e6);
       if ((currentTime - lastPulseTime) > this->pulse)
       {
         SendPulse ();
@@ -711,5 +756,5 @@ int main( int argc, char** argv )
 
   printf( "\nQuitting... \n" );
   return 0;
-  
+
 }

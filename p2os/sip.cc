@@ -72,8 +72,7 @@ void SIP::FillStandard(ros_p2os_data_t* data)
 
   // motor state
   //data->motors.state = status;
-
-/*
+  /*
   ///////////////////////////////////////////////////////////////
   // compass
   memset(&(data->compass),0,sizeof(data->compass));
@@ -85,54 +84,62 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->sonar.ranges = new float[data->sonar.ranges_count];
   for(int i=0;i<MIN(PlayerRobotParams[param_idx].SonarNum,sonarreadings);i++)
     data->sonar.ranges[i] = this->sonars[i] / 1e3;
+  */
 
   ///////////////////////////////////////////////////////////////
   // gripper
   unsigned char gripState = timer >> 8;
   if ((gripState & 0x01) && (gripState & 0x02) && !(gripState & 0x04))
-    data->gripper.state = PLAYER_GRIPPER_STATE_ERROR;
+  {
+      data->gripper.grip.state = PLAYER_GRIPPER_STATE_ERROR;
+  }
   else
-    data->gripper.state = (gripState & 0x01) ? PLAYER_GRIPPER_STATE_OPEN :
-      ((gripState & 0x02) ? PLAYER_GRIPPER_STATE_CLOSED :
-      ((gripState & 0x04) ? PLAYER_GRIPPER_STATE_MOVING : PLAYER_GRIPPER_STATE_ERROR));
-  data->gripper.beams = (digin & 0x02) & (digin & 0x04);
-  data->gripper.stored = 0;
+  {
+      data->gripper.grip.state = (gripState & 0x01) ? PLAYER_GRIPPER_STATE_OPEN :
+              ((gripState & 0x02) ? PLAYER_GRIPPER_STATE_CLOSED :
+               ((gripState & 0x04) ? PLAYER_GRIPPER_STATE_MOVING :
+                PLAYER_GRIPPER_STATE_ERROR));
+  }
+  data->gripper.grip.beams = (digin & 0x02) & (digin & 0x04);
+  data->gripper.grip.stored = 0;
 
-  ///////////////////////////////////////////////////////////////
   // lift
-  data->lift.actuators_count = 1;
-  data->lift.actuators = &liftActuator;
-  data->lift.actuators[0].speed = 0;
-  data->lift.actuators[0].acceleration = -1;
-  data->lift.actuators[0].current = -1;
+  data->gripper.lift.speed = 0;
+  data->gripper.lift.acceleration = -1;
+  data->gripper.lift.current = -1;
+
   if ((gripState & 0x10) && (gripState & 0x20) && !(gripState & 0x40))
   {
-    // In this case, the lift is somewhere in between, so
-    // must be at an intermediate carry position. Use last commanded position.
-    data->lift.actuators[0].state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
-    data->lift.actuators[0].position = lastLiftPos;
+      // In this case, the lift is somewhere in between, so
+      // must be at an intermediate carry position. Use last commanded position.
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
+      data->gripper.lift.position = lastLiftPos;
   }
   else if (gripState & 0x10)  // Up
   {
-    data->lift.actuators[0].state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
-    data->lift.actuators[0].position = 1.0f;
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
+      data->gripper.lift.position = 1.0f;
   }
   else if (gripState & 0x20)  // Down
   {
-    data->lift.actuators[0].state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
-    data->lift.actuators[0].position = 0.0f;
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
+      data->gripper.lift.position = 0.0f;
   }
   else if (gripState & 0x40)  // Moving
   {
-    data->lift.actuators[0].state = PLAYER_ACTARRAY_ACTSTATE_MOVING;
-    // There is no way to know where it is for sure, so use last commanded position.
-    data->lift.actuators[0].position = lastLiftPos;
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_MOVING;
+      // There is no way to know where it is for sure, so use last commanded
+      // position.
+      data->gripper.lift.position = lastLiftPos;
   }
   else    // Assume stalled
   {
-    data->lift.actuators[0].state = PLAYER_ACTARRAY_ACTSTATE_STALLED;
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_STALLED;
   }
+  // Store the last lift position
+  lastLiftPos = data->gripper.lift.position;
 
+  /*
   ///////////////////////////////////////////////////////////////
   // bumper
   unsigned int bump_count = PlayerRobotParams[param_idx].NumFrontBumpers + PlayerRobotParams[param_idx].NumRearBumpers;
@@ -149,7 +156,7 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   for(int i=PlayerRobotParams[param_idx].NumRearBumpers-1;i>=0;i--)
     data->bumper.bumpers[j++] =
       (unsigned char)((this->rearbumpers >> i) & 0x01);
-*/
+  */
 /*
   ///////////////////////////////////////////////////////////////
   // digital I/O
