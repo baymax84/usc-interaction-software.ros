@@ -1,7 +1,7 @@
 /*
  *  P2OS for ROS
  *  Copyright (C) 2009
- *     David Feil-Seifer, Brian Gerkey, Kasper Stoy, 
+ *     David Feil-Seifer, Brian Gerkey, Kasper Stoy,
  *      Richard Vaughan, & Andrew Howard
  *
  *
@@ -146,31 +146,31 @@ void initialize_robot_params(void);
 #define ARGNINT   0x1B  // Negative int (LSB, MSB)
 #define ARGSTR    0x2B  // String (Note: 1st byte is length!!)
 
-/* gripper stuff */ 
-#define GRIPopen   1 
-#define GRIPclose  2 
-#define GRIPstop   3 
-#define LIFTup     4 
-#define LIFTdown   5 
-#define LIFTstop   6 
-#define GRIPstore  7 
-#define GRIPdeploy 8 
-#define GRIPhalt   15 
-#define GRIPpress  16 
-#define LIFTcarry  17 
- 
-/* CMUcam stuff */ 
-#define CMUCAM_IMAGE_WIDTH  80 
-#define CMUCAM_IMAGE_HEIGHT 143 
-#define CMUCAM_MESSAGE_LEN  10 
-  
-/* conection stuff */ 
-#define DEFAULT_P2OS_PORT "/dev/ttyS0" 
-#define DEFAULT_P2OS_TCP_REMOTE_HOST "localhost" 
-#define DEFAULT_P2OS_TCP_REMOTE_PORT 8101 
-    
-/* degrees and radians */ 
-#define DTOR(a) M_PI * a / 180.0 
+/* gripper stuff */
+#define GRIPopen   1
+#define GRIPclose  2
+#define GRIPstop   3
+#define LIFTup     4
+#define LIFTdown   5
+#define LIFTstop   6
+#define GRIPstore  7
+#define GRIPdeploy 8
+#define GRIPhalt   15
+#define GRIPpress  16
+#define LIFTcarry  17
+
+/* CMUcam stuff */
+#define CMUCAM_IMAGE_WIDTH  80
+#define CMUCAM_IMAGE_HEIGHT 143
+#define CMUCAM_MESSAGE_LEN  10
+
+/* conection stuff */
+#define DEFAULT_P2OS_PORT "/dev/ttyS0"
+#define DEFAULT_P2OS_TCP_REMOTE_HOST "localhost"
+#define DEFAULT_P2OS_TCP_REMOTE_PORT 8101
+
+/* degrees and radians */
+#define DTOR(a) M_PI * a / 180.0
 #define RTOD(a) 180.0 * a / M_PI
 
 typedef struct

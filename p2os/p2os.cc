@@ -29,15 +29,17 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
 {
 
   p2os_data.position.header.stamp = ts;
-  pose_pub.publish(p2os_data.position );
+  pose_pub.publish( p2os_data.position );
   batt_pub.publish( p2os_data.batt );
-  mstate_pub.publish(p2os_data.motors );
+  mstate_pub.publish( p2os_data.motors );
 
   // put sonar data
   // put aio data
   // put dio data
-  // put gripper data
-  // put lift data
+
+  // put gripper and lift data
+  gripstate_pub_.publish( p2os_data.gripper );
+
   // put bumper data
   // put compass data
 }

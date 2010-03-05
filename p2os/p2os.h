@@ -1,7 +1,7 @@
 /*
  *  P2OS for ROS
  *  Copyright (C) 2009
- *     David Feil-Seifer, Brian Gerkey, Kasper Stoy, 
+ *     David Feil-Seifer, Brian Gerkey, Kasper Stoy,
  *      Richard Vaughan, & Andrew Howard
  *
  *
@@ -36,12 +36,14 @@
 #include "geometry_msgs/Twist.h"
 #include "pr2_msgs/BatteryState.h"
 #include "p2os/MotorState.h"
+#include "p2os/GripperState.h"
 
 typedef struct ros_p2os_data
 {
 	nav_msgs::Odometry  position;
 	pr2_msgs::BatteryState batt;
-  p2os::MotorState                  motors;
+    p2os::MotorState motors;
+    p2os::GripperState gripper;
 } ros_p2os_data_t;
 
 
@@ -60,7 +62,7 @@ class P2OSNode
   public:
     P2OSNode( ros::NodeHandle n );
     virtual ~P2OSNode();
-    
+
   public:
     int Setup();
     int Shutdown();
@@ -86,11 +88,14 @@ class P2OSNode
     void set_motor_state();
     void cmdmotor_state( const p2os::MotorStateConstPtr &);
 
+    void set_gripper_state();
+    void gripperCallback(const p2os::GripperStateConstPtr &msg);
+
   protected:
     ros::NodeHandle n;
-		ros::NodeHandle nh_private;
-    ros::Publisher pose_pub, batt_pub, mstate_pub;
-    ros::Subscriber cmdvel_sub, cmdmstate_sub;
+    ros::NodeHandle nh_private;
+    ros::Publisher pose_pub, batt_pub, mstate_pub, gripstate_pub_;
+    ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_;
 
     ros::Time veltime;
 
@@ -101,9 +106,10 @@ class P2OSNode
     bool        psos_use_tcp;
     int         psos_tcp_port;
     bool        vel_dirty, motor_dirty;
+    bool        gripper_dirty_;
     int         param_idx;
     // PID settings
-    int rot_kp, rot_kv, rot_ki, trans_kp, trans_kv, trans_ki; 
+    int rot_kp, rot_kv, rot_ki, trans_kp, trans_kv, trans_ki;
 
     int bumpstall; // should we change the bumper-stall behavior?
     int joystick;
@@ -121,8 +127,8 @@ class P2OSNode
 
     geometry_msgs::Twist cmdvel_;
     p2os::MotorState    cmdmotor_state_;
-	  ros_p2os_data_t p2os_data;
-
+    p2os::GripperState gripper_state_;
+    ros_p2os_data_t p2os_data;
 };
 
 #endif
