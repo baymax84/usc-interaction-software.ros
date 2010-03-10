@@ -1,7 +1,7 @@
 /*
  *  P2OS for ROS
  *  Copyright (C) 2009
- *     David Feil-Seifer, Brian Gerkey, Kasper Stoy, 
+ *     David Feil-Seifer, Brian Gerkey, Kasper Stoy,
  *      Richard Vaughan, & Andrew Howard
  *
  *
@@ -38,10 +38,12 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
   // put dio data
 
   // put gripper and lift data
-  gripstate_pub_.publish( p2os_data.gripper );
+  grip_state_pub_.publish( p2os_data.gripper );
+  ptz_state_pub_.publish( ptz_.getCurrentState() );
 
   // put bumper data
   // put compass data
+
 }
 
 /* send the packet, then receive and parse an SIP */
@@ -59,7 +61,7 @@ P2OSNode::SendReceive(P2OSPacket* pkt, bool publish_data)
     pthread_testcancel();
     if(packet.Receive(this->psos_fd))
     {
-      puts("RunPsosThread(): Receive errored");
+      ROS_ERROR("RunPsosThread(): Receive errored");
       pthread_exit(NULL);
     }
 
@@ -79,11 +81,26 @@ P2OSNode::SendReceive(P2OSPacket* pkt, bool publish_data)
     else if(packet.packet[0] == 0xFA && packet.packet[1] == 0xFB &&
             packet.packet[3] == SERAUX)
     {
-       // This is an AUX serial packet
+      // This is an AUX serial packet
+      if(ptz_.isOn())
+      {
+        int len = packet.packet[2] - 3;
+        if (ptz_.cb_.gotPacket())
+        {
+          ROS_ERROR("PTZ got a message, but alread has the complete packet.");
+        }
+        else
+        {
+          for (int i=4; i < 4+len; ++i)
+          {
+            ptz_.cb_.putOnBuf(packet.packet[i]);
+          }
+        }
+      }
     }
-
     else
     {
+      ROS_ERROR("Received other packet!");
       packet.PrintHex();
     }
   }
@@ -132,7 +149,7 @@ P2OSNode::ToggleMotorPower(unsigned char val)
   unsigned char command[4];
   P2OSPacket packet;
   printf( "motor state: %d\n", p2os_data.motors.state );
-  p2os_data.motors.state = (int) val;  
+  p2os_data.motors.state = (int) val;
   command[0] = ENABLE;
   command[1] = ARGINT;
   command[2] = val;
@@ -228,4 +245,3 @@ void P2OSNode::SendPulse (void)
   packet.Build(&command, 1);
   SendReceive(&packet);
 }
-
