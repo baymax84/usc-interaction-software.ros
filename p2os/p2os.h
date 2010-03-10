@@ -40,16 +40,17 @@
 
 typedef struct ros_p2os_data
 {
-	nav_msgs::Odometry  position;
-	pr2_msgs::BatteryState batt;
+    nav_msgs::Odometry  position;
+    pr2_msgs::BatteryState batt;
     p2os::MotorState motors;
     p2os::GripperState gripper;
 } ros_p2os_data_t;
 
-
 // this is here because we need the above typedef's before including it.
 #include "sip.h"
 #include "kinecalc.h"
+
+#include "p2os_ptz.h"
 
 class SIP;
 
@@ -94,8 +95,9 @@ class P2OSNode
   protected:
     ros::NodeHandle n;
     ros::NodeHandle nh_private;
-    ros::Publisher pose_pub, batt_pub, mstate_pub, gripstate_pub_;
-    ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_;
+    ros::Publisher pose_pub, batt_pub, mstate_pub, grip_state_pub_,
+        ptz_state_pub_;
+    ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_, ptz_cmd_sub_;
 
     ros::Time veltime;
 
@@ -123,6 +125,7 @@ class P2OSNode
     double pulse; // Pulse time
     double lastPulseTime; // Last time of sending a pulse or command to the robot
 
+    P2OSPtz ptz_;
   public:
 
     geometry_msgs::Twist cmdvel_;

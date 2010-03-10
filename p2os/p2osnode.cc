@@ -36,11 +36,9 @@
 #include <string.h>
 
 P2OSNode::P2OSNode( ros::NodeHandle nh ) :
-        gripper_dirty_(false)
+    n(nh), gripper_dirty_(false), ptz_(this)
 {
   // read in config options
-  n = nh;
-
   // bumpstall
   n.param( "bumpstall", bumpstall, -1 );
   // pulse
@@ -91,19 +89,20 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
   n.param( "max_yawdecel", spd, 0.0);
   motor_max_rot_decel = (short)rint(RTOD(spd));
 
-
   // advertise services
   pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
   batt_pub = n.advertise<pr2_msgs::BatteryState>("battery_state",1000);
   mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
-  gripstate_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
+  grip_state_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
+  ptz_state_pub_ = n.advertise<p2os::PTZState>("ptz_state",1000);
 
   // subscribe to services
-  cmdvel_sub = n.subscribe( "cmd_vel", 1, (boost::function < void(const geometry_msgs::TwistConstPtr&)>) boost::bind( &P2OSNode::cmdvel_cb, this, _1 ));
-  cmdmstate_sub = n.subscribe( "cmd_motor_state",1,(boost::function <void(const p2os::MotorStateConstPtr&)>) boost::bind(&P2OSNode::cmdmotor_state,this,_1));
-
+  cmdvel_sub = n.subscribe("cmd_vel", 1, &P2OSNode::cmdvel_cb, this);
+  cmdmstate_sub = n.subscribe("cmd_motor_state", 1, &P2OSNode::cmdmotor_state,
+                               this);
   gripper_sub_ = n.subscribe("gripper_control", 1, &P2OSNode::gripperCallback,
                              this);
+  ptz_cmd_sub_ = n.subscribe("ptz_control", 1, &P2OSPtz::callback, &ptz_);
 
   veltime = ros::Time::now();
 
@@ -133,33 +132,38 @@ P2OSNode::set_motor_state()
   command[2] = val;
   command[3] = 0;
   packet.Build(command,4);
+
+  // Store the current motor state so that we can set it back
+  p2os_data.motors.state = cmdmotor_state_.state;
   SendReceive(&packet,false);
 }
 
 void
 P2OSNode::set_gripper_state()
 {
-    // Send the gripper command
-    unsigned char grip_val = (unsigned char) gripper_state_.grip.state;
-    unsigned char grip_command[4];
-    P2OSPacket grip_packet;
-    grip_command[0] = GRIPPER;
-    grip_command[1] = ARGINT;
-    grip_command[2] = grip_val;
-    grip_command[3] = 0;
-    grip_packet.Build(grip_command,4);
-    SendReceive(&grip_packet,false);
+  gripper_dirty_ = false;
 
-    // Send the lift command
-    unsigned char lift_val = (unsigned char) gripper_state_.lift.state;
-    unsigned char lift_command[4];
-    P2OSPacket lift_packet;
-    lift_command[0] = GRIPPER;
-    lift_command[1] = ARGINT;
-    lift_command[2] = lift_val;
-    lift_command[3] = 0;
-    lift_packet.Build(lift_command,4);
-    SendReceive(&lift_packet,false);
+  // Send the gripper command
+  unsigned char grip_val = (unsigned char) gripper_state_.grip.state;
+  unsigned char grip_command[4];
+  P2OSPacket grip_packet;
+  grip_command[0] = GRIPPER;
+  grip_command[1] = ARGINT;
+  grip_command[2] = grip_val;
+  grip_command[3] = 0;
+  grip_packet.Build(grip_command,4);
+  SendReceive(&grip_packet,false);
+
+  // Send the lift command
+  unsigned char lift_val = (unsigned char) gripper_state_.lift.state;
+  unsigned char lift_command[4];
+  P2OSPacket lift_packet;
+  lift_command[0] = GRIPPER;
+  lift_command[1] = ARGINT;
+  lift_command[2] = lift_val;
+  lift_command[3] = 0;
+  lift_packet.Build(lift_command,4);
+  SendReceive(&lift_packet,false);
 }
 
 void
@@ -213,7 +217,7 @@ P2OSNode::set_vel()
     }
     else
     {
-      printf( "speed demand thresholded! (true: %u, max: %u)", absSpeedDemand, motor_max_speed );
+      ROS_INFO( "speed demand thresholded! (true: %u, max: %u)", absSpeedDemand, motor_max_speed );
       motorcommand[2] = motor_max_speed & 0x00FF;
       motorcommand[3] = (motor_max_speed & 0xFF00) >> 8;
     }
@@ -242,13 +246,11 @@ P2OSNode::set_vel()
   }
 }
 
-void
-P2OSNode::gripperCallback(const p2os::GripperStateConstPtr &msg)
+void P2OSNode::gripperCallback(const p2os::GripperStateConstPtr &msg)
 {
-    gripper_dirty_ = true;
-    gripper_state_ = *msg;
+  gripper_dirty_ = true;
+  gripper_state_ = *msg;
 }
-
 
 int
 P2OSNode::Setup()
@@ -281,19 +283,18 @@ P2OSNode::Setup()
 
   // use serial port
 
-  printf("P2OS connection opening serial port %s...",psos_serial_port.c_str());
-  fflush(stdout);
+  ROS_INFO("P2OS connection opening serial port %s...",psos_serial_port.c_str());
 
   if((this->psos_fd = open(this->psos_serial_port.c_str(),
                    O_RDWR | O_SYNC | O_NONBLOCK, S_IRUSR | S_IWUSR )) < 0 )
   {
-    perror("P2OS::Setup():open():");
+    ROS_ERROR("P2OS::Setup():open():");
     return(1);
   }
 
   if(tcgetattr( this->psos_fd, &term ) < 0 )
   {
-    perror("P2OS::Setup():tcgetattr():");
+    ROS_ERROR("P2OS::Setup():tcgetattr():");
     close(this->psos_fd);
     this->psos_fd = -1;
     return(1);
@@ -305,7 +306,7 @@ P2OSNode::Setup()
 
   if(tcsetattr(this->psos_fd, TCSAFLUSH, &term ) < 0)
   {
-    perror("P2OS::Setup():tcsetattr():");
+    ROS_ERROR("P2OS::Setup():tcsetattr():");
     close(this->psos_fd);
     this->psos_fd = -1;
     return(1);
@@ -313,7 +314,7 @@ P2OSNode::Setup()
 
   if(tcflush(this->psos_fd, TCIOFLUSH ) < 0)
   {
-    perror("P2OS::Setup():tcflush():");
+    ROS_ERROR("P2OS::Setup():tcflush():");
     close(this->psos_fd);
     this->psos_fd = -1;
     return(1);
@@ -321,7 +322,7 @@ P2OSNode::Setup()
 
   if((flags = fcntl(this->psos_fd, F_GETFL)) < 0)
   {
-    perror("P2OS::Setup():fcntl()");
+    ROS_ERROR("P2OS::Setup():fcntl()");
     close(this->psos_fd);
     this->psos_fd = -1;
     return(1);
@@ -340,10 +341,10 @@ P2OSNode::Setup()
         usleep(P2OS_CYCLETIME_USEC);
         break;
       case AFTER_FIRST_SYNC:
-        printf("turning off NONBLOCK mode...\n");
+        ROS_INFO("turning off NONBLOCK mode...\n");
         if(fcntl(this->psos_fd, F_SETFL, flags ^ O_NONBLOCK) < 0)
         {
-          perror("P2OS::Setup():fcntl()");
+          ROS_ERROR("P2OS::Setup():fcntl()");
           close(this->psos_fd);
           this->psos_fd = -1;
           return(1);
@@ -380,7 +381,7 @@ P2OSNode::Setup()
           cfsetospeed(&term, bauds[currbaud]);
           if( tcsetattr(this->psos_fd, TCSAFLUSH, &term ) < 0 )
           {
-            perror("P2OS::Setup():tcsetattr():");
+            ROS_ERROR("P2OS::Setup():tcsetattr():");
             close(this->psos_fd);
             this->psos_fd = -1;
             return(1);
@@ -388,7 +389,7 @@ P2OSNode::Setup()
 
           if(tcflush(this->psos_fd, TCIOFLUSH ) < 0 )
           {
-            perror("P2OS::Setup():tcflush():");
+            ROS_ERROR("P2OS::Setup():tcflush():");
             close(this->psos_fd);
             this->psos_fd = -1;
             return(1);
@@ -406,15 +407,15 @@ P2OSNode::Setup()
     switch(receivedpacket.packet[3])
     {
       case SYNC0:
-        printf( "SYNC0\n" );
+        ROS_INFO( "SYNC0\n" );
         psos_state = AFTER_FIRST_SYNC;
         break;
       case SYNC1:
-        printf( "SYNC1\n" );
+        ROS_INFO( "SYNC1\n" );
         psos_state = AFTER_SECOND_SYNC;
         break;
       case SYNC2:
-        printf( "SYNC2\n" );
+        ROS_INFO( "SYNC2\n" );
         psos_state = READY;
         break;
       default:
@@ -438,7 +439,7 @@ P2OSNode::Setup()
   if(psos_state != READY)
   {
     if(this->psos_use_tcp)
-    printf("Couldn't synchronize with P2OS.\n"
+    ROS_INFO("Couldn't synchronize with P2OS.\n"
            "  Most likely because the robot is not connected %s %s\n",
            this->psos_use_tcp ? "to the ethernet-serial bridge device " : "to the serial port",
            this->psos_use_tcp ? this->psos_tcp_host.c_str() : this->psos_serial_port.c_str());
@@ -466,7 +467,7 @@ P2OSNode::Setup()
   packet.Send(this->psos_fd);
   usleep(P2OS_CYCLETIME_USEC);
 
-  printf("Done.\n   Connected to %s, a %s %s\n", name, type, subtype);
+  ROS_INFO("Done.\n   Connected to %s, a %s %s\n", name, type, subtype);
   // now, based on robot type, find the right set of parameters
   for(i=0;i<PLAYER_NUM_ROBOT_TYPES;i++)
   {
@@ -484,7 +485,7 @@ P2OSNode::Setup()
     param_idx = 0;
   }
 
-  printf( "param_idx: [%d]\n", param_idx );
+  ROS_INFO( "param_idx: [%d]\n", param_idx );
 
 
   //sleep(1);
@@ -612,11 +613,11 @@ P2OSNode::Setup()
   if(this->bumpstall >= 0)
   {
     if(this->bumpstall > 3)
-      printf("ignoring bumpstall value %d; should be 0, 1, 2, or 3",
+      ROS_INFO("ignoring bumpstall value %d; should be 0, 1, 2, or 3",
                     this->bumpstall);
     else
     {
-      printf("setting bumpstall to %d", this->bumpstall);
+      ROS_INFO("setting bumpstall to %d", this->bumpstall);
       P2OSPacket bumpstall_packet;;
       unsigned char bumpstall_command[4];
       bumpstall_command[0] = BUMP_STALL;
@@ -628,8 +629,8 @@ P2OSNode::Setup()
     }
   }
 
+  ptz_.setup();
   return(0);
-
 }
 
 int
@@ -637,6 +638,11 @@ P2OSNode::Shutdown()
 {
   unsigned char command[20],buffer[20];
   P2OSPacket packet;
+
+  if (ptz_.isOn())
+  {
+    ptz_.shutdown();
+  }
 
   memset(buffer,0,20);
 
@@ -698,16 +704,15 @@ P2OSNode::spin()
     if( vel_dirty )
     {
       set_vel();
+      vel_dirty = false;
     }
     if( motor_dirty )
+    {
       set_motor_state();
-
-    vel_dirty = false;
-    motor_dirty = false;
-
+    }
     if( gripper_dirty_ )
     {
-        set_gripper_state();
+      set_gripper_state();
     }
 
     // Check if need to send a pulse to the robot
@@ -743,7 +748,7 @@ int main( int argc, char** argv )
 
   if( p->Setup() != 0 )
   {
-    printf( "setup failed... \n" );
+    ROS_ERROR( "p2os setup failed... \n" );
     return -1;
   }
 
@@ -751,10 +756,10 @@ int main( int argc, char** argv )
 
   if( p->Shutdown() != 0 )
   {
-    printf( "shutdown failed... is your robot heading for the wall?\n" );
+    ROS_ERROR( "p2os shutdown failed... is your robot heading for the wall?\n" );
   }
 
-  printf( "\nQuitting... \n" );
+  ROS_INFO( "\nQuitting... \n" );
   return 0;
 
 }

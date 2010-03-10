@@ -86,49 +86,106 @@ void initialize_robot_params(void);
 #define SYNC1 1
 #define SYNC2 2
 
-#define PULSE 0
-#define OPEN 1
-#define CLOSE 2
-#define ENABLE 4
-#define SETA 5
-#define SETV 6
-#define SETO 7
-#define VEL 11
-#define RVEL 21
-#define SETRA 23
-#define SONAR 28
-#define STOP 29
-#define VEL2 32
-#define GRIPPER 33
-#define GRIPPERVAL 36
-#define TTY2 42   // Added in AmigOS 1.2
-#define GETAUX 43 // Added in AmigOS 1.2
-#define BUMP_STALL 44
-#define JOYDRIVE 47
-#define GYRO 58         // Added in AROS 1.8
-#define ROTKP 82        // Added in P2OS1.M
-#define ROTKV 83        // Added in P2OS1.M
-#define ROTKI 84        // Added in P2OS1.M
-#define TRANSKP 85      // Added in P2OS1.M
-#define TRANSKV 86      // Added in P2OS1.M
-#define TRANSKI 87      // Added in P2OS1.M
-#define TTY3 66   // Added in AmigOS 1.3
-#define GETAUX2 67  // Added in AmigOS 1.3
-#define ARM_INFO 70
-#define ARM_STATUS 71
-#define ARM_INIT 72
-#define ARM_CHECK 73
-#define ARM_POWER 74
-#define ARM_HOME 75
-#define ARM_PARK 76
-#define ARM_POS 77
-#define ARM_SPEED 78
-#define ARM_STOP 79
-#define ARM_AUTOPARK 80
-#define ARM_GRIPPARK 81
-#define SOUND 90
-#define PLAYLIST 91
+enum P2OSCommand {
+  PULSE = 0,
+  OPEN = 1,
+  CLOSE = 2,
+  ENABLE = 4,
+  SETA = 5,
+  SETV = 6,
+  SETO = 7,
+  MOVE = 8, ///< int, translational move (mm)
+  ROTATE = 9, ///< int, set rotational velocity, duplicate of RVEL (deg/sec)
+  SETRV = 10, ///< int, sets the maximum rotational velocity (deg/sec)
+  VEL = 11,
+  HEAD = 12, ///< int, turn to absolute heading 0-359 (degrees)
+  DHEAD = 13, ///< int, turn relative to current heading (degrees)
+  //DROTATE = 14, does not really exist
+  SAY = 15, /**< string, makes the robot beep.
+               up to 20 pairs of duration (20 ms incrs) and tones (halfcycle) */
+  JOYINFO = 17, // int, requests joystick packet, 0 to stop, 1 for 1, 2 for
+                // continuous
+  CONFIG = 18, ///< int, request configuration packet
+  ENCODER = 19, ///< int, > 0 to request continous stream of packets, 0 to stop
+  RVEL = 21,
+  DCHEAD = 22, ///< int, colbert relative heading setpoint (degrees)
+  SETRA = 23,
+  SONAR = 28,
+  STOP = 29,
+  DIGOUT = 30, ///< int, sets the digout lines
+  //TIMER = 31, ... no clue about this one
+  VEL2 = 32,
+  GRIPPER = 33,
+  //KICK = 34, um...
+  ADSEL = 35, ///< int, select the port given as argument
+  GRIPPERVAL = 36,
+  GRIPPERPACREQUEST = 37, ///< p2 gripper packet request
+  IOREQUEST = 40, ///< request iopackets from p2os
+  PTUPOS = 41, ///< most-sig byte is port number, least-sig byte is pulse width
+  TTY2 = 42,   // Added in AmigOS 1.2
+  GETAUX = 43, // Added in AmigOS 1.2
+  BUMP_STALL = 44,
+  TCM2 = 45, ///< TCM2 module commands, see tcm2 manual for details
+  JOYDRIVE = 47,
+  MOVINGBLINK = 49, ///< int, 1 to blink lamp quickly before moving, 0 not to
+                    ///(for patrolbot)
+  HOSTBAUD = 50, ///< int, set baud rate for host port - 0=9600, 1=19200,
+                 ///2=38400, 3=57600, 4=115200
+  AUX1BAUD = 51, ///< int, set baud rate for Aux1 - 0=9600, 1=19200, 2=38400,
+                 ///3=57600, 4=115200
+  AUX2BAUD = 52, ///< int, set baud rate for Aux2 - 0=9600, 1=19200, 2=38400,
+                 ///3=57600, 4=115200
+  ESTOP = 55, ///< none, emergency stop, overrides decel
+  ESTALL = 56, // ?
+  GYRO = 58,         // Added in AROS 1.8
+  // SRISIM specific:
 
+  // for calibrating the compass:
+  CALCOMP = 65, ///< int, commands for calibrating compass, see compass manual
+
+  TTY3 = 66,   // Added in AmigOS 1.3
+  GETAUX2 = 67,  // Added in AmigOS 1.3
+  ARM_INFO = 70,
+  ARM_STATUS = 71,
+  ARM_INIT = 72,
+  ARM_CHECK = 73,
+  ARM_POWER = 74,
+  ARM_HOME = 75,
+  ARM_PARK = 76,
+  ARM_POS = 77,
+  ARM_SPEED = 78,
+  ARM_STOP = 79,
+  ARM_AUTOPARK = 80,
+  ARM_GRIPPARK = 81,
+
+  ROTKP = 82,        // Added in P2OS1.M
+  ROTKV = 83,        // Added in P2OS1.M
+  ROTKI = 84,        // Added in P2OS1.M
+  TRANSKP = 85,      // Added in P2OS1.M
+  TRANSKV = 86,      // Added in P2OS1.M
+  TRANSKI = 87,      // Added in P2OS1.M
+  SOUND = 90,
+  PLAYLIST = 91,
+  SOUNDTOG = 92, ///< int, AmigoBot (old H8 model) specific, enable(1) or
+                 /// diable(0) sound
+  // Power commands
+  POWER_PC = 95,
+  POWER_LRF = 96,
+  POWER_5V = 97,
+  POWER_12V = 98,
+  POWER_24V = 98,
+  POWER_AUX_PC = 125,
+  POWER_TOUCHSCREEN = 126,
+  POWER_PTZ = 127,
+  POWER_AUDIO = 128,
+  POWER_LRF2 = 129,
+
+  // For SEEKUR or later lateral-capable robots
+  LATVEL = 110, ///< int, sets the lateral velocity (mm)
+  LATACCEL = 113, ///< int, sets the lateral acceleration (+, mm/sec2) or
+                  /// lateral deceleration (-, mm/sec2)
+  SETLATV = 0, ///< int, someday will set the vel
+};
 
 /* Server Information Packet (SIP) types */
 #define STATUSSTOPPED 0x32
