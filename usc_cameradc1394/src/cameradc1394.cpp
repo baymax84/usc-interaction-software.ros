@@ -28,6 +28,7 @@
 
 #include "dcam1394/dcam1394.h"
 #include "usc_cameradc1394/Params.h"
+#include "usc_cameradc1394/FeatureValue.h"
 #include "dcam1394/dcam_features.h"
 #include <cv_bridge/CvBridge.h>
 
@@ -62,13 +63,14 @@ class CameraOpenCVNode
     typedef void (*fnFillImageData)(void* img, IplImage* frame);
     map<string,dc1394video_mode_t> _mapCameraModes;
     map<dc1394color_coding_t,pair<int, int> > mapcv;
+    int bu, rv;
     NodeHandle _node;
     image_transport::ImageTransport _it;
     sensor_msgs::Image _imagemsg;
     sensor_msgs::CameraInfo infomsg, original_infomsg;
     image_transport::Publisher _pubImage, _pubImage2, _pubOriginalImage;
-    Publisher _pubInfo, _pubInfo2, _pubOriginalInfo;
-
+    Publisher _pubInfo, _pubInfo2, _pubOriginalInfo, _params_pub;
+    Subscriber _params_sub;
 public:
 
 
@@ -159,10 +161,13 @@ public:
         _node.param("mode",smode,string(""));
         map<string,dc1394video_mode_t>::iterator itmode = _mapCameraModes.find(smode);
         if( itmode != _mapCameraModes.end() )
+        {
             mode = itmode->second;
+
+        }
         else     
             mode = (dc1394video_mode_t)0;
-
+            printf( "mode found: %d(%s)\n", (int) mode, smode.c_str() );
         _node.param("framerate",framerate,15.0);
 
         // For ieee1394 cameras:
@@ -324,8 +329,8 @@ public:
           	  p1.id = i;
             	p2.id = (int) DC1394_FEATURE_MAX+1;
 
-	            p1.name = "blue-u";
-  	          p2.name = "red-v";
+	            p1.name = "blue_u";
+  	          p2.name = "red_v";
     	        
       	      uint32_t val1, val2;
         	    cam->getWBValue( val1, val2 );
@@ -400,9 +405,37 @@ public:
       	  } 
 	      }
 
+        _params_pub = _node.advertise<usc_cameradc1394::Params>( "camera_params", true );
+        _params_sub = _node.subscribe("set_param", 1000, (boost::function <void(const usc_cameradc1394::FeatureValueConstPtr&)>) boost::bind (&CameraOpenCVNode::set_feature, this, _1));
+
+        _params_pub.publish(params);
+
   	  	ROS_INFO("camera started");
         camguid = guid;
         return true;
+    }
+
+    void set_feature( const usc_cameradc1394::FeatureValueConstPtr &msg )
+    {
+      ROS_INFO("asked to set feature %d:%d", msg->id, msg->value );
+      if( msg->id != (int) DC1394_FEATURE_WHITE_BALANCE && msg->id != (int) DC1394_FEATURE_MAX+1 )
+      {
+        ROS_INFO( "setting feature: %d:%d", msg->id, msg->value );
+        cam->setFeature( (dc1394feature_t) msg->id, msg->value );
+        cam->setFeatureMode((dc1394feature_t)msg->id,DC1394_FEATURE_MODE_MANUAL);
+      }
+      else if( msg->id == (int) DC1394_FEATURE_WHITE_BALANCE )
+      {
+        bu = msg->value;
+        cam->setFeature( DC1394_FEATURE_WHITE_BALANCE, bu, rv );
+        cam->setFeatureMode(DC1394_FEATURE_WHITE_BALANCE,DC1394_FEATURE_MODE_MANUAL);
+      }
+      else
+      {
+        rv = msg->value;
+        cam->setFeature( DC1394_FEATURE_WHITE_BALANCE, bu, rv );
+        cam->setFeatureMode(DC1394_FEATURE_WHITE_BALANCE,DC1394_FEATURE_MODE_MANUAL);
+      }
     }
 
     bool process()
@@ -604,6 +637,8 @@ public:
         }
 
         //usleep(max(1000,1000000/(int)framerate-10000));
+        _params_pub.publish(params);
+
         return true;
     }
 
@@ -762,6 +797,7 @@ int main(int argc, char **argv)
     while (cvcam.ok()) {
         if (!cvcam.process())
             usleep(100000);
+        ros::spinOnce();
     }
 
     return 0;

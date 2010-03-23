@@ -2,6 +2,7 @@
 <launch>  
   <param name="display" type="int" value="1"/>
   <param name="framerate" type="double" value="15"/>
+  <param name="mode" type="str" value="MODE_640x480_RGB"/>
 
   <!-- various camera parameters -->
 <!--   <param name="cameraguid" value="b09d01006c5a5a"/> -->
@@ -21,5 +22,5 @@
   <param name="compression" type="str" value="jpeg"/> -->
 <!--   <param name="colorfilter" type="str" value="COLOR_FILTER_BGGR"/> -->
 
-  <node pkg="cameradc1394" type="cameradc1394" respawn="true"/>
+  <node pkg="usc_cameradc1394" type="cameradc1394" name="overhead" respawn="true"/>
 </launch>
