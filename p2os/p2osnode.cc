@@ -91,7 +91,7 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
 
   // advertise services
   pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
-  batt_pub = n.advertise<pr2_msgs::BatteryState>("battery_state",1000);
+  batt_pub = n.advertise<p2os::BatteryState>("battery_state",1000);
   mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
   grip_state_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
   ptz_state_pub_ = n.advertise<p2os::PTZState>("ptz_state",1000);

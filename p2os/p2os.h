@@ -34,14 +34,14 @@
 
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
-#include "pr2_msgs/BatteryState.h"
+#include "p2os/BatteryState.h"
 #include "p2os/MotorState.h"
 #include "p2os/GripperState.h"
 
 typedef struct ros_p2os_data
 {
     nav_msgs::Odometry  position;
-    pr2_msgs::BatteryState batt;
+    p2os::BatteryState batt;
     p2os::MotorState motors;
     p2os::GripperState gripper;
 } ros_p2os_data_t;
