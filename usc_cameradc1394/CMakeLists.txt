@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 2.4.6)
+cmake_minimum_required(VERSION 2.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
+
+
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 rosbuild_init()
 rosbuild_genmsg()
@@ -16,6 +19,10 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(CheckCXXSourceRuns)
 include(CheckCXXCompilerFlag)
+
+FIND_PACKAGE( FLTK REQUIRED )
+INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
+LINK_LIBRARIES(${FLTK_LIBRARIES})
 
 if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
   set(SSE_FLAGS)
@@ -85,6 +92,7 @@ rosbuild_add_library(dcam1394 src/dcam1394/dcam1394.cpp src/dcam1394/image_proc.
 
 rosbuild_add_executable(imagescaler src/imagescaler.cpp)
 rosbuild_add_executable(cameradc1394 src/cameradc1394.cpp)
+rosbuild_add_executable(camera_param_gui camera_param_gui.cc )
 target_link_libraries(cameradc1394 dcam1394)
 
 # check for newer versions of opencv that support cvInitUndistortRectifyMap
