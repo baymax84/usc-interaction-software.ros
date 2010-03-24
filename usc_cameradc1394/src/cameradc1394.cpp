@@ -310,96 +310,102 @@ public:
    			int fmin = (int) DC1394_FEATURE_MIN;
 	      for( int i=(int) DC1394_FEATURE_MIN; i <= (int) DC1394_FEATURE_MAX; i++ )
   	    {
+          printf( "looking for feature: %s\n", dcam_features[i-fmin] );
     	    if( cam->hasFeature((dc1394feature_t) i) )
       	  {
         	  usc_cameradc1394::Param p;
           	printf( "camera has feature: %s ", dcam_features[i-fmin] );
 	          // get bounds
   	        unsigned int min, max;
-    	      cam->getFeatureBoundaries( (dc1394feature_t) i, min, max );
 	
-  	        // get auto status
-    	      dc1394feature_mode_t isAuto;
-      	    cam->getFeatureMode( (dc1394feature_t) i, isAuto );
-	
-  	        if( i == (int) DC1394_FEATURE_WHITE_BALANCE )
-    	      {
-      	      // push back two sliders
-        	    usc_cameradc1394::Param p1, p2;
-          	  p1.id = i;
-            	p2.id = (int) DC1394_FEATURE_MAX+1;
+            if( i != (int) DC1394_FEATURE_TRIGGER )
+            {
+   	          // get auto status
+       	      dc1394feature_mode_t isAuto;
+         	    cam->getFeatureMode( (dc1394feature_t) i, isAuto );
+  
+              if( i == (int) DC1394_FEATURE_WHITE_BALANCE )
+   	          {
+      	        // push back two sliders
+        	      usc_cameradc1394::Param p1, p2;
+          	    p1.id = i;
+            	  p2.id = (int) DC1394_FEATURE_MAX+1;
 
-	            p1.name = "blue_u";
-  	          p2.name = "red_v";
-    	        
-      	      uint32_t val1, val2;
-        	    cam->getWBValue( val1, val2 );
-	
-  	          p1.min = min;
-    	        p2.min = min;
-      	      p1.max = max;
-        	    p2.max = max;
-          	  p1.value = val1;
-	            p2.value = val2;
+  	            p1.name = "blue_u";
+    	          p2.name = "red_v";
+      	        
+        	      uint32_t val1, val2;
+          	    cam->getWBValue( val1, val2 );
+    	          cam->getFeatureBoundaries( (dc1394feature_t) i, min, max );	  
+	  
+  	            p1.min = min;
+    	          p2.min = min;
+      	        p1.max = max;
+        	      p2.max = max;
+          	    p1.value = val1;
+	              p2.value = val2;
             	
-  	          std::string s =  p1.name;
-    	        bool dirty = false;
-      	      if( _node.hasParam( s.c_str() ) )
-        	    {
-          	    int valx2;
-            	  _node.getParam( s.c_str(), valx2 );
-              	p1.value = valx2;
-	              ROS_INFO( "setting feature [%s]: %d", s.c_str(), valx2 );
-  	            dirty = true;
-    	        }
-      	      s =  p2.name;         
-        	    if( _node.hasParam( s.c_str() ) )
-          	  {
-            	  int valx2;
-              	_node.getParam( s.c_str(), valx2 );
-	              p2.value = valx2;
-  	            ROS_INFO( "setting feature [%s]: %d", s.c_str(), valx2 );
-    	          dirty = true;
+    	          std::string s =  p1.name;
+      	        bool dirty = false;
+        	      if( _node.hasParam( s.c_str() ) )
+          	    {
+            	    int valx2;
+              	  _node.getParam( s.c_str(), valx2 );
+                	p1.value = valx2;
+	                ROS_INFO( "setting feature [%s]: %d", s.c_str(), valx2 );
+  	              dirty = true;
+      	        }
+        	      s =  p2.name;         
+          	    if( _node.hasParam( s.c_str() ) )
+            	  {
+              	  int valx2;
+                	_node.getParam( s.c_str(), valx2 );
+	                p2.value = valx2;
+  	              ROS_INFO( "setting feature [%s]: %d", s.c_str(), valx2 );
+    	            dirty = true;
+        	      }
+	
+  	            if( dirty )
+      	        {
+        	        cam->setFeature(DC1394_FEATURE_WHITE_BALANCE,p1.value,p2.value);
+          	      cam->setFeatureMode(DC1394_FEATURE_WHITE_BALANCE,DC1394_FEATURE_MODE_MANUAL);
+            	  }
+	
+  	            params.params.push_back(p1);
+    	          params.params.push_back(p2);
+        	    }
+          	  else
+            	{
+              	p.id = i;
+	              p.name = dcam_features[i-fmin];
+    	          cam->getFeatureBoundaries( (dc1394feature_t) i, min, max );	  
+    
+
+  	            p.min = min;
+    	          p.max = max;
+      	        printf ("[%u,%u] ", min, max );
+        	      
+          	    uint32_t val;
+            	  cam->getFeatureValue( (dc1394feature_t) i, val );
+  	            std::string s = p.name;
+	  
+  	            if( _node.hasParam( s.c_str() ) )
+    	          {
+      	          int val2;
+        	        _node.getParam( s.c_str(), val2 );
+          	      val = val2;
+            	    cam->setFeature( (dc1394feature_t) p.id, val );
+              	  cam->setFeatureMode( (dc1394feature_t) p.id, DC1394_FEATURE_MODE_MANUAL);
+  	              ROS_INFO( "setting feature [%s]: %d\n", s.c_str(), val2 );
+    	          }
+	  
+  	            p.value = val;
+	  
+  	            // add to list
+    	          params.params.push_back(p);
       	      }
-	
-  	          if( dirty )
-    	        {
-      	        cam->setFeature(DC1394_FEATURE_WHITE_BALANCE,p1.value,p2.value);
-        	      cam->setFeatureMode(DC1394_FEATURE_WHITE_BALANCE,DC1394_FEATURE_MODE_MANUAL);
-          	  }
-	
-  	          params.params.push_back(p1);
-    	        params.params.push_back(p2);
-      	    }
-        	  else
-          	{
-            	p.id = i;
-	            p.name = dcam_features[i-fmin];
-	
-  	          p.min = min;
-    	        p.max = max;
-      	      printf ("[%u,%u] ", min, max );
-        	    
-          	  uint32_t val;
-            	cam->getFeatureValue( (dc1394feature_t) i, val );
-	            std::string s = p.name;
-	
-  	          if( _node.hasParam( s.c_str() ) )
-    	        {
-      	        int val2;
-        	      _node.getParam( s.c_str(), val2 );
-          	    val = val2;
-            	  cam->setFeature( (dc1394feature_t) p.id, val );
-              	cam->setFeatureMode( (dc1394feature_t) p.id, DC1394_FEATURE_MODE_MANUAL);
-	              ROS_INFO( "setting feature [%s]: %d\n", s.c_str(), val2 );
-  	          }
-	
-  	          p.value = val;
-	
-  	          // add to list
-    	        params.params.push_back(p);
-      	    }        
-	
+
+            } // if min	            
   	        printf( "\n" );
     	      // TODO: get auto
       	  } 

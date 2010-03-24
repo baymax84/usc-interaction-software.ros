@@ -426,29 +426,31 @@ dcam::Dcam::Dcam(uint64_t guid, size_t bsize)
 
   else
     {
+/*
       if (hasFeature(DC1394_FEATURE_EXPOSURE))
-	{
-	  getFeatureBoundaries(DC1394_FEATURE_EXPOSURE,expMin,expMax);
-	  PRINTF("[Dcam] Exposure min/max: [%d,%d]",expMin,expMax);
-	}
+    	{
+     	  getFeatureBoundaries(DC1394_FEATURE_EXPOSURE,expMin,expMax);
+    	  PRINTF("[Dcam] Exposure min/max: [%d,%d]",expMin,expMax);
+     	}
       else
-	PRINTF("[Dcam] No exposure feature");
+      	PRINTF("[Dcam] No exposure feature");
 
       if (hasFeature(DC1394_FEATURE_GAIN))
-	{
-	  getFeatureBoundaries(DC1394_FEATURE_GAIN,gainMin,gainMax);
-	  PRINTF("[Dcam] Gain min/max: [%d,%d]",gainMin,gainMax);
-	}
+    	{
+	      getFeatureBoundaries(DC1394_FEATURE_GAIN,gainMin,gainMax);
+    	  PRINTF("[Dcam] Gain min/max: [%d,%d]",gainMin,gainMax);
+    	}
       else
-	PRINTF("[Dcam] No gain feature");
+      	PRINTF("[Dcam] No gain feature");
 
       if (hasFeature(DC1394_FEATURE_BRIGHTNESS))
-	{
-	  getFeatureBoundaries(DC1394_FEATURE_BRIGHTNESS,brightMin,brightMax);
-	  PRINTF("[Dcam] Brightness min/max: [%d,%d]",brightMin,brightMax);
-	}
+    	{
+	      getFeatureBoundaries(DC1394_FEATURE_BRIGHTNESS,brightMin,brightMax);
+    	  PRINTF("[Dcam] Brightness min/max: [%d,%d]",brightMin,brightMax);
+    	}
       else
-	PRINTF("[Dcam] No brightness feature");
+      	PRINTF("[Dcam] No brightness feature");
+*/        
     }
 
   //  dc1394_iso_release_bandwidth(dcCam, 10000000);
