@@ -13,11 +13,11 @@ rosbuild_init()
 #    SET (phidgetExtraLibs "-L${PHIDGETIFK_DIR}/lib -lphidget21")
 #ENDIF ("${PHIDGETIFK_DIR}" STREQUAL "")
 
-genmsg()
+rosbuild_genmsg()
 
 INCLUDE_DIRECTORIES(${phidget_SOURCE_DIR}/include)
 LINK_LIBRARIES(-L${phidget_SOURCE_DIR}/lib -lphidget21)
-rospack_add_executable(phidget phidget.cc)
+rosbuild_add_executable(phidget phidget.cc)
 
 #target_link_libraries(phidget ${phidgetExtraLibs})
 
