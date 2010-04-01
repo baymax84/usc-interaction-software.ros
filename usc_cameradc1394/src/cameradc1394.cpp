@@ -68,8 +68,8 @@ class CameraOpenCVNode
     image_transport::ImageTransport _it;
     sensor_msgs::Image _imagemsg;
     sensor_msgs::CameraInfo infomsg, original_infomsg;
-    image_transport::Publisher _pubImage, _pubImage2, _pubOriginalImage;
-    Publisher _pubInfo, _pubInfo2, _pubOriginalInfo, _params_pub;
+    image_transport::Publisher _pubImage, _pubOriginalImage;
+    Publisher _pubInfo, _pubOriginalInfo, _params_pub;
     Subscriber _params_sub;
 public:
 
@@ -93,14 +93,13 @@ public:
     float kc[5]; // radial distortion
     IplImage* _pUndistortionMapX, *_pUndistortionMapY; // undistortion maps
 
-    CameraOpenCVNode() : _it(_node), frame(NULL), frame_undist(NULL),
+    CameraOpenCVNode( ros::NodeHandle nh ) : _node(nh), _it(nh), frame(NULL), frame_undist(NULL),
                          _pUndistortionMapX(NULL), _pUndistortionMapY(NULL),
                          bToggleVideoWriter(false), bSnapImage(false)
     {
         bEnableBayer = false;
         uid = 1;
         cambuffersize = 0;
-        
         dcam::init();
         int numcams = dcam::numCameras();
         //ROS_ASSERT( numcams > 0 );
@@ -110,11 +109,9 @@ public:
           exit(1);
         }
 
-        _pubImage = _it.advertise("Image",1);
-        _pubImage2 = _it.advertise("image",1);
+        _pubImage = _it.advertise("image_raw",1);
         _pubOriginalImage = _it.advertise("OriginalImage",1);
-        _pubInfo = _node.advertise<sensor_msgs::CameraInfo>("CameraInfo",4);
-        _pubInfo2 = _node.advertise<sensor_msgs::CameraInfo>("camera_info",4);
+        _pubInfo = _node.advertise<sensor_msgs::CameraInfo>("camera_info",4);
         _pubOriginalInfo = _node.advertise<sensor_msgs::CameraInfo>("OriginalCameraInfo",4);
         string smode;
 
@@ -171,6 +168,7 @@ public:
         _node.param("framerate",framerate,15.0);
 
         // For ieee1394 cameras:
+        /*
         _node.param("brightness",brightness,-1.0);
         _node.param("contrast",contrast,-1.0);
         _node.param("whitebalance_blueu",wb_blueu,-1.0);
@@ -181,7 +179,7 @@ public:
             compression = "raw";
         _node.param("exposure",exposure,-1.0);
         _node.param("shutter",shutter,-1.0);
-
+        */
         string frame_id;
         _node.param("frame_id",frame_id,string(""));
         infomsg.header.frame_id = frame_id;
@@ -505,6 +503,12 @@ public:
                 infomsg.P[4*i+2] = infomsg.K[3*i+2];
                 infomsg.P[4*i+3] = 0;
             }
+
+            for( int i = 0; i < 5; i++ )
+            {
+              infomsg.D[i] = kc[i];
+            }
+
             original_infomsg.width = frame->width;
             original_infomsg.height = frame->height;
             for(int i = 0; i < 5; ++i)
@@ -543,10 +547,9 @@ public:
         infomsg.header.stamp = imagetime;
         original_infomsg.header = infomsg.header;
         _pubInfo.publish(infomsg);
-        _pubInfo2.publish(infomsg);
         _pubOriginalInfo.publish(original_infomsg);
 
-        bool bImagePublish = _pubImage.getNumSubscribers()>0 || _pubImage2.getNumSubscribers()>0;
+        bool bImagePublish = _pubImage.getNumSubscribers()>0;
         bool bOriginalImagePublish = _pubOriginalImage.getNumSubscribers()>0;
 
         if( !bImagePublish && !bOriginalImagePublish && !display )
@@ -617,15 +620,16 @@ public:
             else
                 ROS_ERROR("error publishing orignal image");
         }
-
+/*
         if( bImagePublish || display)
             cvRemap( frame, frame_undist, _pUndistortionMapX, _pUndistortionMapY, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
-
+*/
         if( bImagePublish ) {
-            if (sensor_msgs::CvBridge::fromIpltoRosImage(frame_undist, _imagemsg, "passthrough")) {
+            if (sensor_msgs::CvBridge::fromIpltoRosImage(frame, _imagemsg, "passthrough")) {
+                if( _imagemsg.encoding == sensor_msgs::image_encodings::TYPE_8UC3 )
+                  _imagemsg.encoding = sensor_msgs::image_encodings::BGR8;
                 _imagemsg.header = infomsg.header;
                 _pubImage.publish(_imagemsg);
-                _pubImage2.publish(_imagemsg);
             }
             else
                 ROS_ERROR("error publishing undistorted image");
@@ -798,7 +802,8 @@ int main(int argc, char **argv)
     if( !ros::master::check() )
         return 1;
     
-    CameraOpenCVNode cvcam;
+    ros::NodeHandle nh("~");
+    CameraOpenCVNode cvcam(nh);
     
     while (cvcam.ok()) {
         if (!cvcam.process())
