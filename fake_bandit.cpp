@@ -61,7 +61,7 @@ int main( int argc, char* argv[] )
   add_param( 14, "left_hand_thumb_joint", -90, 90, 0);
   add_param( 15, "right_hand_thumb_joint", -90, 90, 0);
 	ros::ServiceServer service = n.advertiseService("params", param);
-  ros::Rate loop_rate(1);
+  ros::Rate loop_rate(100);
   
   sensor_msgs::JointState js;
 
