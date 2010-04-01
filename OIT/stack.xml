@@ -1,0 +1,17 @@
+<stack>
+  <description brief="OIT: Overhead Interaction Toolkit">
+
+    Overhead Interaction Toolkit: ...
+
+  </description>
+  <author>Maintained by David Feil-Seifer/dfseifer@usc.edu</author>
+  <license>BSD</license>  
+  <review status="Unreviewed"/>
+  <url></url>
+  <depend stack="common_msgs" /> <!-- sensor_msgs, geometry_msgs -->
+  <depend stack="driver_common" /> <!-- dynamic_reconfigure -->
+  <depend stack="image_common" /> <!-- image_transport, camera_calibration_parsers -->
+  <depend stack="ros" /> <!-- rospy, std_srvs, roscpp, message_filters, rosbagmigration -->
+  <depend stack="vision_opencv" /> <!-- opencv2, image_geometry, cv_bridge -->
+
+</stack>
