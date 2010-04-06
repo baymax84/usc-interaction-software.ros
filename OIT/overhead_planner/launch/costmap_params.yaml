@@ -1,4 +1,4 @@
-global_frame: /ovh
+global_frame: /map
 robot_base_frame: /robot/odom
 update_frequency: 5.0
 publish_frequency: 1.0

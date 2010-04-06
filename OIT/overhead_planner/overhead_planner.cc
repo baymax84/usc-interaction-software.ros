@@ -9,20 +9,25 @@
 navfn::NavfnROS navfn_plan;
 ros::Subscriber goal_sub;
 
+tf::TransformListener* tfl;
+
 void goal_cb( const geometry_msgs::PoseStampedConstPtr &msg )
 {
-	geometry_msgs::PoseStamped start = *msg;
+	geometry_msgs::PoseStamped tmsg;
 
+	tfl->transformPose( "/map", *msg, tmsg );
+	geometry_msgs::PoseStamped start = tmsg, tstart;
+	start.header.frame_id = "/robot/odom";
+	start.pose.position.x = 0;
+	start.pose.position.y = 0;
+	start.pose.position.z = 0;
+	tfl->transformPose( "/map", start, tstart );
 
-
-	start.pose.position.x = 1.0;	
-	start.pose.position.y = -1.0;
-
-	ROS_INFO( "plan: (%f,%f) ==> (%f,%f)", start.pose.position.x,start.pose.position.y,msg->pose.position.x,msg->pose.position.y );
+	ROS_INFO( "plan(%s): (%f,%f) ==> (%f,%f)", tmsg.header.frame_id.c_str(), tstart.pose.position.x,tstart.pose.position.y,tmsg.pose.position.x,tmsg.pose.position.y );
 
 	std::vector< geometry_msgs::PoseStamped > path;
 
-	bool planned = navfn_plan.makePlan( start, *msg, path );
+	bool planned = navfn_plan.makePlan( tstart, tmsg, path );
 	if( !planned )
 	{
 		ROS_WARN( "plan did not succeed" );
@@ -41,8 +46,8 @@ int main( int argc, char* argv[] )
 	ros::init( argc, argv, "overhead_planner" );
 	ros::NodeHandle nh("~");	
 
-	tf::TransformListener tf(ros::Duration(10));
-	costmap_2d::Costmap2DROS costmap("ovh_costmap", tf );
+	tfl = new tf::TransformListener(ros::Duration(10));
+	costmap_2d::Costmap2DROS costmap("ovh_costmap", *tfl );
 	navfn_plan.initialize("ovh_navfn_planner", &costmap );
 
 	goal_sub = nh.subscribe("/goal", 1, goal_cb );
