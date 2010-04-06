@@ -1,7 +1,7 @@
 <stack>
   <description brief="OIT: Overhead Interaction Toolkit">
 
-    Overhead Interaction Toolkit: ...
+    Overhead Interaction Toolkit: This is a collection of packages designed to operate a robot with limited or no on-board sensing. Instead, an overhead camera is used to track the position of the robot, obstacles, and other people in a scene.
 
   </description>
   <author>Maintained by David Feil-Seifer/dfseifer@usc.edu</author>
