@@ -67,7 +67,8 @@ int main( int argc, char* argv[] )
 
   while( n.ok() )
   {
-    js.header.frame_id="/world";
+    js.header.frame_id="/bandit_torso_link";
+    js.header.stamp = ros::Time::now();
     js.name = joint_names;
     js.position = joint_pos;
     js.velocity = zeroes;
