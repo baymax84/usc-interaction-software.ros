@@ -75,7 +75,7 @@ int main( int argc, char* argv[] )
     js.effort = zeroes;    
     joint_state_publisher.publish(js);
   
-    ROS_INFO( "publish" );
+    //ROS_INFO( "publish" );
 
 	  ros::spinOnce();
     loop_rate.sleep();
