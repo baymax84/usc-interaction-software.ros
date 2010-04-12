@@ -160,6 +160,10 @@ void P2OSPtz::callback(const p2os::PTZStateConstPtr &cmd)
   p2os::PTZState to_send;
   bool change_pan_tilt = false;
   bool change_zoom = false;
+  to_send.pan = pan_;
+  to_send.tilt = tilt_;
+  to_send.zoom = zoom_;
+
   // Check if the command is relative to the current position
   if (cmd->relative)
   {
@@ -170,7 +174,7 @@ void P2OSPtz::callback(const p2os::PTZStateConstPtr &cmd)
     }
     if ( abs(cmd->tilt) > TILT_THRESH)
     {
-      to_send.pan = cmd->tilt + tilt_;
+      to_send.tilt = cmd->tilt + tilt_;
       change_pan_tilt = true;
     }
     if ( abs(cmd->zoom) > ZOOM_THRESH)
@@ -767,6 +771,8 @@ int P2OSPtz::sendAbsZoom(int zoom)
   command[8] = buf[3];
   command[9] = FOOTER;
 
+  zoom_ = zoom;
+
   if (sendCommand(command, 10))
     return -1;
   if (bidirectional_com_)
@@ -951,6 +957,10 @@ int P2OSPtz::sendAbsPanTilt(int pan, int tilt)
   command[12] = buf[3];
   command[13] = (unsigned char) FOOTER;
   sendCommand(command, 14);
+
+  tilt_ = ttilt;
+  pan_ = ppan;
+
   if (bidirectional_com_)
   {
     return (receiveCommandAnswer(COMMAND_RESPONSE_BYTES));
