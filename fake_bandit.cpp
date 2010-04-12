@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include <bandit_msgs/Params.h>
-#include <bandit_msgs/Joint.h>
+#include <bandit_msgs/JointArray.h>
 #include <sensor_msgs/JointState.h>
 bandit_msgs::Params::Response param_res;
 #define DTOR( a ) a * M_PI / 180.0
@@ -35,33 +35,48 @@ void jointCB( const bandit_msgs::JointConstPtr& j )
   joint_pos[j->id] = j->angle;
 }
 
+void jointarrayCB( const bandit_msgs::JointArrayConstPtr& j )
+{
+	for( int i = 0; i < j->joints.size(); i++ )
+	{
+		int id = j->joints[i].id;
+		double angle = j->joints[i].angle;
+		joint_pos[id] = angle;
+	}
+}
 
 int main( int argc, char* argv[] )
 {
 	ros::init(argc, argv, "fake_bandit" );
 	ros::NodeHandle n;
   ros::Subscriber joint_sub = n.subscribe("joint_ind", 1, jointCB );
+  ros::Subscriber joints_sub = n.subscribe("joints", 1, jointarrayCB );
   joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
 
-  
+
+	// head  
   add_param( 0, "bandit_head_pan_joint", -90, 90, 0 );
   add_param( 1, "bandit_head_tilt_joint", -15, 15, 0 );
-  add_param( 2, "left_torso_shoulder_mounting_joint", -90, 180, 0);
-  add_param( 3, "right_torso_shoulder_mounting_joint", -90, 180, 0);
-  add_param( 4, "left_shoulder_mounting_shoulder_joint", -20, 180, 0);
-  add_param( 5, "right_shoulder_mounting_shoulder_joint", -20, 180, 0);
-  add_param( 6, "left_shoulder_bicep_joint", -90, 90, 0);
-  add_param( 7, "right_shoulder_bicep_joint", -90, 90, 0);
-  add_param( 8, "left_bicep_forearm_joint", 0, 110, 0);
-  add_param( 9, "right_bicep_forearm_joint", 0, 110, 0);
-  add_param( 10, "left_forearm_wrist_joint", -90, 90, 0);
-  add_param( 11, "right_forearm_wrist_joint", -90, 90, 0);
-  add_param( 12, "left_wrist_hand_joint", -90, 90, 0);
-  add_param( 13, "right_wrist_hand_joint", -90, 90, 0);
-  add_param( 14, "left_hand_thumb_joint", -90, 90, 0);
+
+	// left arm
+  add_param( 2, "left_torso_shoulder_mounting_joint", -180, 180, 0);
+  add_param( 3, "left_shoulder_mounting_shoulder_joint", -20, 180, 0);
+  add_param( 4, "left_shoulder_bicep_joint", -90, 90, 0);
+  add_param( 5, "left_bicep_forearm_joint", 0, 110, 0);
+  add_param( 6, "left_forearm_wrist_joint", -90, 90, 0);
+  add_param( 7, "left_wrist_hand_joint", -90, 90, 0);
+  add_param( 8, "left_hand_thumb_joint", -90, 90, 0);
+
+	// right arm
+  add_param( 9, "right_torso_shoulder_mounting_joint", -90, 180, 0);
+  add_param( 10, "right_shoulder_mounting_shoulder_joint", -20, 180, 0);
+  add_param( 11, "right_shoulder_bicep_joint", -90, 90, 0);
+  add_param( 12, "right_bicep_forearm_joint", 0, 110, 0);
+  add_param( 13, "right_forearm_wrist_joint", -90, 90, 0);
+  add_param( 14, "right_wrist_hand_joint", -90, 90, 0);
   add_param( 15, "right_hand_thumb_joint", -90, 90, 0);
 	ros::ServiceServer service = n.advertiseService("params", param);
-  ros::Rate loop_rate(100);
+  ros::Rate loop_rate(50);
   
   sensor_msgs::JointState js;
 
