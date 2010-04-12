@@ -104,15 +104,17 @@ int main(int argc, char** argv)
 
   // Retrieve port from parameter server
   std::string port;
-  nh.param("~/port", port, std::string("/dev/ttyUSB0"));//S1"));
+  nh.param("port", port, std::string("/dev/ttyUSB0"));//S1"));
 
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
     // joint offset parameters for Bandit #3 (RAM-2010Mar25)
-    nh.param( "~home", homestring, std::string("5,-20,-68,-82,-28,62,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
-    nh.param( "~direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    nh.param( "home", homestring, std::string("5,0,-68,-68,-28,54,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
+    nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    //nh.param( "home", homestring, std::string("5,-20,-68,-82,-28,62,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
+    nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
 
     // joint offset parameters for Bandit #4 (RAM-2010Mar25)
     //nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25,"));
