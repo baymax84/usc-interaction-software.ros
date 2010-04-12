@@ -46,14 +46,14 @@ int main( int argc, char* argv[] )
   
   add_param( 0, "bandit_head_pan_joint", -90, 90, 0 );
   add_param( 1, "bandit_head_tilt_joint", -15, 15, 0 );
-  add_param( 2, "left_torso_shoulder_mounting_joint", -90, 90, 0);
-  add_param( 3, "right_torso_shoulder_mounting_joint", -90, 90, 0);
-  add_param( 4, "left_shoulder_mounting_shoulder_joint", -90, 90, 0);
-  add_param( 5, "right_shoulder_mounting_shoulder_joint", -90, 90, 0);
+  add_param( 2, "left_torso_shoulder_mounting_joint", -90, 180, 0);
+  add_param( 3, "right_torso_shoulder_mounting_joint", -90, 180, 0);
+  add_param( 4, "left_shoulder_mounting_shoulder_joint", -20, 180, 0);
+  add_param( 5, "right_shoulder_mounting_shoulder_joint", -20, 180, 0);
   add_param( 6, "left_shoulder_bicep_joint", -90, 90, 0);
   add_param( 7, "right_shoulder_bicep_joint", -90, 90, 0);
-  add_param( 8, "left_bicep_forearm_joint", -90, 90, 0);
-  add_param( 9, "right_bicep_forearm_joint", -90, 90, 0);
+  add_param( 8, "left_bicep_forearm_joint", 0, 110, 0);
+  add_param( 9, "right_bicep_forearm_joint", 0, 110, 0);
   add_param( 10, "left_forearm_wrist_joint", -90, 90, 0);
   add_param( 11, "right_forearm_wrist_joint", -90, 90, 0);
   add_param( 12, "left_wrist_hand_joint", -90, 90, 0);
