@@ -7,5 +7,6 @@
   <depend package="libbandit" />
   <depend package="bandit_msgs" />
 	<depend package="sensor_msgs"/>
+  <depend package="xmlrpcpp"/>
   <url></url>
 </package>

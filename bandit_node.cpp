@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 
   // Retrieve port from parameter server
   std::string port;
-  nh.param("port", port, std::string("/dev/ttyUSB0"));//S1"));
+  nh.param("port", port, std::string("/dev/ttyS1"));//S1"));
 
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
