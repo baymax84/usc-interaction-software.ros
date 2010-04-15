@@ -32,7 +32,7 @@
 #include "sip.h"
 #include "tf/tf.h"
 #include "tf/transform_datatypes.h"
-
+#include <sstream>
 
 void SIP::FillStandard(ros_p2os_data_t* data)
 {
@@ -77,14 +77,14 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   // compass
   memset(&(data->compass),0,sizeof(data->compass));
   data->compass.pos.pa = DTOR(this->compass);
+  */
 
   ///////////////////////////////////////////////////////////////
   // sonar
-  data->sonar.ranges_count = PlayerRobotParams[param_idx].SonarNum;
-  data->sonar.ranges = new float[data->sonar.ranges_count];
-  for(int i=0;i<MIN(PlayerRobotParams[param_idx].SonarNum,sonarreadings);i++)
-    data->sonar.ranges[i] = this->sonars[i] / 1e3;
-  */
+  data->sonar.ranges_count = static_cast<int>(sonarreadings);
+  data->sonar.ranges.clear();
+  for(int i=0; i < data->sonar.ranges_count; i++)
+    data->sonar.ranges.push_back(sonars[i] / 1e3);
 
   ///////////////////////////////////////////////////////////////
   // gripper
@@ -198,33 +198,39 @@ void SIP::Print()
 {
   int i;
 
-  printf("lwstall:%d rwstall:%d\n", lwstall, rwstall);
+  ROS_DEBUG("lwstall:%d rwstall:%d\n", lwstall, rwstall);
 
-  printf("Front bumpers: ");
+  std::stringstream front_bumper_info;
   for(int i=0;i<5;i++) {
-    printf("%d", (frontbumpers >> i) & 0x01 );
+    front_bumper_info << " "
+                      << static_cast<int>((frontbumpers >> i) & 0x01 );
   }
-  puts("");
-
-  printf("Rear bumpers: ");
+  ROS_DEBUG("Front bumpers:%s", front_bumper_info.str().c_str());
+  std::stringstream rear_bumper_info;
   for(int i=0;i<5;i++) {
-    printf("%d", (rearbumpers >> i) & 0x01 );
+    rear_bumper_info << " "
+                     << static_cast<int>((rearbumpers >> i) & 0x01 );
   }
-  puts("");
+  ROS_DEBUG("Rear bumpers:%s", rear_bumper_info.str().c_str());
 
-  ROS_INFO("status: 0x%x analog: %d param_id: %d ", status, analog, param_idx);
-  printf("digin: ");
+  ROS_DEBUG("status: 0x%x analog: %d param_id: %d ", status, analog, param_idx);
+  std::stringstream digin_info;
   for(i=0;i<8;i++) {
-    printf("%d", (digin >> (7-i) ) & 0x01);
+    digin_info << " "
+               << static_cast<int>((digin >> (7-i) ) & 0x01);
   }
-  printf(" digout: ");
+  std::stringstream digout_info;
+  ROS_DEBUG("digin:%s", digin_info.str().c_str());
   for(i=0;i<8;i++) {
-    printf("%d", (digout >> (7-i) ) & 0x01);
+    digout_info << " "
+               << static_cast<int>((digout >> (7-i) ) & 0x01);
   }
-  puts("");
-  printf("battery: %d compass: %d sonarreadings: %d\n", battery, compass, sonarreadings);
-  printf("xpos: %d ypos:%d ptu:%hu timer:%hu\n", xpos, ypos, ptu, timer);
-  printf("angle: %d lvel: %d rvel: %d control: %d\n", angle, lvel, rvel, control);
+  ROS_DEBUG("digout:%s", digout_info.str().c_str());
+  ROS_DEBUG("battery: %d compass: %d sonarreadings: %d\n", battery,
+            compass, sonarreadings);
+  ROS_DEBUG("xpos: %d ypos:%d ptu:%hu timer:%hu\n", xpos, ypos, ptu, timer);
+  ROS_DEBUG("angle: %d lvel: %d rvel: %d control: %d\n", angle, lvel,
+            rvel, control);
 
   PrintSonars();
   PrintArmInfo ();
@@ -233,28 +239,30 @@ void SIP::Print()
 
 void SIP::PrintSonars()
 {
-  printf("Sonars: ");
-  for(int i = 0; i < 16; i++){
-    printf("%hu ", sonars[i]);
+  if(sonarreadings <= 0)
+    return;
+  std::stringstream sonar_info;
+  for(int i = 0; i < sonarreadings; i++){
+    sonar_info << " " << static_cast<int>(sonars[i]);
   }
-  puts("");
+  ROS_DEBUG("Sonars: %s", sonar_info.str().c_str());
 }
 
 void SIP::PrintArm ()
 {
-	printf ("Arm power is %s\tArm is %sconnected\n", (armPowerOn ? "on" : "off"), (armConnected ? "" : "not "));
-	printf ("Arm joint status:\n");
+	ROS_DEBUG ("Arm power is %s\tArm is %sconnected\n", (armPowerOn ? "on" : "off"), (armConnected ? "" : "not "));
+	ROS_DEBUG ("Arm joint status:\n");
 	for (int ii = 0; ii < 6; ii++)
-		printf ("Joint %d   %s   %d\n", ii + 1, (armJointMoving[ii] ? "Moving " : "Stopped"), armJointPos[ii]);
+		ROS_DEBUG ("Joint %d   %s   %d\n", ii + 1, (armJointMoving[ii] ? "Moving " : "Stopped"), armJointPos[ii]);
 }
 
 void SIP::PrintArmInfo ()
 {
-	printf ("Arm version:\t%s\n", armVersionString);
-	printf ("Arm has %d joints:\n", armNumJoints);
-	printf ("  |\tSpeed\tHome\tMin\tCentre\tMax\tTicks/90\n");
+	ROS_DEBUG ("Arm version:\t%s\n", armVersionString);
+	ROS_DEBUG ("Arm has %d joints:\n", armNumJoints);
+	ROS_DEBUG ("  |\tSpeed\tHome\tMin\tCentre\tMax\tTicks/90\n");
 	for (int ii = 0; ii < armNumJoints; ii++)
-		printf ("%d |\t%d\t%d\t%d\t%d\t%d\t%d\n", ii, armJoints[ii].speed, armJoints[ii].home, armJoints[ii].min, armJoints[ii].centre, armJoints[ii].max, armJoints[ii].ticksPer90);
+		ROS_DEBUG ("%d |\t%d\t%d\t%d\t%d\t%d\t%d\n", ii, armJoints[ii].speed, armJoints[ii].home, armJoints[ii].min, armJoints[ii].centre, armJoints[ii].max, armJoints[ii].ticksPer90);
 }
 
 void SIP::ParseStandard( unsigned char *buffer )
@@ -282,7 +290,7 @@ void SIP::ParseStandard( unsigned char *buffer )
     change = (int) rint(PositionChange( rawxpos, newxpos ) *
 			PlayerRobotParams[param_idx].DistConvFactor);
     if (abs(change)>100)
-      printf("invalid odometry change [%d]; odometry values are tainted", change);
+      ROS_DEBUG("invalid odometry change [%d]; odometry values are tainted", change);
     else
       xpos += change;
   }
@@ -298,7 +306,7 @@ void SIP::ParseStandard( unsigned char *buffer )
     change = (int) rint(PositionChange( rawypos, newypos ) *
 			PlayerRobotParams[param_idx].DistConvFactor);
     if (abs(change)>100)
-      printf("invalid odometry change [%d]; odometry values are tainted", change);
+      ROS_DEBUG("invalid odometry change [%d]; odometry values are tainted", change);
     else
       ypos += change;
   }
@@ -350,7 +358,7 @@ void SIP::ParseStandard( unsigned char *buffer )
   unsigned char numSonars=buffer[cnt];
   cnt+=sizeof(unsigned char);
 
-  if(numSonars>0)
+  if(numSonars > 0)
   {
     //find the largest sonar index supplied
     unsigned char maxSonars=sonarreadings;
@@ -393,9 +401,9 @@ void SIP::ParseStandard( unsigned char *buffer )
   digout = buffer[cnt];
   cnt += sizeof(unsigned char);
   // for debugging:
-  //Print();
+  Print();
+  // PrintSonars();
 }
-
 
 /** Parse a SERAUX SIP packet.  For a CMUcam, this will have blob
  **  tracking messages in the format (all one-byte values, no spaces):
@@ -412,7 +420,7 @@ void SIP::ParseSERAUX( unsigned char *buffer )
   if (type != SERAUX && type != SERAUX2)
   {
     // Really should never get here...
-    printf("ERROR: Attempt to parse non SERAUX packet as serial data.\n");
+    ROS_ERROR("Attempt to parse non SERAUX packet as serial data.\n");
     return;
   }
 
@@ -430,7 +438,7 @@ void SIP::ParseSERAUX( unsigned char *buffer )
     if (buffer[ix] == 255)
       break;		// Got it!
   if (len < 10 || ix > len-8) {
-    printf("ERROR: Failed to get a full blob tracking packet.\n");
+    ROS_ERROR("Failed to get a full blob tracking packet.\n");
     return;
   }
 
@@ -438,7 +446,7 @@ void SIP::ParseSERAUX( unsigned char *buffer )
   if (buffer[ix+1] == 'S')
   {
      // Color information (track color)
-     printf("Tracking color (RGB):  %d %d %d\n"
+     ROS_DEBUG("Tracking color (RGB):  %d %d %d\n"
             "       with variance:  %d %d %d\n",
               buffer[ix+2], buffer[ix+3], buffer[ix+4],
               buffer[ix+5], buffer[ix+6], buffer[ix+7]);
@@ -462,7 +470,7 @@ void SIP::ParseSERAUX( unsigned char *buffer )
      return;
   }
 
-  printf("ERROR: Unknown blob tracker packet type: %c\n", buffer[ix+1]);
+  ROS_ERROR("Unknown blob tracker packet type: %c\n", buffer[ix+1]);
   return;
 }
 
@@ -483,13 +491,13 @@ SIP::ParseGyro(unsigned char* buffer)
   if(type != GYROPAC)
   {
     // Really should never get here...
-    printf("ERROR: Attempt to parse non GYRO packet as gyro data.\n");
+    ROS_ERROR("Attempt to parse non GYRO packet as gyro data.\n");
     return;
   }
 
   if(len < 1)
   {
-    printf("Couldn't get gyro measurement count");
+    ROS_DEBUG("Couldn't get gyro measurement count");
     return;
   }
 
@@ -499,7 +507,7 @@ SIP::ParseGyro(unsigned char* buffer)
   // sanity check
   if((len-1) != (count*3))
   {
-    printf("Mismatch between gyro measurement count and packet length");
+    ROS_DEBUG("Mismatch between gyro measurement count and packet length");
     return;
   }
 
@@ -534,13 +542,13 @@ void SIP::ParseArm (unsigned char *buffer)
 
 	if (buffer[1] != ARMPAC)
 	{
-		printf ("ERROR: Attempt to parse a non ARM packet as arm data.\n");
+		ROS_ERROR("Attempt to parse a non ARM packet as arm data.\n");
 		return;
 	}
 
 	if (length < 1 || length != 9)
 	{
-		printf ("ARMpac length incorrect size");
+		ROS_DEBUG ("ARMpac length incorrect size");
 		return;
 	}
 
@@ -578,13 +586,13 @@ void SIP::ParseArmInfo (unsigned char *buffer)
 	int length = (int) buffer[0] - 2;
 	if (buffer[1] != ARMINFOPAC)
 	{
-		printf ("ERROR: Attempt to parse a non ARMINFO packet as arm info.\n");
+		ROS_ERROR ("Attempt to parse a non ARMINFO packet as arm info.\n");
 		return;
 	}
 
 	if (length < 1)
 	{
-		printf ("ARMINFOpac length bad size");
+		ROS_DEBUG ("ARMINFOpac length bad size");
 		return;
 	}
 
