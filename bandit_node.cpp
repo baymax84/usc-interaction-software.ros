@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <bandit_msgs/JointArray.h>
 #include <bandit_msgs/Params.h>
+#include <sensor_msgs/JointState.h>
 
 #include <bandit/bandit.h>
 
@@ -73,9 +74,18 @@ void stateCB(ros::Publisher& joint_pub)
   bandit_msgs::JointArray j;
   bandit_msgs::Joint joint;
 
+  sensor_msgs::JointState js;
+
+  js.header.stamp = ros::Time::now();
+  js.header.frame_id = "bandit_torso_link";
+
   // For every joint
   for (int i = 0; i < 19; i++)
   {
+    js.name.push_back(g_bandit.getJointRosName(i));
+    js.position.push_back(g_bandit.getJointPos(i));
+    js.velocity.push_back(0);
+    js.effort.push_back(0);
     // Set the id and angle
     joint.id = i;
     joint.angle = g_bandit.getJointPos(i);
@@ -84,10 +94,12 @@ void stateCB(ros::Publisher& joint_pub)
     j.joints.push_back(joint);
   }
 
+  
   ROS_INFO( "publishing..." );
 
   // Publish to other nodes
-  joint_pub.publish(j);
+  joint_pub.publish(js);
+  //joint_pub.publish(j);
 }
 
 int main(int argc, char** argv)
@@ -106,6 +118,7 @@ int main(int argc, char** argv)
   std::string port;
   nh.param("port", port, std::string("/dev/ttyS1"));//S1"));
 
+  ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
@@ -183,7 +196,7 @@ int main(int argc, char** argv)
   {
     // This callback gets called whenever processPendingMessages
     // receives a valid state update from bandit
-    g_bandit.registerStateCB(boost::bind(&stateCB, boost::ref(joint_pub)));
+    g_bandit.registerStateCB(boost::bind(&stateCB, boost::ref(joints_pub)));
     
     ROS_INFO( "connecting to bandit on port: [%s]\n", port.c_str() );
 
@@ -209,7 +222,7 @@ int main(int argc, char** argv)
       
       //populate service response message
       param_res.id.push_back(i);
-      param_res.name.push_back(g_bandit.getJointName(i));
+      param_res.name.push_back(g_bandit.getJointRosName(i));
       //param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));
       //param_res.max.push_back(RTOD(g_bandit.getJointMax(i)));
       //param_res.pos.push_back(RTOD(g_bandit.getJointPos(i)));
