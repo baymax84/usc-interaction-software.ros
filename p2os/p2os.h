@@ -32,11 +32,13 @@
 #include "packet.h"
 #include "robot_params.h"
 
+#include "ros/ros.h"
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
 #include "p2os/BatteryState.h"
 #include "p2os/MotorState.h"
 #include "p2os/GripperState.h"
+#include "p2os/SonarArray.h"
 
 typedef struct ros_p2os_data
 {
@@ -44,6 +46,7 @@ typedef struct ros_p2os_data
     p2os::BatteryState batt;
     p2os::MotorState motors;
     p2os::GripperState gripper;
+    p2os::SonarArray sonar;
 } ros_p2os_data_t;
 
 // this is here because we need the above typedef's before including it.
@@ -96,7 +99,7 @@ class P2OSNode
     ros::NodeHandle n;
     ros::NodeHandle nh_private;
     ros::Publisher pose_pub, batt_pub, mstate_pub, grip_state_pub_,
-        ptz_state_pub_;
+      ptz_state_pub_, sonar_pub_;
     ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_, ptz_cmd_sub_;
 
     ros::Time veltime;
@@ -124,10 +127,11 @@ class P2OSNode
     short motor_max_rot_accel, motor_max_rot_decel;
     double pulse; // Pulse time
     double lastPulseTime; // Last time of sending a pulse or command to the robot
+    bool use_sonar_;
 
     P2OSPtz ptz_;
-  public:
 
+  public:
     geometry_msgs::Twist cmdvel_;
     p2os::MotorState    cmdmotor_state_;
     p2os::GripperState gripper_state_;

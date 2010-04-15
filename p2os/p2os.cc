@@ -34,6 +34,8 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
   mstate_pub.publish( p2os_data.motors );
 
   // put sonar data
+  sonar_pub_.publish( p2os_data.sonar );
+
   // put aio data
   // put dio data
 
@@ -148,7 +150,7 @@ P2OSNode::ToggleMotorPower(unsigned char val)
 {
   unsigned char command[4];
   P2OSPacket packet;
-  printf( "motor state: %d\n", p2os_data.motors.state );
+  ROS_INFO( "motor state: %d\n", p2os_data.motors.state );
   p2os_data.motors.state = (int) val;
   command[0] = ENABLE;
   command[1] = ARGINT;

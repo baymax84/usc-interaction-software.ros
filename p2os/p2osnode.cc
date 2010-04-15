@@ -38,6 +38,10 @@
 P2OSNode::P2OSNode( ros::NodeHandle nh ) :
     n(nh), gripper_dirty_(false), ptz_(this)
 {
+  // Use sonar
+  ros::NodeHandle n_private("~");
+  n_private.param("use_sonar", use_sonar_, false);
+
   // read in config options
   // bumpstall
   n.param( "bumpstall", bumpstall, -1 );
@@ -95,6 +99,7 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
   mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
   grip_state_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
   ptz_state_pub_ = n.advertise<p2os::PTZState>("ptz_state",1000);
+  sonar_pub_ = n.advertise<p2os::SonarArray>("sonar", 1000);
 
   // subscribe to services
   cmdvel_sub = n.subscribe("cmd_vel", 1, &P2OSNode::cmdvel_cb, this);
@@ -447,7 +452,6 @@ P2OSNode::Setup()
     this->psos_fd = -1;
     return(1);
   }
-
   cnt = 4;
   cnt += snprintf(name, sizeof(name), "%s", &receivedpacket.packet[cnt]);
   cnt++;
@@ -456,18 +460,17 @@ P2OSNode::Setup()
   cnt += snprintf(subtype, sizeof(subtype), "%s", &receivedpacket.packet[cnt]);
   cnt++;
 
-
   command = OPEN;
   packet.Build(&command, 1);
   packet.Send(this->psos_fd);
   usleep(P2OS_CYCLETIME_USEC);
-
   command = PULSE;
   packet.Build(&command, 1);
   packet.Send(this->psos_fd);
   usleep(P2OS_CYCLETIME_USEC);
 
   ROS_INFO("Done.\n   Connected to %s, a %s %s\n", name, type, subtype);
+
   // now, based on robot type, find the right set of parameters
   for(i=0;i<PLAYER_NUM_ROBOT_TYPES;i++)
   {
@@ -629,7 +632,13 @@ P2OSNode::Setup()
     }
   }
 
+  // Turn on the sonar
+  if(use_sonar_) {
+    this->ToggleSonarPower(1);
+    ROS_DEBUG("Sonar array powered on.");
+  }
   ptz_.setup();
+
   return(0);
 }
 
@@ -669,24 +678,16 @@ P2OSNode::Shutdown()
 }
 
 // this fcn doubles for P2OS::Main
-
 void
 P2OSNode::spin()
 {
-  int last_sonar_subscrcount = 0;
   double currentTime;
   struct timeval timeVal;
 
   while( n.ok() )
   {
     // we want to turn on the sonars if another node has subscribed to the sonar topic
-/*
-    if(last_sonar_subscrcount == 0 && n.numSubscribers("sonar") > 0 )
-      this->ToggleSonarPower(1);
-    else if(last_sonar_subscrcount > 0 && n.numSubscribers("sonar") == 0 )
-      this->ToggleSonarPower(0);
-    last_sonar_subscrcount = node->numSubscribers("sonar");
-*/
+
     // Process Messages Placeholder
 
     // handle the following messages:
