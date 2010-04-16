@@ -71,7 +71,9 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->batt.voltage = battery / 10.0;
 
   // motor state
-  //data->motors.state = status;
+  // The below will tell us if the motors are currently moving or not, it does
+  // not tell us whether they have been enabled
+  // data->motors.state = (status & 0x01);
   /*
   ///////////////////////////////////////////////////////////////
   // compass
@@ -88,42 +90,63 @@ void SIP::FillStandard(ros_p2os_data_t* data)
 
   ///////////////////////////////////////////////////////////////
   // gripper
-  unsigned char gripState = timer >> 8;
+  unsigned char gripState = timer;
   if ((gripState & 0x01) && (gripState & 0x02) && !(gripState & 0x04))
   {
       data->gripper.grip.state = PLAYER_GRIPPER_STATE_ERROR;
+      data->gripper.grip.dir = 0;
   }
-  else
+  else if(gripState & 0x04)
   {
-      data->gripper.grip.state = (gripState & 0x01) ? PLAYER_GRIPPER_STATE_OPEN :
-              ((gripState & 0x02) ? PLAYER_GRIPPER_STATE_CLOSED :
-               ((gripState & 0x04) ? PLAYER_GRIPPER_STATE_MOVING :
-                PLAYER_GRIPPER_STATE_ERROR));
+    data->gripper.grip.state = PLAYER_GRIPPER_STATE_MOVING;
+    if(gripState & 0x01)
+      data->gripper.grip.dir = 1;
+    if(gripState & 0x02)
+      data->gripper.grip.dir = -1;
   }
-  data->gripper.grip.beams = (digin & 0x02) & (digin & 0x04);
-  data->gripper.grip.stored = 0;
+  else if(gripState & 0x01)
+  {
+    data->gripper.grip.state = PLAYER_GRIPPER_STATE_OPEN;
+    data->gripper.grip.dir = 0;
+  }
+  else if(gripState & 0x02)
+  {
+    data->gripper.grip.state = PLAYER_GRIPPER_STATE_CLOSED;
+    data->gripper.grip.dir = 0;
+  }
+
+  // Reset data to false
+  data->gripper.grip.inner_beam = false;
+  data->gripper.grip.outer_beam = false;
+  data->gripper.grip.left_contact = false;
+  data->gripper.grip.right_contact = false;
+
+  if (digin & 0x08)
+  {
+    data->gripper.grip.inner_beam = true;
+  }
+  if (digin & 0x04)
+  {
+    data->gripper.grip.outer_beam = true;
+  }
+  if (!(digin & 0x10))
+  {
+    data->gripper.grip.left_contact = true;
+  }
+  if (!(digin & 0x20))
+  {
+    data->gripper.grip.right_contact = true;
+  }
 
   // lift
-  data->gripper.lift.speed = 0;
-  data->gripper.lift.acceleration = -1;
-  data->gripper.lift.current = -1;
+  data->gripper.lift.dir = 0;
 
   if ((gripState & 0x10) && (gripState & 0x20) && !(gripState & 0x40))
   {
       // In this case, the lift is somewhere in between, so
-      // must be at an intermediate carry position. Use last commanded position.
+      // must be at an intermediate carry position. Use last commanded position
       data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
       data->gripper.lift.position = lastLiftPos;
-  }
-  else if (gripState & 0x10)  // Up
-  {
-      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
-      data->gripper.lift.position = 1.0f;
-  }
-  else if (gripState & 0x20)  // Down
-  {
-      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
-      data->gripper.lift.position = 0.0f;
   }
   else if (gripState & 0x40)  // Moving
   {
@@ -131,6 +154,22 @@ void SIP::FillStandard(ros_p2os_data_t* data)
       // There is no way to know where it is for sure, so use last commanded
       // position.
       data->gripper.lift.position = lastLiftPos;
+      if (gripState & 0x10)
+        data->gripper.lift.dir = 1;
+      else if (gripState & 0x20)
+        data->gripper.lift.dir = -1;
+  }
+  else if (gripState & 0x10)  // Up
+  {
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
+      data->gripper.lift.position = 1.0f;
+      data->gripper.lift.dir = 0;
+  }
+  else if (gripState & 0x20)  // Down
+  {
+      data->gripper.lift.state = PLAYER_ACTARRAY_ACTSTATE_IDLE;
+      data->gripper.lift.position = 0.0f;
+      data->gripper.lift.dir = 0;
   }
   else    // Assume stalled
   {
@@ -157,20 +196,21 @@ void SIP::FillStandard(ros_p2os_data_t* data)
     data->bumper.bumpers[j++] =
       (unsigned char)((this->rearbumpers >> i) & 0x01);
   */
-/*
+
   ///////////////////////////////////////////////////////////////
   // digital I/O
-  data->dio.count = (unsigned char)8;
+  data->dio.count = 8;
   data->dio.bits = (unsigned int)this->digin;
 
   ///////////////////////////////////////////////////////////////
   // analog I/O
   //TODO: should do this smarter, based on which analog input is selected
   data->aio.voltages_count = (unsigned char)1;
-  if (!data->aio.voltages)
-    data->aio.voltages = new float[1];
-  data->aio.voltages[0] = (this->analog / 255.0) * 5.0;
-*/
+  // if (!data->aio.voltages)
+  //   data->aio.voltages = new float[1];
+  // data->aio.voltages[0] = (this->analog / 255.0) * 5.0;
+  data->aio.voltages.clear();
+  data->aio.voltages.push_back((this->analog / 255.0) * 5.0);
 }
 
 int SIP::PositionChange( unsigned short from, unsigned short to )
@@ -214,13 +254,19 @@ void SIP::Print()
   ROS_DEBUG("Rear bumpers:%s", rear_bumper_info.str().c_str());
 
   ROS_DEBUG("status: 0x%x analog: %d param_id: %d ", status, analog, param_idx);
-  std::stringstream digin_info;
+  std::stringstream status_info;
   for(i=0;i<8;i++) {
+    status_info << " "
+               << static_cast<int>((status >> (7-i) ) & 0x01);
+  }
+  ROS_DEBUG("status:%s", status_info.str().c_str());
+  std::stringstream digin_info;
+  for(i=0;i<11;i++) {
     digin_info << " "
                << static_cast<int>((digin >> (7-i) ) & 0x01);
   }
-  std::stringstream digout_info;
   ROS_DEBUG("digin:%s", digin_info.str().c_str());
+  std::stringstream digout_info;
   for(i=0;i<8;i++) {
     digout_info << " "
                << static_cast<int>((digout >> (7-i) ) & 0x01);

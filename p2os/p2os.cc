@@ -34,10 +34,13 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
   mstate_pub.publish( p2os_data.motors );
 
   // put sonar data
+  p2os_data.sonar.header.stamp = ts;
   sonar_pub_.publish( p2os_data.sonar );
 
   // put aio data
+  aio_pub_.publish( p2os_data.aio);
   // put dio data
+  aio_pub_.publish( p2os_data.dio);
 
   // put gripper and lift data
   grip_state_pub_.publish( p2os_data.gripper );
