@@ -255,13 +255,13 @@ void SIP::Print()
 
   ROS_DEBUG("status: 0x%x analog: %d param_id: %d ", status, analog, param_idx);
   std::stringstream status_info;
-  for(i=0;i<8;i++) {
+  for(i=0;i<11;i++) {
     status_info << " "
                << static_cast<int>((status >> (7-i) ) & 0x01);
   }
   ROS_DEBUG("status:%s", status_info.str().c_str());
   std::stringstream digin_info;
-  for(i=0;i<11;i++) {
+  for(i=0;i<8;i++) {
     digin_info << " "
                << static_cast<int>((digin >> (7-i) ) & 0x01);
   }

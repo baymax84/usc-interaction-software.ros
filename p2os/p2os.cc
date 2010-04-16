@@ -40,7 +40,7 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
   // put aio data
   aio_pub_.publish( p2os_data.aio);
   // put dio data
-  aio_pub_.publish( p2os_data.dio);
+  dio_pub_.publish( p2os_data.dio);
 
   // put gripper and lift data
   grip_state_pub_.publish( p2os_data.gripper );
