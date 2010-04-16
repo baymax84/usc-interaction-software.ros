@@ -100,6 +100,8 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
   grip_state_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
   ptz_state_pub_ = n.advertise<p2os::PTZState>("ptz_state",1000);
   sonar_pub_ = n.advertise<p2os::SonarArray>("sonar", 1000);
+  aio_pub_ = n.advertise<p2os::AIO>("aio", 1000);
+  dio_pub_ = n.advertise<p2os::DIO>("dio", 1000);
 
   // subscribe to services
   cmdvel_sub = n.subscribe("cmd_vel", 1, &P2OSNode::cmdvel_cb, this);

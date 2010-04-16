@@ -39,6 +39,8 @@
 #include "p2os/MotorState.h"
 #include "p2os/GripperState.h"
 #include "p2os/SonarArray.h"
+#include "p2os/DIO.h"
+#include "p2os/AIO.h"
 
 typedef struct ros_p2os_data
 {
@@ -47,6 +49,8 @@ typedef struct ros_p2os_data
     p2os::MotorState motors;
     p2os::GripperState gripper;
     p2os::SonarArray sonar;
+    p2os::DIO dio;
+    p2os::AIO aio;
 } ros_p2os_data_t;
 
 // this is here because we need the above typedef's before including it.
@@ -99,7 +103,7 @@ class P2OSNode
     ros::NodeHandle n;
     ros::NodeHandle nh_private;
     ros::Publisher pose_pub, batt_pub, mstate_pub, grip_state_pub_,
-      ptz_state_pub_, sonar_pub_;
+      ptz_state_pub_, sonar_pub_, aio_pub_, dio_pub_;
     ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_, ptz_cmd_sub_;
 
     ros::Time veltime;
