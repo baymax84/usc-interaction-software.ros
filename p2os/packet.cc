@@ -27,24 +27,24 @@
 #include "packet.h"
 #include <unistd.h>
 #include <stdlib.h> /* for exit() */
-
+#include "ros/ros.h"
 void P2OSPacket::Print() {
   if (packet) {
-    printf("\"");
+    ROS_INFO("\"");
     for(int i=0;i<size;i++) {
-      printf("%u ", packet[i]);
+      ROS_INFO("%u ", packet[i]);
     }
-    puts("\"");
+    ROS_INFO("\"");
   }
 }
 
 void P2OSPacket::PrintHex() {
   if (packet) {
-    printf("\"");
+    ROS_INFO("\"");
     for(int i=0;i<size;i++) {
-      printf("0x%.2x ", packet[i]);
+      ROS_INFO("0x%.2x ", packet[i]);
     }
-    puts("\"");
+    ROS_INFO("\"");
   }
 }
 
@@ -98,7 +98,7 @@ int P2OSPacket::Receive( int fd )
       {
         if ( (cnt+=read( fd, &prefix[2], 1 )) < 0 )
         {
-          perror("Error reading packet header from robot connection: P2OSPacket():Receive():read():");
+          ROS_ERROR("Error reading packet header from robot connection: P2OSPacket():Receive():read():");
           return(1);
         }
       }
@@ -113,7 +113,7 @@ int P2OSPacket::Receive( int fd )
       prefix[1]=prefix[2];
       //skipped++;
     }
-    //if (skipped>3) printf("Skipped %d bytes\n", skipped);
+    //if (skipped>3) ROS_INFO("Skipped %d bytes\n", skipped);
 
     size = prefix[2]+3;
     memcpy( packet, prefix, 3);
@@ -123,7 +123,7 @@ int P2OSPacket::Receive( int fd )
     {
       if ( (cnt+=read( fd, &packet[3+cnt],  prefix[2]-cnt )) < 0 )
       {
-        perror("Error reading packet body from robot connection: P2OSPacket():Receive():read():");
+        ROS_ERROR("Error reading packet body from robot connection: P2OSPacket():Receive():read():");
         return(1);
       }
     }
@@ -141,7 +141,7 @@ int P2OSPacket::Build( unsigned char *data, unsigned char datasize ) {
   packet[1]=0xFB;
 
   if ( size > 198 ) {
-    puts("Packet to P2OS can't be larger than 200 bytes");
+    ROS_ERROR("Packet to P2OS can't be larger than 200 bytes");
     return(1);
   }
   packet[2] = datasize + 2;
@@ -153,7 +153,7 @@ int P2OSPacket::Build( unsigned char *data, unsigned char datasize ) {
   packet[3+datasize+1] = chksum & 0xFF;
 
   if (!Check()) {
-    puts("DAMN");
+    ROS_ERROR("DAMN");
     return(1);
   }
   return(0);
@@ -163,13 +163,13 @@ int P2OSPacket::Send( int fd)
 {
   int cnt=0;
 
-  //printf("Send(): ");
+  //ROS_INFO("Send(): ");
   //PrintHex();
   while(cnt!=size)
   {
     if((cnt += write( fd, packet, size )) < 0)
     {
-      perror("Send");
+      ROS_ERROR("Send");
       return(1);
     }
   }
