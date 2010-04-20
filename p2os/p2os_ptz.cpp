@@ -8,7 +8,7 @@ const int P2OSPtz::MAX_COMMAND_LENGTH = 19;
 const int P2OSPtz::MAX_REQUEST_LENGTH = 17;
 const int P2OSPtz::COMMAND_RESPONSE_BYTES = 6;
 const int P2OSPtz::PACKET_TIMEOUT = 300;
-const int P2OSPtz::SLEEP_TIME_USEC = 100000;
+const int P2OSPtz::SLEEP_TIME_USEC = 300000;
 const int P2OSPtz::PAN_THRESH = 1;
 const int P2OSPtz::TILT_THRESH = 1;
 const int P2OSPtz::ZOOM_THRESH = 1;
@@ -34,7 +34,7 @@ P2OSPtz::P2OSPtz(P2OSNode * p2os, bool bidirectional_com) :
 int P2OSPtz::setup()
 {
   int err = 0;
-  int num_inits = 9;
+  int num_inits = 7;
   is_on_ = true;
   for (int i = 1; i < num_inits; i++) {
     switch(i)
@@ -70,42 +70,24 @@ int P2OSPtz::setup()
       case 4:
         do
         {
-          ROS_DEBUG("Waiting for camera to set default tilt");
-          err = setDefaultTiltRange();
+          for(int i = 0; i < 3; i++)
+          {
+            ROS_DEBUG("Waiting for camera to set default tilt");
+            err = setDefaultTiltRange();
+          }
         } while (error_code_ == CAM_ERROR_BUSY);
         break;
       case 5:
-        do
-        {
-          ROS_DEBUG("Waiting for camera to get pan and tilt");
-          err = getAbsPanTilt(&pan_, &tilt_);
-        } while (error_code_ == CAM_ERROR_BUSY);
-        break;
-      case 6:
-        do
-        {
-          ROS_DEBUG("Waiting for camera to get max zoom");
-          err = getMaxZoom(&max_zoom_);
-        } while (error_code_ == CAM_ERROR_BUSY);
-        break;
-      case 7:
-        do
-        {
-          ROS_DEBUG("Waiting for camera to get abs zoom");
-          err = getAbsZoom(&zoom_);
-        } while (error_code_ == CAM_ERROR_BUSY);
-        break;
-      case 8:
         do
         {
           ROS_DEBUG("Waiting for camera to set initial pan and tilt");
           err = sendAbsPanTilt(0, 0);
         } while (error_code_ == CAM_ERROR_BUSY);
         break;
-      case 9:
+      case 6:
         do
         {
-          ROS_DEBUG("Waiting for camera to set initial pan and tilt");
+          ROS_DEBUG("Waiting for camera to set initial zoom");
           err = sendAbsZoom(0);
         } while (error_code_ == CAM_ERROR_BUSY);
         break;
@@ -241,7 +223,7 @@ int P2OSPtz::sendCommand(unsigned char *str, int len)
 
   // Since I'm hardcoding this to AUX1, basically we gotta stick the AUX1DATA
   // header on this and then give it to the p2os send command.
-  unsigned char mybuf[MAX_COMMAND_LENGTH];
+  unsigned char mybuf[MAX_COMMAND_LENGTH+3];
   mybuf[0] = TTY2;
   mybuf[1] = ARGSTR;
   mybuf[2] = len;
@@ -790,7 +772,7 @@ int P2OSPtz::sendAbsZoom(int zoom)
 int P2OSPtz::setDefaultTiltRange()
 {
   unsigned char command[MAX_COMMAND_LENGTH];
-  unsigned char buf[8];
+  unsigned char buf[5]; //4 values and string terminator
   int maxtilt, mintilt;
 
   command[0] = HEADER;
@@ -801,23 +783,22 @@ int P2OSPtz::setDefaultTiltRange()
   command[5] = DEVICEID+1;
 
   mintilt = (int)(floor(MIN_TILT/.1125) + 0x8000);
-  sprintf((char *)buf, "%X", mintilt);
-
+  sprintf((char*)buf, "%X", mintilt);
   command[6] = buf[0];
   command[7] = buf[1];
   command[8] = buf[2];
   command[9] = buf[3];
-  // tilt position
   maxtilt = (int)(floor(MAX_TILT/.1125) + 0x8000);
-  sprintf((char *)buf, "%X", maxtilt);
+  sprintf((char*)buf, "%X", maxtilt);
 
   command[10] = buf[0];
   command[11] = buf[1];
   command[12] = buf[2];
   command[13] = buf[3];
-  command[14] = (unsigned char) FOOTER;
+  command[14] = FOOTER;
 
-  sendCommand(command, 15);
+  if(sendCommand(command, 15))
+    return -1;
   if (bidirectional_com_)
   {
     return (receiveCommandAnswer(COMMAND_RESPONSE_BYTES));
@@ -956,7 +937,8 @@ int P2OSPtz::sendAbsPanTilt(int pan, int tilt)
   command[11] = buf[2];
   command[12] = buf[3];
   command[13] = (unsigned char) FOOTER;
-  sendCommand(command, 14);
+  if(sendCommand(command, 14))
+    return -1;
 
   tilt_ = ttilt;
   pan_ = ppan;
