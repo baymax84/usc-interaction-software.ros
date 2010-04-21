@@ -97,10 +97,7 @@ dcam::init()
         throw DcamException(msg);
       }
       
-      PRINTF("Reset bus");
-      dc1394_reset_bus(camera);
-
-      usleep(500000);
+      //usleep(500000);
 
       PRINTF("Initializing camera, turning off ISO");
       dc1394_video_set_transmission(camera, DC1394_OFF);
@@ -453,7 +450,7 @@ dcam::Dcam::Dcam(uint64_t guid, size_t bsize)
 */        
     }
 
-  //  dc1394_iso_release_bandwidth(dcCam, 10000000);
+    dc1394_iso_release_bandwidth(dcCam, 10000000);
 
   //  CHECK_ERR_CLEAN( dc1394_reset_bus(dcCam), "Could not reset bus" );
 
@@ -475,6 +472,7 @@ dcam::Dcam::cleanup()
   dc1394_video_set_transmission(dcCam, DC1394_OFF);
   dc1394_capture_stop(dcCam);
   dc1394_camera_free(dcCam);
+  dc1394_free(dcam::dcRef);
   dcCam = NULL;
 }
 

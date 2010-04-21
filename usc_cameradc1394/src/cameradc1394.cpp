@@ -191,12 +191,19 @@ public:
             // check if guid exists, if not, kill the node
             guid = (uint64_t)strtoull(sguid.c_str(),0,16);
             int i;
-            for(i = 0; i < numcams; ++i) {
-                if( guid == dcam::getGuid(i) )
-                    break;
-            }
 
+            for(i = 0; i < numcams; i++) {
+
+                if( (int) guid == (int) dcam::getGuid(i) )
+                {
+                  ROS_INFO( "%u == %u", dcam::getGuid(i), guid );
+                  break;
+                }
+                ROS_INFO( "%u != %u", dcam::getGuid(i), guid );
+            }
+            ROS_INFO( "numcams: %d(%d)\n", numcams, i );
             ROS_ASSERT(i < numcams);
+            guid = dcam::getGuid(i);
         }
         else {
             // pick any camera
@@ -259,6 +266,7 @@ public:
         dc1394framerate_t fps = DC1394_FRAMERATE_30;
         for(map<dc1394framerate_t,float>::iterator it = m.begin(); it != m.end(); ++it) {
             if( fabsf(it->second-framerate) < 0.01f ) {
+                ROS_INFO( "framerate: %f", framerate );
                 fps = it->first;
                 break;
             }
