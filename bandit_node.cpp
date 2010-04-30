@@ -116,22 +116,28 @@ int main(int argc, char** argv)
 
   // Retrieve port from parameter server
   std::string port;
-  nh.param("port", port, std::string("/dev/ttyS1"));//S1"));
+  nh.param("port", port, std::string("/dev/ttyS1"));
 
   ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
   ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
-    // joint offset parameters for Bandit #3 (RAM-2010Mar25)
-    nh.param( "home", homestring, std::string("5,0,-68,-68,-28,54,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
-    nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
-    //nh.param( "home", homestring, std::string("5,-20,-68,-82,-28,62,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
+    // joint offset parameters for Bandit #1 (RAM-2010Apr30)
+    nh.param( "home", homestring, std::string("-3,10,-62,-74,-28,62,-11,0.5,0.6,52,80,26,-58,12,0.5,0.5,0.2,0.25,0.25,"));
     nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
 
+    // joint offset parameters for Bandit #3 (RAM-2010Mar25)
+    // ... which set is correct...
+    //nh.param( "home", homestring, std::string("5,0,-68,-68,-28,54,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
+    //nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    //nh.param( "home", homestring, std::string("5,-20,-68,-82,-28,62,-4,0.5,0.6,64,74,26,-57,-2,0.5,0.5,0.2,0.25,0.25,"));
+    //nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+
     // joint offset parameters for Bandit #4 (RAM-2010Mar25)
-    //nh.param( "~home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25,"));
-    //nh.param( "~direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    //nh.param( "home", homestring, std::string("17,0,-53,-81,-28,62,-4,0.5,0.6,59,75,26,-58,-2,0.5,0.5,0.2,0.25,0.25,"));
+    //nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    
 
     for( int i = 0; i < 19; i++ )
     {
