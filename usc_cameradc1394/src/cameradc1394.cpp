@@ -316,11 +316,11 @@ public:
    			int fmin = (int) DC1394_FEATURE_MIN;
 	      for( int i=(int) DC1394_FEATURE_MIN; i <= (int) DC1394_FEATURE_MAX; i++ )
   	    {
-          printf( "looking for feature: %s\n", dcam_features[i-fmin] );
+          //printf( "looking for feature: %s\n", dcam_features[i-fmin] );
     	    if( cam->hasFeature((dc1394feature_t) i) )
       	  {
         	  usc_cameradc1394::Param p;
-          	printf( "camera has feature: %s ", dcam_features[i-fmin] );
+          	ROS_INFO( "camera has feature: %s ", dcam_features[i-fmin] );
 	          // get bounds
   	        unsigned int min, max;
 	
@@ -389,7 +389,7 @@ public:
 
   	            p.min = min;
     	          p.max = max;
-      	        printf ("[%u,%u] ", min, max );
+      	        //printf ("[%u,%u] ", min, max );
         	      
           	    uint32_t val;
             	  cam->getFeatureValue( (dc1394feature_t) i, val );
@@ -412,7 +412,7 @@ public:
       	      }
 
             } // if min	            
-  	        printf( "\n" );
+  	        //printf( "\n" );
     	      // TODO: get auto
       	  } 
 	      }

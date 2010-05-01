@@ -97,6 +97,7 @@ dcam::init()
         throw DcamException(msg);
       }
       
+      //dc1394_reset_bus( camera );
       //usleep(500000);
 
       PRINTF("Initializing camera, turning off ISO");
@@ -113,7 +114,7 @@ dcam::init()
       throw DcamException("Could not initialize dc1394_context.  Make sure /dev/raw1394 exists and you have permissions to access.");
     }
 
-    usleep(500000);
+    //usleep(500000);
 
   }
 }
@@ -126,7 +127,6 @@ dcam::fini()
     dc1394_free((dc1394_t*)dcam::dcRef);
   }
 }
-
 
 size_t dcam::numCameras()
 {
