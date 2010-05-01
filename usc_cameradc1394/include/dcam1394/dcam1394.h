@@ -163,6 +163,7 @@ namespace dcam
 
   void init();			// initializes the bus
   void fini();			// releases the bus
+  void reset();
   size_t numCameras();		// number of cameras found
   uint64_t getGuid(size_t i);	// camera ids
   char *getVendor(size_t i);
@@ -174,6 +175,7 @@ namespace dcam
   {
     friend void init();
     friend void fini();
+    friend void reset();
     friend size_t numCams();
     friend uint64_t getGuid(size_t i);
     friend char *getVendor(size_t i);
