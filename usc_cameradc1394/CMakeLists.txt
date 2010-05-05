@@ -94,6 +94,8 @@ rosbuild_add_library(dcam1394 src/dcam1394/dcam1394.cpp src/dcam1394/image_proc.
 rosbuild_add_executable(imagescaler src/imagescaler.cpp)
 rosbuild_add_executable(cameradc1394 src/cameradc1394.cpp)
 rosbuild_add_executable(camera_param_gui camera_param_gui.cc )
+rosbuild_add_executable(stereo_synchronizer src/stereo_synchronizer.cc
+src/OSTFileReader.cc)
 target_link_libraries(cameradc1394 dc1394 dcam1394)
 
 # check for newer versions of opencv that support cvInitUndistortRectifyMap
