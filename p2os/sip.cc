@@ -62,10 +62,22 @@ void SIP::FillStandard(ros_p2os_data_t* data)
     pa = DTOR(this->angle);
   }
 	tf::poseTFToMsg(tf::Pose(tf::Quaternion(pa,0,0),tf::Vector3(px,py,0)),data->position.pose.pose);
+  data->position.header.frame_id = "odom";
+  data->position.child_frame_id = "base_link";
 
   // add rates
   data->position.twist.twist.linear.x = ((lvel + rvel) / 2) / 1e3;
   data->position.twist.twist.angular.z = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
+
+  //publish transform
+
+  data->odom_trans.header = data->position.header;
+  data->odom_trans.child_frame_id = data->position.child_frame_id;
+  data->odom_trans.transform.translation.x = px;
+  data->odom_trans.transform.translation.y = py;
+  data->odom_trans.transform.translation.z = 0;
+  data->odom_trans.transform.rotation = tf::createQuaternionMsgFromYaw(pa); 
+
 
   // battery
   data->batt.voltage = battery / 10.0;
