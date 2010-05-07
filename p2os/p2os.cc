@@ -178,7 +178,7 @@ P2OSNode::cmdvel_cb( const geometry_msgs::TwistConstPtr &msg)
   if( fabs( msg->linear.x - cmdvel_.linear.x ) > 0.01 || fabs( msg->angular.z-cmdvel_.angular.z) > 0.01 )
   {
     veltime = ros::Time::now();
-    ROS_INFO( "new speed: [%0.2f,%0.2f](%0.3f)", msg->linear.x*1e3, msg->angular.z, veltime.toSec() );
+    ROS_DEBUG( "new speed: [%0.2f,%0.2f](%0.3f)", msg->linear.x*1e3, msg->angular.z, veltime.toSec() );
     vel_dirty = true;
     cmdvel_ = *msg;
   }
@@ -187,7 +187,7 @@ P2OSNode::cmdvel_cb( const geometry_msgs::TwistConstPtr &msg)
     ros::Duration veldur = ros::Time::now() - veltime;
     if( veldur.toSec() > 2.0 && ((fabs(cmdvel_.linear.x) > 0.01) || (fabs(cmdvel_.angular.z) > 0.01)) )
     {
-      ROS_INFO( "maintaining old speed: %0.3f|%0.3f", veltime.toSec(), ros::Time::now().toSec() );
+      ROS_DEBUG( "maintaining old speed: %0.3f|%0.3f", veltime.toSec(), ros::Time::now().toSec() );
       vel_dirty = true;
       veltime = ros::Time::now();
     }
@@ -348,7 +348,7 @@ P2OSNode::Setup()
         usleep(P2OS_CYCLETIME_USEC);
         break;
       case AFTER_FIRST_SYNC:
-        ROS_INFO("turning off NONBLOCK mode...\n");
+        ROS_INFO("turning off NONBLOCK mode...");
         if(fcntl(this->psos_fd, F_SETFL, flags ^ O_NONBLOCK) < 0)
         {
           ROS_ERROR("P2OS::Setup():fcntl()");
@@ -366,7 +366,7 @@ P2OSNode::Setup()
         packet.Send(this->psos_fd);
         break;
       default:
-        puts("P2OS::Setup():shouldn't be here...");
+        ROS_WARN("P2OS::Setup():shouldn't be here...");
         break;
     }
     usleep(P2OS_CYCLETIME_USEC);
@@ -414,15 +414,15 @@ P2OSNode::Setup()
     switch(receivedpacket.packet[3])
     {
       case SYNC0:
-        ROS_INFO( "SYNC0\n" );
+        ROS_INFO( "SYNC0" );
         psos_state = AFTER_FIRST_SYNC;
         break;
       case SYNC1:
-        ROS_INFO( "SYNC1\n" );
+        ROS_INFO( "SYNC1" );
         psos_state = AFTER_SECOND_SYNC;
         break;
       case SYNC2:
-        ROS_INFO( "SYNC2\n" );
+        ROS_INFO( "SYNC2" );
         psos_state = READY;
         break;
       default:
@@ -430,7 +430,7 @@ P2OSNode::Setup()
         // and reconnect
         if(!sent_close)
         {
-          //puts("sending CLOSE");
+          ROS_DEBUG("sending CLOSE");
           command = CLOSE;
           packet.Build( &command, 1);
           packet.Send(this->psos_fd);
@@ -447,7 +447,7 @@ P2OSNode::Setup()
   {
     if(this->psos_use_tcp)
     ROS_INFO("Couldn't synchronize with P2OS.\n"
-           "  Most likely because the robot is not connected %s %s\n",
+           "  Most likely because the robot is not connected %s %s",
            this->psos_use_tcp ? "to the ethernet-serial bridge device " : "to the serial port",
            this->psos_use_tcp ? this->psos_tcp_host.c_str() : this->psos_serial_port.c_str());
     close(this->psos_fd);
@@ -471,7 +471,7 @@ P2OSNode::Setup()
   packet.Send(this->psos_fd);
   usleep(P2OS_CYCLETIME_USEC);
 
-  ROS_INFO("Done.\n   Connected to %s, a %s %s\n", name, type, subtype);
+  ROS_INFO("Done.\n   Connected to %s, a %s %s", name, type, subtype);
 
   // now, based on robot type, find the right set of parameters
   for(i=0;i<PLAYER_NUM_ROBOT_TYPES;i++)
@@ -485,13 +485,10 @@ P2OSNode::Setup()
   }
   if(i == PLAYER_NUM_ROBOT_TYPES)
   {
-    fputs("P2OS: Warning: couldn't find parameters for this robot; "
-            "using defaults\n",stderr);
+    ROS_WARN("P2OS: Warning: couldn't find parameters for this robot; "
+            "using defaults");
     param_idx = 0;
   }
-
-  ROS_INFO( "param_idx: [%d]\n", param_idx );
-
 
   //sleep(1);
 
@@ -672,7 +669,7 @@ P2OSNode::Shutdown()
 
   close(this->psos_fd);
   this->psos_fd = -1;
-  puts("P2OS has been shutdown");
+  ROS_INFO("P2OS has been shutdown");
   delete this->sippacket;
   this->sippacket = NULL;
 
