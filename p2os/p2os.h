@@ -91,15 +91,16 @@ class P2OSNode
     inline double SecsPerTicktoRadsPerSec (int joint, double secs);
 
     void SendPulse (void);
-    void spin();
-    void set_vel();
+    //void spin();
+    void check_and_set_vel();
     void cmdvel_cb( const geometry_msgs::TwistConstPtr &);
 
-    void set_motor_state();
+    void check_and_set_motor_state();
     void cmdmotor_state( const p2os::MotorStateConstPtr &);
 
-    void set_gripper_state();
+    void check_and_set_gripper_state();
     void gripperCallback(const p2os::GripperStateConstPtr &msg);
+    double get_pulse() {return pulse;}
 
   protected:
     ros::NodeHandle n;
