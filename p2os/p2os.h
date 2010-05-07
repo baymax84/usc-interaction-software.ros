@@ -35,6 +35,7 @@
 #include "ros/ros.h"
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
+#include <tf/transform_broadcaster.h>
 #include "p2os/BatteryState.h"
 #include "p2os/MotorState.h"
 #include "p2os/GripperState.h"
@@ -51,6 +52,7 @@ typedef struct ros_p2os_data
     p2os::SonarArray sonar;
     p2os::DIO dio;
     p2os::AIO aio;
+    geometry_msgs::TransformStamped odom_trans;
 } ros_p2os_data_t;
 
 // this is here because we need the above typedef's before including it.
@@ -105,7 +107,7 @@ class P2OSNode
     ros::Publisher pose_pub, batt_pub, mstate_pub, grip_state_pub_,
       ptz_state_pub_, sonar_pub_, aio_pub_, dio_pub_;
     ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_, ptz_cmd_sub_;
-
+    tf::TransformBroadcaster odom_broadcaster;
     ros::Time veltime;
 
     SIP* sippacket;

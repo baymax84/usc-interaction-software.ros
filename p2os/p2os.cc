@@ -30,6 +30,9 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
 
   p2os_data.position.header.stamp = ts;
   pose_pub.publish( p2os_data.position );
+  p2os_data.odom_trans.header.stamp = ts;
+  odom_broadcaster.sendTransform( p2os_data.odom_trans );
+
   batt_pub.publish( p2os_data.batt );
   mstate_pub.publish( p2os_data.motors );
 
