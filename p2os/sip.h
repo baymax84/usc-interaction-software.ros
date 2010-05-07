@@ -119,7 +119,6 @@ class SIP
             armNumJoints(0), armJoints(NULL),
             lastLiftPos(0.0f)
     {
-        printf( "sip param_idx: [%d]\n", param_idx );
         for (int i = 0; i < 6; ++i)
         {
             armJointMoving[i] = false;

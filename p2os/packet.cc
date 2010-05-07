@@ -53,7 +53,7 @@ bool P2OSPacket::Check() {
   short chksum;
   chksum = CalcChkSum();
 
-  if ( chksum == packet[size-2] << 8 | packet[size-1])
+  if ( (chksum == packet[size-2] << 8) | packet[size-1])
     return(true);
 
 

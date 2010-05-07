@@ -61,12 +61,19 @@ void SIP::FillStandard(ros_p2os_data_t* data)
     py += this->ypos / 1e3;
     pa = DTOR(this->angle);
   }
-	tf::poseTFToMsg(tf::Pose(tf::Quaternion(pa,0,0),tf::Vector3(px,py,0)),data->position.pose.pose);
+
+  // timestamps get set in the p2os::StandardSIPPutData fcn
   data->position.header.frame_id = "odom";
   data->position.child_frame_id = "base_link";
 
-  // add rates
+  data->position.pose.pose.position.x = px;
+  data->position.pose.pose.position.y = py;
+  data->position.pose.pose.position.z = 0.0;
+  data->position.pose.pose.orientation = tf::createQuaternionMsgFromYaw(pa);
+
+    // add rates
   data->position.twist.twist.linear.x = ((lvel + rvel) / 2) / 1e3;
+  data->position.twist.twist.linear.y = 0.0;
   data->position.twist.twist.angular.z = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
 
   //publish transform
