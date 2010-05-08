@@ -785,6 +785,7 @@ P2OSNode::ResetRawPositions()
     p2oscommand[1] = ARGINT;
     pkt.Build(p2oscommand, 2);
     this->SendReceive(&pkt,false);
+    ROS_INFO("resetting raw positions" );
   }
 }
 
