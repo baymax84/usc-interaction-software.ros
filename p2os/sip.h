@@ -112,7 +112,7 @@ class SIP
 
     SIP(int idx) :
             param_idx(idx), sonarreadings(0), sonars(NULL),
-            xpos(INT_MAX), ypos(INT_MAX),
+            xpos(0), ypos(0), x_offset(0), y_offset(0), angle_offset(0),
             blobmx(0), blobmy(0), blobx1(0), blobx2(0), bloby1(0), bloby2(0),
             blobarea(0), blobconf(0), blobcolor(0),
             armPowerOn(false), armConnected(false), armVersionString(NULL),

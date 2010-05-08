@@ -43,6 +43,8 @@ int main( int argc, char** argv )
     return -1;
   }
 
+  p->ResetRawPositions();
+
   ros::Time lastTime;
   
   while( ros::ok() )
@@ -56,7 +58,8 @@ int main( int argc, char** argv )
       ros::Time currentTime = ros::Time::now();
       ros::Duration pulseInterval = currentTime - lastTime;
       if( pulseInterval.toSec() > p->get_pulse() )
-      {
+      {	
+				ROS_DEBUG ("sending pulse" );
         p->SendPulse();
         lastTime = currentTime;
       }
