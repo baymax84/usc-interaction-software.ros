@@ -105,9 +105,11 @@ int main( int argc, char* argv[] )
 {
   ros::init( argc, argv, "checkerboard" );
   ros::NodeHandle nh;
+	ros::NodeHandle nh_priv("~");
   tb = new tf::TransformBroadcaster();
-	nh.param("frame_id", camera_frame, std::string("camera") );
-	nh.param("child_frame_id", checkerboard_frame,std::string("checkerboard"));
+	nh_priv.param("frame_id", camera_frame, std::string("camera") );
+	nh_priv.param("child_frame_id", checkerboard_frame,std::string("checkerboard"));
+	ROS_INFO( "%s ==> %s", camera_frame.c_str(), checkerboard_frame.c_str() );
   image_transport::ImageTransport it(nh);
   image_transport::CameraSubscriber image_sub = it.subscribeCamera("image", 1, image_cb );
 
