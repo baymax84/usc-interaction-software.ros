@@ -82,13 +82,12 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
       
       tf::Transform checktf;
       checktf.setOrigin( tf::Vector3(tvec.at<double>(0,0),tvec.at<double>(0,1), tvec.at<double>(0,2) ) );
-			tf::Quaternion quat;
-			quat.setEuler(-rvec.at<double>(0,2), -rvec.at<double>(0,1), -rvec.at<double>(0,0)-M_PI );
-      checktf.setRotation( quat );
+
+			checktf.setRotation( tf::Quaternion(rvec.at<double>(0,2), rvec.at<double>(0,1), rvec.at<double>(0,0)+M_PI ));
       tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, camera_frame, checkerboard_frame ));
       checktf.setOrigin( tf::Vector3(0,0, tvec.at<double>(0,2) ) );
       //checktf.setRotation( tf::Quaternion( -rvec.at<double>(0,2), -rvec.at<double>(0,1),  -rvec.at<double>(0,0) ));
-      tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, "/ovh_height", "/ovh" ));
+      tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, camera_frame, "/ovh" ));
     }
  }
   catch( sensor_msgs::CvBridgeException cvbe )
