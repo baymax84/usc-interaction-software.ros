@@ -1,7 +1,7 @@
 <package>
   <description brief="checkerboard_detector">
 
-     checkerboard_detector
+     checkerboard_detector node that finds a NxM checkerboard in an image, and uses a corresponding camera_info message to return a transform to that checkerboard from the camera frame
 
   </description>
   <author>David Feil-Seifer (dfseifer@usc.edu)</author>
@@ -14,11 +14,5 @@
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>
   <depend package="tf"/>
-  <depend package="overhead"/>
 </package>
-
-
-
-
-
 

@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b checkerboard_detector is ... 
+\b checkerboard_detector finds a NxM checkerboard in an image and using a camera_info publishes a transform from the camera frame to the checkerboard
 
 <!-- 
 Provide an overview of your package.
