@@ -32,7 +32,7 @@
 sensor_msgs::CvBridge img_bridge;
 tf::TransformBroadcaster* tb;
 
-std::string camera_frame, checkerboard_frame;
+std::string checkerboard_frame;
 
 int nx = 8;
 int ny = 6;
@@ -61,6 +61,7 @@ std::vector<cv::Point3f> getObjPoints( int x, int y, double size )
 
 void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraInfoConstPtr& infomsg )
 {
+	ROS_INFO("entering image_cb");
   cv::Mat img;
   try
   {
@@ -84,14 +85,14 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
       checktf.setOrigin( tf::Vector3(tvec.at<double>(0,0),tvec.at<double>(0,1), tvec.at<double>(0,2) ) );
 
 			checktf.setRotation( tf::Quaternion(rvec.at<double>(0,2), rvec.at<double>(0,1), rvec.at<double>(0,0)+M_PI ));
-      tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, camera_frame, checkerboard_frame ));
-      checktf.setOrigin( tf::Vector3(0,0, tvec.at<double>(0,2) ) );
-      //checktf.setRotation( tf::Quaternion( -rvec.at<double>(0,2), -rvec.at<double>(0,1),  -rvec.at<double>(0,0) ));
-      tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, camera_frame, "/ovh" ));
+			
+      tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, msg->header.frame_id, checkerboard_frame ));
+      ROS_INFO("published frame");
     }
  }
   catch( sensor_msgs::CvBridgeException cvbe )
   {
+  	ROS_INFO( "failed" );
     ROS_WARN( "cv_bridge could not get Mat from Image Msg: %s", cvbe.what() );
   }
 
@@ -106,12 +107,10 @@ int main( int argc, char* argv[] )
   ros::NodeHandle nh;
 	ros::NodeHandle nh_priv("~");
   tb = new tf::TransformBroadcaster();
-	nh_priv.param("frame_id", camera_frame, std::string("camera") );
 	nh_priv.param("child_frame_id", checkerboard_frame,std::string("checkerboard"));
-	ROS_INFO( "%s ==> %s", camera_frame.c_str(), checkerboard_frame.c_str() );
   image_transport::ImageTransport it(nh);
   image_transport::CameraSubscriber image_sub = it.subscribeCamera("image", 1, image_cb );
-
+	ROS_INFO("getting ready to spin");
   ros::spin();
   return 0;
 
