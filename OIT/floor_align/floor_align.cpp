@@ -30,7 +30,6 @@ tf::TransformBroadcaster * tb;
 tf::StampedTransform * raw_frame;
 tf::Transform * filtered_frame;
 tf::Transform * floor_norm_to_cam;
-tf::Transform * cam_to_ovh;
 
 ros::Rate * loop_rate;
 
@@ -106,7 +105,6 @@ int main( int argc, char* argv[] )
 	
 	//publishing these
 	floor_norm_to_cam = new tf::Transform;
-	cam_to_ovh = new tf::Transform;
 	
 	//calculating these (temp use)
 	filtered_frame = new tf::Transform;
