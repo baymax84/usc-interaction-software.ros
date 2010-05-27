@@ -1,5 +1,5 @@
 <package>
-  <description brief="p2os">
+  <description brief="p2os_driver">
      P2OS driver for ros
   </description>
   <author>dfseifer@usc.edu</author>
