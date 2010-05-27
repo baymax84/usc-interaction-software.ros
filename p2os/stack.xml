@@ -1,0 +1,13 @@
+<stack>
+	<description brief="P2OS/ARCOS device support">
+		This stack provides the p2os driver supporting any robot that uses either P2OS or ARCOS firmware. This stack also includes urdf definitions for visualization and examples to control the robot.
+
+	</description>
+	<author>Maintained by David Feil-Seifer (dfseifer@usc.edu)</author>
+	<license>GPLv2</license>
+	<review statues="unreviewed"/>
+	<url></url>
+	<depend stack="common_msgs"/>
+	<depend stack="robot_model"/>
+	<depend stack="geometry"/>
+</stack>
