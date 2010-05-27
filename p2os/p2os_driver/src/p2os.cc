@@ -21,8 +21,8 @@
  *
  */
 
-#include "ros/ros.h"
-#include "p2os.h"
+#include <ros/ros.h>
+#include <p2os_driver/p2os.h>
 
 #include <termios.h>
 #include <fcntl.h>
@@ -89,13 +89,13 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
 
   // advertise services
   pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
-  batt_pub = n.advertise<p2os::BatteryState>("battery_state",1000);
-  mstate_pub = n.advertise<p2os::MotorState>("motor_state",1000);
-  grip_state_pub_ = n.advertise<p2os::GripperState>("gripper_state",1000);
-  ptz_state_pub_ = n.advertise<p2os::PTZState>("ptz_state",1000);
-  sonar_pub_ = n.advertise<p2os::SonarArray>("sonar", 1000);
-  aio_pub_ = n.advertise<p2os::AIO>("aio", 1000);
-  dio_pub_ = n.advertise<p2os::DIO>("dio", 1000);
+  batt_pub = n.advertise<p2os_driver::BatteryState>("battery_state",1000);
+  mstate_pub = n.advertise<p2os_driver::MotorState>("motor_state",1000);
+  grip_state_pub_ = n.advertise<p2os_driver::GripperState>("gripper_state",1000);
+  ptz_state_pub_ = n.advertise<p2os_driver::PTZState>("ptz_state",1000);
+  sonar_pub_ = n.advertise<p2os_driver::SonarArray>("sonar", 1000);
+  aio_pub_ = n.advertise<p2os_driver::AIO>("aio", 1000);
+  dio_pub_ = n.advertise<p2os_driver::DIO>("dio", 1000);
 
   // subscribe to services
   cmdvel_sub = n.subscribe("cmd_vel", 1, &P2OSNode::cmdvel_cb, this);
@@ -116,7 +116,7 @@ P2OSNode::~P2OSNode()
 }
 
 void
-P2OSNode::cmdmotor_state( const p2os::MotorStateConstPtr &msg)
+P2OSNode::cmdmotor_state( const p2os_driver::MotorStateConstPtr &msg)
 {
   motor_dirty = true;
   cmdmotor_state_ = *msg;
@@ -253,7 +253,7 @@ P2OSNode::check_and_set_vel()
   }
 }
 
-void P2OSNode::gripperCallback(const p2os::GripperStateConstPtr &msg)
+void P2OSNode::gripperCallback(const p2os_driver::GripperStateConstPtr &msg)
 {
   gripper_dirty_ = true;
   gripper_state_ = *msg;

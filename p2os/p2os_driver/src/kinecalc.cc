@@ -22,7 +22,7 @@
  */
 
 
-#include "kinecalc.h"
+#include <p2os_driver/kinecalc.h>
 
 #include <math.h>
 

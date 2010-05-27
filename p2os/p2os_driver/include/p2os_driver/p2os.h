@@ -36,22 +36,22 @@
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
 #include <tf/transform_broadcaster.h>
-#include "p2os/BatteryState.h"
-#include "p2os/MotorState.h"
-#include "p2os/GripperState.h"
-#include "p2os/SonarArray.h"
-#include "p2os/DIO.h"
-#include "p2os/AIO.h"
+#include <p2os_driver/BatteryState.h>
+#include <p2os_driver/MotorState.h>
+#include <p2os_driver/GripperState.h>
+#include <p2os_driver/SonarArray.h>
+#include <p2os_driver/DIO.h>
+#include <p2os_driver/AIO.h>
 
 typedef struct ros_p2os_data
 {
     nav_msgs::Odometry  position;
-    p2os::BatteryState batt;
-    p2os::MotorState motors;
-    p2os::GripperState gripper;
-    p2os::SonarArray sonar;
-    p2os::DIO dio;
-    p2os::AIO aio;
+    p2os_driver::BatteryState batt;
+    p2os_driver::MotorState motors;
+    p2os_driver::GripperState gripper;
+    p2os_driver::SonarArray sonar;
+    p2os_driver::DIO dio;
+    p2os_driver::AIO aio;
     geometry_msgs::TransformStamped odom_trans;
 } ros_p2os_data_t;
 
@@ -96,10 +96,10 @@ class P2OSNode
     void cmdvel_cb( const geometry_msgs::TwistConstPtr &);
 
     void check_and_set_motor_state();
-    void cmdmotor_state( const p2os::MotorStateConstPtr &);
+    void cmdmotor_state( const p2os_driver::MotorStateConstPtr &);
 
     void check_and_set_gripper_state();
-    void gripperCallback(const p2os::GripperStateConstPtr &msg);
+    void gripperCallback(const p2os_driver::GripperStateConstPtr &msg);
     double get_pulse() {return pulse;}
 
   protected:
@@ -140,8 +140,8 @@ class P2OSNode
 
   public:
     geometry_msgs::Twist cmdvel_;
-    p2os::MotorState    cmdmotor_state_;
-    p2os::GripperState gripper_state_;
+    p2os_driver::MotorState    cmdmotor_state_;
+    p2os_driver::GripperState gripper_state_;
     ros_p2os_data_t p2os_data;
 };
 

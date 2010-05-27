@@ -24,10 +24,10 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#include "packet.h"
+#include <p2os_driver/packet.h>
 #include <unistd.h>
 #include <stdlib.h> /* for exit() */
-#include "ros/ros.h"
+#include <ros/ros.h>
 void P2OSPacket::Print() {
   if (packet) {
     ROS_INFO("\"");
