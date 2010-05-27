@@ -11,5 +11,4 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 rosbuild_genmsg()
-rosbuild_add_executable(p2os p2osnode.cc p2os.cc kinecalc.cc packet.cc
-robot_params.cc sip.cc p2os_ptz.h p2os_ptz.cpp)
+rosbuild_add_executable(p2os src/p2osnode.cc src/p2os.cc src/kinecalc.cc src/packet.cc src/robot_params.cc src/sip.cc src/p2os_ptz.cpp)
