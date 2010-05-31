@@ -59,7 +59,7 @@
 
 #ifndef _ROBOT_PARAMS_H
 #define _ROBOT_PARAMS_H
-
+#include <string>
 
 void initialize_robot_params(void);
 
@@ -250,7 +250,7 @@ typedef struct
 typedef struct
 {
   double AngleConvFactor; //
-  char* Class;
+  std::string Class;
   double DiffConvFactor; //
   double DistConvFactor; //
   int FrontBumpers; //
@@ -260,8 +260,8 @@ typedef struct
   int IRNum; //
   int IRUnit; //
   int LaserFlipped; //
-  char* LaserIgnore;
-  char* LaserPort;
+  std::string LaserIgnore;
+  std::string LaserPort;
   int LaserPossessed; //
   int LaserPowerControlled; //
   int LaserTh; //
@@ -286,7 +286,7 @@ typedef struct
   int SettableAccsDecs; //
   int SettableVelMaxes; //
   int SonarNum; //
-  char* Subclass;
+  std::string Subclass;
   int SwitchToBaudRate; //
   int TableSensingIR; //
   int TransAccel; //

@@ -476,8 +476,8 @@ P2OSNode::Setup()
   // now, based on robot type, find the right set of parameters
   for(i=0;i<PLAYER_NUM_ROBOT_TYPES;i++)
   {
-    if(!strcasecmp(PlayerRobotParams[i].Class,type) &&
-       !strcasecmp(PlayerRobotParams[i].Subclass,subtype))
+    if(!strcasecmp(PlayerRobotParams[i].Class.c_str(),type) &&
+       !strcasecmp(PlayerRobotParams[i].Subclass.c_str(),subtype))
     {
       param_idx = i;
       break;
