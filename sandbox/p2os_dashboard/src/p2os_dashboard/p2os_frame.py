@@ -41,8 +41,9 @@ import rxtools.cppwidgets as rxtools
 
 import robot_monitor
 from robot_monitor.robot_monitor_panel import RobotMonitorPanel
-from pr2_msgs.msg import PowerState, PowerBoardState, DashboardState
-from pr2_power_board.srv import PowerBoardCommand, PowerBoardCommandRequest
+from p2os_driver.msg import BatteryState, MotorState
+#from pr2_msgs.msg import PowerState, PowerBoardState, DashboardState
+#from pr2_power_board.srv import PowerBoardCommand, PowerBoardCommandRequest
 import std_msgs.msg
 import std_srvs.srv
 
@@ -53,10 +54,12 @@ from os import path
 import threading
 
 from status_control import StatusControl
-#from breaker_control import BreakerControl
-from power_state_control import PowerStateControl
-from diagnostics_frame import DiagnosticsFrame
 from rosout_frame import RosoutFrame
+
+from power_state_control import PowerStateControl
+
+#from breaker_control import BreakerControl
+#from diagnostics_frame import DiagnosticsFrame
 
 class P2OSFrame(wx.Frame):
     _CONFIG_WINDOW_X="/Window/X"
@@ -66,6 +69,13 @@ class P2OSFrame(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, pos, size, style)
         
         wx.InitAllImageHandlers()
+
+        self.motorStatePub = rospy.Publisher('cmd_motor_state', MotorState)
+        self.motorStateSub = rospy.Subscriber("cmd_motor_state", MotorState, self.motorStateCallback)
+
+        self.battStateSub = rospy.Subscriber("battery_state", BatteryState, self.battStateCallback)
+
+        self.motorState = 0
         
         rospy.init_node('p2os_dashboard', anonymous=True)
         try:
@@ -85,9 +95,9 @@ class P2OSFrame(wx.Frame):
         sizer.Add(static_sizer, 0)
         
         # Diagnostics
-        self._diagnostics_button = StatusControl(self, wx.ID_ANY, icons_path, "diag", True)
-        self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics"))
-        static_sizer.Add(self._diagnostics_button, 0)
+#        self._diagnostics_button = StatusControl(self, wx.ID_ANY, icons_path, "diag", True)
+#        self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics"))
+#        static_sizer.Add(self._diagnostics_button, 0)
         
         # Rosout
         self._rosout_button = StatusControl(self, wx.ID_ANY, icons_path, "rosout", True)
@@ -112,19 +122,19 @@ class P2OSFrame(wx.Frame):
         #  self._breaker_ctrls.append(ctrl)
         #  static_sizer.Add(ctrl, 0)
         
-        static_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Runstops"), wx.HORIZONTAL)
-        sizer.Add(static_sizer, 0)
+#        static_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Runstops"), wx.HORIZONTAL)
+#        sizer.Add(static_sizer, 0)
         
         # run-stop
-        self._runstop_ctrl = StatusControl(self, wx.ID_ANY, icons_path, "runstop", False)
-        self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: Unknown"))
-        static_sizer.Add(self._runstop_ctrl, 0)
+#        self._runstop_ctrl = StatusControl(self, wx.ID_ANY, icons_path, "runstop", False)
+#        self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: Unknown"))
+#        static_sizer.Add(self._runstop_ctrl, 0)
         
         # Wireless run-stop
-        #self._wireless_runstop_ctrl = StatusControl(self, wx.ID_ANY, icons_path, "runstop-wireless", False)
-        #self._wireless_runstop_ctrl.SetToolTip(wx.ToolTip("Wireless Runstop: Unknown"))
-        #static_sizer.Add(self._wireless_runstop_ctrl, 0)
-        
+#        self._wireless_runstop_ctrl = StatusControl(self, wx.ID_ANY, icons_path, "runstop-wireless", False)
+#        self._wireless_runstop_ctrl.SetToolTip(wx.ToolTip("Wireless Runstop: Unknown"))
+#        static_sizer.Add(self._wireless_runstop_ctrl, 0)
+#        
         static_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Battery"), wx.HORIZONTAL)
         sizer.Add(static_sizer, 0)
         
@@ -140,11 +150,11 @@ class P2OSFrame(wx.Frame):
         self.Layout()
         self.Fit()
         
-        self._diagnostics_frame = DiagnosticsFrame(self, wx.ID_ANY, "Diagnostics")
-        self._diagnostics_frame.Hide()
-        self._diagnostics_frame.Center()
-        self._diagnostics_button.Bind(wx.EVT_BUTTON, self.on_diagnostics_clicked)
-        
+#        self._diagnostics_frame = DiagnosticsFrame(self, wx.ID_ANY, "Diagnostics")
+#        self._diagnostics_frame.Hide()
+#        self._diagnostics_frame.Center()
+#        self._diagnostics_button.Bind(wx.EVT_BUTTON, self.on_diagnostics_clicked)
+#        
         self._rosout_frame = RosoutFrame(self, wx.ID_ANY, "Rosout")
         self._rosout_frame.Hide()
         self._rosout_frame.Center()
@@ -154,51 +164,67 @@ class P2OSFrame(wx.Frame):
         
         self._timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.on_timer)
-        self._timer.Start(500)
+        self._timer.Start(1000)
     
-        self._dashboard_agg_sub = rospy.Subscriber('dashboard_agg', DashboardState, self.dashboard_callback)
+#        self._dashboard_agg_sub = rospy.Subscriber('dashboard_agg', DashboardState, self.dashboard_callback)
         
         self._dashboard_message = None
         self._last_dashboard_message_time = 0.0
         
     def __del__(self):
         self._dashboard_agg_sub.unregister()
-        
+
+    def battStateCallback(self, msg):
+		self._power_state_ctrl.set_power_state(msg)
+
+    def motorStateCallback(self, msg):
+		self.motorState = msg.state
+
+		if(self.motorState):
+			self._motors_button.set_ok()
+			self._motors_button.SetToolTip(wx.ToolTip("Motors: Running"))
+		else:
+			self._motors_button.set_error()
+			self._motors_button.SetToolTip(wx.ToolTip("Motors: Halted"))
+
     def on_timer(self, evt):
-      level = self._diagnostics_frame._diagnostics_panel.get_top_level_state()
-      if (level == -1 or level == 3):
-        if (self._diagnostics_button.set_stale()):
-            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Stale"))
-      elif (level >= 2):
-        if (self._diagnostics_button.set_error()):
-            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Error"))
-      elif (level == 1):
-        if (self._diagnostics_button.set_warn()):
-            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Warning"))
-      else:
-        if (self._diagnostics_button.set_ok()):
-            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: OK"))
-        
+#      print "timer tick\n"
+#      level = self._diagnostics_frame._diagnostics_panel.get_top_level_state()
+#      if (level == -1 or level == 3):
+#        if (self._diagnostics_button.set_stale()):
+#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Stale"))
+#      elif (level >= 2):
+#        if (self._diagnostics_button.set_error()):
+#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Error"))
+#      elif (level == 1):
+#        if (self._diagnostics_button.set_warn()):
+#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Warning"))
+#      else:
+#        if (self._diagnostics_button.set_ok()):
+#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: OK"))
+#        
       self.update_rosout()
-      
-      if (rospy.get_time() - self._last_dashboard_message_time > 5.0):
-          self._motors_button.set_stale()
-          self._power_state_ctrl.set_stale()
-          #[ctrl.reset() for ctrl in self._breaker_ctrls]
-          self._runstop_ctrl.set_stale()
-          #self._wireless_runstop_ctrl.set_stale()
-          ctrls = [self._motors_button, self._power_state_ctrl, self._runstop_ctrl]
-          #ctrls.extend(self._breaker_ctrls)
-          for ctrl in ctrls:
-              ctrl.SetToolTip(wx.ToolTip("No message received on dashboard_agg in the last 5 seconds"))
-        
+      self._power_state_ctrl.updateToolTip()
+#      
+#      if (rospy.get_time() - self._last_dashboard_message_time > 5.0):
+#          self._motors_button.set_stale()
+#          self._power_state_ctrl.set_stale()
+#          #[ctrl.reset() for ctrl in self._breaker_ctrls]
+#          self._runstop_ctrl.set_stale()
+#          #self._wireless_runstop_ctrl.set_stale()
+#          ctrls = [self._motors_button, self._power_state_ctrl, self._runstop_ctrl]
+#          ctrls = [self._power_state_ctrl]
+#          #ctrls.extend(self._breaker_ctrls)
+#          for ctrl in ctrls:
+#              ctrl.SetToolTip(wx.ToolTip("No message received on dashboard_agg in the last 5 seconds"))
+#        
       if (rospy.is_shutdown()):
         self.Close()
         
-    def on_diagnostics_clicked(self, evt):
-      self._diagnostics_frame.Show()
-      self._diagnostics_frame.Raise()
-      
+#    def on_diagnostics_clicked(self, evt):
+#      self._diagnostics_frame.Show()
+#      self._diagnostics_frame.Raise()
+		
     def on_rosout_clicked(self, evt):
       self._rosout_frame.Show()
       self._rosout_frame.Raise()
@@ -219,58 +245,58 @@ class P2OSFrame(wx.Frame):
       #        if (wx.MessageBox("Resetting the motors may not work because not all breakers are enabled.  Enable all the breakers first?", "Enable Breakers?", wx.YES_NO|wx.ICON_QUESTION, self) == wx.YES):
       #            [breaker.set_enable() for breaker in self._breaker_ctrls]
         
-      reset = rospy.ServiceProxy("p2os_etherCAT/reset_motors", std_srvs.srv.Empty)
+      self.motorStatePub.publish(MotorState(1))
        
-      try:
-        reset()
-      except rospy.ServiceException, e:
-        wx.MessageBox("Failed to reset the motors: service call failed with error: %s"%(e), "Error", wx.OK|wx.ICON_ERROR)
+#      try:
+#        reset()
+#      except rospy.ServiceException, e:
+#        wx.MessageBox("Failed to reset the motors: service call failed with error: %s"%(e), "Error", wx.OK|wx.ICON_ERROR)
     
     def on_halt_motors(self, evt):
-      halt = rospy.ServiceProxy("p2os_etherCAT/halt_motors", std_srvs.srv.Empty)
+      self.motorStatePub.publish(MotorState(0))
        
-      try:
-        halt()
-      except rospy.ServiceException, e:
-        wx.MessageBox("Failed to halt the motors: service call failed with error: %s"%(e), "Error", wx.OK|wx.ICON_ERROR)
+#      try:
+#        halt()
+#      except rospy.ServiceException, e:
+#        wx.MessageBox("Failed to halt the motors: service call failed with error: %s"%(e), "Error", wx.OK|wx.ICON_ERROR)
       
-    def dashboard_callback(self, msg):
-      wx.CallAfter(self.new_dashboard_message, msg)
+#    def dashboard_callback(self, msg):
+#      wx.CallAfter(self.new_dashboard_message, msg)
       
-    def new_dashboard_message(self, msg):
-      self._dashboard_message = msg
-      self._last_dashboard_message_time = rospy.get_time()
-      
-      if (msg.motors_halted_valid):
-        if (not msg.motors_halted.data):
-          if (self._motors_button.set_ok()):
-              self._motors_button.SetToolTip(wx.ToolTip("Motors: Running"))
-        else:
-          if (self._motors_button.set_error()):
-              self._motors_button.SetToolTip(wx.ToolTip("Motors: Halted"))
-      else:
-          if (self._motors_button.set_stale()):
-              self._motors_button.SetToolTip(wx.ToolTip("Motors: Stale"))
-          
-      if (msg.power_state_valid):
-        self._power_state_ctrl.set_power_state(msg.power_state)
-      else:
-        self._power_state_ctrl.set_stale()
-      
-      if (msg.power_board_state_valid):
-      #  [ctrl.set_power_board_state_msg(msg.power_board_state) for ctrl in self._breaker_ctrls]
-        
-        if (not msg.power_board_state.run_stop):
-          # if the wireless stop is also off, we can't tell if the runstop is pressed or not
-          #if (not msg.power_board_state.wireless_stop):
-          #  if (self._runstop_ctrl.set_warn()):
-          #      self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: Unknown (Wireless is Pressed)"))
-          #else:
-          if (self._runstop_ctrl.set_error()):
-              self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: Pressed"))
-        else:          
-          if (self._runstop_ctrl.set_ok()):
-              self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: OK"))
+#    def new_dashboard_message(self, msg):
+#      self._dashboard_message = msg
+#      self._last_dashboard_message_time = rospy.get_time()
+#      
+#      if (msg.motors_halted_valid):
+#        if (not msg.motors_halted.data):
+#          if (self._motors_button.set_ok()):
+#              self._motors_button.SetToolTip(wx.ToolTip("Motors: Running"))
+#        else:
+#          if (self._motors_button.set_error()):
+#              self._motors_button.SetToolTip(wx.ToolTip("Motors: Halted"))
+#      else:
+#          if (self._motors_button.set_stale()):
+#              self._motors_button.SetToolTip(wx.ToolTip("Motors: Stale"))
+#          
+#**      if (msg.power_state_valid):
+#**        self._power_state_ctrl.set_power_state(msg.power_state)
+#**      else:
+#**        self._power_state_ctrl.set_stale()
+#      
+#      if (msg.power_board_state_valid):
+#      #  [ctrl.set_power_board_state_msg(msg.power_board_state) for ctrl in self._breaker_ctrls]
+#        
+#        if (not msg.power_board_state.run_stop):
+#          # if the wireless stop is also off, we can't tell if the runstop is pressed or not
+#          #if (not msg.power_board_state.wireless_stop):
+#          #  if (self._runstop_ctrl.set_warn()):
+#          #      self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: Unknown (Wireless is Pressed)"))
+#          #else:
+#          if (self._runstop_ctrl.set_error()):
+#              self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: Pressed"))
+#        else:          
+#          if (self._runstop_ctrl.set_ok()):
+#              self._runstop_ctrl.SetToolTip(wx.ToolTip("Physical Runstop: OK"))
           
         #if (not msg.power_board_state.wireless_stop):
         #  if (self._wireless_runstop_ctrl.set_error()):
@@ -347,6 +373,5 @@ class P2OSFrame(wx.Frame):
         
     def on_close(self, event):
       self.save_config()
-      
       self.Destroy()
       

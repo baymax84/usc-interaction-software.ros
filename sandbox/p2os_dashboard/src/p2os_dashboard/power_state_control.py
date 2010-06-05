@@ -35,8 +35,8 @@ roslib.load_manifest('p2os_dashboard')
 
 import wx
 
-from pr2_msgs.msg import PowerState, PowerBoardState
-from pr2_power_board.srv import PowerBoardCommand, PowerBoardCommandRequest
+#from pr2_msgs.msg import PowerState, PowerBoardState
+#from pr2_power_board.srv import PowerBoardCommand, PowerBoardCommandRequest
 
 from os import path
 
@@ -44,10 +44,8 @@ class PowerStateControl(wx.Window):
   def __init__(self, parent, id, icons_path):
     wx.Window.__init__(self, parent, id, wx.DefaultPosition, wx.Size(60, 32))
     
-    self._power_consumption = 0.0
     self._pct = 0
-    self._time_remaining = roslib.rostime.Duration(0)
-    self._ac_present = 0
+    self._vlt = 0
     
     self._left_bitmap = wx.Bitmap(path.join(icons_path, "battery-minus.png"), wx.BITMAP_TYPE_PNG)
     self._right_bitmap = wx.Bitmap(path.join(icons_path, "battery-plus.png"), wx.BITMAP_TYPE_PNG)
@@ -93,28 +91,44 @@ class PowerStateControl(wx.Window):
     dc.DrawBitmap(self._left_bitmap, 0, 0, True)
     dc.DrawBitmap(self._right_bitmap, self._end_x, 0, True)
     
-    if (self._plugged_in):
-      dc.DrawBitmap(self._plug_bitmap, 
-                    (self._start_x + self._width) / 2.0 - (self._plug_bitmap.GetWidth() / 2.0), 
-                    self.GetSize().GetHeight() / 2.0 - (self._plug_bitmap.GetHeight() / 2.0))
+#    if (self._plugged_in):
+#      dc.DrawBitmap(self._plug_bitmap, 
+#                    (self._start_x + self._width) / 2.0 - (self._plug_bitmap.GetWidth() / 2.0), 
+#                    self.GetSize().GetHeight() / 2.0 - (self._plug_bitmap.GetHeight() / 2.0))
       
       
   def set_power_state(self, msg):
-    last_pct = self._pct
-    last_plugged_in = self._plugged_in
-    last_time_remaining = self._time_remaining
+	last_pct = self._pct
+	last_vlt = self._vlt
+	last_plugged_in = self._plugged_in
+#    last_time_remaining = self._time_remaining
       
-    self._power_consumption = msg.power_consumption
-    self._time_remaining = msg.time_remaining
-    self._pct = msg.relative_capacity / 100.0
-    self._plugged_in = msg.AC_present
+#    self._power_consumption = 0 #msg.power_consumption
+#    self._time_remaining = 10 #msg.time_remaining
+	self._pct = (msg.voltage - 11.3) / 2.2 #msg.relative_capacity / 100.0
+	if self._pct > 1.0:
+		self._pct = 1.0
+	
+	if self._pct < 0.0:
+		self._pct = 0.0
+	self._vlt = msg.voltage
+#	print "Battery: %.2f%% (%.2f v)"%(self._pct * 100.0, msg.voltage)
+#	self.SetToolTip(wx.ToolTip("Not Stale"))
+#	self.SetToolTip(wx.ToolTip("Battery: %.2f%% (%.2f v)"%(self._pct * 100.0, msg.voltage)))
+	self.Refresh()
     
-    if (last_pct != self._pct or last_plugged_in != self._plugged_in or last_time_remaining != self._time_remaining):
-        drain_str = "remaining"
-        if (self._plugged_in):
-            drain_str = "to full charge"
-        self.SetToolTip(wx.ToolTip("Battery: %.2f%% (%d minutes %s)"%(self._pct * 100.0, self._time_remaining.to_sec()/60.0, drain_str)))
-        self.Refresh()
+#    self._plugged_in = false #msg.AC_present
+    
+#    if (last_pct != self._pct or last_plugged_in != self._plugged_in or last_time_remaining != self._time_remaining):
+#        drain_str = "remaining"
+#        if (self._plugged_in):
+#            drain_str = "to full charge"
+#        self.SetToolTip(wx.ToolTip("Battery: %.2f%% (%d minutes %s)"%(self._pct * 100.0, self._time_remaining.to_sec()/60.0, drain_str)))
+#        self.Refresh()
+  def updateToolTip(self):
+	self.SetToolTip(wx.ToolTip("Battery: %.2f%% (%.2f v)"%(self._pct * 100.0, self._vlt)))
+	self.Refresh()
+
     
   def set_stale(self):
     self._plugged_in = 0
