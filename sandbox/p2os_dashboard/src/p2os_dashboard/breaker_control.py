@@ -36,8 +36,8 @@ roslib.load_manifest('p2os_dashboard')
 import wx
 import rospy
 
-from pr2_msgs.msg import PowerState, PowerBoardState
-from pr2_power_board.srv import PowerBoardCommand, PowerBoardCommandRequest
+#from pr2_msgs.msg import PowerState, PowerBoardState
+#from pr2_power_board.srv import PowerBoardCommand, PowerBoardCommandRequest
 
 from status_control import StatusControl
 
