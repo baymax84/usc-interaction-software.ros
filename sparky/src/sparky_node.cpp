@@ -109,7 +109,8 @@ int main(int argc, char** argv)
                                     "sparky_params", paramsCallback);
 
   //
-  while (nh.ok()) ros::spin();
+  bool running = init_servo_controller();
+  while ((running) && (nh.ok())) ros::spin();
 
   // exit program
   shutdown_servo_controller();
@@ -175,11 +176,12 @@ bool initParams()
 
 bool init_servo_controller()
 {
-
+    ROS_INFO("Initializing servo controller...");
     if ( ! g_sparky.open() ) {
-        std::cout << "Unable to open controller, exiting" <<  std::endl;
+        ROS_ERROR("Unable to open controller, exiting");
         return false;
     }
+    ROS_INFO("Servo controller initialized successfully!");
 
     // success
     return true;
@@ -199,6 +201,8 @@ bool init_servo_controller()
 
 void shutdown_servo_controller()
 {
+    ROS_INFO("Shutting down servo controller...");
+
     // move to home (mid stroke)
     g_sparky . moveHome();
 
@@ -210,6 +214,7 @@ void shutdown_servo_controller()
 
     // close (the close would be done automatically anyway by the dtor)
     g_sparky.close();
+    ROS_INFO("Servo controller shut down successfully!");
 }
 
 
