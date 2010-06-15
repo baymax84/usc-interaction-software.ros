@@ -177,7 +177,7 @@ class P2OSFrame(wx.Frame):
       
       if (rospy.Time.now() > self.battery_msg_last_time + rospy.Duration(5.0)):
 		  #battery msg status is stale
-		  print "setting battery to stale"
+		  #print "setting battery to stale"
 		  self._power_state_ctrl.set_stale()
       
       self.update_rosout()
