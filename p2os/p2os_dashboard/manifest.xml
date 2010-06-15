@@ -14,7 +14,6 @@
     <depend package="roslib"/>
     <depend package="std_srvs"/>
     <depend package="std_msgs"/>
-    <depend package="power_monitor"/>
     <depend package="p2os_driver"/>    
   <rosdep name="wxwidgets"/>
   <rosdep name="wxpython"/>
