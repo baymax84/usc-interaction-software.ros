@@ -14,12 +14,8 @@
     <depend package="roslib"/>
     <depend package="std_srvs"/>
     <depend package="std_msgs"/>
-    <depend package="ocean_battery_driver"/>
     <depend package="power_monitor"/>
-		<depend package="p2os_driver"/>
-    <depend package="pr2_power_board"/>
-    <depend package="pr2_msgs"/>
-    
+    <depend package="p2os_driver"/>    
   <rosdep name="wxwidgets"/>
   <rosdep name="wxpython"/>
 </package>
