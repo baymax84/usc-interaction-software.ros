@@ -9,4 +9,4 @@ rosbuild_init()
 rosbuild_add_executable(bandit_node bandit_node.cpp)
 rosbuild_add_executable(bandit_mover bandit_mover.cpp)
 rosbuild_add_executable(fake_bandit fake_bandit.cpp)
-
+rosbuild_add_executable(bandit_calib bandit_calib.cpp)
