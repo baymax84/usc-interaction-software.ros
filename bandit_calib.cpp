@@ -2,7 +2,7 @@
 #include "sensor_msgs/JointState.h"
 #include "bandit_msgs/JointArray.h"
 #include "bandit_msgs/Params.h"
-#include "bandit_msgs/CalibrateJoint.h"
+#include "bandit_msgs/CalibrateJointAll.h"
 #include "math.h"
 #include <vector>
 
@@ -100,6 +100,22 @@ void publish_joint_ind()
 	joint_publisher->publish(*desiredJointPos);
 }
 
+bool calibrateJointCallback(bandit_msgs::CalibrateJointAll::Request & req, bandit_msgs::CalibrateJointAll::Response & resp)
+{
+	double minAngle, maxAngle;
+	int a = req.Engage;
+	for (int joint_i = 0; joint_i < 14; joint_i++){
+		
+		if (joint_i !=7 || joint_i !=8){
+			calibrateJoint(joint_i, minAngle, maxAngle, 0, 10);
+			resp.MinAngle = minAngle;
+			resp.MaxAngle = maxAngle;
+		}
+	}
+	return true;
+}
+
+/*
 bool calibrateJointCallback(bandit_msgs::CalibrateJoint::Request & req, bandit_msgs::CalibrateJoint::Response & resp)
 {
 	double minAngle, maxAngle;
@@ -108,6 +124,7 @@ bool calibrateJointCallback(bandit_msgs::CalibrateJoint::Request & req, bandit_m
 	resp.MaxAngle = maxAngle;
 	return true;
 }
+*/
 
 int main( int argc, char* argv[] )
 {
