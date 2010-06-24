@@ -60,24 +60,28 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 		ros::Rate(1).sleep();
 		
 		currentPose = rad_to_deg( joint_positions->at(p_id) );//stores the value at the p_id-th position in array joint_position to currentPose
-		checker_array[counter % 3] = fabs(currentPose) - fabs(lastPose);
+		checker_array[counter % 3] = fabs(currentPose - lastPose);
 
 		ROS_INFO("currentPose: %f lastPose: %f", currentPose, lastPose);
 		ROS_INFO("desired angle: %f ID: %d", angle_deg, p_id);
-		ROS_INFO("change in pose: %f:", fabs(currentPose) - fabs(lastPose));
+		ROS_INFO("change in pose: %f:", fabs(currentPose - lastPose));
 
 		if( (checker_array[0] < 1) && (checker_array[1] < 1) && (checker_array[2] < 1) )
 		{
 			minAngle = direction == -1 ? rad_to_deg( joint_positions->at(p_id) ) : minAngle;
 			maxAngle = direction == 1 ? rad_to_deg( joint_positions->at(p_id) ) : maxAngle;
 			
+			//reset joint to 0
 			angle_deg = 0;
-			desiredJointPos->angle = deg_to_rad( angle_deg );
+			desiredJointPos->angle = deg_to_rad(angle_deg);
 			ros::Rate(2).sleep();
-			lastPose = rad_to_deg( joint_positions->at(p_id) );
+
+			lastPose = rad_to_deg( joint_positions->at(p_id) );//lastPose = minAngle
 			
-			currentPose = rad_to_deg( joint_positions->at(p_id) );
-			
+			ROS_INFO("currentPose: %f lastPose: %f", currentPose, lastPose);
+			ROS_INFO("desired angle: %f ID: %d", angle_deg, p_id);
+			ROS_INFO("change in pose: %f:", fabs(currentPose - lastPose));
+
 			continueCalibration = (direction == -1);
 			direction = direction == -1 ? 1 : 0;
 		}
@@ -86,7 +90,7 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 
 		counter++;
 	}
-	
+
 	//ROS_INFO("Joint ID [%i] Maximum (+) [%f] Maximum (-): [%f]", p_id, minAngle, maxAngle);
 }
 
@@ -123,7 +127,7 @@ int main( int argc, char* argv[] )
 	
 	ros::Rate(1).sleep();
 	
-	spinner->start();
+	spinner->start();//starts threads
 	
 	desiredJointPos = new bandit_msgs::Joint;
 	
