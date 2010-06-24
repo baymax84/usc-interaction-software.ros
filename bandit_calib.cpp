@@ -6,6 +6,9 @@
 #include "math.h"
 #include <vector>
 
+/*
+	initiate objects
+*/
 bandit_msgs::Joint * desiredJointPos;
 ros::Publisher * joint_publisher;
 ros::Subscriber * joint_subscriber;
@@ -26,17 +29,17 @@ double rad_to_deg(double rad)
 
 void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 {
-	*joint_positions = js->position;
+	*joint_positions = js->position;//pulls out all the positions for all joints and stores it to joint_positions
 	//ROS_INFO("Updated joint positions");
 }
 
-void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, const double & p_angle_deg, const double & p_angle_increment_deg = 20)
+void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, const double & p_angle_deg, const double & p_angle_increment_deg)
 {
 	ROS_INFO("Running calibration on joint: [%i]", p_id);
 	double angle_deg = 0;// -p_angle_increment_deg;//deg_to_rad(p_angle_deg); //so this is the starting angle?
-	double lastPose = 0;
+	double lastPose = rad_to_deg( joint_positions->at(p_id) );
 	double currentPose = rad_to_deg( joint_positions->at(p_id) );
-	int direction = -1; //
+	int direction = -1;
 	bool continueCalibration = true;
 	minAngle = 0.0;
 	maxAngle = 0.0;
@@ -47,21 +50,23 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 	ros::Rate(2).sleep();
 	//lastPose = rad_to_deg( joint_positions->at(p_id) );
 	
+	int counter = 0;
+	double checker_array[3];
 	while(continueCalibration)
 	{	
-		//if(abs(currentPose - lastPose) >= p_angle_increment_deg)
-		//{
-			angle_deg += direction * p_angle_increment_deg;
-		//}
+
+		angle_deg += direction * p_angle_increment_deg;
 		desiredJointPos->angle = deg_to_rad(angle_deg);
-		ros::Rate(2).sleep();
+		ros::Rate(1).sleep();
 		
-		currentPose = rad_to_deg( joint_positions->at(p_id) );
-		
+		currentPose = rad_to_deg( joint_positions->at(p_id) );//stores the value at the p_id-th position in array joint_position to currentPose
+		checker_array[counter % 3] = fabs(currentPose) - fabs(lastPose);
+
 		ROS_INFO("currentPose: %f lastPose: %f", currentPose, lastPose);
 		ROS_INFO("desired angle: %f ID: %d", angle_deg, p_id);
-		
-		if(fabs(currentPose - lastPose) < 0.5)
+		ROS_INFO("change in pose: %f:", fabs(currentPose) - fabs(lastPose));
+
+		if( (checker_array[0] < 1) && (checker_array[1] < 1) && (checker_array[2] < 1) )
 		{
 			minAngle = direction == -1 ? rad_to_deg( joint_positions->at(p_id) ) : minAngle;
 			maxAngle = direction == 1 ? rad_to_deg( joint_positions->at(p_id) ) : maxAngle;
@@ -69,7 +74,7 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 			angle_deg = 0;
 			desiredJointPos->angle = deg_to_rad( angle_deg );
 			ros::Rate(2).sleep();
-			lastPose = 0;
+			lastPose = rad_to_deg( joint_positions->at(p_id) );
 			
 			currentPose = rad_to_deg( joint_positions->at(p_id) );
 			
@@ -78,6 +83,8 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 		}
 		else
 			lastPose = currentPose;
+
+		counter++;
 	}
 	
 	//ROS_INFO("Joint ID [%i] Maximum (+) [%f] Maximum (-): [%f]", p_id, minAngle, maxAngle);
@@ -92,7 +99,7 @@ void publish_joint_ind()
 bool calibrateJointCallback(bandit_msgs::CalibrateJoint::Request & req, bandit_msgs::CalibrateJoint::Response & resp)
 {
 	double minAngle, maxAngle;
-	calibrateJoint(req.Id, minAngle, maxAngle, 0.0, 20.0);
+	calibrateJoint(req.Id, minAngle, maxAngle, 0.0, req.Angle_Increment);
 	resp.MinAngle = minAngle;
 	resp.MaxAngle = maxAngle;
 	return true;
@@ -110,7 +117,7 @@ int main( int argc, char* argv[] )
 	*joint_subscriber = n.subscribe("joint_states", 10, jointStatesCallBack); //creates subscriber and subscribes to topic "joint_states"
 	
 	joint_calib_srv = new ros::ServiceServer;
-	*joint_calib_srv = n.advertiseService("calibrate_joint", calibrateJointCallback);
+	*joint_calib_srv = n.advertiseService("calibrate_joint", calibrateJointCallback);//creates service and can be called by service calibrate_joint
 	
 	spinner = new ros::AsyncSpinner(2);//Use 2 threads
 	
