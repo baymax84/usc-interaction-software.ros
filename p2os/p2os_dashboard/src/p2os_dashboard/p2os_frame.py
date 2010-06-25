@@ -214,8 +214,8 @@ class P2OSFrame(wx.Frame):
       
     def on_motors_clicked(self, evt):
       menu = wx.Menu()
-      menu.Bind(wx.EVT_MENU, self.on_reset_motors, menu.Append(wx.ID_ANY, "Reset"))
-      menu.Bind(wx.EVT_MENU, self.on_halt_motors, menu.Append(wx.ID_ANY, "Halt"))
+      menu.Bind(wx.EVT_MENU, self.on_reset_motors, menu.Append(wx.ID_ANY, "Enable"))
+      menu.Bind(wx.EVT_MENU, self.on_halt_motors, menu.Append(wx.ID_ANY, "Disable"))
       self._motors_button.toggle(True)
       self.PopupMenu(menu)
       self._motors_button.toggle(False)
