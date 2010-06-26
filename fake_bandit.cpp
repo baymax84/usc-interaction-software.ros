@@ -75,6 +75,7 @@ int main( int argc, char* argv[] )
   add_param( 13, "right_forearm_wrist_joint", -90, 90, 0);
   add_param( 14, "right_wrist_hand_joint", -90, 90, 0);
   add_param( 15, "right_hand_thumb_joint", -90, 90, 0);
+  add_param( 16, "eyebrows_joint", -90, 90, 0);
 	ros::ServiceServer service = n.advertiseService("params", param);
   ros::Rate loop_rate(50);
   
@@ -88,6 +89,20 @@ int main( int argc, char* argv[] )
     js.position = joint_pos;
     js.velocity = zeroes;
     js.effort = zeroes;    
+
+    for( int i = 0; i < js.name.size(); i++ )
+    {
+      if( js.name[i] == std::string( "eyebrows_joint" ) )
+      {
+        js.name[i] = std::string("bandit_head_left_brow_joint");
+        
+        js.name.push_back( "bandit_head_right_brow_joint");
+        js.position.push_back(js.position[i]);
+        js.velocity.push_back(js.velocity[i]);
+        js.effort.push_back(js.effort[i]);
+      }
+    }
+
     joint_state_publisher.publish(js);
   
     //ROS_INFO( "publish" );
