@@ -40,6 +40,7 @@ tf::TransformBroadcaster * tb;
 tf::StampedTransform * raw_frame;
 tf::Transform * filtered_frame;
 tf::Transform * floor_norm_to_cam;
+tf::Transform * result; //cam to floor norm
 
 ros::Rate * loop_rate;
 
@@ -75,7 +76,7 @@ bool getSample()
 
 void publishFilteredTransform()
 {
-	tb->sendTransform(tf::StampedTransform((*floor_norm_to_cam), ros::Time::now(), "/floor", "/ovh" ));
+	tb->sendTransform(tf::StampedTransform((*result), ros::Time::now(), "/ovh_height", "/ovh" ));
 }
 
 //wait for the specified frame and store it in raw_frame
@@ -120,6 +121,8 @@ int main( int argc, char* argv[] )
 	filtered_frame = new tf::Transform;
 	filtered_frame->setOrigin( tf::Vector3( 0, 0, 0 ) );
 	
+	result = new tf::Transform;
+	
 	loop_rate = new ros::Rate(100);
 	
 	for(int i = 0; i < numSamples; i ++)
@@ -157,7 +160,7 @@ int main( int argc, char* argv[] )
 	tf::Quaternion theAngle; theAngle.setEuler( 0.0f, 0.0f, 0.0f ); //only did this to kill compiler warnings
 	floor_norm_to_cam->setRotation( theAngle );
 	
-	tb->sendTransform(tf::StampedTransform((*floor_norm_to_cam), ros::Time::now(), "/floor", "/ovh" ));
+	tb->sendTransform(tf::StampedTransform((*floor_norm_to_cam), ros::Time::now(), "/floor", "/ovh_tmp" ));
 	
 	float theta = floorToCam.angle( floorNormalVec );
 	
@@ -166,14 +169,16 @@ int main( int argc, char* argv[] )
 	fprintf( stdout, "theta: %f\n", theta );
 	fprintf( stdout, "height: %f\n", height );
 	
-	if( !lookupTransform("/ovh_height", "/ovh") )
+	if( !lookupTransform("/ovh_height", "/ovh_tmp") )
 		return 1;
-		
+	
+	*result = *raw_frame;
+	
 	*theOrigin = raw_frame->getOrigin();
 	btScalar oriy, orip, orir;
 	raw_frame->getBasis().getEulerYPR( oriy, orip, orir );
 	
-	fprintf(stdout, "<node pkg=\"tf\" type=\"static_transform_publisher\" name=\"floor_align_pub\" args=\"%f %f %f %f %f %f ovh_height ovh 100\" />\n", theOrigin->x(), theOrigin->y(), theOrigin->z(), oriy, orip, orir );
+	ROS_INFO("<node pkg=\"tf\" type=\"static_transform_publisher\" name=\"floor_align_pub\" args=\"%f %f %f %f %f %f /ovh_height /ovh 100\" />\n", theOrigin->x(), theOrigin->y(), theOrigin->z(), oriy, orip, orir );
 	
 	while( node.ok() )
 	{
