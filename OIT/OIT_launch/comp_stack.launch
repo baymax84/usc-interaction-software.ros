@@ -1,0 +1,23 @@
+<launch>
+  <master auto="start"/>
+  <!--<node name="rviz" pkg="rviz" type="rviz"/>-->
+ 	<group ns="overhead_cam">
+		<!--<param name="image_transport" type="str" value="compressed"/>-->
+
+		<node pkg="overhead" type="image_splitter" name="image_splitter" output="screen">
+			<param name="image_transport" type="str" value="compressed"/>
+  		<param name="parent_hist" type="str" value="$(find overhead)/pink_rth.txt"/>
+		  <param name="ir_hist" type="str" value="$(find overhead)/ir_rth.txt"/>
+      <param name="display" type="int" value="1"/>
+			<remap from="image_color" to="/overhead_cam/image_raw"/>
+   	</node>
+    <node pkg="overhead" type="ir_finder" name="ir_finder">
+		<param name="blob_dist_baseline" type="double" value="0.3" />
+		<param name="blob_dist_tolerance" type="double" value="0.25" />
+      <remap from="camera_info" to="/overhead_cam/camera_info"/>
+      <remap from="ir_blobs" to="/overhead_cam/ir_blobs"/>
+    </node>
+  </group>
+  <!--<node pkg="tf" type="static_transform_publisher" name="ovh_ovh_height" args="0 0 3.35 0 0 3.1415927 /ovh /ovh_height 50"/> -->
+  <node pkg="tf" type="static_transform_publisher" name="ir_base_link" args=".254 0 -0.4445 0 0 0 /robot/ir /robot/base_link 50"/> 
+</launch>
