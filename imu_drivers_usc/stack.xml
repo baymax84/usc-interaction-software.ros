@@ -1,0 +1,9 @@
+<stack>
+  <description brief="imu_drivers_usc">imu_drivers_usc</description>
+  <author>Maintained by Hordur Heidarsson</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/imu_drivers_usc</url>
+  <depend stack="ros" />
+
+</stack>
