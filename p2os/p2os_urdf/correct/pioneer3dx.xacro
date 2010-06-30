@@ -8,7 +8,7 @@ name="pioneer3dx">
 
 <!-- Chassis -->
 	<link name="base_link">
-		<inertial>
+		<intertial>
 			<mass value="3.5"/>
 			<origin xyz="-0.025 0 -0.223"/>
 			<inertia ixx="1" ixy="0" ixz="0"
@@ -16,9 +16,9 @@ name="pioneer3dx">
 				 izz="1"/>
 		</inertial>
 		<visual name="base_visual">
-			<origin xyz="-0.045 0 0.148" rpy="0 0 0"/>
+			<origin xyz="0 0 0.318" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/chassis.stl"/>
+				<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/chassis.stl"/>
 			</geometry>
 			<material name="ChassisRed">
 				<color rgba="0.851 0.0 0.0 1.0"/>
@@ -40,11 +40,11 @@ name="pioneer3dx">
 			<inertia ixx="1" ixy="0" ixz="0"
 				 iyy="1" iyz="0"
  				izz="1"/>
-		</inertial>
+			</inertial>
 		<visual name="base_visual">
-			<origin xyz="-0.045 0 0.234" rpy="0 0 0"/>
+			<origin xyz="0 0 0.236" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/top.stl"/>
+				<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/top.stl"/>
 			</geometry>
 			<material name="TopBlack">
 					<color rgba="0.038 0.038 0.038 1.0"/>
@@ -67,9 +67,9 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="-0.185 0 0.055" rpy="0 0 0"/>
+		<origin xyz="-0.179 0 0.034" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/swivel.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/swivel.stl"/>
 		</geometry>
 		<material name="swivel">
 			<color rgba="0.5 0.5 0.5 1"/>
@@ -92,9 +92,9 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="-0.211 0 0.038" rpy="0 0 0"/>
+		<origin xyz="-0.211 0 0.037" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/center_hubcap.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/center_hubcap.stl"/>
 		</geometry>
 		<material name="swivel">
 			<color rgba="0.5 0.5 0.5 1"/>
@@ -116,9 +116,9 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="-0.211 0.149 0.037" rpy="0 0 0"/>
+		<origin xyz="-0.179 0 0.034" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/center_wheel.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/center_wheel.stl"/>
 		</geometry>
 		<material name="WheelBlack">
 			<color rgba="0.117 0.117 0.117 1"/>
@@ -143,7 +143,7 @@ name="pioneer3dx">
 	<visual name="base_visual">
 		<origin xyz="0 0.158 0.091" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/right_hubcap.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/right_hubcap.stl"/>
 		</geometry>
 		<material name="HubcapYellow">
 			<color rgba="1.0 0.811 0.151 1.0"/>
@@ -167,7 +167,7 @@ name="pioneer3dx">
 	<visual name="base_visual">
 		<origin xyz="0 0.158 0.091" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/right_wheel.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/right_wheel.stl"/>
 		</geometry>
 		<material name="WheelBlack">
 			<color rgba="0.117 0.117 0.117 1"/>
@@ -192,7 +192,7 @@ name="pioneer3dx">
 	<visual name="base_visual">
 		<origin xyz="0 -0.158 0.091" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/left_hubcap.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/left_hubcap.stl"/>
 		</geometry>
 		<material name="HubcapYellow">
 			<color rgba="1.0 0.811 0.151 1.0"/>
@@ -216,7 +216,7 @@ name="pioneer3dx">
 	<visual name="base_visual">
 		<origin xyz="0 -0.158 0.091" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/left_wheel.stl"/>
+			<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/left_wheel.stl"/>
 		</geometry>
 		<material name="WheelBlack">
 			<color rgba="0.117 0.117 0.117 1"/>
@@ -239,9 +239,9 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
 		</inertial>
 		<visual name="base_visual">
-			<origin xyz="-0.2 0 0.209" rpy="0 0 0"/>
+			<origin xyz="-0.196 0.199 0.218" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/front_sonar.stl"/>
+				<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/front_sonar.stl"/>
 			</geometry>
 			<material name="SonarYellow">
 				<color rgba="0.715 0.583 0.210 1.0"/>
@@ -263,9 +263,9 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
 		</inertial>
 		<visual name="base_visual">
-			<origin xyz="0.109 0 0.209" rpy="0 0 0"/>
+			<origin xyz="0.105 0.199 0.218" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/back_sonar.stl"/>
+				<mesh filename="package://p2os_urdf/correct/pioneer3dx_meshes/back_sonar.stl"/>
 			</geometry>
 			<material name="SonarYellow">
 				<color rgba="0.715 0.583 0.210 1.0"/>
@@ -340,4 +340,4 @@ name="pioneer3dx">
 		<child link="left_wheel"/>
 	</joint>
 
-</robot>
+
