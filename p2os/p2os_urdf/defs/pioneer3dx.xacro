@@ -10,7 +10,8 @@ name="pioneer3dx">
 	<link name="base_link">
 		<inertial>
 			<mass value="3.5"/>
-			<origin xyz="-0.025 0 -0.223"/>
+			<!--<origin xyz="-0.025 0 -0.223"/>-->
+			<origin xyz="0 0 0"/>
 			<inertia ixx="1" ixy="0" ixz="0"
 				 iyy="1" iyz="0"
 				 izz="1"/>
@@ -36,13 +37,13 @@ name="pioneer3dx">
 	<link name="top_plate">
 		<inertial>
 			<mass value="0"/>	
-			<origin xyz="-0.025 0 -0.223"/>
+			<origin xyz="0 0 0"/>
 			<inertia ixx="1" ixy="0" ixz="0"
 				 iyy="1" iyz="0"
  				izz="1"/>
 		</inertial>
 		<visual name="base_visual">
-			<origin xyz="-0.045 0 0.234" rpy="0 0 0"/>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
 				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/top.stl"/>
 			</geometry>
@@ -57,6 +58,13 @@ name="pioneer3dx">
 			</geometry>
 		</collision>
 	</link>
+	
+  <joint name="base_top_joint" type="fixed">
+		<origin xyz="-0.045 0 0.234" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="top_plate"/>
+	</joint>
+
 
 <!-- Swivel -->
 	<link name="swivel">
@@ -67,7 +75,7 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="-0.185 0 0.055" rpy="0 0 0"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
 			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/swivel.stl"/>
 		</geometry>
@@ -83,6 +91,12 @@ name="pioneer3dx">
 	</collision>
 	</link>
 
+ 	<joint name="base_swivel_joint" type="fixed">
+		<origin xyz="-0.185 0 0.055" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="swivel"/>
+	</joint>
+
 <!-- Center Wheel + Hubcap -->
 	<link name="center_hubcap">
 		<inertial>
@@ -92,7 +106,7 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="-0.211 0 0.038" rpy="0 0 0"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
 			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/center_hubcap.stl"/>
 		</geometry>
@@ -107,6 +121,12 @@ name="pioneer3dx">
 		</geometry>
 	</collision>
 	</link>
+	
+  <joint name="swivel_hubcap_joint" type="fixed">
+		<origin xyz="-0.211 0 0.038" rpy="0 0 0"/>
+		<parent link="swivel"/>
+		<child link="center_hubcap"/>
+	</joint>
 
 	<link name="center_wheel">
 		<inertial>
@@ -141,7 +161,7 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="0 0.158 0.091" rpy="0 0 0"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
 			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/right_hubcap.stl"/>
 		</geometry>
@@ -156,6 +176,7 @@ name="pioneer3dx">
 		</geometry>
 	</collision>
 	</link>
+
 
 	<link name="right_wheel">
 		<inertial>
@@ -280,12 +301,6 @@ name="pioneer3dx">
 	</link>
 
 <!-- Joints -->
-	<joint name="base_top_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="top_plate"/>
-	</joint>
-
 	<joint name="base_front_joint" type="fixed">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<parent link="base_link"/>
@@ -298,17 +313,7 @@ name="pioneer3dx">
 		<child link="back_sonar"/>
 	</joint>
 
-	<joint name="base_swivel_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="swivel"/>
-	</joint>
 
-	<joint name="swivel_hubcap_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="swivel"/>
-		<child link="center_hubcap"/>
-	</joint>
 
 	<joint name="center_wheel_joint" type="fixed">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
