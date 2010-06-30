@@ -1,0 +1,328 @@
+<?xml version="1.0"?>
+<robot name="pioneer3dx"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:xacro="http://ros.org/wiki/fixme"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface">
+
+  <property name="M_PI" value="3.14159"/>
+
+  <property name="base_size_x" value="0.41" />
+  <property name="base_size_y" value="0.385" />
+  <property name="base_size_z" value="0.18" />
+
+  <property name="wheel_radius" value="0.075" />
+  <property name="wheel_length" value="0.02" />
+  <property name="caster_wheel_offset_y" value="0.17" />
+
+<!-- chassis -->
+  <link name="base_link">
+    <inertial>
+      <mass value="10" />
+      <origin xyz="-0.1 0 ${base_size_z/2}" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+               iyy="1.0" iyz="0.0"
+               izz="1.0" />
+    </inertial>
+    
+    <visual>
+      <origin xyz="-0.045 0 0.148" rpy="0 0 0" />
+      <geometry>
+        <box size="0.22 0.29 0.14" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="-0.075 0 0.115" rpy="0 0 0" />
+      <geometry>
+        <box size="0.22 0.29 0.14" />
+      </geometry>
+    </collision>
+  </link>
+
+<!-- top -->
+  <joint name="base_top_joint" type="fixed" >
+    <origin xyz="0 0 0.051" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_top_link"/>
+  </joint>
+
+  <link name="base_top_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 ${base_size_z/2}" />
+      <inertia ixx="0.0652232699207" ixy="0.0" ixz="0.0"
+               iyy="0.0669473158652" iyz="0.0"
+               izz="0.0683196351726" />
+    </inertial>
+
+    <visual>
+      <origin xyz="-0.045 0 0.234" rpy="0 0 0" />
+      <geometry>
+        <box size="${base_size_x} ${base_size_y} 0.01" />
+      </geometry>
+    </visual>
+    
+    
+    <collision>
+      <origin xyz="-0.08 0 0.13" rpy="0 0 0" />
+      <geometry>
+        <box size="${base_size_x} ${base_size_y} 0.01" />
+      </geometry>
+    </collision>
+  </link>
+
+<!-- swivel -->
+  <joint name="base_swivel_joint" type="continuous" >
+    <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <anchor xyz="0 0 0" />
+    <limit effort="100" velocity="100" />
+    <joint_properties damping="0.0" friction="0.0" />
+    <parent link="base_link" />
+    <child link="base_swivel_link" />
+  </joint>
+
+  <link name="base_swivel_link">
+    <inertial>
+      <mass value="0.1" />
+      <origin xyz=" 0 0 0 " />
+      <inertia  ixx="0.012411765597" ixy="0.0" ixz="0.0"
+                iyy="0.015218160428" iyz="0.0"
+                izz="0.011763977943" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.185 0 0.055" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.0375" length="0.01" />
+      </geometry>
+	
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+      <geometry>
+        <cylinder radius="0.0375" length="0.01" />
+      </geometry>
+    </collision>
+  </link>
+
+<!-- center wheel -->
+  <joint name="p3dx_center_wheel_joint" type="continuous">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 0" />
+    <axis xyz="0 1 0" />
+    <anchor xyz="0 0 0" />
+    <limit effort="100" velocity="100" />
+    <joint_properties damping="0.0" friction="0.0" />
+    <parent link="base_swivel_link" />
+    <child link="p3dx_center_wheel_joint" />
+  </joint>
+  
+  <link name="p3dx_center_wheel_joint">
+    <inertial>
+      <mass value="0.1" />
+      <origin xyz=" 0 0 0 " />
+      <inertia  ixx="0.012411765597" ixy="0.0" ixz="0.0"
+                iyy="0.015218160428" iyz="0.0"
+                izz="0.011763977943" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.211 0.149 0.037" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.0375" length="0.01" />
+      </geometry>
+	
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+      <geometry>
+        <cylinder radius="0.0375" length="0.01" />
+      </geometry>
+    </collision>
+  </link>
+
+<!-- side wheels -->
+  <xacro:macro name="p3dx_wheel" params="suffix parent reflect">
+    <joint name="${parent}_${suffix}_wheel_joint" type="continuous">
+      <origin xyz="0 ${reflect*caster_wheel_offset_y} ${wheel_radius}" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <anchor xyz="0 0 0" />
+      <limit effort="100" velocity="100" />
+      <joint_properties damping="0.0" friction="0.0" />
+      <parent link="${parent}" />
+      <child link="${parent}_${suffix}_wheel_link" />
+    </joint>
+    
+    <link name="${parent}_${suffix}_wheel_link">
+      <inertial>
+        <mass value="0.1" /> <!-- check jmh 20081205 -->
+        <origin xyz=" 0 0 0 " />
+        <inertia  ixx="0.012411765597" ixy="0.0" ixz="0.0"
+                  iyy="0.015218160428" iyz="0.0"
+                  izz="0.011763977943" />
+      </inertial>
+      <visual>
+        <origin xyz="0 ${reflect*0.158} 0.091" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+        </geometry>
+	
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${parent}_${suffix}_wheel_link" >
+      <elem key="mu1" value="50.0" />
+      <elem key="mu2" value="50.0" />
+      <elem key="kp"  value="100000000.0" />
+      <elem key="kd"  value="1.0" />
+    </gazebo>
+  </xacro:macro>
+
+
+  <xacro:p3dx_wheel suffix="left" parent="base_link" reflect="1"/>
+  <xacro:p3dx_wheel suffix="right" parent="base_link" reflect="-1"/>
+
+<!-- what is this? -->
+  <joint name="base_caster_box_joint" type="fixed">
+    <origin xyz="0 0 0.051" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_caster_box_link"/>
+  </joint>
+    
+  <link name="base_caster_box_link">
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 ${base_size_z/2}" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+               iyy="0.01" iyz="0.0"
+               izz="0.01" />
+    </inertial>
+
+    <visual>
+      <origin xyz="-0.23 0 0.08" rpy="0 0 0" />
+      <geometry>
+        <box size="0.09 0.02 0.10" />
+      </geometry>
+    </visual>
+    
+    <collision>
+      <origin xyz="-0.23 0 0.08" rpy="0 0 0" />
+      <geometry>
+        <box size="0.09 0.02 0.10" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_caster_support_joint" type="continuous">
+    <axis xyz="0 0 1" />
+    <anchor xyz="0.01 0 0" />
+    <limit effort="100" velocity="100" k_velocity="0" />
+    <joint_properties damping="0.0" friction="0.0" />
+    <parent link="base_caster_box_link" />
+    <origin xyz="-0.265 0 0.0" rpy="0 0 0" />
+    <child link="base_caster_support_link"/>
+  </joint>
+  <link name="base_caster_support_link">
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+               iyy="0.01" iyz="0.0"
+               izz="0.01" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.02 0.06" />
+      </geometry>
+    </visual>
+    
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.02 0.06" />
+      </geometry>
+    </collision>
+  </link>
+
+<!-- wheel joints -->
+  <joint name="caster_wheel_joint" type="continuous">
+    <origin xyz="-0.02 0 -0.02" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <anchor xyz="0 0 0" />
+    <limit effort="100" velocity="100" k_velocity="0" />
+    <joint_properties damping="0.0" friction="0.0" />
+    <parent link="base_caster_support_link" />
+    <child link="caster_wheel_link" />
+  </joint>
+  
+  <link name="caster_wheel_link">
+    <inertial>
+      <mass value="0.1" /> 
+      <origin xyz=" 0 0 0 " />
+      <inertia  ixx="0.012411765597" ixy="-0.000711733678" ixz="0.00050272983"
+                iyy="0.015218160428" iyz="-0.000004273467" izz="0.011763977943" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+      <geometry>
+        <cylinder radius="0.03" length="0.01" />
+      </geometry>
+      
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+      <geometry>
+        <cylinder radius="0.03" length="0.01" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="caster_wheel_link">
+    <elem key="mu1" value="50.0" />
+    <elem key="mu2" value="50.0" />
+    <elem key="kp"  value="100000000.0" />
+    <elem key="kd"  value="1.0" />
+  </gazebo>
+
+<!-- controller -->
+  <gazebo>
+    <controller:differential_position2d name="controller1">
+      <update>100</update>
+      <leftJoint>base_link_right_wheel_joint</leftJoint>
+      <rightJoint>base_link_left_wheel_joint</rightJoint>
+      <wheelSeparation>${caster_wheel_offset_y*2}</wheelSeparation>
+      <wheelDiameter>${wheel_radius*2}</wheelDiameter>
+      <torque>5</torque>
+      <interface:position name="position_iface_0"/>
+    </controller:differential_position2d>
+  
+    <controller:gazebo_ros_p3d name="p3d_base_controller" plugin="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>100.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <topicName>base_pose_ground_truth</topicName>
+      <gaussianNoise>0.01</gaussianNoise>
+      <frameName>map</frameName>
+      <xyzOffsets>25.7 25.7 0</xyzOffsets> <!-- initialize odometry for fake localization-->
+      <rpyOffsets>0 0 0</rpyOffsets>
+      <interface:position name="p3d_base_position"/>
+    </controller:gazebo_ros_p3d>
+
+    <!-- this publishes empty joint_states due to no transmission, but
+         triggering robot_state_puublisher to publish tf between fixed joints in erratic,
+         (e.g. base_laser_link for the base_scan frame) -->
+    <controller:gazebo_ros_controller_manager name="gazebo_ros_controller_manager" plugin="libgazebo_ros_controller_manager.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1000.0</updateRate>
+      <interface:audio name="gazebo_ros_controller_manager_dummy_iface" />
+    </controller:gazebo_ros_controller_manager>
+  </gazebo>
+
+</robot>
