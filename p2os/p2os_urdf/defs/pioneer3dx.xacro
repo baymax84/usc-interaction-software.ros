@@ -59,7 +59,7 @@ name="pioneer3dx">
 		</collision>
 	</link>
 	
-  <joint name="base_top_joint" type="fixed">
+	<joint name="base_top_joint" type="fixed">
 		<origin xyz="-0.045 0 0.234" rpy="0 0 0"/>
 		<parent link="base_link"/>
 		<child link="top_plate"/>
@@ -122,8 +122,8 @@ name="pioneer3dx">
 	</collision>
 	</link>
 	
-  <joint name="swivel_hubcap_joint" type="fixed">
-		<origin xyz="-0.211 0 0.038" rpy="0 0 0"/>
+	<joint name="swivel_hubcap_joint" type="fixed">
+		<origin xyz="-0.026 0 -0.016" rpy="0 0 0"/>
 		<parent link="swivel"/>
 		<child link="center_hubcap"/>
 	</joint>
@@ -136,7 +136,7 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="-0.211 0.149 0.037" rpy="0 0 0"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
 			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/center_wheel.stl"/>
 		</geometry>
@@ -152,8 +152,15 @@ name="pioneer3dx">
 	</collision>
 	</link>
 
-<!-- Right Wheel + Hubcap -->
-	<link name="right_hubcap">
+	<joint name="center_wheel_joint" type="fixed">
+		<origin xyz="-0.0035 0 -0.001" rpy="0 0 0"/>
+		<parent link="center_hubcap"/>
+		<child link="center_wheel"/>
+	</joint>
+
+<!-- Right/Left Hubcap + Wheel -->
+<xacro:macro name="p3dx_wheel" params="suffix parent reflect">
+	<link name="p3dx_${suffix}_wheel">
 		<inertial>
 			<mass value="0"/>	
 			<origin xyz="0 0 0"/>
@@ -163,32 +170,7 @@ name="pioneer3dx">
 	<visual name="base_visual">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/right_hubcap.stl"/>
-		</geometry>
-		<material name="HubcapYellow">
-			<color rgba="1.0 0.811 0.151 1.0"/>
-		</material>
-	</visual>
-	<collision>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry>
-			<box size="0 0 0"/>
-		</geometry>
-	</collision>
-	</link>
-
-
-	<link name="right_wheel">
-		<inertial>
-			<mass value="0"/>	
-			<origin xyz="0 0 0"/>
-			<inertia ixx="1" ixy="0" ixz="0"
-				 iyy="1" iyz="0" izz="1"/>
-  	 	</inertial>
-	<visual name="base_visual">
-		<origin xyz="0 0.158 0.091" rpy="0 0 0"/>
-		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/right_wheel.stl"/>
+			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/${suffix}_wheel.stl"/>
 		</geometry>
 		<material name="WheelBlack">
 			<color rgba="0.117 0.117 0.117 1"/>
@@ -202,8 +184,13 @@ name="pioneer3dx">
 	</collision>
 	</link>
 
-<!-- Left Wheel + Hubcap -->
-	<link name="left_hubcap">
+	<joint name="base_${suffix}_wheel_joint" type="fixed">
+		<origin xyz="0 ${reflect*0.158} 0.091" rpy="0 0 0"/>
+		<parent link="${parent}"/>
+		<child link="p3dx_${suffix}_wheel"/>
+	</joint>
+
+	<link name="p3dx_${suffix}_hubcap">
 		<inertial>
 			<mass value="0"/>	
 			<origin xyz="0 0 0"/>
@@ -211,9 +198,9 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
   	 	</inertial>
 	<visual name="base_visual">
-		<origin xyz="0 -0.158 0.091" rpy="0 0 0"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/left_hubcap.stl"/>
+			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/${suffix}_hubcap.stl"/>
 		</geometry>
 		<material name="HubcapYellow">
 			<color rgba="1.0 0.811 0.151 1.0"/>
@@ -227,29 +214,16 @@ name="pioneer3dx">
 	</collision>
 	</link>
 
-	<link name="left_wheel">
-		<inertial>
-			<mass value="0"/>	
-			<origin xyz="0 0 0"/>
-			<inertia ixx="1" ixy="0" ixz="0"
-				 iyy="1" iyz="0" izz="1"/>
-  	 	</inertial>
-	<visual name="base_visual">
-		<origin xyz="0 -0.158 0.091" rpy="0 0 0"/>
-		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/left_wheel.stl"/>
-		</geometry>
-		<material name="WheelBlack">
-			<color rgba="0.117 0.117 0.117 1"/>
-		</material>
-	</visual>
-	<collision>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry>
-			<box size="0 0 0"/>
-		</geometry>
-	</collision>
-	</link>
+	<joint name="base_${suffix}_hubcap_joint" type="fixed">
+		<origin xyz="0 ${reflect*0.158} 0.091" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="p3dx_${suffix}_hubcap"/>
+	</joint>
+
+</xacro:macro>
+
+<xacro:p3dx_wheel suffix="left" parent="base_link" reflect="1"/>
+<xacro:p3dx_wheel suffix="right" parent="base_link" reflect="-1"/>
 
 <!-- Front + Back Sonar -->
 	<link name="front_sonar">
@@ -260,7 +234,7 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
 		</inertial>
 		<visual name="base_visual">
-			<origin xyz="-0.2 0 0.209" rpy="0 0 0"/>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
 				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/front_sonar.stl"/>
 			</geometry>
@@ -276,6 +250,12 @@ name="pioneer3dx">
 		</collision>
 	</link>
 
+	<joint name="base_front_joint" type="fixed">
+		<origin xyz="-0.198 0 0.208" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="front_sonar"/>
+	</joint>
+
 	<link name="back_sonar">
 		<inertial>
 			<mass value="0"/>	
@@ -284,7 +264,7 @@ name="pioneer3dx">
 				 iyy="1" iyz="0" izz="1"/>
 		</inertial>
 		<visual name="base_visual">
-			<origin xyz="0.109 0 0.209" rpy="0 0 0"/>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
 				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/back_sonar.stl"/>
 			</geometry>
@@ -300,49 +280,10 @@ name="pioneer3dx">
 		</collision>
 	</link>
 
-<!-- Joints -->
-	<joint name="base_front_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="front_sonar"/>
-	</joint>
-
 	<joint name="base_back_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<origin xyz="0.109 0 0.209" rpy="0 0 0"/>
 		<parent link="base_link"/>
 		<child link="back_sonar"/>
-	</joint>
-
-
-
-	<joint name="center_wheel_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="center_hubcap"/>
-		<child link="center_wheel"/>
-	</joint>
-
-	<joint name="base_right_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="right_hubcap"/>
-	</joint>
-
-	<joint name="right_wheel_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="right_hubcap"/>
-		<child link="right_wheel"/>
-	</joint>
-
-	<joint name="base_left_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="left_hubcap"/>
-	</joint>
-
-	<joint name="left_wheel_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="left_hubcap"/>
-		<child link="left_wheel"/>
 	</joint>
 
 </robot>
