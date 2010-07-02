@@ -1,13 +1,13 @@
 <package>
-  <description brief="OIT_launch">
+  <description brief="oit_launch">
 
-     OIT_launch
+     oit_launch
 
   </description>
   <author>Edward T. Kaszubski</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/OIT_launch</url>
+  <url>http://ros.org/wiki/oit_launch</url>
 
 </package>
 
