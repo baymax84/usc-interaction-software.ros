@@ -98,7 +98,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 	double lastPose = rad_to_deg( joint_positions->at(p_id) );
 	double currentPose = rad_to_deg( joint_positions->at(p_id) );
 	bool continueCalibration = true;
-	int direction[] = { 0, 0, -1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1};
+	int direction[] = { 0, 0, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, 1};
 	
 	position_zero = rad_to_deg( joint_positions->at(p_id) );//get the encoder position at 0 degrees
 	ROS_INFO("Position Zero [%f]:", position_zero);
@@ -203,66 +203,65 @@ void true_zero(const int & id)
 {	
 	switch(id){
 		case 0:
-			ROS_INFO("No Joint Calibration Available");
+			offset = 0;
+			truezero = minAngle + offset;
 			break;
 		case 1:
 			ROS_INFO("No Joint Calibration Available");
 			break;
 		case 2:
-			offset = 0;
-			truezero = minAngle + offset;
+			offset = -97;
+			truezero = minAngle - offset;
 			break;
 		case 3:
-			offset = 0;
+			offset = 158;
 			truezero = maxAngle - offset;
 			break;
 		case 4:
-			offset = 0;
-			truezero = maxAngle - offset;
+			offset = -120;
+			truezero = minAngle - offset;
 			break;
 		case 5:
-			offset = 0;
+			offset = 119;
 			truezero = maxAngle - offset;
 			break;
 		case 6:
-			offset = 0;
+			offset = 84;
 			truezero = maxAngle - offset;
 			break;
 		case 7:
-			offset = 0;
+			offset = 28;
 			truezero = maxAngle - offset;
 			break;
 		case 8:
-			offset = 0;
-			truezero = maxAngle - offset;
+			ROS_INFO("No Joint Calibration Available");
 			break;
 		case 9:
-			offset = 0;
-			truezero = minAngle + offset;
+			offset = -105;
+			truezero = minAngle - offset;
 			break;
 		case 10:
-			offset = 0;
+			offset = 160;
 			truezero = maxAngle - offset;
 			break;
 		case 11:
-			offset = 0;
-			truezero = maxAngle - offset;
+			offset = -135;
+			truezero = minAngle - offset;
 			break;
 		case 12:
-			offset = 0;
+			offset = 118;
 			truezero = maxAngle - offset;
 			break;
 		case 13:
-			offset = 0;
+			offset = 97;
 			truezero = maxAngle - offset;
 			break;
 		case 14:
-			offset = 0;
+			offset = 28;
 			truezero = maxAngle - offset;
 			break;
 		case 15:
-			offset = 0;
-			truezero = maxAngle - offset;
+			ROS_INFO("No Joint Calibration Available");
 			break;
 		default:
 			ROS_INFO("No Joint Calibration Available");
@@ -316,7 +315,7 @@ int main( int argc, char* argv[] )
 		write_bandit_file.close();
 	}
 	else
-		return 0
+		return 0;
 	
     return 0;
   }
