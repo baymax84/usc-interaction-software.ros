@@ -63,7 +63,6 @@ std::vector<cv::Point3f> getObjPoints( int x, int y, double size )
 
 void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraInfoConstPtr& infomsg )
 {
-	ROS_INFO("entering image_cb");
   cv::Mat img;
   try
   {
@@ -75,45 +74,23 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
       cv::drawChessboardCorners(img, cvSize(nx,ny), corners, true );
 
       std::vector<cv::Point2f> imgpts;
-      cv::Mat rvec(4,1, CV_32F), tvec(4,1,CV_32F);
-      
+      double fR3[3], fT3[3];
+      cv::Mat rvec(3, 1, CV_64FC1, fR3);
+      cv::Mat tvec(3, 1, CV_64FC1, fT3);
+
       image_geometry::PinholeCameraModel pcam;
       pcam.fromCameraInfo(infomsg);
-      std::vector<cv::Point3f> objpts = getObjPoints(nx,ny,.104);
+      std::vector<cv::Point3f> objpts = getObjPoints(nx,ny,.108);
 
       cv::solvePnP( objpts, corners, pcam.intrinsicMatrix(), pcam.distortionCoeffs(), rvec, tvec );
       
-			std::vector<cv::Point2f> imgpts2;
-			cv::projectPoints( objpts, rvec, tvec, pcam.intrinsicMatrix(), pcam.distortionCoeffs(), imgpts2 );
-
       tf::Transform checktf;
-      checktf.setOrigin( tf::Vector3(tvec.at<double>(0,0),tvec.at<double>(0,1), tvec.at<double>(0,2) ) );
-			
-			cv::circle( img, imgpts2[0], 10, CV_RGB(255,0, 0), 3 );
-			cv::circle( img, imgpts2[nx*ny-1], 10, CV_RGB(0,0, 255), 3 );
-/*
-			for( int i = 0; i < nx*ny; i+= nx )
-			{
-				cv::circle( img, imgpts2[i], 10, CV_RGB(255,0, 0), 3 );
-			}
-*/
-
+      checktf.setOrigin( tf::Vector3(fT3[0], fT3[1], fT3[2] ) );
+      double rx = fR3[0], ry = fR3[1], rz = fR3[2];
 			tf::Quaternion quat;
-			double rx = rvec.at<double>(0,0);
-			double ry = rvec.at<double>(0,1);
-			double rz = rvec.at<double>(0,2);
-
-			double rxp = rx;
-			double ryp = ry;
-			double rzp = rz;
-
-			quat.setRPY( ryp, rxp, rzp );
-			ROS_INFO( "rx: %0.2f ry: %0.2f rz: %0.2f", RTOD(rx), RTOD(ry), RTOD(rz) );
-			ROS_INFO( "rx: %0.2f ry: %0.2f rz: %0.2f", RTOD(rxp), RTOD(ryp), RTOD(rzp) );
-
+      quat.setRPY(rx, ry, rz);
 			checktf.setRotation( quat );
       tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, msg->header.frame_id, checkerboard_frame ));
-      ROS_INFO("published frame");
     }
  }
   catch( sensor_msgs::CvBridgeException cvbe )
