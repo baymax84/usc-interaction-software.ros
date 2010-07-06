@@ -8,5 +8,6 @@
   <depend package="bandit_msgs" />
 	<depend package="sensor_msgs"/>
   <depend package="xmlrpcpp"/>
+  <depend package="yaml_cpp"/>
   <url></url>
 </package>

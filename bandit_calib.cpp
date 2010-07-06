@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 
@@ -124,7 +125,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 		angle_deg += direction[p_id] * p_angle_increment_deg;
 		desiredJointPos->angle = deg_to_rad(angle_deg);//publishes new angle
 		publish_joint_ind();
-		ros::Duration(2).sleep();
+		ros::Duration(3).sleep();
 		
 		currentPose = rad_to_deg( joint_positions->at(p_id) );//stores the value at the p_id-th position in array joint_position to currentPose
 
@@ -207,18 +208,18 @@ void true_zero(const int & id)
 			truezero = minAngle + offset;
 			break;
 		case 1:
-			ROS_INFO("No Joint Calibration Available");
+			ROS_INFO("No Joint Calibration Available");//this joint has no max/min
 			break;
 		case 2:
 			offset = -97;
 			truezero = minAngle - offset;
 			break;
 		case 3:
-			offset = 158;
+			offset = (156 + 3); //the 3 is the offset from 0 degrees from starting position
 			truezero = maxAngle - offset;
 			break;
 		case 4:
-			offset = -120;
+			offset = -114;
 			truezero = minAngle - offset;
 			break;
 		case 5:
@@ -226,7 +227,7 @@ void true_zero(const int & id)
 			truezero = maxAngle - offset;
 			break;
 		case 6:
-			offset = 84;
+			offset = 87;
 			truezero = maxAngle - offset;
 			break;
 		case 7:
@@ -234,14 +235,14 @@ void true_zero(const int & id)
 			truezero = maxAngle - offset;
 			break;
 		case 8:
-			ROS_INFO("No Joint Calibration Available");
+			ROS_INFO("No Joint Calibration Available");//the gripper does not actuate
 			break;
 		case 9:
-			offset = -105;
+			offset = -107;
 			truezero = minAngle - offset;
 			break;
 		case 10:
-			offset = 160;
+			offset = (159 + 3);
 			truezero = maxAngle - offset;
 			break;
 		case 11:
@@ -249,11 +250,11 @@ void true_zero(const int & id)
 			truezero = minAngle - offset;
 			break;
 		case 12:
-			offset = 118;
+			offset = 115;
 			truezero = maxAngle - offset;
 			break;
 		case 13:
-			offset = 97;
+			offset = 98;
 			truezero = maxAngle - offset;
 			break;
 		case 14:
@@ -261,7 +262,7 @@ void true_zero(const int & id)
 			truezero = maxAngle - offset;
 			break;
 		case 15:
-			ROS_INFO("No Joint Calibration Available");
+			ROS_INFO("No Joint Calibration Available");//the gripper does not actuate
 			break;
 		default:
 			ROS_INFO("No Joint Calibration Available");
@@ -283,6 +284,7 @@ int main( int argc, char* argv[] )
 	
 	ofstream write_bandit_file;//declares output stream
 	write_bandit_file.open("Bandit_Calibration_File.txt");
+	YAML::Emitter bandit_file;
 	
 	//joint_calib_srv = new ros::ServiceServer;
 	//*joint_calib_srv = n.advertiseService("calibrate_joint", calibrateJointCallback);//creates service and can be called by service calibrate_joint
@@ -299,16 +301,39 @@ int main( int argc, char* argv[] )
 	if(ros::ok()){
 		
 		for ( int z_id = 0; z_id < 16; z_id++){
-			if(z_id == 2 || z_id == 3 || z_id == 9 || z_id == 10){
-				calibrateJoint(z_id, 20, position_zero);
-				true_zero(z_id);
-			}
-			else {
+			if(z_id == 6 || z_id == 7 || z_id == 8 || z_id == 13 || z_id == 14 || z_id == 15){
 				calibrateJoint(z_id, 10, position_zero);
 				true_zero(z_id);
 			}
+			else if(z_id == 4 || z_id == 11){
+				calibrateJoint(z_id, 30, position_zero);
+				true_zero(z_id);
+			}
+			else {
+				calibrateJoint(z_id, 20, position_zero);
+				true_zero(z_id);				
+			}
+			
 			write_bandit_file << "Joint ID: " << z_id << " True Zero: " << truezero << " Offset: " << offset << "\n";
 			write_bandit_file << "MaxAngle: " << maxAngle << " MinAngle: " << minAngle << "\n \n";
+			
+			bandit_file << YAML::BeginMap;
+			bandit_file << YAML::Key << "Joint ID:";
+			bandit_file << YAML::Value << z_id;
+			bandit_file << YAML::Literal << "\n";
+			bandit_file << YAML::Key << "True Zero:";
+			bandit_file << YAML::Value << truezero;
+			bandit_file << YAML::Literal << "\n";
+			bandit_file << YAML::Key << "Offset:";
+			bandit_file << YAML::Value << offset;
+			bandit_file << YAML::Literal << "\n";
+			bandit_file << YAML::Key << "MaxAngle:";
+			bandit_file << YAML::Value << maxAngle;
+			bandit_file << YAML::Literal << "\n";
+			bandit_file << YAML::Key << "MinAngle:";
+			bandit_file << YAML::Value << minAngle;
+			bandit_file << YAML::Literal << "\n";
+			bandit_file << YAML::EndMap;
 		}
 		ros::spinOnce();
 		ros::Rate(20).sleep();
