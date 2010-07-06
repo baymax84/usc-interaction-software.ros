@@ -109,7 +109,7 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 	{	
 		angle_deg += direction[p_id] * p_angle_increment_deg;
 		desiredJointPos->angle = deg_to_rad(angle_deg);//publishes new angle
-		ros::Duration(2).sleep();
+		ros::Duration(3).sleep();
 		
 		currentPose = rad_to_deg( joint_positions->at(p_id) );//stores the value at the p_id-th position in array joint_position to currentPose
 
