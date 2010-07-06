@@ -34,7 +34,9 @@ tf::TransformBroadcaster* tb;
 
 std::string checkerboard_frame;
 
-int nx = 8;
+#define RTOD(a) ((a) * 180.0 / M_PI )
+
+int nx = 7;
 int ny = 6;
 
 std::vector<cv::Point3f> getObjPoints( int x, int y, double size )
@@ -76,16 +78,40 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
       cv::Mat rvec(4,1, CV_32F), tvec(4,1,CV_32F);
       
       image_geometry::PinholeCameraModel pcam;
-      pcam.fromCameraInfo( infomsg);
-      std::vector<cv::Point3f> objpts = getObjPoints(nx,ny,.1016);
+      pcam.fromCameraInfo(infomsg);
+      std::vector<cv::Point3f> objpts = getObjPoints(nx,ny,.104);
 
       cv::solvePnP( objpts, corners, pcam.intrinsicMatrix(), pcam.distortionCoeffs(), rvec, tvec );
       
+			std::vector<cv::Point2f> imgpts2;
+			cv::projectPoints( objpts, rvec, tvec, pcam.intrinsicMatrix(), pcam.distortionCoeffs(), imgpts2 );
+
       tf::Transform checktf;
       checktf.setOrigin( tf::Vector3(tvec.at<double>(0,0),tvec.at<double>(0,1), tvec.at<double>(0,2) ) );
-
-			checktf.setRotation( tf::Quaternion(rvec.at<double>(0,2), rvec.at<double>(0,1), rvec.at<double>(0,0)+M_PI ));
 			
+			cv::circle( img, imgpts2[0], 10, CV_RGB(255,0, 0), 3 );
+			cv::circle( img, imgpts2[nx*ny-1], 10, CV_RGB(0,0, 255), 3 );
+/*
+			for( int i = 0; i < nx*ny; i+= nx )
+			{
+				cv::circle( img, imgpts2[i], 10, CV_RGB(255,0, 0), 3 );
+			}
+*/
+
+			tf::Quaternion quat;
+			double rx = rvec.at<double>(0,0);
+			double ry = rvec.at<double>(0,1);
+			double rz = rvec.at<double>(0,2);
+
+			double rxp = rx;
+			double ryp = ry;
+			double rzp = rz;
+
+			quat.setRPY( ryp, rxp, rzp );
+			ROS_INFO( "rx: %0.2f ry: %0.2f rz: %0.2f", RTOD(rx), RTOD(ry), RTOD(rz) );
+			ROS_INFO( "rx: %0.2f ry: %0.2f rz: %0.2f", RTOD(rxp), RTOD(ryp), RTOD(rzp) );
+
+			checktf.setRotation( quat );
       tb->sendTransform(tf::StampedTransform(checktf, msg->header.stamp, msg->header.frame_id, checkerboard_frame ));
       ROS_INFO("published frame");
     }
@@ -97,8 +123,8 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
   }
 
   // bundle up image with checkerboard dots drawn for export
-  //cv::imshow("corners", img );
-  //cv::waitKey(10);
+  cv::imshow("corners", img );
+  cv::waitKey(10);
  }
 
 int main( int argc, char* argv[] )
@@ -107,6 +133,7 @@ int main( int argc, char* argv[] )
   ros::NodeHandle nh;
 	ros::NodeHandle nh_priv("~");
   tb = new tf::TransformBroadcaster();
+	cvNamedWindow( "corners", 1 );
 	nh_priv.param("child_frame_id", checkerboard_frame,std::string("checkerboard"));
   image_transport::ImageTransport it(nh);
   image_transport::CameraSubscriber image_sub = it.subscribeCamera("image", 1, image_cb );
