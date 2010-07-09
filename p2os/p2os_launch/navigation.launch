@@ -17,7 +17,4 @@
 		<param name="conservative_reset_dist" type="double" value="3.0" />
 		<param name="controller_frequency" type="double" value="15.0" />
 	</node>
-	
-	<!-- run corequisites -->
-	<include file="$(find p2os_launch)/tf_hokuyo_p2os_teleop_joy.launch" />
 </launch>

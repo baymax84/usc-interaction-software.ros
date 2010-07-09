@@ -1,10 +1,4 @@
 <launch>
-	<!-- run corequisites -->
-	<include file="$(find p2os_launch)/p2os_teleop_joy.launch" />
-	
 	<!-- publish the static transform from the center of the robot to the laser rangefinder (required for slam_gmapping) -->
 	<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.1397 0 0 0 base_link laser 100" />
-	
-	<!-- assuming we're using a hokuyo laser, start up the hokuyo node -->
-	<node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" />
 </launch>
