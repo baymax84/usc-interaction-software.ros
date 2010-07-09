@@ -7,7 +7,4 @@
 		<param name="ymin" type="double" value="-2" />
 		<param name="ymax" type="double" value="2" />
 	</node>
-	
-	<!-- run corequisites -->
-	<include file="$(find p2os_launch)/tf_hokuyo_p2os_teleop_joy.launch" />
 </launch>
