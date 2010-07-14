@@ -96,7 +96,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 			checker_sum = currentPose >= lastPose? true:false;
 		}
 		else{
-			if (p_id == 2 || p_id == 4 || p_id == 6 || p_id == 9 || p_id == 11 || p_id == 13){
+			if (p_id == 2 || p_id == 4 || p_id == 9 || p_id == 11){
 				checker_sum = currentPose < lastPose? true:false;
 			}
 			else
