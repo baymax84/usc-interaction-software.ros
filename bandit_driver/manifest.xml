@@ -1,0 +1,14 @@
+<package>
+  <description>A ROS node wrapped around libbandit</description>
+  <author>Jeremy Leibs</author>
+  <license>BSD</license>
+  <review status="experimental" notes=""/>
+  <depend package="roscpp" />
+  <depend package="libbandit" />
+	<rosdep name="fltk"/>
+  <depend package="bandit_msgs" />
+	<depend package="sensor_msgs"/>
+  <rosdep name="xmlrpcpp"/>
+  <depend package="yaml_cpp"/>
+  <url></url>
+</package>

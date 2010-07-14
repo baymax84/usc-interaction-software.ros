@@ -1,0 +1,14 @@
+<package>
+  <description brief="Bandit messages">
+    Messages for interfacing with the bandit humanoid robot.
+  </description>
+  <author>Jeremy Leibs</author>
+  <license>BSD</license>
+  <review status="experimental" notes=""/>
+  <url></url>
+  <depend package="std_msgs"/>
+  <export>
+    <cpp cflags="-I${prefix}/msg/cpp -I${prefix}/srv/cpp"/>
+  </export>
+</package>
+
