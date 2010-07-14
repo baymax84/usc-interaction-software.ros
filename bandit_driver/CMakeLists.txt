@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 2.4.6)
+include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+
+FIND_PACKAGE( FLTK REQUIRED )
+INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
+LINK_LIBRARIES(${FLTK_LIBRARIES})
+
+rosbuild_init()
+rosbuild_add_executable(bandit_node bandit_node.cpp)
+rosbuild_add_executable(bandit_mover bandit_mover.cpp)
+rosbuild_add_executable(fake_bandit fake_bandit.cpp)
+rosbuild_add_executable(bandit_calib bandit_calib.cpp)
+rosbuild_add_executable(bandit_calib_version1 bandit_calib_version1.cpp)
+rosbuild_add_executable(bandit_yaml_parser bandit_yaml_parser.cpp)
+rosbuild_add_executable(bandit_node_edit bandit_node_edit.cpp)
