@@ -20,13 +20,13 @@
 		<visual name="8020_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="8020_geom">
-				<mesh filename="package://interaction_urdf/meshes/bandit_mesh/grid1.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/grid1.stl"/>
 			</geometry>
 			<material name="Silver">
 					<color rgba="0.65 0.65 0.65 1.0"/>
 			</material>
 <!-- 					<material name="texture">
-					<texture filename="package://interaction_urdf/meshes/bandit_mesh/metal1.jpg"/>
+					<texture filename="package://bandit_urdf/meshes/bandit_mesh/metal1.jpg"/>
 					</material> -->
 		</visual>
 		<collision>

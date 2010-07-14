@@ -7,9 +7,9 @@
 
 
  
-  <include filename="$(find interaction_urdf)/defs/common.xacro"/>
+  <include filename="$(find bandit_urdf)/defs/common.xacro"/>
   <!--<include filename="$(find pr2_description)/urdf/common.xacro"/>-->
-  <include filename="$(find interaction_urdf)/defs/materials.xacro"/>
+  <include filename="$(find bandit_urdf)/defs/materials.xacro"/>
 
  <xacro:macro name="pioneer2dx" params="name">
     <link name="base_link">
@@ -22,7 +22,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <!--<mesh filename="package://interaction_urdf/meshes/chassis.mesh"/>-->
+          <!--<mesh filename="package://bandit_urdf/meshes/chassis.mesh"/>-->
           <box size="0.445 0.277 0.17"/>
         </geometry>
         <material name="Red"/>

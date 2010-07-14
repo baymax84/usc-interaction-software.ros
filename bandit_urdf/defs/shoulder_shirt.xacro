@@ -6,7 +6,7 @@
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        xmlns:xacro="http://ros.org/wiki/xacro">
 
-	<include filename="$(find interaction_urdf)/defs/common.xacro"/>
+	<include filename="$(find bandit_urdf)/defs/common.xacro"/>
 	<property name="PI" value="3.14"/>
 	<property name="RCon" value="0.01744"/>
 
@@ -44,7 +44,7 @@
 			<visual name="${side}_shoulder_mounting_link_visual">
 				<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>
 				<geometry name="${side}_shoulder_mounting_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/shoulder_cover_${side}_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/shoulder_cover_${side}_small.stl"/>
 					<!--<box size="0.080 0.085 ${shoulder_mounting_link_z}"/>-->
 				</geometry>
 				<material name="SweaterRed"/>
@@ -84,7 +84,7 @@
 			<visual name="${side}_shoulder_link_visual">
 				<origin xyz="0 ${-reflect*0.0} 0" rpy="0 ${M_PI/2} 0"/>
 				<geometry name="${side}_shoulder_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/bicep_cover_${side}_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/bicep_cover_${side}_small.stl"/>
 				</geometry>
 				<material name="SweaterRed"/>
 			</visual>
@@ -121,7 +121,7 @@
 			<visual name="${side}_bicep_link_visual">
 				<origin xyz="0 0 0" rpy="0 ${-M_PI/2} ${-M_PI/2}"/>
 				<geometry name="${side}_bicep_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/elbow_cover_${side}_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/elbow_cover_${side}_small.stl"/>
 					<!--<box size="0.050 0.050 0.065"/>-->
 				</geometry>
 				<material name="SweaterRed"/>
@@ -160,7 +160,7 @@
 				<origin xyz="0 0 0" rpy="0 ${M_PI/2} ${M_PI/2}"/>
 				<!--<origin xyz="0 0 -0.025" rpy="0 ${M_PI/2} ${M_PI/2}"/>-->
 				<geometry name="${side}_forearm_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/forearm_cover_${side}_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/forearm_cover_${side}_small.stl"/>
 					<!--<box size="0.068 0.065 0.095"/>-->
 				</geometry>
 				<material name="SweaterRed"/>
@@ -199,7 +199,7 @@
 			<visual name="${side}_wrist_link_visual">
 				<origin xyz="0 0 -0.01" rpy="${M_PI/2} 0 ${M_PI/2}"/>
 				<geometry name="${side}_wrist_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/wrist_cover_${side}_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/wrist_cover_${side}_small.stl"/>
 					<!--<box size="0.054 0.054 0.055"/>-->
 				</geometry>
 				<material name="NewFace"/>
@@ -238,7 +238,7 @@
 			<visual name="${side}_hand_link_visual">
 				<origin xyz="0 0 -.00" rpy="${M_PI/2} 0 0"/>
 				<geometry name="${side}_hand_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/${side}_hand_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/${side}_hand_small.stl"/>
 					
 					<!--<box size="0.060 0.060 0.080"/>-->
 				</geometry>
@@ -277,7 +277,7 @@
 			<visual name="${side}_thumb_link_visual">
 				<origin xyz="0 0 0" rpy="${M_PI/2} ${-M_PI/2} 0"/>
 				<geometry name="${side}_thumb_link_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/${side}_thumb_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/${side}_thumb_small.stl"/>
 					<!--<box size="0.030 0.025 0.06"/>-->
 				</geometry>
 				<material name="NewFace"/>

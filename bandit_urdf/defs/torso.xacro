@@ -5,7 +5,7 @@
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <include filename="$(find interaction_urdf)/defs/torso.gazebo.xacro" />
+  <include filename="$(find bandit_urdf)/defs/torso.gazebo.xacro" />
 	
 	
 	<xacro:macro name="bandit_torso" params="name parent *origin">
@@ -31,7 +31,7 @@
     	  <origin xyz="0 0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
     	  <!--<origin xyz="0 0 0.05" rpy="${M_PI/2} 0 ${M_PI/2}"/>-->
       	<geometry name="${name}_geom">
-					<mesh filename="package://interaction_urdf/meshes/bandit_mesh/body_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/body_small.stl"/>
   	    <!--  <box size="0 0 0"/>-->
 	      </geometry>
 
@@ -57,7 +57,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 ${M_PI/2} ${M_PI}"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://interaction_urdf/meshes/bandit_mesh/stop_switch_small.STL"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/stop_switch_small.STL"/>
 			</geometry>
 			<material name="Red"/>
 		</visual>
