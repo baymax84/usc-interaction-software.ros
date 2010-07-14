@@ -95,9 +95,13 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 		if (direction[p_id] == -1){
 			checker_sum = currentPose >= lastPose? true:false;
 		}
-		else
-			checker_sum = currentPose <= lastPose? true:false;
-		
+		else{
+			if (p_id == 2 || p_id == 4 || p_id == 6 || p_id == 9 || p_id == 11 || p_id == 13){
+				checker_sum = currentPose < lastPose? true:false;
+			}
+			else
+				checker_sum = currentPose <= lastPose? true:false;
+		}
 		if( checker_sum )
 		{
 			if (direction[p_id] == -1){
@@ -175,22 +179,37 @@ void true_zero(const int & id)
 		case 2:
 			offset = (-157 + 60);
 			truezero = minAngle - offset;
+			if (truezero > 0){
+				truezero = - truezero;
+			}
 			break;
 		case 3:
 			offset = (85 + 90);
 			truezero = maxAngle - offset;
+			if (truezero > 0){
+				truezero = - truezero;
+			}
 			break;
 		case 4:
 			offset = (-85 + 30);
 			truezero = minAngle - offset;
+			if (truezero > 0){
+				truezero = - truezero;
+			}
 			break;
 		case 5:
 			offset = (68 + 60);
 			truezero = maxAngle - offset;
+			if (truezero < 0){
+				truezero = - truezero;
+			}
 			break;
 		case 6:
 			offset = 77;
 			truezero = maxAngle - offset;
+			if (truezero > 0){
+				truezero = - truezero;
+			}
 			break;
 		case 7:
 			offset = (57 - 30);
@@ -204,22 +223,37 @@ void true_zero(const int & id)
 		case 9:
 			offset = (-158 + 60);
 			truezero = minAngle - offset;
+			if (truezero < 0){
+				truezero = - truezero;
+			}
 			break;
 		case 10:
 			offset = (80 + 90);
 			truezero = maxAngle - offset;
+			if (truezero < 0){
+				truezero = - truezero;
+			}
 			break;
 		case 11:
 			offset = (-150 + 30);
 			truezero = minAngle - offset;
+			if (truezero < 0){
+				truezero = - truezero;
+			}
 			break;
 		case 12:
 			offset = (61 + 60);
 			truezero = maxAngle - offset;
+			if (truezero > 0){
+				truezero = - truezero;
+			}
 			break;
 		case 13:
 			offset = 87;
 			truezero = maxAngle - offset;
+			if (truezero < 0){
+				truezero = - truezero;
+			}
 			break;
 		case 14:
 			offset = (57 - 30); //this joint is inoperational on Bandit 2
@@ -283,16 +317,16 @@ int main( int argc, char* argv[] )
 	if(ros::ok()){
 		
 		for ( int z_id = 0; z_id < 19; z_id++){
-			if(z_id == 6 || z_id == 7 || z_id == 8 || z_id == 13 || z_id == 14 || z_id == 15){
-				calibrateJoint(z_id, 10, position_zero);
+			if(z_id == 3 || z_id == 4 || z_id == 10 || z_id == 11){
+				calibrateJoint(z_id, 30, position_zero);
 				true_zero(z_id);
 			}
-			else if(z_id == 4 || z_id == 11){
+			else if(z_id == 2 || z_id == 9){
 				calibrateJoint(z_id, 40, position_zero);
 				true_zero(z_id);
 			}
 			else {
-				calibrateJoint(z_id, 30, position_zero);
+				calibrateJoint(z_id, 10, position_zero);
 				true_zero(z_id);				
 			}
 			
