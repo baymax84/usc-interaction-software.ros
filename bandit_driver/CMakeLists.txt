@@ -6,6 +6,11 @@ INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
 LINK_LIBRARIES(${FLTK_LIBRARIES})
 
 rosbuild_init()
+
+#set the default path for built executables to the "bin" directory
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+
 rosbuild_add_executable(bandit_node bandit_node.cpp)
 rosbuild_add_executable(bandit_mover bandit_mover.cpp)
 rosbuild_add_executable(fake_bandit fake_bandit.cpp)
