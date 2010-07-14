@@ -130,13 +130,13 @@ void Bandit::setJointPos(uint16_t id, double angle)
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
+/*
   if (angle > joint->second.max)
     angle = joint->second.max;
   
   if (angle < joint->second.min)
     angle = joint->second.min;
-
+*/
   int16_t pos = (joint->second.direction * angle + joint->second.offset) / joint->second.scale;
   
   switch (joint->second.type)
