@@ -32,7 +32,7 @@
 		  </geometry>
 	  	</collision>
 	  </link>
-	<!--DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN-->
+
 	<joint name="bandit_logo_joint" type="fixed">
 		<origin xyz="0 0 0"/>
 		<axis xyz="0 1 0"/>
@@ -68,7 +68,6 @@
 		
 	</xacro:macro>
 
-<!-- dasf -->
 	<link name="bandit_stop_link">
 		<inertial>
 			<mass value="0"/>	
@@ -96,6 +95,5 @@
 		<parent link="bandit_torso_link"/>
 		<child link="bandit_stop_link"/>
 	</joint>
-<!-- dasf -->
 
 </robot>
