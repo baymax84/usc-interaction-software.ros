@@ -24,12 +24,6 @@
 		<origin xyz="-0.00 0 ${body_height/2}" rpy="0 0 0"/>
 	</xacro:bandit_torso>
 
-<!--DANGO
-  <xacro:bandit_logo name="bandit_logo" parent="bandit_torso_link">
-    <origin xyz="0 1.0 0" rpy="0 0 0"/>
-  </xacro:bandit_logo>
-DANGO-->
-
 	<xacro:bandit_head name="bandit_head" parent="bandit_torso_link">
 			<origin xyz="0 0 ${body_height/2 +neck_height/2+0.01}" rpy="0 0 0"/>
 		<!--<origin xyz="0 0 ${body_height/2+neck_height/2+0.01}" rpy="0 0 0"/>-->
