@@ -98,7 +98,7 @@
 		<!-- -->
 		<joint name="${side}_shoulder_bicep_joint" type="revolute">
 			<origin xyz="0 0 ${-.150}"/>
-			<axis xyz="0 0 1"/>
+			<axis xyz="0 0 ${reflect}"/>
 			<parent link="${side}_shoulder_link"/>
 			<child link="${side}_bicep_link"/>
 			<limit lower="${-reflect*M_PI/4-1.5}" 
@@ -174,9 +174,9 @@
 		</link>	
 		<!-- -->
 		<joint name="${side}_forearm_wrist_joint" type="revolute">
-			<origin xyz="0 0 -0.145"/>
+			<origin xyz="0 0 -0.145" rpy="0 0 ${-reflect * M_PI/2}"/>
 			<!--<origin xyz="0 0 -0.090"/>-->
-			<axis xyz="0 0 1"/>
+			<axis xyz="0 0 ${reflect}"/>
 			<parent link="${side}_forearm_link"/>
 			<child link="${side}_wrist_link"/>
 			<limit lower="${reflect*M_PI/4-1.5}" 
@@ -289,7 +289,6 @@
 				</geometry>
 			</collision>
 		</link>	
-
 		<!--
 		<joint name="" type="revolute">
 			<origin xyz=""/>
