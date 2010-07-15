@@ -25,7 +25,7 @@
 			<material name="Silver">
 					<color rgba="0.65 0.65 0.65 1.0"/>
 			</material>
-<!-- 					<material name="texture">
+<!-- 					<material name="GridTexture">
 					<texture filename="package://bandit_urdf/meshes/bandit_mesh/metal1.jpg"/>
 					</material> -->
 		</visual>
@@ -216,8 +216,11 @@
 		<geometry name="pioneer_geom">
 			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/${suffix}_wheel.stl"/>
 		</geometry>
-		<material name="WheelBlack">
+<!--		<material name="WheelBlack">
 			<color rgba="0.117 0.117 0.117 1"/>
+		</material>-->
+		<material name="TireTexture">
+			<texture filename="package://bandit_urdf/meshes/bandit_mesh/tire1.jpg"/>
 		</material>
 	</visual>
 	<collision>
@@ -300,6 +303,34 @@
 		<child link="front_sonar"/>
 	</joint>
 
+	<link name="front_sonar_rim">
+		<inertial>
+			<mass value="0"/>	
+			<origin xyz="0 0 0"/>
+			<inertia ixx="1" ixy="0" ixz="0"
+				 iyy="1" iyz="0" izz="1"/>
+		</inertial>
+		<visual name="base_visual">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry name="pioneer_geom">
+				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/front_rim.stl"/>
+			</geometry>
+			<material name="Black"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0 0 0"/>
+			</geometry>
+		</collision>
+	</link>
+
+	<joint name="base_front_rim_joint" type="fixed">
+		<origin xyz="-0.198 0 0.208" rpy="0 0 0"/>
+		<parent link="chassis_link"/>
+		<child link="front_sonar_rim"/>
+	</joint>
+
 	<link name="back_sonar">
 		<inertial>
 			<mass value="0"/>	
@@ -330,6 +361,33 @@
 		<child link="back_sonar"/>
 	</joint>
 
+	<link name="back_sonar_rim">
+		<inertial>
+			<mass value="0"/>	
+			<origin xyz="0 0 0"/>
+			<inertia ixx="1" ixy="0" ixz="0"
+				 iyy="1" iyz="0" izz="1"/>
+		</inertial>
+		<visual name="base_visual">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry name="pioneer_geom">
+				<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/back_rim.stl"/>
+			</geometry>
+			<material name="Black"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0 0 0"/>
+			</geometry>
+		</collision>
+	</link>
+
+	<joint name="base_back_rim_joint" type="fixed">
+		<origin xyz="0.109 0 0.209" rpy="0 0 0"/>
+		<parent link="chassis_link"/>
+		<child link="back_sonar_rim"/>
+	</joint>
 
 
 
