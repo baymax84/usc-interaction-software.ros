@@ -2,8 +2,6 @@
 #include "sensor_msgs/JointState.h"
 #include "bandit_msgs/JointArray.h"
 #include "bandit_msgs/Params.h"
-#include "bandit_msgs/CalibrateJoint.h"
-#include "bandit_msgs/CalibrateJointAll.h"
 #include "math.h"
 #include <vector>
 #include <iostream>
@@ -212,12 +210,12 @@ void true_zero(const int & id)
 			}
 			break;
 		case 7:
-			offset = (57 - 30);
-			truezero = maxAngle - offset;
+			offset = 0;
+			truezero = 0.5;
 			break;
 		case 8:
 			offset = 0;
-			truezero = minAngle - offset;
+			truezero = 0.6;
 			ROS_INFO("No Joint Calibration Available");//the gripper does not actuate
 			break;
 		case 9:
@@ -256,27 +254,27 @@ void true_zero(const int & id)
 			}
 			break;
 		case 14:
-			offset = (57 - 30); //this joint is inoperational on Bandit 2
-			truezero = maxAngle - offset;
+			offset = 0; //this joint is inoperational on Bandit 2
+			truezero = 0.5;
 			break;
 		case 15:
 			offset = 0;
-			truezero = minAngle - offset;
+			truezero = 0.5;
 			ROS_INFO("No Joint Calibration Available");//the gripper does not actuate
 			break;
 		case 16:
 			offset = 0;
-			truezero = minAngle - offset;
+			truezero = 0.2;
 			ROS_INFO("No Joint Calibration Available");
 			break;
 		case 17:
 			offset = 0;
-			truezero = minAngle - offset;
+			truezero = 0.25;
 			ROS_INFO("No Joint Calibration Available");
 			break;
 		case 18:
 			offset = 0;
-			truezero = minAngle - offset;
+			truezero = 0.25;
 			ROS_INFO("No Joint Calibration Available");
 			break;
 		default:
