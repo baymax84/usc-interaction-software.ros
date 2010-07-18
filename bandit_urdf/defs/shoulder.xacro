@@ -23,13 +23,13 @@
 			<insert_block name="origin"/>
 			<parent link="${parent}"/>
 			<child link="${side}_shoulder_mounting_link"/>
-			<limit lower="${reflect*M_PI/4-1.5}" 
-			upper="${reflect*M_PI/4+1.5}" effort="30" velocity="6"/>
+			<limit lower="${-M_PI}" 
+			upper="${M_PI}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
 			<safety_controller k_position="100" k_velocity="10"
-			soft_lower_limit="${reflect*M_PI/4-1.5+0.15}"
-			soft_upper_limit="${reflect*M_PI/4+1.5-0.15}"/>
+			soft_lower_limit="${-M_PI}"
+			soft_upper_limit="${M_PI}"/>
 		</joint>
 		
 		<link name="${side}_shoulder_mounting_link">
@@ -62,13 +62,13 @@
 			<axis xyz="${reflect} 0 0"/>
 			<parent link="${side}_shoulder_mounting_link"/>
 			<child link="${side}_shoulder_link"/>
-			<limit lower="${reflect*M_PI/4-1.5}" 
-			upper="${reflect*M_PI/4+1.5}" effort="30" velocity="6"/>
+			<limit lower="${-0.34906585}" 
+			upper="${M_PI}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
 			<safety_controller k_position="100" k_velocity="10"
-			soft_lower_limit="${reflect*M_PI/4-1.5+0.15}"
-			soft_upper_limit="${reflect*M_PI/4+1.5-0.15}"/>
+			soft_lower_limit="${-0.34906585}"
+			soft_upper_limit="${M_PI}"/>
 		</joint>
 
 		<link name="${side}_shoulder_link">
@@ -101,13 +101,13 @@
 			<axis xyz="0 0 ${reflect}"/>
 			<parent link="${side}_shoulder_link"/>
 			<child link="${side}_bicep_link"/>
-			<limit lower="${-reflect*M_PI/4-1.5}" 
-			upper="${-reflect*M_PI/4+1.5}" effort="30" velocity="6"/>
+			<limit lower="${1.57079633}" 
+			upper="${1.57079633}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
 			<safety_controller k_position="100" k_velocity="10"
-			soft_lower_limit="${-reflect*M_PI/4-1.5+0.15}"
-			soft_upper_limit="${-reflect*M_PI/4+1.5-0.15}"/>
+			soft_lower_limit="${-1.57079633}"
+			soft_upper_limit="${1.57079633}"/>
 		</joint>
 		
 		<link name="${side}_bicep_link">
@@ -139,13 +139,13 @@
 			<axis xyz="0 ${-1} 0"/>
 			<parent link="${side}_bicep_link"/>
 			<child link="${side}_forearm_link"/>
-			<limit lower="${reflect*M_PI/4-1.5}" 
-			upper="${reflect*M_PI/4+1.5}" effort="30" velocity="6"/>
+			<limit lower="${0}" 
+			upper="${1.91986218}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
 			<safety_controller k_position="100" k_velocity="10"
-			soft_lower_limit="${reflect*M_PI/4-1.5+0.15}"
-			soft_upper_limit="${reflect*M_PI/4+1.5-0.15}"/>
+			soft_lower_limit="${0}"
+			soft_upper_limit="${1.91986218}"/>
 		</joint>
 		
 		<link name="${side}_forearm_link">
@@ -179,13 +179,13 @@
 			<axis xyz="0 0 ${reflect}"/>
 			<parent link="${side}_forearm_link"/>
 			<child link="${side}_wrist_link"/>
-			<limit lower="${reflect*M_PI/4-1.5}" 
-			upper="${reflect*M_PI/4+1.5}" effort="30" velocity="6"/>
+			<limit lower="${-M_PI/2.0}" 
+			upper="${M_PI/2.0}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
 			<safety_controller k_position="100" k_velocity="10"
-			soft_lower_limit="${reflect*M_PI/4-1.5+0.15}"
-			soft_upper_limit="${reflect*M_PI/4+1.5-0.15}"/>
+			soft_lower_limit="${-M_PI/2.0}"
+			soft_upper_limit="${M_PI/2.0}"/>
 		</joint>
 
 		<link name="${side}_wrist_link">
@@ -218,13 +218,13 @@
 			<axis xyz="0 -1 0"/>
 			<parent link="${side}_wrist_link"/>
 			<child link="${side}_hand_link"/>
-			<limit lower="${reflect*M_PI/4-1.5}" 
-			upper="${reflect*M_PI/4+1.5}" effort="30" velocity="6"/>
+			<limit lower="${-M_PI/2.0}" 
+			upper="${M_PI/2.0}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
 			<safety_controller k_position="100" k_velocity="10"
-			soft_lower_limit="${reflect*M_PI/4-1.5+0.15}"
-			soft_upper_limit="${reflect*M_PI/4+1.5-0.15}"/>
+			soft_lower_limit="${-M_PI/2.0}"
+			soft_upper_limit="${M_PI/2.0}"/>
 		</joint>
 
 		<link name="${side}_hand_link">
