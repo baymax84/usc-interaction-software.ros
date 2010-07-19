@@ -284,7 +284,6 @@
 		<!--<xacro:bandit_head_gazebo name="${name}"/>-->
 	</xacro:macro>
 
-<!-- DAN -->
 <xacro:macro name="pupil" params="suffix reflect">
 	<joint name="pupil_${suffix}_joint" type="fixed">
 		<origin xyz="0.0012 ${reflect*0.001} -0.032" rpy="0 0 0"/>
@@ -319,6 +318,5 @@
 
 <xacro:pupil suffix="left" reflect="-4.8"/>
 <xacro:pupil suffix="right" reflect="-4.6"/>
-<!-- DAN -->
 
 </robot>
