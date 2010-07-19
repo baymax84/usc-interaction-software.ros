@@ -25,8 +25,9 @@
 #include <image_geometry/pinhole_camera_model.h>
 #include <cv_bridge/CvBridge.h>
 #include <tf/transform_broadcaster.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+//#include <opencv/cv.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
 
 sensor_msgs::CvBridge img_bridge;
@@ -39,10 +40,10 @@ std::string checkerboard_frame;
 int nx = 7;
 int ny = 6;
 
-std::vector<cv::Point3f> getObjPoints( int x, int y, double size )
+cv::Mat getObjPoints( int x, int y, double size )
 {
   bool xodd = x % 2 == 1; bool yodd = x % 2 == 1;
-  std::vector<cv::Point3f> ret;
+  cv::Mat ret(cv::Size(x*y,3), CV_64FC1);
 
   for( int i = 0; i < y; i++ )
   {
@@ -53,8 +54,9 @@ std::vector<cv::Point3f> getObjPoints( int x, int y, double size )
     {
       double xcoord = size*(-x/2+j);
       if( !xodd ) xcoord += size/2.0;
-      cv::Point3f coord = cv::Point3f( xcoord, ycoord, 0);
-      ret.push_back(coord);
+			ret.at<double>(i*y+j,0) = xcoord;
+			ret.at<double>(i*y+j,1) = ycoord;
+			ret.at<double>(i*y+j,1) = 0;
     }
   }
   return ret;
@@ -67,11 +69,18 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
   try
   {
     img = img_bridge.imgMsgToCv(msg, "bgr8" );
-    
+    CvMat oldimg = img;
     std::vector<cv::Point2f> corners;
-    if( cv::findChessboardCorners( img, cvSize(nx,ny), corners ) )
-    {
-      cv::drawChessboardCorners(img, cvSize(nx,ny), corners, true );
+		if( cv::findChessboardCorners(img, cvSize(nx,ny), corners ) )
+		{
+			cv::Mat cornersmat( cv::Size(corners.size(), 2), CV_64FC1 );
+			for( int i = 0; i < corners.size(); i++ )
+			{
+				cornersmat.at<double>(i,0) = corners[i].x;
+				cornersmat.at<double>(i,1) = corners[i].y;
+			}
+
+      cv::drawChessboardCorners(img, cvSize(nx,ny), cornersmat, true );
 
       std::vector<cv::Point2f> imgpts;
       double fR3[3], fT3[3];
@@ -80,9 +89,9 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
 
       image_geometry::PinholeCameraModel pcam;
       pcam.fromCameraInfo(infomsg);
-      std::vector<cv::Point3f> objpts = getObjPoints(nx,ny,.108);
+      cv::Mat objpts = getObjPoints(nx,ny,.108);
 
-      cv::solvePnP( objpts, corners, pcam.intrinsicMatrix(), pcam.distortionCoeffs(), rvec, tvec );
+      cv::solvePnP( objpts, cornersmat, pcam.intrinsicMatrix(), pcam.distortionCoeffs(), rvec, tvec );
       
       tf::Transform checktf;
       checktf.setOrigin( tf::Vector3(fT3[0], fT3[1], fT3[2] ) );
