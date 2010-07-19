@@ -97,7 +97,7 @@
 		</link>
 		<!-- -->
 		<joint name="${side}_shoulder_bicep_joint" type="revolute">
-			<origin xyz="0 0 ${-.150}"/>
+			<origin xyz="0 0 ${-.161}"/>
 			<axis xyz="0 0 ${reflect}"/>
 			<parent link="${side}_shoulder_link"/>
 			<child link="${side}_bicep_link"/>
@@ -119,7 +119,7 @@
 				iyz="-0.05886609911" izz="0.27353821674"/>
 			</inertial>
 			<visual name="${side}_bicep_link_visual">
-				<origin xyz="0 0 0" rpy="0 ${-M_PI/2} ${-M_PI/2}"/>
+				<origin xyz="0 0 0.0" rpy="0 ${-M_PI/2} ${M_PI/2}"/>
 				<geometry name="${side}_bicep_link_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/elbow_cover_${side}_small.stl"/>
 					<!--<box size="0.050 0.050 0.065"/>-->
