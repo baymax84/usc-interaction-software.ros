@@ -24,7 +24,7 @@
 				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/background.stl"/>
 			</geometry>
 			<material name="BackgroundFile">
-				<texture filename="package://bandit_urdf/meshes/bandit_mesh/background6.jpg"/>
+				<texture filename="package://bandit_urdf/meshes/bandit_mesh/gradients/background6.jpg"/>
 			</material>
 		</visual>
 		<collision>
@@ -56,7 +56,7 @@
 				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/background.stl"/>
 			</geometry>
 			<material name="groundFile">
-				<texture filename="package://bandit_urdf/meshes/bandit_mesh/background5.jpg"/>
+				<texture filename="package://bandit_urdf/meshes/bandit_mesh/gradients/background5.jpg"/>
 			</material>
 		</visual>
 		<collision>

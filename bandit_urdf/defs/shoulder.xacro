@@ -47,12 +47,12 @@
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/shoulder_cover_${side}_small.stl"/>
 					<!--<box size="0.080 0.085 ${shoulder_mounting_link_z}"/>-->
 				</geometry>
-				<material name="Grey"/>
+				<material name="Arms"/>
 			</visual>
 			<collision name="${side}_shoulder_mounting_link_collision">
-				<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>
+				<origin xyz="0 0 -0.05" rpy="${RCon*90} 0 ${RCon*90}"/>
 				<geometry name="${side}_shoulder_mounting_link_geom">
-					<box size="0.080 0.085 ${shoulder_mounting_link_z}"/>
+					<box size="0.105 0.175 ${shoulder_mounting_link_z}"/>
 				</geometry>
 			</collision>
 		</link>
@@ -86,12 +86,12 @@
 				<geometry name="${side}_shoulder_link_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/bicep_cover_${side}_small.stl"/>
 				</geometry>
-				<material name="Grey"/>
+				<material name="Arms"/>
 			</visual>
 			<collision name="${side}_shoulder_link_collision">
 				<origin xyz="0 0 -0.04" rpy="0 0 0"/>
 				<geometry name="${side}_shoulder_link_geom">
-					<box size="0.080 0.080 ${shoulder_link_z}"/>
+					<box size="0 0 0"/>
 				</geometry>
 			</collision>
 		</link>
@@ -124,12 +124,12 @@
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/elbow_cover_${side}_small.stl"/>
 					<!--<box size="0.050 0.050 0.065"/>-->
 				</geometry>
-				<material name="Grey"/>
+				<material name="Arms"/>
 			</visual>
 			<collision name="${side}_bicep_link_collision">
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry name="${side}_bicep_link_geom">
-					<box size="0.050 0.050 0.065"/>
+					<box size="0 0 0"/>
 				</geometry>
 			</collision>
 		</link>
@@ -163,12 +163,12 @@
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/forearm_cover_${side}_small.stl"/>
 					<!--<box size="0.068 0.065 0.095"/>-->
 				</geometry>
-				<material name="Grey"/>
+				<material name="Arms"/>
 			</visual>
 			<collision name="${side}_forearm_link_collision">
-				<origin xyz="0 0 -0.025" rpy="0 0 0"/>
+				<origin xyz="0 0 -0.075" rpy="0 0 0"/>
 				<geometry name="${side}_forearm_link_geom">
-					<box size="0.068 0.065 0.095"/>
+					<box size="0 0 0"/>
 				</geometry>
 			</collision>
 		</link>	
@@ -202,12 +202,12 @@
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/wrist_cover_${side}_small.stl"/>
 					<!--<box size="0.054 0.054 0.055"/>-->
 				</geometry>
-				<material name="Grey"/>
+				<material name="Wrist"/>
 			</visual>
 			<collision name="">
 				<origin xyz="0 0 -0.01" rpy="0 0 0"/>
 				<geometry name="${side}_wrist_link_geom">
-					<box size="0.054 0.054 0.055"/>
+					<box size="0 0 0"/>
 				</geometry>
 			</collision>
 		</link>	
@@ -242,12 +242,12 @@
 					
 					<!--<box size="0.060 0.060 0.080"/>-->
 				</geometry>
-				<material name="Grey"/>
+				<material name="Hands"/>
 			</visual>
 			<collision name="${side}_hand_link_collision">
-				<origin xyz="0 0 -.03" rpy="0 0 0"/>
+				<origin xyz="-0.05 0 -0.06" rpy="0 0 0"/>
 				<geometry name="${side}_hand_link_geom">
-					<box size="0.060 0.060 0.080"/>
+					<box size="0.03 0.06 0.080"/>
 				</geometry>
 			</collision>
 		</link>	
@@ -280,7 +280,7 @@
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/${side}_thumb_small.stl"/>
 					<!--<box size="0.030 0.025 0.06"/>-->
 				</geometry>
-				<material name="Grey"/>
+				<material name="Hands"/>
 			</visual>
 			<collision name="${side}_thumb_link_collision">
 				<origin xyz="0 0 -.015" rpy="0 0 0"/>

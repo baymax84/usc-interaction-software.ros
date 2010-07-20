@@ -27,7 +27,7 @@
   	             izz="1"/>
     	</inertial>
 	    <visual name="${name}_visual">
-  	    <material name="torso"/>
+  	    <material name="Torso"/>
     	  <origin xyz="0 0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
     	  <!--<origin xyz="0 0 0.05" rpy="${M_PI/2} 0 ${M_PI/2}"/>-->
       	<geometry name="${name}_geom">
@@ -37,9 +37,9 @@
 
     	</visual>
 	    <collision>
-  	    <origin xyz="0 0 0" rpy="0 0 0"/>
+  	    <origin xyz="0 0 -0.067" rpy="0 0 0"/>
     	  <geometry>
-      	  <box size="0 0 0"/>
+      	  <box size="0.152 0.228 0.282"/>
 	      </geometry>
   	  </collision>
 	  </link>

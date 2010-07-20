@@ -45,13 +45,13 @@
         <geometry name="${name}_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/neck_small.stl"/>
         </geometry>
-					<material name="NewFace"/>
+					<material name="Neck"/>
       </visual>
 
       <collision name="${name}_collision">
         <origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>
         <geometry name="${name}_visual_geom">
-		<box size="0.063 0.063 0.076"/>
+		<box size="0 0 0"/>
         </geometry>
       </collision>
     </link>
@@ -89,13 +89,13 @@
         <geometry name="${name}_visual_geom">
 		<mesh filename="package://bandit_urdf/meshes/bandit_mesh/head_small.stl"/>
         </geometry>
-					<material name="NewFace"/>
+					<material name="Head"/>
       </visual>
 
       <collision name="${name}_collision">
-         <origin xyz="0 0 0" rpy="0 0 0 " />
+         <origin xyz="0.008 0 0.055" rpy="0 0 0 " />
         <geometry name="${name}_visual_geom">
-		<box size="0.127 0.158 0.175"/>
+		<box size="0.147 0.156 0.16"/>
         </geometry>
       </collision>
     </link>
@@ -130,14 +130,14 @@
         </geometry>
 					<!--  <material name="Silver"/>  -->
 					<material name="texture">
-					<texture filename="package://bandit_urdf/meshes/bandit_mesh/reflect1.jpg"/>
+					<texture filename="package://bandit_urdf/meshes/bandit_mesh/gradients/reflect1.jpg"/>
 					</material>
       </visual>
 
       <collision name="${name}_collision">
          <origin xyz="0 0 0" rpy="0 0 0 " />
         <geometry name="${name}_visual_geom">
-					<box size="0.127 0.158 0.175"/>
+					<box size="0 0 0"/>
         </geometry>
       </collision>
     </link>
@@ -163,11 +163,11 @@
                  iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
       </inertial>
       <visual name="${name}_visual">
-        <origin xyz="0 0 0" rpy="${RCon*0} 0 ${RCon*-90}"/>
+        <origin xyz="0 0 0" rpy="0 0 ${RCon*-90}"/>
         <geometry name="${name}_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/eyebrow_${side}_small.stl"/>
         </geometry>
-					<material name="NewEye"/>
+					<material name="Eyebrows"/>
       </visual>
 
       <collision name="${name}_collision">
@@ -199,7 +199,7 @@
                  iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
       </inertial>
       <visual name="${name}_visual">
-        <origin xyz="0 0 .002" rpy="${RCon*0} 0 ${RCon*-90}"/>
+        <origin xyz="0 0 .002" rpy="0 0 ${RCon*-90}"/>
         <!--<origin xyz="0 0 -0.035" rpy="${RCon*0} 0 ${RCon*-90}"/>-->
         <!--<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>-->
 
@@ -207,13 +207,13 @@
         <geometry name="${name}_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/top_lip_small.STL"/>
         </geometry>
-					<material name="LipsPink"/>
+					<material name="Lips"/>
       </visual>
 
       <collision name="${name}_collision">
          <origin xyz="0 0 0" rpy="0 0 0 " />
         <geometry name="${name}_visual_geom">
-					<box size="0.127 0.158 0.175"/>
+					<box size="0 0 0"/>
         </geometry>
       </collision>
     </link>
@@ -244,13 +244,13 @@
         <geometry name="${name}2_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/bottom_lip_small.stl"/>
         </geometry>
-					<material name="LipsPink"/>
+					<material name="Lips"/>
       </visual>
 
       <collision name="${name}2_collision">
          <origin xyz="0 0 0" rpy="0 0 0 " />
         <geometry name="${name}2_visual_geom">
-					<box size="0.127 0.158 0.175"/>
+					<box size="0 0 0"/>
         </geometry>
       </collision>
     </link>
@@ -303,7 +303,7 @@
 			<geometry name="pupil_left_geom">
 				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/middle_eye.stl"/>
 			</geometry>
-		<material name="EyeBlack">
+		<material name="Pupil">
 			<color rgba="0 0 0 1"/>
 		</material>
 		</visual>
