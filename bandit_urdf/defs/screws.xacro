@@ -20,7 +20,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -48,7 +48,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -76,7 +76,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -104,7 +104,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -132,7 +132,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -160,7 +160,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -188,7 +188,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -216,7 +216,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -244,7 +244,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -272,7 +272,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -300,7 +300,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -328,7 +328,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -356,7 +356,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -384,7 +384,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -412,7 +412,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -440,7 +440,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -468,7 +468,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -496,7 +496,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -524,7 +524,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -552,7 +552,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -580,7 +580,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -608,7 +608,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -636,7 +636,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -664,7 +664,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -692,7 +692,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -720,7 +720,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -748,7 +748,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -776,7 +776,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -804,7 +804,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -832,7 +832,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -860,7 +860,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -888,7 +888,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -920,7 +920,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -948,7 +948,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -976,7 +976,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
@@ -1004,7 +1004,7 @@
 		<visual name="base_visual">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry name="pioneer_geom">
-				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw_small.stl"/>
+				<mesh filename="package://bandit_urdf/meshes/bandit_mesh/screw.stl"/>
 			</geometry>
 			<material name="Black"/>
 		</visual>
