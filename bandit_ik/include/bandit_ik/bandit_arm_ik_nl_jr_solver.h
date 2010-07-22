@@ -38,6 +38,7 @@
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
+#include <robot_state_publisher/treefksolverposfull_recursive.hpp>
 #include <bandit_ik/bandit_arm_kinematics_utils.h>
 #include <kinematics_msgs/GetKinematicSolverInfo.h>
 #include <kinematics_msgs/PositionIKRequest.h>
