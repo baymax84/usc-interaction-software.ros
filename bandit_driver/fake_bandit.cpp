@@ -37,10 +37,32 @@ void jointCB( const bandit_msgs::JointConstPtr& j )
 
 void jointarrayCB( const bandit_msgs::JointArrayConstPtr& j )
 {
-	for( int i = 0; i < j->joints.size(); i++ )
+	for( unsigned int i = 0; i < j->joints.size(); i++ )
 	{
 		int id = j->joints[i].id;
 		double angle = j->joints[i].angle;
+		joint_pos[id] = angle;
+	}
+}
+
+void targetCB( const sensor_msgs::JointStateConstPtr& j )
+{
+	for( unsigned int i = 0; i < j->name.size(); i++ )
+	{
+		// find id of joint
+		int id = -1;
+		for( unsigned int jj = 0; jj < param_res.name.size(); jj++ )
+		{
+			if( param_res.name[jj] == j->name[i] )
+			{
+				id = param_res.id[jj];
+				break;
+			}
+		}
+
+		if( id < 0 ) break;
+
+		double angle = j->position[i];
 		joint_pos[id] = angle;
 	}
 }
@@ -51,6 +73,7 @@ int main( int argc, char* argv[] )
 	ros::NodeHandle n;
   ros::Subscriber joint_sub = n.subscribe("joint_ind", 1, jointCB );
   ros::Subscriber joints_sub = n.subscribe("joints", 1, jointarrayCB );
+  ros::Subscriber target_sub = n.subscribe("target_joints", 1, targetCB );
   joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
 
 
