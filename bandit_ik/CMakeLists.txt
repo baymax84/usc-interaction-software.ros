@@ -36,4 +36,6 @@ rosbuild_add_library(bandit_arm_kinematics_lib
 )
 
 rosbuild_add_executable(bandit_arm_kinematics_node src/main.cpp)
+rosbuild_add_executable(goto_cart src/goto_cart.cpp src/bandit_arm_kinematics_utils.cpp)
+rosbuild_add_executable(cmd_ik src/cmd_ik.cpp)
 target_link_libraries(bandit_arm_kinematics_node bandit_arm_kinematics_lib)
