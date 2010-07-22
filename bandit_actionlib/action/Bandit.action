@@ -1,0 +1,12 @@
+#goal definition
+string frame
+---
+#result definition
+int32 total_time
+float32[] result_joint_id
+float32[] result_joint_angle
+---
+#feedback
+int32 progress_time
+float32[] progress_joint_id
+float32[] progress_joint_angle
