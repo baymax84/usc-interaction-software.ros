@@ -127,8 +127,6 @@ void target_cb(const geometry_msgs::PoseStamped &t_msg)
   try
   {
 		g_tf_listener->transformPose( root_name, t_msg, tt);
-    //g_tf_listener->lookupTransform(root_name, tip_name,
-    //                               ros::Time(0), t);
   }
   catch (tf::TransformException ex)
   {
@@ -138,17 +136,6 @@ void target_cb(const geometry_msgs::PoseStamped &t_msg)
   tf::poseStampedMsgToTF( tt, t );
   tf::StampedTransform t_target_in_torso(t, ros::Time::now(),
                                          root_name, "ik_target");
-/*
-  geometry_msgs::TransformStamped target_trans_msg;
-  tf::transformStampedTFToMsg(t_target_in_torso, target_trans_msg);
-  g_tf_broadcaster->sendTransform(target_trans_msg);
-
-
-*/
-//  tf::StampedTransform t_target_origin(g_target_origin, ros::Time::now(),
-//                                         root_name, "target_origin");
-//  geometry_msgs::TransformStamped target_origin_msg;
-//  tf::transformStampedTFToMsg(t_target_origin, target_origin_msg);
  	g_tf_broadcaster->sendTransform(t_target_in_torso);
 
   ik_tool(t, j_ik);
@@ -165,9 +152,6 @@ int main(int argc, char **argv)
 
 	n.getParam("root_name", root_name );
 	n.getParam("tip_name", tip_name );
-
-  //root_name = "bandit_torso_link";
-  //tip_name = "left_hand_link";
 
   /* DFS: code to get model from parameter server */
   urdf::Model robot_model;
@@ -199,15 +183,6 @@ int main(int argc, char **argv)
   }
 
   ROS_INFO("parsed tree successfully");
-  ///////////////////////////////////////////////////////////////////////
-
-  geometry_msgs::TransformStamped world_trans;
-  world_trans.header.frame_id = "world";
-  world_trans.child_frame_id = root_name;
-  world_trans.transform.translation.x = 0;
-  world_trans.transform.translation.y = 0;
-  world_trans.transform.translation.z = 0;
-  world_trans.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw(0,0,0);
 
   // get joint maxs and mins
   boost::shared_ptr<const urdf::Link> link = robot_model.getLink(tip_name);
@@ -274,7 +249,7 @@ int main(int argc, char **argv)
 
   KDL::ChainIkSolverPos_NR_JL ik_solver_pos(chain, q_min, q_max,
                                             fk_solver_chain, ik_solver_vel, 
-                                            100, 1e-6);
+                                            1000, 1e-3);
   g_ik_solver = &ik_solver_pos;
   ros::Subscriber target_sub = n.subscribe("target_frame", 1, target_cb);
   ros::Subscriber joint_sub = n.subscribe("joint_states", 1, joint_cb);
@@ -284,19 +259,11 @@ int main(int argc, char **argv)
   tf::TransformListener tf_listener;
   g_tf_broadcaster = &tf_broadcaster;
   g_tf_listener = &tf_listener;
-  ros::Rate loop_rate(20);
 
   // set origin to be something we can comfortably reach
   g_target_origin = btTransform(btQuaternion::getIdentity(), btVector3(0, 0.1, 0));
 
-  while (ros::ok())
-  {
-    world_trans.header.stamp = ros::Time::now();
-    tf_broadcaster.sendTransform(world_trans);
-
-    loop_rate.sleep();
-    ros::spinOnce();
-  }
+	ros::spin();
   return 0;
 }
 
