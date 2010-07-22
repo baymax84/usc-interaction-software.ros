@@ -1,0 +1,17 @@
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/ROSBUILD_genaction_msgs.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/ROSBUILD_genmsg_cpp.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/ROSBUILD_genmsg_py.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/ROSBUILD_gensrv_cpp.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/bandit_action_server.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/bandit_test_client.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/clean-test-results.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/rosbuild_precompile.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/rospack_genmsg.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/rospack_genmsg_all.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/rospack_genmsg_libexe.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/rospack_gensrv.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/test.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/test-future.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/test-results.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/test-results-run.dir
+/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build/CMakeFiles/tests.dir
