@@ -146,13 +146,13 @@ class BanditAction
 						ros::Rate(10).sleep();
 					}
 					else
-						ros::Rate(5).sleep();
+						ros::Rate(3).sleep();
 				}
 				feedback.progress_time = seconds;
 				feedback.progress_joint_id.push_back( j_id[jj] );
 				feedback.progress_joint_angle.push_back( j_angle[jj] );
 				as.publishFeedback(feedback);
-				ros::Rate(10).sleep();
+				ros::Rate(5).sleep();
 			}
 			//publishes scucessful result
 		    if(success){
