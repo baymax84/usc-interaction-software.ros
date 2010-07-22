@@ -1,27 +1,28 @@
 #include "ros/ros.h"
-#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/PoseStamped.h>
 
 int main( int argc, char* argv[] )
 {
   ros::init(argc,argv,"ik_cmd");
   ros::NodeHandle n;
-  ros::Publisher joint_publisher = n.advertise<geometry_msgs::TransformStamped>("target_frame",1000);
+  ros::Publisher joint_publisher = n.advertise<geometry_msgs::PoseStamped>("target_frame",1000);
 
-  geometry_msgs::TransformStamped t;
+  geometry_msgs::PoseStamped t;
 
   t.header.stamp = ros::Time::now();
-  t.header.frame_id = "l_shoulder_pan_link";
+  t.header.frame_id = "bandit_torso_link";
+
+
+  t.pose.position.x = 0.257;
+  t.pose.position.y = 0.232;
+  t.pose.position.z = 0.082;
+ 
+  t.pose.orientation.x = -0.404;
+  t.pose.orientation.y = 0.417;
+  t.pose.orientation.z = 0.807;
+  t.pose.orientation.w = 0.108;
 
 /*
-  t.transform.translation.x = 0.207;
-  t.transform.translation.y = 0.131;
-  t.transform.translation.z = -0.185;
- 
-  t.transform.rotation.x = 0.093;
-  t.transform.rotation.y = 0.575;
-  t.transform.rotation.z = 0.812;
-  t.transform.rotation.w = -0.033;
-*/
   t.transform.translation.x = 0.782;
   t.transform.translation.y = 0.187;
   t.transform.translation.z = 0.151;
@@ -30,6 +31,7 @@ int main( int argc, char* argv[] )
   t.transform.rotation.y = -0.605;
   t.transform.rotation.z = -0.002;
   t.transform.rotation.w = 0.796;
+*/
 
   while( ros::ok() )
   {

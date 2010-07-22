@@ -5,6 +5,7 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include <tf_conversions/tf_kdl.h>
+#include <tf/transform_datatypes.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -24,7 +25,7 @@ using std::make_pair;
 using namespace Eigen;
 using namespace bandit_ik;
 
-int num_joints = 0;
+unsigned int num_joints = 0;
 
 sensor_msgs::JointState g_js, g_actual_js;
 ros::Publisher *g_joint_pub = NULL;
@@ -36,10 +37,11 @@ tf::Transform g_target_origin, g_target;
 std::vector<double> g_pose;
 std::string root_name, tip_name;
 KDL::JntArray q_min, q_max;
+
 tf::Transform fk_tool(const std::vector<double> &x) // joint angles 
 {
   map<string, double> joint_pos;
-  for( int i = 0; i <  num_joints; i++ )
+  for( unsigned int i = 0; i <  num_joints; i++ )
   {
     joint_pos.insert(make_pair(g_js.name[i], x[i]));
   }
@@ -70,8 +72,11 @@ bool ik_tool(tf::Transform t, std::vector<double> &joints)
     return false;
   }
   KDL::JntArray q_init(num_joints), q(num_joints);
-  for (int i = 0; i < num_joints; i++)
+  for ( unsigned int i = 0; i < num_joints; i++)
+	{
+		//ROS_INFO( "joint[%d]: %0.2f", i, joints[i]*180.0/M_PI );
     q_init.data[i] = joints[i];
+	}
   // populate F_dest from tf::Transform parameter
   KDL::Frame F_dest;
   tf::TransformTFToKDL(t, F_dest);
@@ -80,7 +85,7 @@ bool ik_tool(tf::Transform t, std::vector<double> &joints)
     ROS_ERROR("ik solver fail");
     return false;
   }
-  for (int i = 0; i < num_joints; i++)
+  for ( unsigned int i = 0; i < num_joints; i++)
     joints[i] = q.data[i];
   return true;
 }
@@ -88,9 +93,9 @@ bool ik_tool(tf::Transform t, std::vector<double> &joints)
 void joint_cb(const sensor_msgs::JointState &msg)
 {
   
-  for( int i = 0; i < msg.name.size(); i++ )
+  for( unsigned int i = 0; i < msg.name.size(); i++ )
   {
-    for( int j = 0; j < num_joints; j++ )
+    for( unsigned int j = 0; j < num_joints; j++ )
     {
       if( msg.name[i] == g_js.name[j] )
       {
@@ -101,17 +106,18 @@ void joint_cb(const sensor_msgs::JointState &msg)
   }
 }
 
-void target_cb(const geometry_msgs::TransformStamped &t_msg)
+void target_cb(const geometry_msgs::PoseStamped &t_msg)
 {
   // assume the transform coming in is a delta away from the center 
   // of our workspace (for now, at least)
   
-  tf::StampedTransform t;
+  tf::Stamped<tf::Pose> t;
+	geometry_msgs::PoseStamped tt;
   std::vector<double> j_ik;
   j_ik.resize(num_joints);
   if (g_actual_js.position.size() >= num_joints)
   {
-    for (int i = 0; i < num_joints ; i++)
+    for ( unsigned int i = 0; i < num_joints ; i++)
     {
       j_ik[i] = g_actual_js.position[i]; 
       ROS_INFO( "j_ik[%d]: %0.2f [%0.2f %0.2f]", i, j_ik[i]*180.0/M_PI, q_min.data[i]*180.0/M_PI, q_max.data[i]*180.0/M_PI );
@@ -120,30 +126,30 @@ void target_cb(const geometry_msgs::TransformStamped &t_msg)
 
   try
   {
-    g_tf_listener->lookupTransform(root_name, tip_name,
-                                   ros::Time(0), t);
+		g_tf_listener->transformPose( root_name, t_msg, tt);
+    //g_tf_listener->lookupTransform(root_name, tip_name,
+    //                               ros::Time(0), t);
   }
   catch (tf::TransformException ex)
   {
     ROS_ERROR("%s", ex.what());
     return;
   }
-  
-
-  tf::StampedTransform t_target_in_torso(g_target_origin * t, ros::Time::now(),
-                                         "world", "ik_target");
+  tf::poseStampedMsgToTF( tt, t );
+  tf::StampedTransform t_target_in_torso(t, ros::Time::now(),
+                                         root_name, "ik_target");
 /*
   geometry_msgs::TransformStamped target_trans_msg;
   tf::transformStampedTFToMsg(t_target_in_torso, target_trans_msg);
   g_tf_broadcaster->sendTransform(target_trans_msg);
 
-  tf::StampedTransform t_target_origin(g_target_origin, ros::Time::now(),
-                                         root_name, "target_origin");
-  geometry_msgs::TransformStamped target_origin_msg;
-  tf::transformStampedTFToMsg(t_target_origin, target_origin_msg);
-  g_tf_broadcaster->sendTransform(target_origin_msg);
+
 */
-  tf::transformStampedMsgToTF( t_msg, t );
+//  tf::StampedTransform t_target_origin(g_target_origin, ros::Time::now(),
+//                                         root_name, "target_origin");
+//  geometry_msgs::TransformStamped target_origin_msg;
+//  tf::transformStampedTFToMsg(t_target_origin, target_origin_msg);
+ 	g_tf_broadcaster->sendTransform(t_target_in_torso);
 
   ik_tool(t, j_ik);
   g_js.header.stamp = ros::Time::now();
@@ -157,8 +163,11 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::NodeHandle n_private("~");
 
-  root_name = "bandit_torso_link";
-  tip_name = "left_hand_link";
+	n.getParam("root_name", root_name );
+	n.getParam("tip_name", tip_name );
+
+  //root_name = "bandit_torso_link";
+  //tip_name = "left_hand_link";
 
   /* DFS: code to get model from parameter server */
   urdf::Model robot_model;
@@ -234,7 +243,7 @@ int main(int argc, char **argv)
 
 
   link = robot_model.getLink(tip_name);
-  int i = 0;
+  unsigned int i = 0;
   while(link && i < num_joints)
   {
     boost::shared_ptr<const urdf::Joint> joint = robot_model.getJoint(link->parent_joint->name);
