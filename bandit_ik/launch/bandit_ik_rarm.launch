@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="bandit_ik" type="bandit_arm_kinematics_node" name="bandit_right_arm_kinematics" output="screen">    
+  <node pkg="bandit_ik" type="goto_cart" name="bandit_right_arm_kinematics" output="screen">    
    <param name="tip_name" value="right_hand_link" />     
    <param name="root_name" value="bandit_torso_link" />  
   </node>
