@@ -10,7 +10,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_find_ros_package(actionlib_msgs)
-include(/home/kitty/ros/stacks/common/actionlib/cmake/actionbuild.cmake)
+include(~/ros/stacks/common/actionlib/cmake/actionbuild.cmake)
 genaction()
 
 rosbuild_init()
