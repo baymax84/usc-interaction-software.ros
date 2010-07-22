@@ -6,7 +6,7 @@
 #include <bandit/bandit.h>
 
 using namespace std;
-bandit::Bandit g_bandit;
+bandit::Bandit c_bandit;
 bandit_msgs::Joint * desired_joint_pos;
 ros::Publisher * joint_publisher;
 ros::Subscriber * joint_subscriber;
@@ -184,13 +184,13 @@ int main( int argc, char* argv[] )
 	joint_positions = new std::vector<double>;
 	
 	while(ros::ok()){
-		bandit_wave();
+		//bandit_wave();
 		ros::Duration(1).sleep();
 		bandit_nod();
 		ros::Duration(1).sleep();
-		bandit_comehere();
+		//bandit_comehere();
 		ros::Duration(1).sleep();
-		bandit_shake();
+		//bandit_shake();
 		ros::Duration(1).sleep();
 	}
 	
