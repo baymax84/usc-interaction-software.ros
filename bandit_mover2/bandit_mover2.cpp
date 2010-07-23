@@ -102,6 +102,7 @@ void button_cb( Fl_Widget* obj , void* )
 
 void slider_cb( Fl_Widget* o, void* )
 {
+  bandit_msgs::JointArray jarray;
   const char* label = o->label();
   int num = 0;
 
@@ -133,7 +134,8 @@ void slider_cb( Fl_Widget* o, void* )
   else
     j.angle = DTOR( oo->value() );
 
-  joint_publisher.publish( j );
+  jarray.joints.push_back(j);
+  joint_publisher.publish( jarray );
 
 //#endif
 
