@@ -123,7 +123,8 @@ void slider_cb( Fl_Widget* o, void* )
 	joint_state_publisher.publish(js);
 	printf("@"); fflush(stdout);
 */
-#if 0
+//#if 0
+
   bandit_msgs::Joint j;
   j.id = num;
   //j.angle = DTOR( oo->value() );
@@ -133,7 +134,8 @@ void slider_cb( Fl_Widget* o, void* )
     j.angle = DTOR( oo->value() );
 
   joint_publisher.publish( j );
-#endif
+
+//#endif
 
   goal_array[num] = oo->value();
 }
