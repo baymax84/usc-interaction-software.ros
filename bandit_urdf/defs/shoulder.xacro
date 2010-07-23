@@ -101,7 +101,7 @@
 			<axis xyz="0 0 ${reflect}"/>
 			<parent link="${side}_shoulder_link"/>
 			<child link="${side}_bicep_link"/>
-			<limit lower="${1.57079633}" 
+			<limit lower="${-1.57079633}" 
 			upper="${1.57079633}" effort="30" velocity="6"/>
 			<dynamics damping="1.0"/>
 			<calibration reference_position="0.0"/>
