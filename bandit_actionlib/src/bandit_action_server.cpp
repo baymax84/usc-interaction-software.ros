@@ -111,14 +111,14 @@ class BanditAction
 		parser.GetNextDocument(doc);
 		Joint_Calibrations gesture;
 		//initalize dynamic arrays for ID and corresponding angle
-		int* j_id = NULL;
+		/*int* j_id = NULL;
 		int j_id_size;
 		double* j_angle = NULL;
 		int j_angle_size;
 		j_id_size = doc.size();
 		j_angle_size = doc.size();
 		j_id = new int [j_id_size];
-		j_angle = new double [j_angle_size];
+		j_angle = new double [j_angle_size];*/
 		
 		while(success){
 			//set preempt
@@ -137,7 +137,7 @@ class BanditAction
 			for(unsigned k=0;k < doc.size();k++) {
 				doc[k] >> gesture;
 				desired_joint_pos.id = gesture.id;
-				desired_joint_pos.angle = gesture.joint_angle;
+				desired_joint_pos.angle = deg_to_rad(gesture.joint_angle);//converts angle degrees to radians
 				jarray->joints.push_back(desired_joint_pos);
 				//publishes feedback information
 				current_time = ros::Time::now().toSec();
@@ -148,7 +148,7 @@ class BanditAction
 				ros::Rate(5).sleep();
 			}
 			
-			publish_joint_ind();//publishes joint array
+			publish_joint_ind();//publishes joint array (note: JointArray is normally set to radians)
 			ros::spinOnce();
 			ros::Rate(5).sleep();
 			
