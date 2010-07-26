@@ -11,11 +11,11 @@
 #include <cstring>
 #include <string>
 #include <sstream>
-#include <ctime>
+#include <sys/time.h>
 #include <yaml-cpp/yaml.h>
 
 using namespace std;
-bandit_msgs::Joint * desired_joint_pos;
+bandit_msgs::JointArray * jarray;
 ros::Publisher * joint_publisher;
 ros::Subscriber * joint_subscriber;
 ros::AsyncSpinner * spinner;
@@ -34,7 +34,7 @@ double rad_to_deg(double rad)
 
 void publish_joint_ind()
 {
-	joint_publisher->publish(*desired_joint_pos);
+	joint_publisher->publish(*jarray);
 }
 
 void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
@@ -77,14 +77,14 @@ class BanditAction
 	void executeCB ( const bandit_actionlib::BanditGoalConstPtr &goal )
 	{
 		bool success = true;
-		time_t seconds;
-		seconds = time(NULL);
+		double current_time = 0;
 		joint_publisher = new ros::Publisher;
-		*joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",10);
+		*joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",5);
 		joint_subscriber = new ros::Subscriber;
 		*joint_subscriber = n.subscribe("joint_states", 10, jointStatesCallBack); //creates subscriber and subscribes to topic "joint_states"
 		
-		desired_joint_pos = new bandit_msgs::Joint;
+		bandit_msgs::Joint desired_joint_pos;
+		jarray = new bandit_msgs::JointArray;
 		joint_positions = new std::vector<double>;
 		
 		spinner = new ros::AsyncSpinner(2);//Use 2 threads
@@ -119,7 +119,7 @@ class BanditAction
 		j_angle_size = doc.size();
 		j_id = new int [j_id_size];
 		j_angle = new double [j_angle_size];
-
+		
 		while(success){
 			//set preempt
 			if (as.isPreemptRequested() || !ros::ok()){
@@ -130,30 +130,28 @@ class BanditAction
 				break;
 			}
 			
-			//reads parsed YAML file and assigns gesture values to j_cal
+			/* reads parsed YAML file and assigns gesture values to bandit_msgs::Joint desired_joint_pos
+			 * takes the desired_joint_pos and puts them into bandit_msgs::JointArray jarray
+			 * publishes feedback about which angles and joints are being slotted into the array as well as the time
+			 */
 			for(unsigned k=0;k < doc.size();k++) {
 				doc[k] >> gesture;
-				j_id[k] = gesture.id;
-				j_angle[k] = gesture.joint_angle;
-			}
-			//publishes each joint id and corresponding angle to bandit_node and publishes feedback
-			for (unsigned jj= 0; jj < doc.size(); jj++){
-				desired_joint_pos->id = j_id[jj];
-				desired_joint_pos->angle = deg_to_rad( j_angle[jj] );
-				publish_joint_ind();
-				if (jj != 0){
-					if (fabs(j_angle[jj] - j_angle[jj - 1]) >= 60){
-						ros::Rate(10).sleep();
-					}
-					else
-						ros::Rate(3).sleep();
-				}
-				feedback.progress_time = seconds;
-				feedback.progress_joint_id.push_back( j_id[jj] );
-				feedback.progress_joint_angle.push_back( j_angle[jj] );
+				desired_joint_pos.id = gesture.id;
+				desired_joint_pos.angle = gesture.joint_angle;
+				jarray->joints.push_back(desired_joint_pos);
+				//publishes feedback information
+				current_time = ros::Time::now().toSec();
+				feedback.progress_time = current_time;
+				feedback.progress_joint_id.push_back( gesture.id );
+				feedback.progress_joint_angle.push_back( gesture.joint_angle );
 				as.publishFeedback(feedback);
 				ros::Rate(5).sleep();
 			}
+			
+			publish_joint_ind();//publishes joint array
+			ros::spinOnce();
+			ros::Rate(5).sleep();
+			
 			//publishes scucessful result
 		    if(success){
 				result.total_time = feedback.progress_time;
@@ -164,10 +162,9 @@ class BanditAction
 				as.setSucceeded(result);
 				success = false;
 			}
-			
+		
 		}
 	}
-	
 	
 };
 
