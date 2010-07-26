@@ -1,747 +1,223 @@
-12:25:57: Creating resource group General
-12:25:57: Creating resource group Internal
-12:25:57: Creating resource group Autodetect
-12:25:57: SceneManagerFactory for type 'DefaultSceneManager' registered.
-12:25:57: Registering ResourceManager for type Material
-12:25:57: Registering ResourceManager for type Mesh
-12:25:57: Registering ResourceManager for type Skeleton
-12:25:57: MovableObjectFactory for type 'ParticleSystem' registered.
-12:25:57: OverlayElementFactory for type Panel registered.
-12:25:57: OverlayElementFactory for type BorderPanel registered.
-12:25:57: OverlayElementFactory for type TextArea registered.
-12:25:57: Registering ResourceManager for type Font
-12:25:57: ArchiveFactory for archive type FileSystem registered.
-12:25:57: ArchiveFactory for archive type Zip registered.
-12:25:57: FreeImage version: 3.10.0
-12:25:57: This program uses FreeImage, a free, open source image library supporting all common bitmap formats. See http://freeimage.sourceforge.net for details
-12:25:57: Supported formats: bmp,ico,jpg,jif,jpeg,jpe,jng,koa,iff,lbm,mng,pbm,pbm,pcd,pcx,pgm,pgm,png,ppm,ppm,ras,tga,targa,tif,tiff,wap,wbmp,wbm,psd,cut,xbm,xpm,gif,hdr,g3,sgi,exr,j2k,j2c,jp2
-12:25:57: DDS codec registering
-12:25:57: Registering ResourceManager for type HighLevelGpuProgram
-12:25:57: Registering ResourceManager for type Compositor
-12:25:57: MovableObjectFactory for type 'Entity' registered.
-12:25:57: MovableObjectFactory for type 'Light' registered.
-12:25:57: MovableObjectFactory for type 'BillboardSet' registered.
-12:25:57: MovableObjectFactory for type 'ManualObject' registered.
-12:25:57: MovableObjectFactory for type 'BillboardChain' registered.
-12:25:57: MovableObjectFactory for type 'RibbonTrail' registered.
-12:25:57: *-*-* OGRE Initialising
-12:25:57: *-*-* Version 1.6.3 (Shoggoth)
-12:25:57: Loading library RenderSystem_GL
-12:25:57: Installing plugin: GL RenderSystem
-12:25:57: OpenGL Rendering Subsystem created.
-12:25:57: Plugin successfully installed
-12:25:57: Loading library Plugin_OctreeSceneManager
-12:25:57: Installing plugin: Octree & Terrain Scene Manager
-12:25:57: Plugin successfully installed
-12:25:57: Loading library Plugin_ParticleFX
-12:25:57: Installing plugin: ParticleFX
-12:25:57: Particle Emitter Type 'Point' registered
-12:25:57: Particle Emitter Type 'Box' registered
-12:25:57: Particle Emitter Type 'Ellipsoid' registered
-12:25:57: Particle Emitter Type 'Cylinder' registered
-12:25:57: Particle Emitter Type 'Ring' registered
-12:25:57: Particle Emitter Type 'HollowEllipsoid' registered
-12:25:57: Particle Affector Type 'LinearForce' registered
-12:25:57: Particle Affector Type 'ColourFader' registered
-12:25:57: Particle Affector Type 'ColourFader2' registered
-12:25:57: Particle Affector Type 'ColourImage' registered
-12:25:57: Particle Affector Type 'ColourInterpolator' registered
-12:25:57: Particle Affector Type 'Scaler' registered
-12:25:57: Particle Affector Type 'Rotator' registered
-12:25:57: Particle Affector Type 'DirectionRandomiser' registered
-12:25:57: Particle Affector Type 'DeflectorPlane' registered
-12:25:57: Plugin successfully installed
-12:25:57: Loading library Plugin_CgProgramManager
-12:25:57: Installing plugin: Cg Program Manager
-12:25:57: Plugin successfully installed
-12:25:57: CPU Identifier & Features
-12:25:57: -------------------------
-12:25:57:  *   CPU ID: GenuineIntel: Intel(R) Core(TM)2 Duo CPU     T9300  @ 2.50GHz
-12:25:57:  *      SSE: yes
-12:25:57:  *     SSE2: yes
-12:25:57:  *     SSE3: yes
-12:25:57:  *      MMX: yes
-12:25:57:  *   MMXEXT: yes
-12:25:57:  *    3DNOW: no
-12:25:57:  * 3DNOWEXT: no
-12:25:57:  *     CMOV: yes
-12:25:57:  *      TSC: yes
-12:25:57:  *      FPU: yes
-12:25:57:  *      PRO: yes
-12:25:57:  *       HT: no
-12:25:57: -------------------------
-12:25:57: ******************************
+12:25:24: Creating resource group General
+12:25:24: Creating resource group Internal
+12:25:24: Creating resource group Autodetect
+12:25:24: SceneManagerFactory for type 'DefaultSceneManager' registered.
+12:25:24: Registering ResourceManager for type Material
+12:25:24: Registering ResourceManager for type Mesh
+12:25:24: Registering ResourceManager for type Skeleton
+12:25:24: MovableObjectFactory for type 'ParticleSystem' registered.
+12:25:24: OverlayElementFactory for type Panel registered.
+12:25:24: OverlayElementFactory for type BorderPanel registered.
+12:25:24: OverlayElementFactory for type TextArea registered.
+12:25:24: Registering ResourceManager for type Font
+12:25:24: ArchiveFactory for archive type FileSystem registered.
+12:25:24: ArchiveFactory for archive type Zip registered.
+12:25:24: FreeImage version: 3.10.0
+12:25:24: This program uses FreeImage, a free, open source image library supporting all common bitmap formats. See http://freeimage.sourceforge.net for details
+12:25:24: Supported formats: bmp,ico,jpg,jif,jpeg,jpe,jng,koa,iff,lbm,mng,pbm,pbm,pcd,pcx,pgm,pgm,png,ppm,ppm,ras,tga,targa,tif,tiff,wap,wbmp,wbm,psd,cut,xbm,xpm,gif,hdr,g3,sgi,exr,j2k,j2c,jp2
+12:25:24: DDS codec registering
+12:25:24: Registering ResourceManager for type HighLevelGpuProgram
+12:25:24: Registering ResourceManager for type Compositor
+12:25:24: MovableObjectFactory for type 'Entity' registered.
+12:25:24: MovableObjectFactory for type 'Light' registered.
+12:25:24: MovableObjectFactory for type 'BillboardSet' registered.
+12:25:24: MovableObjectFactory for type 'ManualObject' registered.
+12:25:24: MovableObjectFactory for type 'BillboardChain' registered.
+12:25:24: MovableObjectFactory for type 'RibbonTrail' registered.
+12:25:24: *-*-* OGRE Initialising
+12:25:24: *-*-* Version 1.6.3 (Shoggoth)
+12:25:24: Loading library RenderSystem_GL
+12:25:24: Installing plugin: GL RenderSystem
+12:25:24: OpenGL Rendering Subsystem created.
+12:25:24: Plugin successfully installed
+12:25:24: Loading library Plugin_OctreeSceneManager
+12:25:24: Installing plugin: Octree & Terrain Scene Manager
+12:25:24: Plugin successfully installed
+12:25:24: Loading library Plugin_ParticleFX
+12:25:24: Installing plugin: ParticleFX
+12:25:24: Particle Emitter Type 'Point' registered
+12:25:24: Particle Emitter Type 'Box' registered
+12:25:24: Particle Emitter Type 'Ellipsoid' registered
+12:25:24: Particle Emitter Type 'Cylinder' registered
+12:25:24: Particle Emitter Type 'Ring' registered
+12:25:24: Particle Emitter Type 'HollowEllipsoid' registered
+12:25:24: Particle Affector Type 'LinearForce' registered
+12:25:24: Particle Affector Type 'ColourFader' registered
+12:25:24: Particle Affector Type 'ColourFader2' registered
+12:25:24: Particle Affector Type 'ColourImage' registered
+12:25:24: Particle Affector Type 'ColourInterpolator' registered
+12:25:24: Particle Affector Type 'Scaler' registered
+12:25:24: Particle Affector Type 'Rotator' registered
+12:25:24: Particle Affector Type 'DirectionRandomiser' registered
+12:25:24: Particle Affector Type 'DeflectorPlane' registered
+12:25:24: Plugin successfully installed
+12:25:24: Loading library Plugin_CgProgramManager
+12:25:24: Installing plugin: Cg Program Manager
+12:25:24: Plugin successfully installed
+12:25:24: CPU Identifier & Features
+12:25:24: -------------------------
+12:25:24:  *   CPU ID: GenuineIntel: Intel(R) Core(TM)2 Duo CPU     T9300  @ 2.50GHz
+12:25:24:  *      SSE: yes
+12:25:24:  *     SSE2: yes
+12:25:24:  *     SSE3: yes
+12:25:24:  *      MMX: yes
+12:25:24:  *   MMXEXT: yes
+12:25:24:  *    3DNOW: no
+12:25:24:  * 3DNOWEXT: no
+12:25:24:  *     CMOV: yes
+12:25:24:  *      TSC: yes
+12:25:24:  *      FPU: yes
+12:25:24:  *      PRO: yes
+12:25:24:  *       HT: no
+12:25:24: -------------------------
+12:25:24: ******************************
 *** Starting GLX Subsystem ***
 ******************************
-12:25:57: Creating resource group ogre_tools
-12:25:57: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media' of type 'FileSystem' to resource group 'ogre_tools'
-12:25:57: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/fonts' of type 'FileSystem' to resource group 'ogre_tools'
-12:25:57: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/models' of type 'FileSystem' to resource group 'ogre_tools'
-12:25:57: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/materials' of type 'FileSystem' to resource group 'ogre_tools'
-12:25:57: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/materials/scripts' of type 'FileSystem' to resource group 'ogre_tools'
-12:25:57: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/materials/programs' of type 'FileSystem' to resource group 'ogre_tools'
-12:25:57: GLRenderSystem::_createRenderWindow "OgreRenderWindow1", 2173x993 windowed  miscParams: externalWindowHandle=21209248:0:96469075:23504192 
-12:25:57: GLXWindow::create: The externalWindowHandle parameter is deprecated.
+12:25:24: Creating resource group ogre_tools
+12:25:24: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media' of type 'FileSystem' to resource group 'ogre_tools'
+12:25:24: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/fonts' of type 'FileSystem' to resource group 'ogre_tools'
+12:25:24: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/models' of type 'FileSystem' to resource group 'ogre_tools'
+12:25:24: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/materials' of type 'FileSystem' to resource group 'ogre_tools'
+12:25:24: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/materials/scripts' of type 'FileSystem' to resource group 'ogre_tools'
+12:25:24: Added resource location '/home/ljho/ros/stacks/visualization_common/ogre_tools/media/materials/programs' of type 'FileSystem' to resource group 'ogre_tools'
+12:25:26: GLRenderSystem::_createRenderWindow "OgreRenderWindow1", 1057x703 windowed  miscParams: externalWindowHandle=34529440:0:90177620:36539648 
+12:25:26: GLXWindow::create: The externalWindowHandle parameter is deprecated.
 Use the parentWindowHandle or currentGLContext parameter instead.
-12:25:57: GLXWindow::create used FBConfigID = 117
-12:25:57: GL_VERSION = 3.2.0 NVIDIA 195.36.24
-12:25:57: GL_VENDOR = NVIDIA Corporation
-12:25:57: GL_RENDERER = GeForce 8400M GS/PCI/SSE2
-12:25:57: GL_EXTENSIONS = GL_ARB_color_buffer_float GL_ARB_compatibility GL_ARB_copy_buffer GL_ARB_depth_buffer_float GL_ARB_depth_clamp GL_ARB_depth_texture GL_ARB_draw_buffers GL_ARB_draw_elements_base_vertex GL_ARB_draw_instanced GL_ARB_fragment_coord_conventions GL_ARB_fragment_program GL_ARB_fragment_program_shadow GL_ARB_fragment_shader GL_ARB_framebuffer_object GL_ARB_framebuffer_sRGB GL_ARB_geometry_shader4 GL_ARB_half_float_pixel GL_ARB_half_float_vertex GL_ARB_imaging GL_ARB_map_buffer_range GL_ARB_multisample GL_ARB_multitexture GL_ARB_occlusion_query GL_ARB_pixel_buffer_object GL_ARB_point_parameters GL_ARB_point_sprite GL_ARB_provoking_vertex GL_ARB_seamless_cube_map GL_ARB_shader_objects GL_ARB_shading_language_100 GL_ARB_shadow GL_ARB_sync GL_ARB_texture_border_clamp GL_ARB_texture_buffer_object GL_ARB_texture_compression GL_ARB_texture_compression_rgtc GL_ARB_texture_cube_map GL_ARB_texture_env_add GL_ARB_texture_env_combine GL_ARB_texture_env_crossbar GL_ARB_texture_env_dot3 GL_ARB_texture_float GL_ARB_texture_mirrored_repeat GL_ARB_texture_multisample GL_ARB_texture_non_power_of_two GL_ARB_texture_rectangle GL_ARB_texture_rg GL_ARB_transpose_matrix GL_ARB_uniform_buffer_object GL_ARB_vertex_array_bgra GL_ARB_vertex_array_object GL_ARB_vertex_buffer_object GL_ARB_vertex_program GL_ARB_vertex_shader GL_ARB_window_pos GL_ATI_draw_buffers GL_ATI_texture_float GL_ATI_texture_mirror_once GL_S3_s3tc GL_EXT_texture_env_add GL_EXT_abgr GL_EXT_bgra GL_EXT_bindable_uniform GL_EXT_blend_color GL_EXT_blend_equation_separate GL_EXT_blend_func_separate GL_EXT_blend_minmax GL_EXT_blend_subtract GL_EXT_compiled_vertex_array GL_EXT_Cg_shader GL_EXT_depth_bounds_test GL_EXT_direct_state_access GL_EXT_draw_buffers2 GL_EXT_draw_instanced GL_EXT_draw_range_elements GL_EXT_fog_coord GL_EXT_framebuffer_blit GL_EXT_framebuffer_multisample GL_EXTX_framebuffer_mixed_formats GL_EXT_framebuffer_object GL_EXT_framebuffer_sRGB GL_EXT_geometry_shader4 GL_EXT_gpu_program_parameters GL_EXT_gpu_shader4 GL_EXT_multi_draw_arrays GL_EXT_packed_depth_stencil GL_EXT_packed_float GL_EXT_packed_pixels GL_EXT_pixel_buffer_object GL_EXT_point_parameters GL_EXT_provoking_vertex GL_EXT_rescale_normal GL_EXT_secondary_color GL_EXT_separate_shader_objects GL_EXT_separate_specular_color GL_EXT_shadow_funcs GL_EXT_stencil_two_side GL_EXT_stencil_wrap GL_EXT_texture3D GL_EXT_texture_array GL_EXT_texture_buffer_object GL_EXT_texture_compression_latc GL_EXT_texture_compression_rgtc GL_EXT_texture_compression_s3tc GL_EXT_texture_cube_map GL_EXT_texture_edge_clamp GL_EXT_texture_env_combine GL_EXT_texture_env_dot3 GL_EXT_texture_filter_anisotropic GL_EXT_texture_integer GL_EXT_texture_lod GL_EXT_texture_lod_bias GL_EXT_texture_mirror_clamp GL_EXT_texture_object GL_EXT_texture_shared_exponent GL_EXT_texture_sRGB GL_EXT_texture_swizzle GL_EXT_timer_query GL_EXT_vertex_array GL_EXT_vertex_array_bgra GL_IBM_rasterpos_clip GL_IBM_texture_mirrored_repeat GL_KTX_buffer_region GL_NV_blend_square GL_NV_conditional_render GL_NV_copy_depth_to_color GL_NV_copy_image GL_NV_depth_buffer_float GL_NV_depth_clamp GL_NV_explicit_multisample GL_NV_fence GL_NV_float_buffer GL_NV_fog_distance GL_NV_fragment_program GL_NV_fragment_program_option GL_NV_fragment_program2 GL_NV_framebuffer_multisample_coverage GL_NV_geometry_shader4 GL_NV_gpu_program4 GL_NV_half_float GL_NV_light_max_exponent GL_NV_multisample_coverage GL_NV_multisample_filter_hint GL_NV_occlusion_query GL_NV_packed_depth_stencil GL_NV_parameter_buffer_object GL_NV_parameter_buffer_object2 GL_NV_pixel_data_range GL_NV_point_sprite GL_NV_primitive_restart GL_NV_register_combiners GL_NV_register_combiners2 GL_NV_shader_buffer_load GL_NV_texgen_reflection GL_NV_texture_barrier GL_NV_texture_compression_vtc GL_NV_texture_env_combine4 GL_NV_texture_expand_normal GL_NV_texture_rectangle GL_NV_texture_shader GL_NV_texture_shader2 GL_NV_texture_shader3 GL_NV_transform_feedback GL_NV_vertex_array_range GL_NV_vertex_array_range2 GL_NV_vertex_buffer_unified_memory GL_NV_vertex_program GL_NV_vertex_program1_1 GL_NV_vertex_program2 GL_NV_vertex_program2_option GL_NV_vertex_program3 GL_NVX_conditional_render GL_NVX_gpu_memory_info GL_SGIS_generate_mipmap GL_SGIS_texture_lod GL_SGIX_depth_texture GL_SGIX_shadow GL_SUN_slice_accum 
-12:25:57: Supported GLX extensions: GLX_EXT_visual_info GLX_EXT_visual_rating GLX_SGIX_fbconfig GLX_SGIX_pbuffer GLX_SGI_video_sync GLX_SGI_swap_control GLX_EXT_swap_control GLX_EXT_texture_from_pixmap GLX_ARB_create_context GLX_ARB_create_context_profile GLX_ARB_multisample GLX_NV_float_buffer GLX_ARB_fbconfig_float GLX_EXT_framebuffer_sRGB GLX_ARB_get_proc_address 
-12:25:57: ***************************
-12:25:57: *** GL Renderer Started ***
-12:25:57: ***************************
-12:25:57: Registering ResourceManager for type GpuProgram
-12:25:57: GLSL support detected
-12:25:57: GL: Using GL_EXT_framebuffer_object for rendering to textures (best)
-12:25:57: FBO PF_UNKNOWN depth/stencil support: D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_L8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_A8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_A4L4 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_BYTE_LA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_R5G6B5 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_B5G6R5 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_A1R5G5B5 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_R8G8B8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_B8G8R8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_A8R8G8B8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_B8G8R8A8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_A2R10G10B10 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_A2B10G10R10 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_FLOAT16_RGB depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_FLOAT16_RGBA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_FLOAT32_RGB depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:57: FBO PF_FLOAT32_RGBA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_X8R8G8B8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_X8B8G8R8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_SHORT_RGBA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_R3G3B2 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_FLOAT16_R depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_FLOAT32_R depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_FLOAT16_GR depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_FLOAT32_GR depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: FBO PF_SHORT_RGB depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
-12:25:58: [GL] : Valid FBO targets PF_UNKNOWN PF_L8 PF_A8 PF_A4L4 PF_BYTE_LA PF_R5G6B5 PF_B5G6R5 PF_A1R5G5B5 PF_R8G8B8 PF_B8G8R8 PF_A8R8G8B8 PF_B8G8R8A8 PF_A2R10G10B10 PF_A2B10G10R10 PF_FLOAT16_RGB PF_FLOAT16_RGBA PF_FLOAT32_RGB PF_FLOAT32_RGBA PF_X8R8G8B8 PF_X8B8G8R8 PF_SHORT_RGBA PF_R3G3B2 PF_FLOAT16_R PF_FLOAT32_R PF_FLOAT16_GR PF_FLOAT32_GR PF_SHORT_RGB 
-12:25:58: RenderSystem capabilities
-12:25:58: -------------------------
-12:25:58: RenderSystem Name: OpenGL Rendering Subsystem
-12:25:58: GPU Vendor: nvidia
-12:25:58: Device Name: GeForce 8400M GS/PCI/SSE2
-12:25:58: Driver Version: 3.2.0.0
-12:25:58:  * Fixed function pipeline: yes
-12:25:58:  * Hardware generation of mipmaps: yes
-12:25:58:  * Texture blending: yes
-12:25:58:  * Anisotropic texture filtering: yes
-12:25:58:  * Dot product texture operation: yes
-12:25:58:  * Cube mapping: yes
-12:25:58:  * Hardware stencil buffer: yes
-12:25:58:    - Stencil depth: 8
-12:25:58:    - Two sided stencil support: yes
-12:25:58:    - Wrap stencil values: yes
-12:25:58:  * Hardware vertex / index buffers: yes
-12:25:58:  * Vertex programs: yes
-12:25:58:  * Fragment programs: yes
-12:25:58:  * Geometry programs: yes
-12:25:58:  * Supported Shader Profiles: arbfp1 arbvp1 fp20 fp30 fp40 glsl gp4gp gpu_gp nvgp4 vp30 vp40
-12:25:58:  * Texture Compression: yes
-12:25:58:    - DXT: yes
-12:25:58:    - VTC: yes
-12:25:58:  * Scissor Rectangle: yes
-12:25:58:  * Hardware Occlusion Query: yes
-12:25:58:  * User clip planes: yes
-12:25:58:  * VET_UBYTE4 vertex element type: yes
-12:25:58:  * Infinite far plane projection: yes
-12:25:58:  * Hardware render-to-texture: yes
-12:25:58:  * Floating point textures: yes
-12:25:58:  * Non-power-of-two textures: yes
-12:25:58:  * Volume textures: yes
-12:25:58:  * Multiple Render Targets: 8
-12:25:58:    - With different bit depths: yes
-12:25:58:  * Point Sprites: yes
-12:25:58:  * Extended point parameters: yes
-12:25:58:  * Max Point Size: 63.375
-12:25:58:  * Vertex texture fetch: yes
-12:25:58:    - Max vertex textures: 32
-12:25:58:    - Vertex textures shared: yes
-12:25:58:  * Render to Vertex Buffer : yes
-12:25:58:  * GL 1.5 without VBO workaround: no
-12:25:58:  * Frame Buffer objects: yes
-12:25:58:  * Frame Buffer objects (ARB extension): no
-12:25:58:  * Frame Buffer objects (ATI extension): no
-12:25:58:  * PBuffer suppport: no
-12:25:58:  * GL 1.5 without HW-occlusion workaround: no
-12:25:58: Registering ResourceManager for type Texture
-12:25:58: ResourceBackgroundQueue - threading disabled
-12:25:58: Particle Renderer Type 'billboard' registered
-12:25:58: SceneManagerFactory for type 'OctreeSceneManager' registered.
-12:25:58: SceneManagerFactory for type 'TerrainSceneManager' registered.
-12:25:58: Added resource location '/home/ljho/ros/stacks/visualization/rviz/ogre_media/textures' of type 'FileSystem' to resource group 'General'
-12:25:58: Parsing scripts for resource group Autodetect
-12:25:58: Finished parsing scripts for resource group Autodetect
-12:25:58: Parsing scripts for resource group General
-12:25:58: Finished parsing scripts for resource group General
-12:25:58: Parsing scripts for resource group Internal
-12:25:58: Finished parsing scripts for resource group Internal
-12:25:58: Parsing scripts for resource group ogre_tools
-12:25:58: Parsing script point_cloud_box.program
-12:25:58: Parsing script passthrough.program
-12:25:58: Parsing script point_cloud_billboard.program
-12:25:58: Parsing script point_cloud_point.program
-12:25:58: Parsing script point_cloud_billboard.material
-12:25:58: Parsing script point_cloud_point.material
-12:25:58: Parsing script point_cloud_box.material
-12:25:58: Parsing script arial.fontdef
-12:25:58: Finished parsing scripts for resource group ogre_tools
-12:25:58: Mesh: Loading ogre_tools_sphere.mesh.
-12:25:58: Mesh: Loading ogre_tools_cylinder.mesh.
-12:25:58: Mesh: Loading ogre_tools_cone.mesh.
-12:25:58: Texture: SelectionRect0Texture: Loading 1 faces(PF_R8G8B8A8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_A8R8G8B8,1x1x1.
-12:25:59: Mesh: Loading ogre_tools_cube.mesh.
-12:25:59: Texture: Robot Link Material00RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material01RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material02RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material03RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: package://bandit_urdf/meshes/bandit_mesh/gradients/reflect1.jpg: Loading 1 faces(PF_R8G8B8,50x38x1) with 5 generated mipmaps from Image. Internal format is PF_X8R8G8B8,50x38x1.
-12:25:59: Texture: Robot Link Material04RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material05RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material06RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material07RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material08RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:25:59: Texture: Robot Link Material09RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material010RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material011RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material012RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material013RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material014RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material015RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material016RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material017RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material018RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material019RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:00: Texture: Robot Link Material020RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material021RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material022RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material023RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material024RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material025RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material026RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: package://bandit_urdf/meshes/bandit_mesh/gradients/tire1.jpg: Loading 1 faces(PF_L8,512x512x1) with 9 generated mipmaps from Image. Internal format is PF_L8,512x512x1.
-12:26:01: Texture: Robot Link Material027RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material028RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material029RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material030RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material031RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:01: Texture: Robot Link Material032RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material033RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material034RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material035RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material036RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material037RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material038RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material039RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material040RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material041RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material042RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material043RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material044RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material045RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material046RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material047RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material048RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material049RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material050RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material051RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material052RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material053RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material054RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material055RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material056RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material057RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material058RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material059RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material060RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material061RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material062RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material063RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material064RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material065RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material066RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material067RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material068RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material069RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material070RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material071RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material072RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material073RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material074RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material075RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material076RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material077RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material078RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material079RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material080RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material081RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material082RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material083RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material084RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material085RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material086RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material087RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material088RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material089RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material090RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material091RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material092RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material093RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material094RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material095RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material096RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material097RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material098RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material099RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0100RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0101RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0102RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0103RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0104RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0105RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0106RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0107RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-12:26:02: Texture: Robot Link Material0108RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0109RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0110RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0111RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0112RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0113RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0114RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0115RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0116RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0117RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0118RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0119RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0120RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0121RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0122RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0123RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0124RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0125RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0126RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0127RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0128RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0129RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0130RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0131RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0132RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0133RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0134RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0135RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0136RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0137RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0138RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0139RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0140RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0141RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0142RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0143RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0144RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0145RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0146RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0147RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0148RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0149RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0150RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0151RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0152RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0153RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0154RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0155RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0156RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0157RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0158RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0159RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0160RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0161RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0162RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0163RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0164RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0165RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0166RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0167RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0168RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0169RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0170RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0171RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0172RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0173RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0174RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0175RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0176RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0177RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0178RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0179RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0180RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0181RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0182RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0183RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0184RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0185RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0186RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0187RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0188RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0189RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0190RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0191RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0192RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0193RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0194RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0195RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0196RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0197RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0198RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0199RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0200RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0201RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0202RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0203RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0204RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0205RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0206RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0207RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0208RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0209RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0210RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0211RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0212RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0213RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0214RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0215RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0216RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-13:54:47: Texture: Robot Link Material0217RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0218RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0219RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0220RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0221RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0222RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0223RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0224RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0225RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0226RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0227RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0228RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0229RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0230RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0231RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0232RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0233RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0234RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0235RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0236RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0237RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0238RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0239RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0240RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0241RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0242RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0243RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0244RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0245RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0246RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0247RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0248RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0249RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0250RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0251RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:44: Texture: Robot Link Material0252RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0253RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0254RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0255RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0256RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0257RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0258RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0259RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0260RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0261RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0262RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0263RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0264RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0265RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0266RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0267RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0268RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0269RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0270RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0271RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0272RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0273RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0274RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0275RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0276RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0277RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0278RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0279RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0280RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0281RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0282RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0283RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0284RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0285RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0286RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0287RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0288RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0289RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0290RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0291RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0292RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0293RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0294RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0295RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0296RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0297RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0298RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0299RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0300RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0301RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0302RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0303RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:45: Texture: Robot Link Material0304RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0305RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0306RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0307RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0308RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0309RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0310RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0311RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0312RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0313RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0314RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0315RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0316RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0317RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0318RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0319RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0320RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0321RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0322RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0323RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0324RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0325RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:46: Texture: Robot Link Material0326RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0327RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0328RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0329RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0330RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0331RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0332RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0333RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0334RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0335RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0336RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0337RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0338RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0339RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0340RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0341RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0342RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0343RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0344RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0345RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:57: Texture: Robot Link Material0346RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0347RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0348RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0349RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0350RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0351RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0352RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0353RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0354RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0355RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0356RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0357RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0358RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0359RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0360RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0361RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0362RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0363RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0364RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0365RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0366RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0367RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0368RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0369RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0370RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0371RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0372RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0373RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0374RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0375RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0376RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0377RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0378RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0379RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0380RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0381RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0382RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0383RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0384RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0385RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0386RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0387RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0388RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0389RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0390RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0391RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0392RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0393RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0394RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0395RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0396RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0397RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0398RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0399RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0400RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0401RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0402RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0403RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0404RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0405RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0406RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0407RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0408RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0409RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0410RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0411RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:58: Texture: Robot Link Material0412RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0413RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0414RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0415RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0416RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0417RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0418RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0419RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0420RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0421RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0422RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0423RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0424RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0425RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0426RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0427RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0428RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0429RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0430RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0431RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0432RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0433RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0434RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:04:59: Texture: Robot Link Material0435RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0436RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0437RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0438RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0439RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0440RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0441RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0442RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0443RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0444RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0445RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0446RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0447RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0448RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0449RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0450RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0451RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0452RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0453RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0454RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0455RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0456RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0457RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0458RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0459RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0460RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0461RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0462RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0463RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0464RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0465RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0466RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0467RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0468RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0469RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0470RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0471RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0472RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0473RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0474RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0475RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0476RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0477RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0478RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0479RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0480RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0481RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0482RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0483RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0484RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0485RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0486RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0487RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0488RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0489RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0490RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0491RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0492RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0493RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0494RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0495RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0496RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0497RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0498RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0499RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0500RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0501RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0502RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0503RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0504RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0505RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0506RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:38: Texture: Robot Link Material0507RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0508RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0509RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0510RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0511RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0512RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0513RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0514RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0515RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0516RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0517RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0518RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0519RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0520RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0521RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0522RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0523RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0524RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0525RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0526RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0527RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0528RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0529RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0530RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0531RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0532RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0533RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0534RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0535RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0536RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0537RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0538RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0539RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0540RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0541RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0542RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0543RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
-14:05:39: Texture: Robot Link Material0544RobotPickTexture: Loading 1 faces(PF_R8G8B8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_X8R8G8B8,1x1x1.
+12:25:26: GLXWindow::create used FBConfigID = 117
+12:25:26: GL_VERSION = 3.2.0 NVIDIA 195.36.24
+12:25:26: GL_VENDOR = NVIDIA Corporation
+12:25:26: GL_RENDERER = GeForce 8400M GS/PCI/SSE2
+12:25:26: GL_EXTENSIONS = GL_ARB_color_buffer_float GL_ARB_compatibility GL_ARB_copy_buffer GL_ARB_depth_buffer_float GL_ARB_depth_clamp GL_ARB_depth_texture GL_ARB_draw_buffers GL_ARB_draw_elements_base_vertex GL_ARB_draw_instanced GL_ARB_fragment_coord_conventions GL_ARB_fragment_program GL_ARB_fragment_program_shadow GL_ARB_fragment_shader GL_ARB_framebuffer_object GL_ARB_framebuffer_sRGB GL_ARB_geometry_shader4 GL_ARB_half_float_pixel GL_ARB_half_float_vertex GL_ARB_imaging GL_ARB_map_buffer_range GL_ARB_multisample GL_ARB_multitexture GL_ARB_occlusion_query GL_ARB_pixel_buffer_object GL_ARB_point_parameters GL_ARB_point_sprite GL_ARB_provoking_vertex GL_ARB_seamless_cube_map GL_ARB_shader_objects GL_ARB_shading_language_100 GL_ARB_shadow GL_ARB_sync GL_ARB_texture_border_clamp GL_ARB_texture_buffer_object GL_ARB_texture_compression GL_ARB_texture_compression_rgtc GL_ARB_texture_cube_map GL_ARB_texture_env_add GL_ARB_texture_env_combine GL_ARB_texture_env_crossbar GL_ARB_texture_env_dot3 GL_ARB_texture_float GL_ARB_texture_mirrored_repeat GL_ARB_texture_multisample GL_ARB_texture_non_power_of_two GL_ARB_texture_rectangle GL_ARB_texture_rg GL_ARB_transpose_matrix GL_ARB_uniform_buffer_object GL_ARB_vertex_array_bgra GL_ARB_vertex_array_object GL_ARB_vertex_buffer_object GL_ARB_vertex_program GL_ARB_vertex_shader GL_ARB_window_pos GL_ATI_draw_buffers GL_ATI_texture_float GL_ATI_texture_mirror_once GL_S3_s3tc GL_EXT_texture_env_add GL_EXT_abgr GL_EXT_bgra GL_EXT_bindable_uniform GL_EXT_blend_color GL_EXT_blend_equation_separate GL_EXT_blend_func_separate GL_EXT_blend_minmax GL_EXT_blend_subtract GL_EXT_compiled_vertex_array GL_EXT_Cg_shader GL_EXT_depth_bounds_test GL_EXT_direct_state_access GL_EXT_draw_buffers2 GL_EXT_draw_instanced GL_EXT_draw_range_elements GL_EXT_fog_coord GL_EXT_framebuffer_blit GL_EXT_framebuffer_multisample GL_EXTX_framebuffer_mixed_formats GL_EXT_framebuffer_object GL_EXT_framebuffer_sRGB GL_EXT_geometry_shader4 GL_EXT_gpu_program_parameters GL_EXT_gpu_shader4 GL_EXT_multi_draw_arrays GL_EXT_packed_depth_stencil GL_EXT_packed_float GL_EXT_packed_pixels GL_EXT_pixel_buffer_object GL_EXT_point_parameters GL_EXT_provoking_vertex GL_EXT_rescale_normal GL_EXT_secondary_color GL_EXT_separate_shader_objects GL_EXT_separate_specular_color GL_EXT_shadow_funcs GL_EXT_stencil_two_side GL_EXT_stencil_wrap GL_EXT_texture3D GL_EXT_texture_array GL_EXT_texture_buffer_object GL_EXT_texture_compression_latc GL_EXT_texture_compression_rgtc GL_EXT_texture_compression_s3tc GL_EXT_texture_cube_map GL_EXT_texture_edge_clamp GL_EXT_texture_env_combine GL_EXT_texture_env_dot3 GL_EXT_texture_filter_anisotropic GL_EXT_texture_integer GL_EXT_texture_lod GL_EXT_texture_lod_bias GL_EXT_texture_mirror_clamp GL_EXT_texture_object GL_EXT_texture_shared_exponent GL_EXT_texture_sRGB GL_EXT_texture_swizzle GL_EXT_timer_query GL_EXT_vertex_array GL_EXT_vertex_array_bgra GL_IBM_rasterpos_clip GL_IBM_texture_mirrored_repeat GL_KTX_buffer_region GL_NV_blend_square GL_NV_conditional_render GL_NV_copy_depth_to_color GL_NV_copy_image GL_NV_depth_buffer_float GL_NV_depth_clamp GL_NV_explicit_multisample GL_NV_fence GL_NV_float_buffer GL_NV_fog_distance GL_NV_fragment_program GL_NV_fragment_program_option GL_NV_fragment_program2 GL_NV_framebuffer_multisample_coverage GL_NV_geometry_shader4 GL_NV_gpu_program4 GL_NV_half_float GL_NV_light_max_exponent GL_NV_multisample_coverage GL_NV_multisample_filter_hint GL_NV_occlusion_query GL_NV_packed_depth_stencil GL_NV_parameter_buffer_object GL_NV_parameter_buffer_object2 GL_NV_pixel_data_range GL_NV_point_sprite GL_NV_primitive_restart GL_NV_register_combiners GL_NV_register_combiners2 GL_NV_shader_buffer_load GL_NV_texgen_reflection GL_NV_texture_barrier GL_NV_texture_compression_vtc GL_NV_texture_env_combine4 GL_NV_texture_expand_normal GL_NV_texture_rectangle GL_NV_texture_shader GL_NV_texture_shader2 GL_NV_texture_shader3 GL_NV_transform_feedback GL_NV_vertex_array_range GL_NV_vertex_array_range2 GL_NV_vertex_buffer_unified_memory GL_NV_vertex_program GL_NV_vertex_program1_1 GL_NV_vertex_program2 GL_NV_vertex_program2_option GL_NV_vertex_program3 GL_NVX_conditional_render GL_NVX_gpu_memory_info GL_SGIS_generate_mipmap GL_SGIS_texture_lod GL_SGIX_depth_texture GL_SGIX_shadow GL_SUN_slice_accum 
+12:25:26: Supported GLX extensions: GLX_EXT_visual_info GLX_EXT_visual_rating GLX_SGIX_fbconfig GLX_SGIX_pbuffer GLX_SGI_video_sync GLX_SGI_swap_control GLX_EXT_swap_control GLX_EXT_texture_from_pixmap GLX_ARB_create_context GLX_ARB_create_context_profile GLX_ARB_multisample GLX_NV_float_buffer GLX_ARB_fbconfig_float GLX_EXT_framebuffer_sRGB GLX_ARB_get_proc_address 
+12:25:26: ***************************
+12:25:26: *** GL Renderer Started ***
+12:25:26: ***************************
+12:25:26: Registering ResourceManager for type GpuProgram
+12:25:26: GLSL support detected
+12:25:26: GL: Using GL_EXT_framebuffer_object for rendering to textures (best)
+12:25:26: FBO PF_UNKNOWN depth/stencil support: D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_L8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_A8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_A4L4 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_BYTE_LA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_R5G6B5 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_B5G6R5 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_A1R5G5B5 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_R8G8B8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_B8G8R8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_A8R8G8B8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_B8G8R8A8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_A2R10G10B10 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_A2B10G10R10 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT16_RGB depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT16_RGBA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT32_RGB depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT32_RGBA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_X8R8G8B8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_X8B8G8R8 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_SHORT_RGBA depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_R3G3B2 depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT16_R depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT32_R depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT16_GR depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_FLOAT32_GR depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: FBO PF_SHORT_RGB depth/stencil support: D0S0 D16S0 D24S0 D32S0 Packed-D24S8 
+12:25:26: [GL] : Valid FBO targets PF_UNKNOWN PF_L8 PF_A8 PF_A4L4 PF_BYTE_LA PF_R5G6B5 PF_B5G6R5 PF_A1R5G5B5 PF_R8G8B8 PF_B8G8R8 PF_A8R8G8B8 PF_B8G8R8A8 PF_A2R10G10B10 PF_A2B10G10R10 PF_FLOAT16_RGB PF_FLOAT16_RGBA PF_FLOAT32_RGB PF_FLOAT32_RGBA PF_X8R8G8B8 PF_X8B8G8R8 PF_SHORT_RGBA PF_R3G3B2 PF_FLOAT16_R PF_FLOAT32_R PF_FLOAT16_GR PF_FLOAT32_GR PF_SHORT_RGB 
+12:25:26: RenderSystem capabilities
+12:25:26: -------------------------
+12:25:26: RenderSystem Name: OpenGL Rendering Subsystem
+12:25:26: GPU Vendor: nvidia
+12:25:26: Device Name: GeForce 8400M GS/PCI/SSE2
+12:25:26: Driver Version: 3.2.0.0
+12:25:26:  * Fixed function pipeline: yes
+12:25:26:  * Hardware generation of mipmaps: yes
+12:25:26:  * Texture blending: yes
+12:25:26:  * Anisotropic texture filtering: yes
+12:25:26:  * Dot product texture operation: yes
+12:25:26:  * Cube mapping: yes
+12:25:26:  * Hardware stencil buffer: yes
+12:25:26:    - Stencil depth: 8
+12:25:26:    - Two sided stencil support: yes
+12:25:26:    - Wrap stencil values: yes
+12:25:26:  * Hardware vertex / index buffers: yes
+12:25:26:  * Vertex programs: yes
+12:25:26:  * Fragment programs: yes
+12:25:26:  * Geometry programs: yes
+12:25:26:  * Supported Shader Profiles: arbfp1 arbvp1 fp20 fp30 fp40 glsl gp4gp gpu_gp nvgp4 vp30 vp40
+12:25:26:  * Texture Compression: yes
+12:25:26:    - DXT: yes
+12:25:26:    - VTC: yes
+12:25:26:  * Scissor Rectangle: yes
+12:25:26:  * Hardware Occlusion Query: yes
+12:25:26:  * User clip planes: yes
+12:25:26:  * VET_UBYTE4 vertex element type: yes
+12:25:26:  * Infinite far plane projection: yes
+12:25:26:  * Hardware render-to-texture: yes
+12:25:26:  * Floating point textures: yes
+12:25:26:  * Non-power-of-two textures: yes
+12:25:26:  * Volume textures: yes
+12:25:26:  * Multiple Render Targets: 8
+12:25:26:    - With different bit depths: yes
+12:25:26:  * Point Sprites: yes
+12:25:26:  * Extended point parameters: yes
+12:25:26:  * Max Point Size: 63.375
+12:25:26:  * Vertex texture fetch: yes
+12:25:26:    - Max vertex textures: 32
+12:25:26:    - Vertex textures shared: yes
+12:25:26:  * Render to Vertex Buffer : yes
+12:25:26:  * GL 1.5 without VBO workaround: no
+12:25:26:  * Frame Buffer objects: yes
+12:25:26:  * Frame Buffer objects (ARB extension): no
+12:25:26:  * Frame Buffer objects (ATI extension): no
+12:25:26:  * PBuffer suppport: no
+12:25:26:  * GL 1.5 without HW-occlusion workaround: no
+12:25:26: Registering ResourceManager for type Texture
+12:25:26: ResourceBackgroundQueue - threading disabled
+12:25:26: Particle Renderer Type 'billboard' registered
+12:25:26: SceneManagerFactory for type 'OctreeSceneManager' registered.
+12:25:26: SceneManagerFactory for type 'TerrainSceneManager' registered.
+12:25:26: Added resource location '/home/ljho/ros/stacks/visualization/rviz/ogre_media/textures' of type 'FileSystem' to resource group 'General'
+12:25:26: Parsing scripts for resource group Autodetect
+12:25:26: Finished parsing scripts for resource group Autodetect
+12:25:26: Parsing scripts for resource group General
+12:25:26: Finished parsing scripts for resource group General
+12:25:26: Parsing scripts for resource group Internal
+12:25:26: Finished parsing scripts for resource group Internal
+12:25:26: Parsing scripts for resource group ogre_tools
+12:25:26: Parsing script point_cloud_box.program
+12:25:26: Parsing script passthrough.program
+12:25:26: Parsing script point_cloud_billboard.program
+12:25:27: Parsing script point_cloud_point.program
+12:25:27: Parsing script point_cloud_billboard.material
+12:25:27: Parsing script point_cloud_point.material
+12:25:27: Parsing script point_cloud_box.material
+12:25:27: Parsing script arial.fontdef
+12:25:27: Finished parsing scripts for resource group ogre_tools
+12:25:28: Mesh: Loading ogre_tools_sphere.mesh.
+12:25:28: Mesh: Loading ogre_tools_cylinder.mesh.
+12:25:28: Mesh: Loading ogre_tools_cone.mesh.
+12:25:28: Texture: SelectionRect0Texture: Loading 1 faces(PF_R8G8B8A8,1x1x1) with 0 generated mipmaps from Image. Internal format is PF_A8R8G8B8,1x1x1.
+12:25:29: *-*-* OGRE Shutdown
+12:25:29: Unregistering ResourceManager for type Compositor
+12:25:29: Unregistering ResourceManager for type Font
+12:25:29: Unregistering ResourceManager for type Skeleton
+12:25:29: Unregistering ResourceManager for type Mesh
+12:25:29: Unregistering ResourceManager for type HighLevelGpuProgram
+12:25:29: Uninstalling plugin: Cg Program Manager
+12:25:29: Plugin successfully uninstalled
+12:25:29: Unloading library Plugin_CgProgramManager
+12:25:29: Uninstalling plugin: ParticleFX
+12:25:29: Plugin successfully uninstalled
+12:25:29: Unloading library Plugin_ParticleFX
+12:25:29: Uninstalling plugin: Octree & Terrain Scene Manager
+12:25:29: Plugin successfully uninstalled
+12:25:29: Unloading library Plugin_OctreeSceneManager
+12:25:29: Uninstalling plugin: GL RenderSystem
+12:25:29: Unregistering ResourceManager for type GpuProgram
+12:25:29: ******************************
+*** Stopping GLX Subsystem ***
+******************************
+12:25:29: Unregistering ResourceManager for type Texture
+12:25:29: Plugin successfully uninstalled
+12:25:29: Unloading library RenderSystem_GL
+12:25:29: Unregistering ResourceManager for type Material
