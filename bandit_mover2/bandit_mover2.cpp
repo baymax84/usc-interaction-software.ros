@@ -11,19 +11,20 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#define DTOR( a ) ( ( a ) * M_PI / 180.0f )
-
-double get_time()
-{
-  struct timeval tp;
-  gettimeofday(&tp,0);
-  return ((double)tp.tv_sec + (double)tp.tv_usec/1e6);
-}
+#define DTOR(a) ( (a) * M_PI / 180.0f )
 
 double goal_array[20];
 double current_array[20];
-//Fl_Value_Slider* p[20];
 Fl_Check_Button* p;
+Fl_Value_Slider* q[19];
+
+//function to record current time
+double get_time()
+{
+	struct timeval tp;
+	gettimeofday(&tp,0);
+	return ((double)tp.tv_sec + (double)tp.tv_usec/1e6);
+}
 
 ros::Publisher joint_publisher;
 ros::Publisher joint_state_publisher;
@@ -32,10 +33,11 @@ std::vector<std::string> joint_names;
 
 bandit_msgs::Params::Response res;
 
+//function for fluid joint motion
 void moveToPosition(){
 
 	bandit_msgs::JointArray jarray;
-	printf("I'm moving!!!\n");
+	printf("I'm Moving!!!\n");
 	int num_moving = 1;
 	double cur_time, diff_time, g_time;
 	double last_time = ros::Time::now().toSec();
@@ -82,7 +84,7 @@ void moveToPosition(){
 				bandit_msgs::Joint j;
 				j.id = q;
 				j.angle = DTOR(c);
-				printf("move joint: %d ang: %f\n",q,c);
+				printf("Move Joint: %d Ang: %f\n",q,c);
 				jarray.joints.push_back(j);
 				//joint_publisher.publish( j );
 			}
@@ -94,6 +96,7 @@ void moveToPosition(){
 	printf("Done Moving!\n");
 }
 
+//callback function for "Move To Position" button
 void button_cb( Fl_Widget* obj , void* )
 {
 	ros::NodeHandle n;
@@ -102,6 +105,7 @@ void button_cb( Fl_Widget* obj , void* )
 }
 
 
+//callback function for sliders
 void slider_cb( Fl_Widget* o, void* )
 {
 //  bandit_msgs::JointArray jarray;
@@ -113,7 +117,7 @@ void slider_cb( Fl_Widget* o, void* )
 		if( res.name[i] == label ) num = i;
 	}
   
-  Fl_Valuator* oo = (Fl_Valuator*) o;
+	Fl_Valuator* oo = (Fl_Valuator*) o;
 
 /*
 	sensor_msgs::JointState js;
@@ -126,27 +130,29 @@ void slider_cb( Fl_Widget* o, void* )
 	joint_state_publisher.publish(js);
 	printf("@"); fflush(stdout);
 */
+
 //#if 0
-if (p->value(0)){
-	bandit_msgs::JointArray jarray;
-	bandit_msgs::Joint j;
-	j.id = num;
-//	j.angle = DTOR( oo->value() );
-	if ( 0/*(num == 7) || (num == 8) || (num > 13)*/ )
-		j.angle = oo->value();
-	else
-		j.angle = DTOR( oo->value() );
 
-	jarray.joints.push_back(j);
-	joint_publisher.publish( jarray );
-}
+	if ( p->value() == 1 ){
+		bandit_msgs::JointArray jarray;
+		bandit_msgs::Joint j;
+		j.id = num;
+		current_array[num] = oo->value();
+//		j.angle = DTOR( oo->value() );
+		if ( 0/*(num == 7) || (num == 8) || (num > 13)*/ )
+			j.angle = oo->value();
+		else
+			j.angle = DTOR( oo->value() );
 
-
+		jarray.joints.push_back(j);
+		joint_publisher.publish( jarray );
+	}
+	
 //#endif
-
 	goal_array[num] = oo->value();
 }
 
+//callback function for reset button
 void reset_cb( Fl_Widget* o, void* )
 {
 	int num = 0;
@@ -157,7 +163,7 @@ void reset_cb( Fl_Widget* o, void* )
 	while(stopper != 1){
 		bandit_msgs::JointArray jrarray;
 		bandit_msgs::Joint jr;
-		printf("Resetting Positions of JointID: %d!\n", num);
+		printf("Resetting joint positions and sliders!\n");
 		for (num = 0; num < 20; num++){	
 			double c = current_array[num];
 			goal_array[num] = 0;
@@ -167,21 +173,27 @@ void reset_cb( Fl_Widget* o, void* )
 			
 			current_array[num] = c;
 			jrarray.joints.push_back(jr);
-			
-			//p[num]->value(0);
-		}
+		}		
 		joint_publisher.publish( jrarray );
 		ros::spinOnce();
 		loop_rate.sleep();
 		stopper++;
 	}
+
+	for ( int a = 0; a < 19; a++)
+		q[a]->value(0);
+
+	for (int asdf = 0; asdf < 20; asdf++)
+		current_array[asdf] = 0;
 }
 
+//callback function for checkbox
 void check_cb( Fl_Widget* o, void* )
 {
-
-
-
+	if ( p->value() == 1)
+		printf("Enabling sliders for instantaneous joint movement!\n");
+	else
+		printf("Deactivating sliders for fluid joint movement!\n");
 }
 
 int main( int argc, char* argv[] )
@@ -224,7 +236,6 @@ int main( int argc, char* argv[] )
 	for (int asdf = 0; asdf < 20; asdf++)
 		current_array[asdf] = 0;
 
- 
 #if 0
 int k = 0;
 while(n.ok()){
@@ -324,7 +335,7 @@ getchar();
 	int win_w = padding*2+slider_w;
 	int win_h = padding*(4+num_sliders)+(num_sliders+1)*slider_h;
 
-	Fl_Window win( win_w, win_h, "Bandit Mover" );
+	Fl_Window win( win_w, win_h, "Bandit Mover 2.2" );
 	win.begin();
 	Fl_Value_Slider* sliders[19];
 
@@ -338,7 +349,7 @@ getchar();
 		sliders[i]->type(FL_HORIZONTAL);
 		sliders[i]->bounds(res.min[i], res.max[i] );
 		sliders[i]->callback( slider_cb );
-		//p[i] = sliders[i];
+		q[i] = sliders[i];
 	}
 
 	Fl_Button* butn = new Fl_Button( padding, (i+1)*padding+i*slider_h,slider_w, slider_h, "Go To Position");
@@ -347,7 +358,7 @@ getchar();
 	Fl_Button* resetbutn = new Fl_Button( padding, (i+2)*padding+i*slider_h,slider_w, slider_h, "Reset");
 		resetbutn->callback( ( Fl_Callback* ) reset_cb );
 
-	Fl_Check_Button* checkbutn = new Fl_Check_Button( padding, (i+3)*padding+i*slider_h,slider_w, slider_h, "Enable");
+	Fl_Check_Button* checkbutn = new Fl_Check_Button( padding, (i+3)*padding+i*slider_h,slider_w, slider_h, "Enable Instantaneous Movement");
 		checkbutn->callback( ( Fl_Callback* ) check_cb );
 	p = checkbutn;
 
