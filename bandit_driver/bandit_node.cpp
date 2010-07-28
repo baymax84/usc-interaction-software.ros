@@ -34,6 +34,7 @@ void jointIndCB(const bandit_msgs::JointConstPtr& j)
   //double dpos = direction[j->id]*RTOD(j->angle)+home[j->id];
   //double pos = DTOR( dpos );
 
+    ROS_INFO( "setting joint: %d to angle: %0.2f", j->id, RTOD(j->angle) );
   g_bandit.setJointPos(j->id, j->angle);
 
   // Push out positions to bandit
@@ -57,6 +58,7 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
     //double pos = DTOR( dpos );
 
     // Set the joint position
+    ROS_INFO( "setting joint: %d to angle: %0.2f", joint_iter->id, joint_iter->angle );
     g_bandit.setJointPos(joint_iter->id, joint_iter->angle);
   }
   // Push out positions to bandit
@@ -206,9 +208,9 @@ int main(int argc, char** argv)
       }
       else
       {
-        param_res.min.push_back(g_bandit.getJointMin(i));
-        param_res.max.push_back(g_bandit.getJointMax(i));
-        param_res.pos.push_back(g_bandit.getJointPos(i));
+        param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));
+        param_res.max.push_back(RTOD(g_bandit.getJointMax(i)));
+        param_res.pos.push_back(RTOD(g_bandit.getJointPos(i)));
       }
     }
 
