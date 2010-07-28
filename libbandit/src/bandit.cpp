@@ -28,7 +28,8 @@ Bandit::Bandit() : master_(7)
   addJoint(4, "left elbow twist","left_shoulder_bicep_joint",    4, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
   addJoint(5, "left elbow","left_bicep_forearm_joint",          3, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f), DTOR(110.0f));
   addJoint(6, "left wrist twist","left_forearm_wrist_joint",    3, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
-  addJoint(7, "left wrist tilt","left_wrist_hand_joint",     3, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.5);
+  //addJoint(7, "left wrist tilt","left_wrist_hand_joint",     3, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.5);
+  addJoint(7, "left wrist tilt","left_wrist_hand_joint",     3, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, DTOR(-90.0f),DTOR(90.0f));
   addJoint(8, "left hand grab","left_hand_thumb_joint",      3, smartservo::JOINT_A, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.0);
   addJoint(9, "right shoulder F/B","right_torso_shoulder_mounting_joint",  2, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-30.0f), DTOR(180.0f));
   addJoint(10, "right shoulder I/O","right_shoulder_mounting_shoulder_joint", 1, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f), DTOR(150.0f));
@@ -37,7 +38,7 @@ Bandit::Bandit() : master_(7)
   addJoint(13, "right wrist twist","right_forearm_wrist_joint",  0, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
   addJoint(14, "right wrist tilt", "right_wrist_hand_joint",  0, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.5);
   addJoint(15, "right hand grab","right_hand_thumb_joint",    0, smartservo::JOINT_A, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.0);
-  addJoint(16, "eyebrows", "eyebrows",          5, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.1, 0.4);
+  addJoint(16, "eyebrows_joint", "eyebrows_joint",          5, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.1, 0.4);
   addJoint(17, "mouth top","mouth_top",        6, smartservo::JOINT_A, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
   addJoint(18, "mouth bottom","mouth_bottom",       6, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
 }
@@ -146,6 +147,7 @@ void Bandit::setJointPos(uint16_t id, double angle)
     break;
   case smartservo::HOBBY_SERVO:
   case smartservo::V1_SERVO:
+    printf( "setting hobby servo to: %d\n", pos );
     if (pos > 255)
       pos = 255;
     if (pos < 0)
