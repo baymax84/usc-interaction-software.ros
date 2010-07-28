@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <string>
 #include <sstream>
 #include <yaml-cpp/yaml.h>
 #include <bandit/bandit.h>
@@ -155,7 +154,7 @@ int main(int argc, char** argv)
 
 	//Reading & Parsing from Bandit_Calibration_File.yaml
 	std::ifstream fin;
-	const std::string fileName = "Bandit_Calibration_File.yaml";//has only calibration values for joints 0-15
+	const std::string fileName = "Bandit_Calibration_File.yaml";
 	fin.open(fileName.c_str());
 	if (fin.fail()){
 		ROS_WARN("Failure to find File");
