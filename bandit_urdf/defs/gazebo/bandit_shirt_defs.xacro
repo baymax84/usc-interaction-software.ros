@@ -10,12 +10,12 @@
 	<include filename="$(find pr2_description)/urdf/common.xacro"/>
 	<include filename="$(find bandit_urdf)/defs/shirt_materials.xacro"/>
 	<include filename="$(find bandit_urdf)/defs/gazebo/torso.xacro"/>
-	<include filename="$(find bandit_urdf)/defs/gazebo/logo.xacro"/>
+<!--	<include filename="$(find bandit_urdf)/defs/logo.xacro"/> -->
 	<include filename="$(find bandit_urdf)/defs/gazebo/head.xacro"/>
 	<include filename="$(find bandit_urdf)/defs/gazebo/shoulder.xacro"/>
-	<include filename="$(find bandit_urdf)/defs/gazebo/pioneerbase.xacro"/>
-	<include filename="$(find bandit_urdf)/defs/gazebo/screws.xacro"/>
-<!--	<include filename="$(find bandit_urdf)/defs/stage.xacro"/> -->
+<!--	<include filename="$(find bandit_urdf)/defs/pioneerbase.xacro"/>
+	<include filename="$(find bandit_urdf)/defs/screws.xacro"/>
+	<include filename="$(find bandit_urdf)/defs/stage.xacro"/> -->
 	<include filename="$(find bandit_urdf)/defs/gazebo.urdf.xacro"/>
 
 

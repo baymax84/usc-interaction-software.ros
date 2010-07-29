@@ -179,8 +179,8 @@
     </link>
 	</xacro:macro>
 
-	<xacro:macro name="bandit_lips" params="name parent *origin">
-	  <joint name="${name}_joint" type="revolute">
+	<xacro:macro name="bandit_mouth" params="name parent side reflect *origin">
+	  <joint name="${name}_${side}_joint" type="revolute">
 		<axis xyz="0 -1 0" />
 		<limit lower="-0.261799388" upper="0.261799388" effort="2.645" velocity="6" />
       		<safety_controller k_velocity="1.5" soft_lower_limit="${-1.57079633+0.15}" soft_upper_limit="${1.57079633-0.15}" k_position="100" />
@@ -189,23 +189,23 @@
  
       		<insert_block name="origin" />
       		<parent link="${parent}"/>
-      		<child link="${name}_link"/>
+      		<child link="${name}_${side}_link"/>
    	  </joint>
-    <link name="${name}_link">
+    <link name="${name}_${side}_link">
       <inertial>
         <mass value="0" />
         <origin xyz="0 0 0" rpy="0 0 ${RCon*90}"/>
         <inertia ixx="0.00482611007"  ixy="-0.000144683999"  ixz="0.000110076136"
                  iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
       </inertial>
-      <visual name="${name}_visual">
-        <origin xyz="0 0 .002" rpy="0 0 ${RCon*-90}"/>
+      <visual name="${name}_${side}_visual">
+        <origin xyz="0 0 ${reflect*.002}" rpy="0 0 ${RCon*-90}"/>
         <!--<origin xyz="0 0 -0.035" rpy="${RCon*0} 0 ${RCon*-90}"/>-->
         <!--<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>-->
 
 	<!-- -->
         <geometry name="${name}_visual_geom">
-					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/top_lip_small.STL"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/${side}_lip_small.STL"/>
         </geometry>
 					<material name="Lips"/>
       </visual>
@@ -217,7 +217,7 @@
         </geometry>
       </collision>
     </link>
-	  <joint name="${name}2_joint" type="revolute">
+<!--	  <joint name="${name}2_joint" type="revolute">
 		<axis xyz="0 -1 0"/>
 		<limit lower="-0.261799388" upper="0.261799388" effort="2.645" velocity="6" />
       		<safety_controller k_velocity="1.5" soft_lower_limit="${-1.57079633+0.15}" soft_upper_limit="${1.57079633-0.15}" k_position="100" />
@@ -237,10 +237,6 @@
       </inertial>
       <visual name="${name}2_visual">
         <origin xyz="0 0 -0.002" rpy="0 0 ${RCon*-90}"/>
-        <!--<origin xyz="0 0 -0.035" rpy="${RCon*0} 0 ${RCon*-90}"/>-->
-        <!--<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>-->
-
-	<!-- -->
         <geometry name="${name}2_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/bottom_lip_small.stl"/>
         </geometry>
@@ -253,7 +249,7 @@
 					<box size="0 0 0"/>
         </geometry>
       </collision>
-    </link>
+    </link> -->
 </xacro:macro>
 
 	<xacro:macro name="bandit_head" params="name parent *origin">
@@ -277,9 +273,12 @@
 			<origin xyz="0.06 -0.0470 .085" rpy="${-M_PI/2} ${-M_PI/2} 0"/>
 		</xacro:bandit_eyebrow>
 
-		<xacro:bandit_lips name="${name}_lips" parent="${name}_tilt_link">
+		<xacro:bandit_mouth name="${name}_mouth" parent="${name}_tilt_link" reflect="1" side="top">
+			<origin xyz="0.070 0.0 0.0075" rpy="0 0 0"/>
+		</xacro:bandit_mouth>
+		<xacro:bandit_mouth name="${name}_mouth" parent="${name}_tilt_link" reflect="-1" side="bottom">
 			<origin xyz="0.070 0.0 -0.0075" rpy="0 0 0"/>
-		</xacro:bandit_lips>
+		</xacro:bandit_mouth>
 
 		<!--<xacro:bandit_head_gazebo name="${name}"/>-->
 	</xacro:macro>
