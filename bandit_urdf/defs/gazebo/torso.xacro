@@ -20,7 +20,7 @@
 -->
 	  <link name = "${name}_link">
 	    <inertial>
- 	    <mass value="0"/>
+ 	    <mass value="50"/>
     	  <origin xyz="0 0 0"/>
       	<inertia ixx="1" ixy="0" ixz="0"
 	               iyy="1" iyz="0"
@@ -31,7 +31,7 @@
     	  <origin xyz="0 0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
     	  <!--<origin xyz="0 0 0.05" rpy="${M_PI/2} 0 ${M_PI/2}"/>-->
       	<geometry name="${name}_geom">
-					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/body_small.stl"/>
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/body_smallest.stl"/>
   	    <!--  <box size="0 0 0"/>-->
 	      </geometry>
 
@@ -46,7 +46,7 @@
 		<xacro:bandit_torso_gazebo name="${name}"/>
 	</xacro:macro>
 
-<!-- dasf -->
+<!-- 
 	<link name="bandit_stop_link">
 		<inertial>
 			<mass value="0"/>	
@@ -73,6 +73,6 @@
 		<origin xyz="-0.08 0 -0.04" rpy="0 0 0"/>
 		<parent link="bandit_torso_link"/>
 		<child link="bandit_stop_link"/>
-	</joint>
-<!-- dasf -->
+	</joint> -->
+
 </robot>
