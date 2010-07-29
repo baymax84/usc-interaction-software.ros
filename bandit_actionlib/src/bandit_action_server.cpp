@@ -55,7 +55,7 @@ void operator >> (const YAML::Node& node, Gestures& gesture){
 }
 
 void operator >> (const YAML::Node& node, Frame& frame){
-	node["Frame Number"] >> frame.frame_num;
+	node["Frame Num"] >> frame.frame_num;
 	const YAML::Node& gestures = node["Gestures"];
 	for (unsigned i=0; i<gestures.size();i++){
 		Gestures gesture;
@@ -123,15 +123,6 @@ class BanditAction
 		YAML::Parser parser(fin);
 		YAML::Node doc;
 		parser.GetNextDocument(doc);
-		//initalize dynamic arrays for ID and corresponding angle
-		/*int* j_id = NULL;
-		int j_id_size;
-		double* j_angle = NULL;
-		int j_angle_size;
-		j_id_size = doc.size();
-		j_angle_size = doc.size();
-		j_id = new int [j_id_size];
-		j_angle = new double [j_angle_size];*/
 		
 		while(success){
 			//set preempt
@@ -150,14 +141,14 @@ class BanditAction
 			for(unsigned k=0;k < doc.size();k++) {
 				Frame frames;
 				doc[k] >> frames;
-				std::cout << " frame num: " << frames.frame_num << "\n";
-				for (int l=0;l<frames.gestures.size();l++){
+				for (int l =0; l < frames.gestures.size(); l++){
 					Gestures g = frames.gestures[l];
 					desired_joint_pos.id = g.id;
 					desired_joint_pos.angle = deg_to_rad(g.joint_angle);
 					jarray->joints.push_back(desired_joint_pos);
 					//publishes feedback information
 					current_time = ros::Time::now().toSec();
+					feedback.progress_time = current_time;
 					feedback.progress_joint_id.push_back( g.id );
 					feedback.progress_joint_angle.push_back( g.joint_angle );
 					as.publishFeedback(feedback);
@@ -166,7 +157,7 @@ class BanditAction
 				//publishes joint array for each frame (note: JointArray is normally set to radians)
 				publish_joint_ind();
 				ros::spinOnce();
-				ros::Rate(5).sleep();
+				ros::Rate(1).sleep();
 			}
 			
 			//publishes scucessful result
