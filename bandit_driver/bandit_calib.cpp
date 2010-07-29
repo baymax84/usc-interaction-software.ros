@@ -66,7 +66,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 	double lastPose = rad_to_deg( joint_positions->at(p_id) );
 	double currentPose = rad_to_deg( joint_positions->at(p_id) );
 	bool continueCalibration = true;
-	int direction[] = { 0, 0, -1, 1, -1, 1, 1, 1, 0, -1, 1, -1, 1, 1, 1, 0, 0, 0, 0};
+	int direction[] = { 0, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
 	
 	position_zero = rad_to_deg( joint_positions->at(p_id) );//get the encoder position at 0 degrees
 	ROS_INFO("Position Zero [%f]:", position_zero);
@@ -210,13 +210,13 @@ void true_zero(const int & id)
 			}
 			break;
 		case 7:
-			offset = 0;
-			truezero = 0.5;
+			offset = 28;
+			truezero = maxAngle - offset;
 			break;
 		case 8:
 			offset = 0;
 			truezero = 0.6;
-			ROS_INFO("No Joint Calibration Available");//the gripper does not actuate
+			ROS_INFO("No Joint Calibration Available");//this joint is inoperational on Bandit 2
 			break;
 		case 9:
 			offset = (-158 + 60);
@@ -254,13 +254,13 @@ void true_zero(const int & id)
 			}
 			break;
 		case 14:
-			offset = 0; //this joint is inoperational on Bandit 2
-			truezero = 0.5;
+			offset = 28; //this joint moves in the opposite direction
+			truezero = maxAngle - offset;
 			break;
 		case 15:
 			offset = 0;
 			truezero = 0.5;
-			ROS_INFO("No Joint Calibration Available");//the gripper does not actuate
+			ROS_INFO("No Joint Calibration Available");//this joint is inoperational on Bandit 2
 			break;
 		case 16:
 			offset = 0;

@@ -55,7 +55,7 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 	double lastPose = rad_to_deg( joint_positions->at(p_id) );
 	double currentPose = rad_to_deg( joint_positions->at(p_id) );
 	bool continueCalibration = true;
-	int direction[] = { 0, 0, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, 1};
+	int direction[] = { 0, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
 	position_zero = 0.0;
 	minAngle = 0.0;
 	maxAngle = 0.0;
@@ -64,8 +64,6 @@ void calibrateJoint(const int & p_id, double & minAngle, double & maxAngle, cons
 	ROS_INFO("Position Zero [%f]:", position_zero);
 	ROS_INFO("currentPose: %f lastPose: %f", currentPose, lastPose);
 	ROS_INFO("desired angle: %f ID: %d", angle_deg, p_id);
-
-	bandit_master_reset();
 		
 	desiredJointPos->id = p_id;
 	bool checker_sum;
