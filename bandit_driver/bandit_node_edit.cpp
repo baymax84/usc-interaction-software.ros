@@ -86,7 +86,7 @@ void stateCB(ros::Publisher& joint_pub)
 
   // For every joint
   for (int i = 0; i < 19; i++)
-  {
+  { 
     js.name.push_back(g_bandit.getJointRosName(i));
     js.position.push_back(g_bandit.getJointPos(i));
     js.velocity.push_back(0);
@@ -257,9 +257,9 @@ int main(int argc, char** argv)
       }
       else
       {
-        param_res.min.push_back(g_bandit.getJointMin(i));
-        param_res.max.push_back(g_bandit.getJointMax(i));
-        param_res.pos.push_back(g_bandit.getJointPos(i));
+        param_res.min.push_back(RTOD(g_bandit.getJointMin(i)));
+        param_res.max.push_back(RTOD(g_bandit.getJointMax(i)));
+        param_res.pos.push_back(RTOD(g_bandit.getJointPos(i)));
       }
     }
 
