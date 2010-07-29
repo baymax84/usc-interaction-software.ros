@@ -174,6 +174,19 @@ bandit_test_client/fast:
 .PHONY : bandit_test_client/fast
 
 #=============================================================================
+# Target rules for targets named bandit_yaml
+
+# Build rule for target.
+bandit_yaml: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 bandit_yaml
+.PHONY : bandit_yaml
+
+# fast build rule for target.
+bandit_yaml/fast:
+	$(MAKE) -f CMakeFiles/bandit_yaml.dir/build.make CMakeFiles/bandit_yaml.dir/build
+.PHONY : bandit_yaml/fast
+
+#=============================================================================
 # Target rules for targets named clean-test-results
 
 # Build rule for target.
@@ -346,6 +359,21 @@ src/bandit_test_client.s:
 	$(MAKE) -f CMakeFiles/bandit_test_client.dir/build.make CMakeFiles/bandit_test_client.dir/src/bandit_test_client.s
 .PHONY : src/bandit_test_client.s
 
+# target to build an object file
+src/bandit_yaml.o:
+	$(MAKE) -f CMakeFiles/bandit_yaml.dir/build.make CMakeFiles/bandit_yaml.dir/src/bandit_yaml.o
+.PHONY : src/bandit_yaml.o
+
+# target to preprocess a source file
+src/bandit_yaml.i:
+	$(MAKE) -f CMakeFiles/bandit_yaml.dir/build.make CMakeFiles/bandit_yaml.dir/src/bandit_yaml.i
+.PHONY : src/bandit_yaml.i
+
+# target to generate assembly for a file
+src/bandit_yaml.s:
+	$(MAKE) -f CMakeFiles/bandit_yaml.dir/build.make CMakeFiles/bandit_yaml.dir/src/bandit_yaml.s
+.PHONY : src/bandit_yaml.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -358,6 +386,7 @@ help:
 	@echo "... ROSBUILD_gensrv_cpp"
 	@echo "... bandit_action_server"
 	@echo "... bandit_test_client"
+	@echo "... bandit_yaml"
 	@echo "... clean-test-results"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
@@ -377,6 +406,9 @@ help:
 	@echo "... src/bandit_test_client.o"
 	@echo "... src/bandit_test_client.i"
 	@echo "... src/bandit_test_client.s"
+	@echo "... src/bandit_yaml.o"
+	@echo "... src/bandit_yaml.i"
+	@echo "... src/bandit_yaml.s"
 .PHONY : help
 
 

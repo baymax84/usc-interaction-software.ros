@@ -35,3 +35,4 @@ rosbuild_genmsg()
 
 rosbuild_add_executable(bandit_action_server src/bandit_action_server.cpp)
 rosbuild_add_executable(bandit_test_client src/bandit_test_client.cpp)
+rosbuild_add_executable(bandit_yaml src/bandit_yaml.cpp)
