@@ -180,7 +180,7 @@ TOOLCHAINCONFIG:FILEPATH=TOOLCHAINCONFIG-NOTFOUND
 USERCONFIG:FILEPATH=USERCONFIG-NOTFOUND
 
 //Path to a file.
-_file_name:FILEPATH=/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/src/bandit_test_client.cpp
+_file_name:FILEPATH=/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/src/bandit_yaml.cpp
 
 //Value Computed by CMake
 bandit_actionlib_BINARY_DIR:STATIC=/home/kitty/ros/stacks/interaction-ros-pkg/bandit/bandit_actionlib/build

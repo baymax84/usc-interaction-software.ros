@@ -9,9 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <string>
 #include <sstream>
-#include <sys/time.h>
 #include <yaml-cpp/yaml.h>
 
 using namespace std;
@@ -42,13 +40,28 @@ void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 	*joint_positions = js->position;//pulls out all the positions for all joints and stores it to joint_positions
 }
 
-struct Joint_Calibrations {
+struct Gestures {
 	float id, joint_angle;
 };
 
-void operator >> (const YAML::Node& node, Joint_Calibrations& gesture){
+struct Frame {
+	int frame_num;
+	std::vector <Gestures> gestures;
+};
+
+void operator >> (const YAML::Node& node, Gestures& gesture){
 	node["Joint ID"] >> gesture.id;
 	node["Joint Angle"] >> gesture.joint_angle;
+}
+
+void operator >> (const YAML::Node& node, Frame& frame){
+	node["Frame Number"] >> frame.frame_num;
+	const YAML::Node& gestures = node["Gestures"];
+	for (unsigned i=0; i<gestures.size();i++){
+		Gestures gesture;
+		gestures[i] >> gesture;
+		frame.gestures.push_back(gesture);
+	}
 }
 
 class BanditAction
@@ -78,6 +91,7 @@ class BanditAction
 	{
 		bool success = true;
 		double current_time = 0;
+		double first_time = ros::Time::now().toSec();
 		joint_publisher = new ros::Publisher;
 		*joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",5);
 		joint_subscriber = new ros::Subscriber;
@@ -106,10 +120,9 @@ class BanditAction
 		if (fin.fail()){
 			ROS_WARN("Failure to find File");
 		}
-		YAML:: Parser parser(fin);
+		YAML::Parser parser(fin);
 		YAML::Node doc;
 		parser.GetNextDocument(doc);
-		Joint_Calibrations gesture;
 		//initalize dynamic arrays for ID and corresponding angle
 		/*int* j_id = NULL;
 		int j_id_size;
@@ -135,26 +148,30 @@ class BanditAction
 			 * publishes feedback about which angles and joints are being slotted into the array as well as the time
 			 */
 			for(unsigned k=0;k < doc.size();k++) {
-				doc[k] >> gesture;
-				desired_joint_pos.id = gesture.id;
-				desired_joint_pos.angle = deg_to_rad(gesture.joint_angle);//converts angle degrees to radians
-				jarray->joints.push_back(desired_joint_pos);
-				//publishes feedback information
-				current_time = ros::Time::now().toSec();
-				feedback.progress_time = current_time;
-				feedback.progress_joint_id.push_back( gesture.id );
-				feedback.progress_joint_angle.push_back( gesture.joint_angle );
-				as.publishFeedback(feedback);
+				Frame frames;
+				doc[k] >> frames;
+				std::cout << " frame num: " << frames.frame_num << "\n";
+				for (int l=0;l<frames.gestures.size();l++){
+					Gestures g = frames.gestures[l];
+					desired_joint_pos.id = g.id;
+					desired_joint_pos.angle = deg_to_rad(g.joint_angle);
+					jarray->joints.push_back(desired_joint_pos);
+					//publishes feedback information
+					current_time = ros::Time::now().toSec();
+					feedback.progress_joint_id.push_back( g.id );
+					feedback.progress_joint_angle.push_back( g.joint_angle );
+					as.publishFeedback(feedback);
+					ros::Rate(5).sleep();
+				}
+				//publishes joint array for each frame (note: JointArray is normally set to radians)
+				publish_joint_ind();
+				ros::spinOnce();
 				ros::Rate(5).sleep();
 			}
 			
-			publish_joint_ind();//publishes joint array (note: JointArray is normally set to radians)
-			ros::spinOnce();
-			ros::Rate(5).sleep();
-			
 			//publishes scucessful result
 		    if(success){
-				result.total_time = feedback.progress_time;
+				result.total_time = current_time - first_time;
 				result.result_joint_id = feedback.progress_joint_id;
 				result.result_joint_angle = feedback.progress_joint_angle;
 				ROS_INFO("%s: Succeeded", action_name.c_str());
