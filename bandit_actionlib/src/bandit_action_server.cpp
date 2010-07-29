@@ -40,27 +40,27 @@ void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 	*joint_positions = js->position;//pulls out all the positions for all joints and stores it to joint_positions
 }
 
-struct Gestures {
+struct Joints {
 	float id, joint_angle;
 };
 
 struct Frame {
 	int frame_num;
-	std::vector <Gestures> gestures;
+	std::vector <Joints> joints;
 };
 
-void operator >> (const YAML::Node& node, Gestures& gesture){
-	node["Joint ID"] >> gesture.id;
-	node["Joint Angle"] >> gesture.joint_angle;
+void operator >> (const YAML::Node& node, Joints& joint){
+	node["Joint ID"] >> joint.id;
+	node["Joint Angle"] >> joint.joint_angle;
 }
 
 void operator >> (const YAML::Node& node, Frame& frame){
 	node["Frame Num"] >> frame.frame_num;
-	const YAML::Node& gestures = node["Gestures"];
-	for (unsigned i=0; i<gestures.size();i++){
-		Gestures gesture;
-		gestures[i] >> gesture;
-		frame.gestures.push_back(gesture);
+	const YAML::Node& joints = node["Joints"];
+	for (unsigned i=0; i<joints.size();i++){
+		Joints joint;
+		joints[i] >> joint;
+		frame.joints.push_back(joint);
 	}
 }
 
@@ -141,8 +141,8 @@ class BanditAction
 			for(unsigned k=0;k < doc.size();k++) {
 				Frame frames;
 				doc[k] >> frames;
-				for (int l =0; l < frames.gestures.size(); l++){
-					Gestures g = frames.gestures[l];
+				for (int l =0; l < frames.joints.size(); l++){
+					Joints g = frames.joints[l];
 					desired_joint_pos.id = g.id;
 					desired_joint_pos.angle = deg_to_rad(g.joint_angle);
 					jarray->joints.push_back(desired_joint_pos);
