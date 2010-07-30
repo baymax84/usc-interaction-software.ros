@@ -39,8 +39,8 @@ Bandit::Bandit() : master_(7)
   addJoint(14, "right wrist tilt", "right_wrist_hand_joint",  0, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.5);
   addJoint(15, "right hand grab","right_hand_thumb_joint",    0, smartservo::JOINT_A, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.0);
   addJoint(16, "eyebrows_joint", "eyebrows_joint",          5, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.1, 0.4);
-  addJoint(17, "mouth top","mouth_top",        6, smartservo::JOINT_A, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
-  addJoint(18, "mouth bottom","mouth_bottom",       6, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
+  addJoint(17, "mouth top_joint","mouth_top_joint",        6, smartservo::JOINT_A, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
+  addJoint(18, "mouth bottom_joint","mouth_bottom_joint",       6, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
 }
     
 Bandit::~Bandit()
@@ -67,6 +67,11 @@ void Bandit::addJoint(int id, std::string name, std::string rname, int mod_id, s
 
   master_.setJointType(mod_id, type);
   
+}
+
+void Bandit::useJointLimits( bool use_limits )
+{
+  joint_limits_ = use_limits;
 }
 
 void Bandit::registerStateCB(boost::function<void()> callback)
@@ -131,13 +136,15 @@ void Bandit::setJointPos(uint16_t id, double angle)
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-/*
-  if (angle > joint->second.max)
-    angle = joint->second.max;
   
-  if (angle < joint->second.min)
-    angle = joint->second.min;
-*/
+  if( joint_limits_ )
+  {
+    if (angle > joint->second.max)
+      angle = joint->second.max;
+  
+    if (angle < joint->second.min)
+      angle = joint->second.min;
+  }
   int16_t pos = (joint->second.direction * angle + joint->second.offset) / joint->second.scale;
   
   switch (joint->second.type)

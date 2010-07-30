@@ -38,7 +38,10 @@ namespace bandit
   private:
     //! Instance of Master module to be used to communicate with joints
     smartservo::MasterModule master_;
-    
+
+    //! use software joint limits?
+    bool                    joint_limits_;
+
     //! Generic bandit joint
     /*! 
      *  This joint may represent a bandit joint or servo
@@ -73,7 +76,9 @@ namespace bandit
     void addJoint(int id, std::string name, std::string rname, int mod_id, smartservo::WhichJoint which, smartservo::JointType type,
                           int8_t direction, double scale, double offset, double min, double max);
 
-    
+  
+    void useJointLimits( bool use_limits );
+  
     //! Return the type of a joint
     smartservo::JointType getJointType(int id);
 
