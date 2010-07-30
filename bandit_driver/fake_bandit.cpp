@@ -99,10 +99,10 @@ int main( int argc, char* argv[] )
   add_param( 14, "right_wrist_hand_joint", -90, 90, 0);
   add_param( 15, "right_hand_thumb_joint", -90, 90, 0);
   add_param( 16, "eyebrows_joint", -90, 90, 0);
-  add_param( 17, "bandit_head_lips_joint", 0, 30, 0);
-  add_param( 18, "bandit_head_lips2_joint", 0, -30, 0);
+  add_param( 17, "mouth_top_joint", 0, 30, 0);
+  add_param( 18, "mouth_bottom_joint", 0, -30, 0);
 
-	ros::ServiceServer service = n.advertiseService("params", param);
+  ros::ServiceServer service = n.advertiseService("params", param);
   ros::Rate loop_rate(50);
   
   sensor_msgs::JointState js;
