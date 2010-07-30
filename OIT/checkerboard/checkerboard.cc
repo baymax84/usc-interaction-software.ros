@@ -37,28 +37,32 @@ std::string checkerboard_frame;
 
 #define RTOD(a) ((a) * 180.0 / M_PI )
 
-int nx = 7;
+int nx = 8;
 int ny = 6;
 
 cv::Mat getObjPoints( int x, int y, double size )
 {
   bool xodd = x % 2 == 1; bool yodd = x % 2 == 1;
-  cv::Mat ret(cv::Size(x*y,3), CV_64FC1);
+
+  std::vector<cv::Point3f> corners;
 
   for( int i = 0; i < y; i++ )
   {
-    double ycoord = size*(-y/2+i);
+    float ycoord = size*(-y/2+i);
     if( !yodd ) ycoord += size/2.0;
 
     for( int j = 0; j < x; j++ )
     {
-      double xcoord = size*(-x/2+j);
+      float xcoord = size*(-x/2+j);
       if( !xodd ) xcoord += size/2.0;
-			ret.at<double>(i*y+j,0) = xcoord;
-			ret.at<double>(i*y+j,1) = ycoord;
-			ret.at<double>(i*y+j,1) = 0;
+      cv::Point3f p;
+      p.x = xcoord;
+			p.y = ycoord;
+			p.z = 0;
+      corners.push_back(p);
     }
   }
+  cv::Mat ret(cv::Size(x*y,1), CV_32FC3, (void*)&corners[0]);
   return ret;
 }
 
@@ -72,16 +76,9 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
     CvMat oldimg = img;
     std::vector<cv::Point2f> corners;
 		if( cv::findChessboardCorners(img, cvSize(nx,ny), corners ) )
-		{
-			cv::Mat cornersmat( cv::Size(corners.size(), 2), CV_64FC1 );
-			for( int i = 0; i < corners.size(); i++ )
-			{
-				cornersmat.at<double>(i,0) = corners[i].x;
-				cornersmat.at<double>(i,1) = corners[i].y;
-			}
-
+		{   
+			cv::Mat cornersmat( cv::Size(corners.size(), 1), CV_32FC2, (void*)&corners[0] );
       cv::drawChessboardCorners(img, cvSize(nx,ny), cornersmat, true );
-
       std::vector<cv::Point2f> imgpts;
       double fR3[3], fT3[3];
       cv::Mat rvec(3, 1, CV_64FC1, fR3);
@@ -96,6 +93,7 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
       tf::Transform checktf;
       checktf.setOrigin( tf::Vector3(fT3[0], fT3[1], fT3[2] ) );
       double rx = fR3[0], ry = fR3[1], rz = fR3[2];
+      ROS_INFO( "tx: (%0.2f,%0.2f,%0.2f) rx: (%0.2f,%0.2f,%0.2f)", fT3[0],fT3[1], fT3[2], fR3[0],fR3[1],fR3[2]);
 			tf::Quaternion quat;
       quat.setRPY(rx, ry, rz);
 			checktf.setRotation( quat );
