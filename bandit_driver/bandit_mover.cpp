@@ -41,22 +41,20 @@ void slider_cb( Fl_Widget* o, void* )
 	joint_state_publisher.publish(js);
 	printf("@"); fflush(stdout);
 */
+
+  bandit_msgs::JointArray ja;
   bandit_msgs::Joint j;
   j.id = num;
-  //j.angle = DTOR( oo->value() );
-  if ( 0/*(num == 7) || (num == 8) || (num > 13)*/ )
-    j.angle = oo->value();
-  else
-    j.angle = DTOR( oo->value() );
-
-  joint_publisher.publish( j );
+  j.angle = DTOR( oo->value() );
+  ja.joints.push_back(j);
+  joint_publisher.publish( ja );
 }
 
 int main( int argc, char* argv[] )
 {
   ros::init(argc,argv,"bandit_mover");
   ros::NodeHandle n;
-  joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",1000);
+  joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",1000);
 	//joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
 
 

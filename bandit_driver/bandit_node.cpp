@@ -50,7 +50,6 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
        joint_iter++)
   {
     // Set the joint position
-    //printf( "j->angle: %f\n", RTOD(joint_iter->angle) );
     ROS_INFO( "j->angle: %f\n", RTOD(joint_iter->angle) );
 
     // scale to home
@@ -69,12 +68,25 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
   printf( "=====================\n");
 }
 
+void targetCB(const sensor_msgs::JointStateConstPtr &t )
+{
+  for( int i = 0; i < t->name.size(); i++ )
+  {
+    for( int j = 0; j < 19; j++ )
+    {
+      if( g_bandit.getJointRosName(j) == t->name[i] )
+      {
+        g_bandit.setJointPos(j, t->position[i] );
+      }
+    }
+  }
+
+  g_bandit.sendAllJointPos();
+}
+
 // This callback is invoked when we get new state from bandit
 void stateCB(ros::Publisher& joint_pub)
 {
-  bandit_msgs::JointArray j;
-  bandit_msgs::Joint joint;
-
   sensor_msgs::JointState js;
 
   js.header.stamp = ros::Time::now();
@@ -83,16 +95,29 @@ void stateCB(ros::Publisher& joint_pub)
   // For every joint
   for (int i = 0; i < 19; i++)
   {
-    js.name.push_back(g_bandit.getJointRosName(i));
-    js.position.push_back(g_bandit.getJointPos(i));
-    js.velocity.push_back(0);
-    js.effort.push_back(0);
-    // Set the id and angle
-    joint.id = i;
-    joint.angle = g_bandit.getJointPos(i);
+    if( g_bandit.getJointRosName(i) == std::string("eyebrows_joint") )
+    {
+      js.name.push_back(std::string("bandit_head_left_brow_joint"));
+      js.position.push_back(-3*g_bandit.getJointPos(i));
+      js.velocity.push_back(0);
+      js.effort.push_back(0);
+      js.name.push_back(std::string("bandit_head_right_brow_joint"));
+      js.position.push_back(-3*g_bandit.getJointPos(i));
+      js.velocity.push_back(0);
+      js.effort.push_back(0);
+    
+    }
+    else
+    {
+      js.name.push_back(g_bandit.getJointRosName(i));
+      if( i > 16 )
+        js.position.push_back(2*g_bandit.getJointPos(i));
+      else 
+        js.position.push_back(g_bandit.getJointPos(i));
 
-    // Add to array
-    j.joints.push_back(joint);
+      js.velocity.push_back(0);
+      js.effort.push_back(0);
+   }
   }
 
   
@@ -100,7 +125,6 @@ void stateCB(ros::Publisher& joint_pub)
 
   // Publish to other nodes
   joint_pub.publish(js);
-  //joint_pub.publish(j);
 }
 
 int main(int argc, char** argv)
@@ -120,7 +144,7 @@ int main(int argc, char** argv)
   nh.param("port", port, std::string("/dev/ttyUSB0"));
 
   ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
-  ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
+  //ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
@@ -236,25 +260,10 @@ int main(int argc, char** argv)
     ROS_INFO("All PID settings configured successfully");
 
     // Push out initial state
-    g_bandit.setJointPos(0,  0.0f);  // "head pitch",        
-    g_bandit.setJointPos(1,  0.0f);  // "head pan",          
-    g_bandit.setJointPos(2,  0.0f);  // "left shoulder F/B", 
-    g_bandit.setJointPos(3,  0.0f);  // "left shoulder I/O", 
-    g_bandit.setJointPos(4,  0.0f);  // "left elbow twist",  
-    g_bandit.setJointPos(5,  0.0f);  // "left elbow",        
-    g_bandit.setJointPos(6,  0.0f);  // "left wrist twist",  
-    g_bandit.setJointPos(7,  0.0f);  // "left wrist tilt",   
-    g_bandit.setJointPos(8,  0.0f);  // "left hand grab",    
-    g_bandit.setJointPos(9,  0.0f);  // "right shoulder F/B",
-    g_bandit.setJointPos(10, 0.0f);  // "right shoulder I/O"
-    g_bandit.setJointPos(11, 0.0f);  // "right elbow twist",
-    g_bandit.setJointPos(12, 0.0f);  // "right elbow",      
-    g_bandit.setJointPos(13, 0.0f);  // "right wrist twist",
-    g_bandit.setJointPos(14, 0.0f);  // "right wrist tilt", 
-    g_bandit.setJointPos(15, 0.0f);  // "right hand grab",  
-    g_bandit.setJointPos(16, 0.0f);  // "eyebrows",         
-    g_bandit.setJointPos(17, 0.0f);  // "mouth top",        
-    g_bandit.setJointPos(18, 0.0f);  // "mouth bottom"
+    for( int i = 0; i < 19; i++ )
+    {
+      g_bandit.setJointPos(i,  0.0f);
+    }
 
     // Send bandit position commands:
     g_bandit.sendAllJointPos();
@@ -264,6 +273,8 @@ int main(int argc, char** argv)
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
     ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
+    ros::Subscriber target_sub = nh.subscribe("target_state", 1, targetCB );
+
     ros::ServiceServer service = nh.advertiseService("params", param);
     while (nh.ok())
     {
