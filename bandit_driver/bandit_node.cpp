@@ -273,7 +273,7 @@ int main(int argc, char** argv)
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
     ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
-    ros::Subscriber target_sub = nh.subscribe("target_state", 1, targetCB );
+    ros::Subscriber target_sub = nh.subscribe("target_joints", 1, targetCB );
 
     ros::ServiceServer service = nh.advertiseService("params", param);
     while (nh.ok())
