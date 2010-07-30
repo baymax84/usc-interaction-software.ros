@@ -180,7 +180,7 @@
 	</xacro:macro>
 
 	<xacro:macro name="bandit_lips" params="name parent *origin">
-	  <joint name="${name}_joint" type="revolute">
+	  <joint name="mouth_top_joint" type="revolute">
 		<axis xyz="0 -1 0" />
 		<limit lower="-0.261799388" upper="0.261799388" effort="2.645" velocity="6" />
       		<safety_controller k_velocity="1.5" soft_lower_limit="${-1.57079633+0.15}" soft_upper_limit="${1.57079633-0.15}" k_position="100" />
@@ -189,35 +189,32 @@
  
       		<insert_block name="origin" />
       		<parent link="${parent}"/>
-      		<child link="${name}_link"/>
+      		<child link="mouth_top_link"/>
    	  </joint>
-    <link name="${name}_link">
+    <link name="mouth_top_link">
       <inertial>
         <mass value="0" />
         <origin xyz="0 0 0" rpy="0 0 ${RCon*90}"/>
         <inertia ixx="0.00482611007"  ixy="-0.000144683999"  ixz="0.000110076136"
                  iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
       </inertial>
-      <visual name="${name}_visual">
+      <visual name="mouth_top_visual">
         <origin xyz="0 0 .002" rpy="0 0 ${RCon*-90}"/>
-        <!--<origin xyz="0 0 -0.035" rpy="${RCon*0} 0 ${RCon*-90}"/>-->
-        <!--<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>-->
 
-	<!-- -->
-        <geometry name="${name}_visual_geom">
+        <geometry name="mouth_top_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/top_lip_small.STL"/>
         </geometry>
 					<material name="Lips"/>
       </visual>
 
-      <collision name="${name}_collision">
+      <collision name="mouth_top_collision">
          <origin xyz="0 0 0" rpy="0 0 0 " />
-        <geometry name="${name}_visual_geom">
+        <geometry name="mouth_top_visual_geom">
 					<box size="0 0 0"/>
         </geometry>
       </collision>
     </link>
-	  <joint name="${name}2_joint" type="revolute">
+	  <joint name="mouth_bottom_joint" type="revolute">
 		<axis xyz="0 -1 0"/>
 		<limit lower="-0.261799388" upper="0.261799388" effort="2.645" velocity="6" />
       		<safety_controller k_velocity="1.5" soft_lower_limit="${-1.57079633+0.15}" soft_upper_limit="${1.57079633-0.15}" k_position="100" />
@@ -226,30 +223,27 @@
  
       		<insert_block name="origin" />
       		<parent link="${parent}"/>
-      		<child link="${name}2_link"/>
+      		<child link="mouth_bottom_link"/>
    	  </joint>
-    <link name="${name}2_link">
+    <link name="mouth_bottom_link">
       <inertial>
         <mass value="0" />
         <origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>
         <inertia ixx="0.00482611007"  ixy="-0.000144683999"  ixz="0.000110076136"
                  iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
       </inertial>
-      <visual name="${name}2_visual">
+      <visual name="mouth_bottom_visual">
         <origin xyz="0 0 -0.002" rpy="0 0 ${RCon*-90}"/>
-        <!--<origin xyz="0 0 -0.035" rpy="${RCon*0} 0 ${RCon*-90}"/>-->
-        <!--<origin xyz="0 0 0" rpy="${RCon*90} 0 ${RCon*90}"/>-->
 
-	<!-- -->
-        <geometry name="${name}2_visual_geom">
+        <geometry name="mouth_bottom_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/bottom_lip_small.STL"/>
         </geometry>
 					<material name="Lips"/>
       </visual>
 
-      <collision name="${name}2_collision">
+      <collision name="mouth_bottom_collision">
          <origin xyz="0 0 0" rpy="0 0 0 " />
-        <geometry name="${name}2_visual_geom">
+        <geometry name="mouth_bottom_visual_geom">
 					<box size="0 0 0"/>
         </geometry>
       </collision>
@@ -317,5 +311,73 @@
 
 <xacro:pupil suffix="left" reflect="-4.8"/>
 <xacro:pupil suffix="right" reflect="-4.6"/>
+
+<!--	  <joint name="bandit_top_lip_joint" type="revolute">
+		<axis xyz="0 -1 0" />
+		<limit lower="-0.261799388" upper="0.261799388" effort="2.645" velocity="6" />
+      		<safety_controller k_velocity="1.5" soft_lower_limit="${-1.57079633+0.15}" soft_upper_limit="${1.57079633-0.15}" k_position="100" />
+     		<calibration reference_position="0.0" />
+      		<dynamics damping="1.0" />
+      		<parent link="bandit_head_tilt_link"/>
+      		<child link="bandit_top_lip_link"/>
+   	  </joint>
+    <link name="bandit_top_lip_link">
+      <inertial>
+        <mass value="0" />
+        <origin xyz="0 0 0" rpy="0 0 ${RCon*90}"/>
+        <inertia ixx="0.00482611007"  ixy="-0.000144683999"  ixz="0.000110076136"
+                 iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
+      </inertial>
+      <visual name="bandit_top_lip_visual">
+        <origin xyz="0 0 .002" rpy="0 0 ${RCon*-90}"/>
+
+        <geometry name="bandit_top_lip_visual_geom">
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/top_lip_small.STL"/>
+        </geometry>
+					<material name="Lips"/>
+      </visual>
+
+      <collision name="bandit_top_lip_collision">
+         <origin xyz="0 0 0" rpy="0 0 0 " />
+        <geometry name="bandit_top_lip_visual_geom">
+					<box size="0 0 0"/>
+        </geometry>
+      </collision>
+    </link>
+
+	  <joint name="bandit_bottom_lip_joint" type="revolute">
+		<axis xyz="0 -1 0" />
+		<limit lower="-0.261799388" upper="0.261799388" effort="2.645" velocity="6" />
+      		<safety_controller k_velocity="1.5" soft_lower_limit="${-1.57079633+0.15}" soft_upper_limit="${1.57079633-0.15}" k_position="100" />
+     		<calibration reference_position="0.0" />
+      		<dynamics damping="1.0" />
+
+      		<parent link="bandit_head_tilt_link"/>
+      		<child link="bandit_bottom_lip_link"/>
+   	  </joint>
+    <link name="bandit_bottom_lip_link">
+      <inertial>
+        <mass value="0" />
+        <origin xyz="0 0 0" rpy="0 0 ${RCon*90}"/>
+        <inertia ixx="0.00482611007"  ixy="-0.000144683999"  ixz="0.000110076136"
+                 iyy="0.005218991412"  iyz="-0.000314239509"  izz="0.008618784925"/>
+      </inertial>
+      <visual name="bandit_bottom_lip_visual">
+        <origin xyz="0 0 .002" rpy="0 0 ${RCon*-90}"/>
+
+        <geometry name="bandit_bottom_lip_visual_geom">
+					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/bottom_lip_small.STL"/>
+        </geometry>
+					<material name="Lips"/>
+      </visual>
+
+      <collision name="bandit_bottom_lip_collision">
+         <origin xyz="0 0 0" rpy="0 0 0 " />
+        <geometry name="bandit_bottom_lip_visual_geom">
+					<box size="0 0 0"/>
+        </geometry>
+      </collision>
+    </link> -->
+
 
 </robot>
