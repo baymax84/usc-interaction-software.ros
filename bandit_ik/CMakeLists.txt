@@ -16,26 +16,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
-
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
-
-rosbuild_add_library(bandit_arm_kinematics_lib
-  src/bandit_arm_kinematics_utils.cpp
-  src/bandit_arm_ik_nl_jr_solver.cpp
-  src/bandit_arm_kinematics.cpp
-)
-
-rosbuild_add_executable(bandit_arm_kinematics_node src/main.cpp)
 rosbuild_add_executable(goto_cart src/goto_cart.cpp src/bandit_arm_kinematics_utils.cpp)
 rosbuild_add_executable(cmd_ik src/cmd_ik.cpp)
-target_link_libraries(bandit_arm_kinematics_node bandit_arm_kinematics_lib)
+
