@@ -2,6 +2,12 @@
 #include <bandit_msgs/JointArray.h>
 #include <bandit_msgs/Params.h>
 #include <sensor_msgs/JointState.h>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <sstream>
+#include <yaml-cpp/yaml.h>
 #include <bandit/bandit.h>
 
 #include <boost/bind.hpp>
@@ -34,7 +40,6 @@ void jointIndCB(const bandit_msgs::JointConstPtr& j)
   //double dpos = direction[j->id]*RTOD(j->angle)+home[j->id];
   //double pos = DTOR( dpos );
 
-    ROS_INFO( "setting joint: %d to angle: %0.2f", j->id, RTOD(j->angle) );
   g_bandit.setJointPos(j->id, j->angle);
 
   // Push out positions to bandit
@@ -50,6 +55,7 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
        joint_iter++)
   {
     // Set the joint position
+    //printf( "j->angle: %f\n", RTOD(joint_iter->angle) );
     ROS_INFO( "j->angle: %f\n", RTOD(joint_iter->angle) );
 
     // scale to home
@@ -57,7 +63,6 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
     //double pos = DTOR( dpos );
 
     // Set the joint position
-    ROS_INFO( "setting joint: %d to angle: %0.2f", joint_iter->id, joint_iter->angle );
     g_bandit.setJointPos(joint_iter->id, joint_iter->angle);
   }
   // Push out positions to bandit
@@ -68,25 +73,12 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
   printf( "=====================\n");
 }
 
-void targetCB(const sensor_msgs::JointStateConstPtr &t )
-{
-  for( int i = 0; i < t->name.size(); i++ )
-  {
-    for( int j = 0; j < 19; j++ )
-    {
-      if( g_bandit.getJointRosName(j) == t->name[i] )
-      {
-        g_bandit.setJointPos(j, t->position[i] );
-      }
-    }
-  }
-
-  g_bandit.sendAllJointPos();
-}
-
 // This callback is invoked when we get new state from bandit
 void stateCB(ros::Publisher& joint_pub)
 {
+  bandit_msgs::JointArray j;
+  bandit_msgs::Joint joint;
+
   sensor_msgs::JointState js;
 
   js.header.stamp = ros::Time::now();
@@ -94,30 +86,21 @@ void stateCB(ros::Publisher& joint_pub)
 
   // For every joint
   for (int i = 0; i < 19; i++)
-  {
-    if( g_bandit.getJointRosName(i) == std::string("eyebrows_joint") )
-    {
-      js.name.push_back(std::string("bandit_head_left_brow_joint"));
-      js.position.push_back(-3*g_bandit.getJointPos(i));
-      js.velocity.push_back(0);
-      js.effort.push_back(0);
-      js.name.push_back(std::string("bandit_head_right_brow_joint"));
-      js.position.push_back(-3*g_bandit.getJointPos(i));
-      js.velocity.push_back(0);
-      js.effort.push_back(0);
-    
-    }
-    else
-    {
-      js.name.push_back(g_bandit.getJointRosName(i));
-      if( i > 16 )
-        js.position.push_back(2*g_bandit.getJointPos(i));
-      else 
-        js.position.push_back(g_bandit.getJointPos(i));
+  { 
+    js.name.push_back(g_bandit.getJointRosName(i));
+    if (g_bandit.getJointRosName(i) == "eyebrows_joint"){
+		js.name[i] = std::string("bandit_head_left_brow_joint");
+		js.name.push_back( "bandit_head_right_brow_joint");
+	}
+    js.position.push_back(g_bandit.getJointPos(i));
+    js.velocity.push_back(0);
+    js.effort.push_back(0);
+    // Set the id and angle
+    joint.id = i;
+    joint.angle = g_bandit.getJointPos(i);
 
-      js.velocity.push_back(0);
-      js.effort.push_back(0);
-   }
+    // Add to array
+    j.joints.push_back(joint);
   }
 
   
@@ -125,6 +108,21 @@ void stateCB(ros::Publisher& joint_pub)
 
   // Publish to other nodes
   joint_pub.publish(js);
+  //joint_pub.publish(j);
+}
+
+//This creates a data structure for mappings in yaml file
+struct Joint_Calibrations {
+	float id, truezero, offset, maxAngle, minAngle;
+};
+
+//This overrides the >> operator to insert mappings into joint
+void operator >> (const YAML::Node& node, Joint_Calibrations& joint){
+	node["Joint ID"] >> joint.id;
+	node["True Zero"] >> joint.truezero;
+	node["Offset"] >> joint.offset;
+	node["Max Angle"] >> joint.maxAngle;
+	node["Min Angle"] >> joint.minAngle;
 }
 
 int main(int argc, char** argv)
@@ -144,7 +142,7 @@ int main(int argc, char** argv)
   nh.param("port", port, std::string("/dev/ttyUSB0"));
 
   ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
-  //ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
+  ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
@@ -158,6 +156,35 @@ int main(int argc, char** argv)
       home[i] = 0;
     }
 
+	//Reading & Parsing from Bandit_Calibration_File.yaml
+	std::ifstream fin;
+	const std::string fileName = "Bandit_Calibration_File.yaml";
+	fin.open(fileName.c_str());
+	if (fin.fail()){
+		ROS_WARN("Failure to find File");
+	}
+	YAML:: Parser parser(fin);
+	YAML::Node doc;
+	parser.GetNextDocument(doc);
+	Joint_Calibrations joint;
+	
+	double j_cal[19];
+	for (int j_in=0;j_in<19;j_in++){
+		j_cal[j_in]=0;	
+	}
+	
+	int input;
+	std::cout<<"If this is the initial calibration please press 0. \n If calibration file is already created please press 1. \n";
+	std::cin >> input;
+	
+	if (input == 1){
+		for(unsigned k=0;k<doc.size();k++) {
+			doc[k] >> joint;
+			j_cal[k] = joint.truezero;
+		}
+	}
+ 
+	/* 
     std::string::size_type i = 0;
     std::string::size_type j = homestring.find(',');
 
@@ -174,10 +201,10 @@ int main(int argc, char** argv)
     }
 
     printf( "\n" );
-    
-    i = 0;
-    j = dirsstring.find(',');
-    ii = 0;
+*/
+    std::string::size_type i = 0;
+    std::string::size_type j = dirsstring.find(',');
+    int ii = 0;
     printf( "direction: \n\n" );
     while( j != std::string::npos )
     {
@@ -214,9 +241,11 @@ int main(int argc, char** argv)
       g_bandit.setJointDirection(i, direction[i]);
       //g_bandit.setJointOffset(i, DTOR(home[i]));
       if (g_bandit.getJointType(i) == smartservo::SMART_SERVO)
-        g_bandit.setJointOffset(i, DTOR(home[i]));
+		g_bandit.setJointOffset(i, DTOR(j_cal[i]));
+        //g_bandit.setJointOffset(i, DTOR(home[i]));
       else
-        g_bandit.setJointOffset(i, home[i]);
+		g_bandit.setJointOffset(i, j_cal[i]);
+        //g_bandit.setJointOffset(i, home[i]);
       
       //populate service response message
       param_res.id.push_back(i);
@@ -260,10 +289,25 @@ int main(int argc, char** argv)
     ROS_INFO("All PID settings configured successfully");
 
     // Push out initial state
-    for( int i = 0; i < 19; i++ )
-    {
-      g_bandit.setJointPos(i,  0.0f);
-    }
+    g_bandit.setJointPos(0,  0.0f);  // "head pitch",        
+    g_bandit.setJointPos(1,  0.0f);  // "head pan",          
+    g_bandit.setJointPos(2,  0.0f);  // "left shoulder F/B", 
+    g_bandit.setJointPos(3,  0.0f);  // "left shoulder I/O", 
+    g_bandit.setJointPos(4,  0.0f);  // "left elbow twist",  
+    g_bandit.setJointPos(5,  0.0f);  // "left elbow",        
+    g_bandit.setJointPos(6,  0.0f);  // "left wrist twist",  
+    g_bandit.setJointPos(7,  0.0f);  // "left wrist tilt",   
+    g_bandit.setJointPos(8,  0.0f);  // "left hand grab",    
+    g_bandit.setJointPos(9,  0.0f);  // "right shoulder F/B",
+    g_bandit.setJointPos(10, 0.0f);  // "right shoulder I/O"
+    g_bandit.setJointPos(11, 0.0f);  // "right elbow twist",
+    g_bandit.setJointPos(12, 0.0f);  // "right elbow",      
+    g_bandit.setJointPos(13, 0.0f);  // "right wrist twist",
+    g_bandit.setJointPos(14, 0.0f);  // "right wrist tilt", 
+    g_bandit.setJointPos(15, 0.0f);  // "right hand grab",  
+    g_bandit.setJointPos(16, 0.0f);  // "eyebrows",         
+    g_bandit.setJointPos(17, 0.0f);  // "mouth top",        
+    g_bandit.setJointPos(18, 0.0f);  // "mouth bottom"
 
     // Send bandit position commands:
     g_bandit.sendAllJointPos();
@@ -273,8 +317,6 @@ int main(int argc, char** argv)
     // joint messages
     ros::Subscriber joint_sub = nh.subscribe("joint_cmd", 1, jointCB);
     ros::Subscriber ind_joint_sub = nh.subscribe("joint_ind", 1, jointIndCB);
-    ros::Subscriber target_sub = nh.subscribe("target_joints", 1, targetCB );
-
     ros::ServiceServer service = nh.advertiseService("params", param);
     while (nh.ok())
     {
