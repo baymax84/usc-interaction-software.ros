@@ -1,32 +1,68 @@
-- Joint ID: 0
-  Joint Angle: 0
-- Joint ID: 9
-  Joint Angle: 60
-- Joint ID: 12
-  Joint Angle: 115
-- Joint ID: 13
-  Joint Angle: 90
-- Joint ID: 12
-  Joint Angle: 90
-- Joint ID: 12
-  Joint Angle: 115
-- Joint ID: 12
-  Joint Angle: 90
-- Joint ID: 12
-  Joint Angle: 115
-- Joint ID: 12
-  Joint Angle: 90
-- Joint ID: 12
-  Joint Angle: 115
-- Joint ID: 12
-  Joint Angle: 90
-- Joint ID: 12
-  Joint Angle: 115
-- Joint ID: 12
-  Joint Angle: 90
-- Joint ID: 9
-  Joint Angle: 0
-- Joint ID: 12
-  Joint Angle: 0
-- Joint ID: 13
-  Joint Angle: 0
+- Frame Num: 0
+  Hold Time: 3
+  Joints:
+   - Joint ID: 9
+     Joint Angle: 60
+   - Joint ID: 12
+     Joint Angle: 115
+   - Joint ID: 13
+     Joint Angle: 90
+- Frame Num: 1
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 90
+- Frame Num: 2
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 115
+- Frame Num: 3
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 90
+- Frame Num: 4
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 115
+- Frame Num: 5
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 90
+- Frame Num: 6
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 115
+- Frame Num: 7
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 90
+- Frame Num: 8
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 115
+- Frame Num: 9
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 90
+- Frame Num: 10
+  Hold Time: 0
+  Joints:
+   - Joint ID: 12
+     Joint Angle: 115
+- Frame Num: 11
+  Hold Time: 3
+  Joints:
+   - Joint ID: 9
+     Joint Angle: 0
+   - Joint ID: 12
+     Joint Angle: 0
+   - Joint ID: 13
+     Joint Angle: 0
