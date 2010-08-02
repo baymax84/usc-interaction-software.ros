@@ -59,6 +59,21 @@ void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 	*joint_positions = js->position;//pulls out all the positions for all joints and stores it to joint_positions
 }
 
+//designed to check that the true maxangle is recorded <not yet completed>
+void joint_checker(const int& p_id, const double& lastPose, const int& direction, bool& checker_sum){
+	double angledeg = lastPose + 20 * direction;
+	desiredJointPos->angle = deg_to_rad( angledeg );
+	publish_joint_ind();
+	ros::Duration(3).sleep();
+	double lastPose2 = rad_to_deg( joint_positions->at(p_id) );
+	ros::Duration(3).sleep();
+	if (direction == -1){
+		checker_sum = lastPose2 >= lastPose? true:false;
+	}
+	else
+		checker_sum = lastPose2 <= lastPose? true:false;
+}
+
 void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, double & position_zero)
 {
 	ROS_INFO("Running calibration on joint: [%i]", p_id);
@@ -66,7 +81,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 	double lastPose = rad_to_deg( joint_positions->at(p_id) );
 	double currentPose = rad_to_deg( joint_positions->at(p_id) );
 	bool continueCalibration = true;
-	int direction[] = { 0, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
+	int direction[] = { -1, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
 	
 	position_zero = rad_to_deg( joint_positions->at(p_id) );//get the encoder position at 0 degrees
 	ROS_INFO("Position Zero [%f]:", position_zero);
@@ -83,7 +98,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 		angle_deg += direction[p_id] * p_angle_increment_deg;
 		desiredJointPos->angle = deg_to_rad(angle_deg);//publishes new angle
 		publish_joint_ind();
-		ros::Duration(3).sleep();
+		ros::Duration(2).sleep();
 		
 		currentPose = rad_to_deg( joint_positions->at(p_id) );//stores the value at the p_id-th position in array joint_position to currentPose
 
@@ -100,6 +115,11 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 			else
 				checker_sum = currentPose <= lastPose? true:false;
 		}
+		
+		if( checker_sum ){
+				joint_checker(p_id, lastPose, direction[p_id], checker_sum);
+		}
+		
 		if( checker_sum )
 		{
 			if (direction[p_id] == -1){
@@ -166,7 +186,7 @@ void true_zero(const int & id)
 {	
 	switch(id){
 		case 0:
-			offset = 0; //this joint is inoperational on Bandit 2
+			offset = -27; //this joint is inoperational on Bandit 2
 			truezero = minAngle - offset;
 			break;
 		case 1:
