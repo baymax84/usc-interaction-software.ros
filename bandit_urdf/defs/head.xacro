@@ -128,7 +128,7 @@
         <geometry name="${name}_visual_geom">
 					<mesh filename="package://bandit_urdf/meshes/bandit_mesh/camera_board.stl"/>
         </geometry>
-					<!--  <material name="Silver"/>  -->
+					
 					<material name="texture">
 					<texture filename="package://bandit_urdf/meshes/bandit_mesh/gradients/reflect1.jpg"/>
 					</material>
@@ -310,7 +310,7 @@
 </xacro:macro>
 
 <xacro:pupil suffix="left" reflect="-4.8"/>
-<xacro:pupil suffix="right" reflect="-4.6"/>
+<xacro:pupil suffix="right" reflect="-4.6"/> 
 
 <!--	  <joint name="bandit_top_lip_joint" type="revolute">
 		<axis xyz="0 -1 0" />
