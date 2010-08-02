@@ -149,19 +149,19 @@ class BanditAction
 					desired_joint_pos.angle = deg_to_rad(g.joint_angle);
 					jarray->joints.push_back(desired_joint_pos);
 					//publishes feedback information
-					current_time = ros::Time::now().toSec();
+					current_time = ros::Time::now().toSec(); //gets the current time
 					feedback.progress_time = current_time;
 					feedback.progress_hold_time = frames.hold_time;
 					feedback.progress_joint_id.push_back( g.id );
 					feedback.progress_joint_angle.push_back( g.joint_angle );
-					as.publishFeedback(feedback);
+					as.publishFeedback(feedback); //publishes the feedback information
 					ros::Rate(5).sleep();
 				}
 				//publishes joint array for each frame (note: JointArray is normally set to radians)
 				publish_joint_ind();
 				ros::spinOnce();
 				ros::Rate(1).sleep();
-				ros::Duration(frames.hold_time).sleep();
+				ros::Duration(frames.hold_time).sleep(); // forces the node to sleep for the hold_time
 			}
 			
 			//publishes scucessful result
