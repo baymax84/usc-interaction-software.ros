@@ -1,0 +1,16 @@
+<package>
+  <description brief="fake_bandit">
+
+     fake_bandit
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/fake_bandit</url>
+  <depend package="sensor_msgs"/>
+  <depend package="bandit_msgs"/>
+
+</package>
+
+
