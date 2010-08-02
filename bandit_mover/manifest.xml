@@ -10,6 +10,9 @@
   <url>http://ros.org/wiki/bandit_mover</url>
   <depend package="bandit_msgs"/>
   <depend package="sensor_msgs"/>
+  <depend package="roscpp"/>
+  <depend package="libbandit"/>
+  <depend name="fltk"/>
 
 </package>
 

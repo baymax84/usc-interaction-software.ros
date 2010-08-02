@@ -335,7 +335,7 @@ getchar();
 	int win_w = padding*2+slider_w;
 	int win_h = padding*(4+num_sliders)+(num_sliders+1)*slider_h;
 
-	Fl_Window win( win_w, win_h, "Bandit Mover 2.2" );
+	Fl_Window win( win_w, win_h, "Bandit Mover" );
 	win.begin();
 	Fl_Value_Slider* sliders[19];
 
