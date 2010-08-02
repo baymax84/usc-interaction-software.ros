@@ -8,5 +8,6 @@ float32[] result_joint_angle
 ---
 #feedback
 float32 progress_time
+float32 progress_hold_time
 float32[] progress_joint_id
 float32[] progress_joint_angle

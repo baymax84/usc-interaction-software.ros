@@ -151,6 +151,7 @@ class BanditAction
 					//publishes feedback information
 					current_time = ros::Time::now().toSec();
 					feedback.progress_time = current_time;
+					feedback.progress_hold_time = frames.hold_time;
 					feedback.progress_joint_id.push_back( g.id );
 					feedback.progress_joint_angle.push_back( g.joint_angle );
 					as.publishFeedback(feedback);
