@@ -46,6 +46,7 @@ struct Joints {
 
 struct Frame {
 	int frame_num;
+	int hold_time;
 	std::vector <Joints> joints;
 };
 
@@ -56,6 +57,7 @@ void operator >> (const YAML::Node& node, Joints& joint){
 
 void operator >> (const YAML::Node& node, Frame& frame){
 	node["Frame Num"] >> frame.frame_num;
+	node["Hold Time"] >> frame.hold_time;
 	const YAML::Node& joints = node["Joints"];
 	for (unsigned i=0; i<joints.size();i++){
 		Joints joint;
@@ -158,6 +160,7 @@ class BanditAction
 				publish_joint_ind();
 				ros::spinOnce();
 				ros::Rate(1).sleep();
+				ros::Duration(frames.hold_time).sleep();
 			}
 			
 			//publishes scucessful result
