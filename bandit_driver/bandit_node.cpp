@@ -119,12 +119,13 @@ void stateCB(ros::Publisher& joint_pub)
 
 //This creates a data structure for mappings in yaml file
 struct Joint_Calibrations {
-	float id, truezero, offset, maxAngle, minAngle;
+	float id, direction, truezero, offset, maxAngle, minAngle;
 };
 
 //This overrides the >> operator to insert mappings into joint
 void operator >> (const YAML::Node& node, Joint_Calibrations& joint){
 	node["Joint ID"] >> joint.id;
+	node["Direction"] >> joint.direction;
 	node["True Zero"] >> joint.truezero;
 	node["Offset"] >> joint.offset;
 	node["Max Angle"] >> joint.maxAngle;
@@ -138,7 +139,8 @@ int main(int argc, char** argv)
   int direction[19];
   
   // Home positions of the joints for Bandit
-  double home[19];
+  //double home[19];
+  double j_cal[19];
 
   ros::init(argc, argv, "bandit");
   ros::NodeHandle nh;
@@ -152,19 +154,15 @@ int main(int argc, char** argv)
     std::string homestring, dirsstring;
 
     // joint offset parameters for Bandit #1 (RAM-2010Apr30)
-    nh.param( "home", homestring, std::string("-3,10,-62,-74,-28,62,-11,0.5,0.6,52,80,26,-58,12,0.5,0.5,0.2,0.25,0.25,"));
-    nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    //nh.param( "home", homestring, std::string("-3,10,-62,-74,-28,62,-11,0.5,0.6,52,80,26,-58,12,0.5,0.5,0.2,0.25,0.25,"));
+    //nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
 
     for( int i = 0; i < 19; i++ )
     {
       direction[i] = 1;
-      home[i] = 0;
+      //home[i] = 0;
+      j_cal[i]=0;	
     }
-
-	double j_cal[19];
-	for (int j_in=0;j_in<19;j_in++){
-		j_cal[j_in]=0;	
-	}
 	
   std::string calibration_filename;
   nh.param("calibration_filename", calibration_filename, std::string("") );
@@ -185,6 +183,7 @@ int main(int argc, char** argv)
 	 	for(unsigned k=0;k<doc.size();k++) {
 	  	doc[k] >> joint;
 		  j_cal[k] = joint.truezero;
+		  direction[k] = joint.direction;
   	}
     g_bandit.useJointLimits(true);
   }
