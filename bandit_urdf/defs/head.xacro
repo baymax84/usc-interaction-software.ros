@@ -87,7 +87,7 @@
 
 	<!-- -->
         <geometry name="${name}_visual_geom">
-		<mesh filename="package://bandit_urdf/meshes/bandit_mesh/head_smaller.stl"/>
+		<mesh filename="package://bandit_urdf/meshes/bandit_mesh/head_small.stl"/>
         </geometry>
 					<material name="Head"/>
       </visual>
