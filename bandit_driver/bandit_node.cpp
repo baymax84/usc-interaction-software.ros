@@ -155,29 +155,29 @@ int main(int argc, char** argv)
       direction[i] = 1;
       home[i] = 0;
     }
-
-	//Reading & Parsing from Bandit_Calibration_File.yaml
-	std::ifstream fin;
-	const std::string fileName = "Bandit_Calibration_File.yaml";
-	fin.open(fileName.c_str());
-	if (fin.fail()){
-		ROS_WARN("Failure to find File");
-	}
-	YAML:: Parser parser(fin);
-	YAML::Node doc;
-	parser.GetNextDocument(doc);
-	Joint_Calibrations joint;
+	
+	int input;
+	std::cout<<"If this is the initial calibration please press 0. \n If calibration file is already created please press 1. \n";
+	std::cin >> input;
 	
 	double j_cal[19];
 	for (int j_in=0;j_in<19;j_in++){
 		j_cal[j_in]=0;	
 	}
 	
-	int input;
-	std::cout<<"If this is the initial calibration please press 0. \n If calibration file is already created please press 1. \n";
-	std::cin >> input;
-	
+	//Reading & Parsing from Bandit_Calibration_File.yaml
 	if (input == 1){
+		std::ifstream fin;
+		const std::string fileName = "Bandit_Calibration_File.yaml";
+		fin.open(fileName.c_str());
+		if (fin.fail()){
+			ROS_WARN("Failure to find File");
+		}
+		YAML:: Parser parser(fin);
+		YAML::Node doc;
+		parser.GetNextDocument(doc);
+		Joint_Calibrations joint;
+		
 		for(unsigned k=0;k<doc.size();k++) {
 			doc[k] >> joint;
 			j_cal[k] = joint.truezero;
