@@ -249,7 +249,7 @@ int main(int argc, char **argv)
 
   KDL::ChainIkSolverPos_NR_JL ik_solver_pos(chain, q_min, q_max,
                                             fk_solver_chain, ik_solver_vel, 
-                                            1000, 1e-3);
+                                            1000, 1e-2);
   g_ik_solver = &ik_solver_pos;
   ros::Subscriber target_sub = n.subscribe("target_frame", 1, target_cb);
   ros::Subscriber joint_sub = n.subscribe("joint_states", 1, joint_cb);
