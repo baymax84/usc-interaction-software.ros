@@ -28,6 +28,7 @@ double position_zero = 0;
 double offset = 0;
 double truezero = 0;
 int direction[19] = { -1, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
+int direction_Emit[19] = {-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1};
 
 double deg_to_rad(double deg)
 {
@@ -361,7 +362,7 @@ int main( int argc, char* argv[] )
 			
 			emitter << YAML::BeginMap;
 			emitter << YAML::Key << "Joint ID" << YAML::Value << z_id;
-			emitter << YAML::Key << "Direction" << YAML::Value << direction[z_id];
+			emitter << YAML::Key << "Direction" << YAML::Value << direction_Emit[z_id];
 			emitter << YAML::Key << "True Zero" << YAML::Value << truezero;
 			emitter << YAML::Key << "Offset" << YAML::Value << offset;
 			emitter << YAML::Key << "Max Angle" << YAML::Value << maxAngle;
