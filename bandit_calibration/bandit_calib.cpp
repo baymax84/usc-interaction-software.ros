@@ -60,18 +60,22 @@ void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 }
 
 //designed to check that the true maxangle is recorded <not yet completed>
-void joint_checker(const int& p_id, const double& lastPose, const int& direction, bool& checker_sum){
-	double angledeg = lastPose + 20 * direction;
-	desiredJointPos->angle = deg_to_rad( angledeg );
+bool joint_checker(const int& p_id, double& lastPose, const int& direction, bool& checker_sum, const double& p_angle_increment_deg){
+	desiredJointPos->id = p_id;
+	double angledeg;
+	angledeg += direction * 2 * p_angle_increment_deg;
+	desiredJointPos->angle = deg_to_rad(angledeg);//publishes new angle
 	publish_joint_ind();
-	ros::Duration(3).sleep();
-	double lastPose2 = rad_to_deg( joint_positions->at(p_id) );
-	ros::Duration(3).sleep();
+	ros::Duration(2).sleep();
+	
+	double current_pos = rad_to_deg( joint_positions->at(p_id) );
 	if (direction == -1){
-		checker_sum = lastPose2 >= lastPose? true:false;
+		checker_sum = current_pos >= lastPose? true:false;
 	}
-	else
-		checker_sum = lastPose2 <= lastPose? true:false;
+	else{
+		checker_sum = current_pos <= lastPose? true:false;
+	}
+	return checker_sum;
 }
 
 void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, double & position_zero)
@@ -117,7 +121,7 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 		}
 		
 		if( checker_sum ){
-				joint_checker(p_id, lastPose, direction[p_id], checker_sum);
+				joint_checker(p_id, lastPose, direction[p_id], checker_sum, p_angle_increment_deg);
 		}
 		
 		if( checker_sum )
@@ -181,6 +185,12 @@ bool calibrateJointCallback(bandit_msgs::CalibrateJoint::Request & req, bandit_m
 	return true;
 }
 */
+
+/*
+ * This function is used to set the offset for the physical hardware calibration limits for Bandit II
+ * First run bandit_calib_version1 and use the service call to determine the min/max angle of the joints and input below
+ * The Second value of (XXX + XX) is measure for the zero position of hands down, palm facing inwards, and forearm facing outwards
+ */
 
 void true_zero(const int & id)
 {	
@@ -327,8 +337,9 @@ int main( int argc, char* argv[] )
 	
 	joint_positions = new std::vector<double>;
 	
+	std::string filename = "Bandit_Calibration_File.yaml";
 	ofstream write_bandit_file;//declares output stream
-	write_bandit_file.open("Bandit_Calibration_File.yaml");//creates file Bandit_Calibration_File.yaml
+	write_bandit_file.open(filename.c_str());//creates file Bandit_Calibration_File.yaml
 	YAML::Emitter emitter;//declares output emitter for yaml formatting
 	emitter << YAML::BeginSeq;
 	
