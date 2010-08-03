@@ -27,6 +27,7 @@ double maxAngle = 0;
 double position_zero = 0;
 double offset = 0;
 double truezero = 0;
+int direction[19] = { -1, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
 
 double deg_to_rad(double deg)
 {
@@ -85,7 +86,6 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 	double lastPose = rad_to_deg( joint_positions->at(p_id) );
 	double currentPose = rad_to_deg( joint_positions->at(p_id) );
 	bool continueCalibration = true;
-	int direction[] = { -1, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
 	
 	position_zero = rad_to_deg( joint_positions->at(p_id) );//get the encoder position at 0 degrees
 	ROS_INFO("Position Zero [%f]:", position_zero);
@@ -361,6 +361,7 @@ int main( int argc, char* argv[] )
 			
 			emitter << YAML::BeginMap;
 			emitter << YAML::Key << "Joint ID" << YAML::Value << z_id;
+			emitter << YAML::Key << "Direction" << YAML::Value << direction[z_id];
 			emitter << YAML::Key << "True Zero" << YAML::Value << truezero;
 			emitter << YAML::Key << "Offset" << YAML::Value << offset;
 			emitter << YAML::Key << "Max Angle" << YAML::Value << maxAngle;
