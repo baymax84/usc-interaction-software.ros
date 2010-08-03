@@ -76,9 +76,6 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
 // This callback is invoked when we get new state from bandit
 void stateCB(ros::Publisher& joint_pub)
 {
-  bandit_msgs::JointArray j;
-  bandit_msgs::Joint joint;
-
   sensor_msgs::JointState js;
 
   js.header.stamp = ros::Time::now();
@@ -87,28 +84,37 @@ void stateCB(ros::Publisher& joint_pub)
   // For every joint
   for (int i = 0; i < 19; i++)
   { 
-    js.name.push_back(g_bandit.getJointRosName(i));
-    if (g_bandit.getJointRosName(i) == "eyebrows_joint"){
-		js.name[i] = std::string("bandit_head_left_brow_joint");
-		js.name.push_back( "bandit_head_right_brow_joint");
-	}
-    js.position.push_back(g_bandit.getJointPos(i));
-    js.velocity.push_back(0);
-    js.effort.push_back(0);
-    // Set the id and angle
-    joint.id = i;
-    joint.angle = g_bandit.getJointPos(i);
+    if( g_bandit.getJointRosName(i) == std::string("eyebrows_joint") )
+    {
+      // the eyebrows are really two joints as far as robot_state_publisher is concerned
 
-    // Add to array
-    j.joints.push_back(joint);
+      js.name.push_back(std::string("bandit_head_left_brow_joint"));
+      js.position.push_back(-3*g_bandit.getJointPos(i));
+      js.velocity.push_back(0);
+      js.effort.push_back(0);
+      js.name.push_back(std::string("bandit_head_right_brow_joint"));
+      js.position.push_back(-3*g_bandit.getJointPos(i));
+      js.velocity.push_back(0);
+      js.effort.push_back(0);
+
+    }
+    else
+    {
+      js.name.push_back(g_bandit.getJointRosName(i));
+      if( i > 16 )
+        js.position.push_back(2*g_bandit.getJointPos(i));
+      else
+        js.position.push_back(g_bandit.getJointPos(i));
+
+      js.velocity.push_back(0);
+      js.effort.push_back(0);
+    }
   }
 
-  
   ROS_INFO( "publishing..." );
 
   // Publish to other nodes
   joint_pub.publish(js);
-  //joint_pub.publish(j);
 }
 
 //This creates a data structure for mappings in yaml file
@@ -142,7 +148,6 @@ int main(int argc, char** argv)
   nh.param("port", port, std::string("/dev/ttyUSB0"));
 
   ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
-  ros::Publisher joint_pub = nh.advertise<bandit_msgs::JointArray>("joint_state", 1000);
 
     std::string homestring, dirsstring;
 
@@ -155,67 +160,49 @@ int main(int argc, char** argv)
       direction[i] = 1;
       home[i] = 0;
     }
-	
-	int input;
-	std::cout<<"If this is the initial calibration please press 0. \n If calibration file is already created please press 1. \n";
-	std::cin >> input;
-	
+
 	double j_cal[19];
 	for (int j_in=0;j_in<19;j_in++){
 		j_cal[j_in]=0;	
 	}
 	
-	//Reading & Parsing from Bandit_Calibration_File.yaml
-	if (input == 1){
-		std::ifstream fin;
-		const std::string fileName = "Bandit_Calibration_File.yaml";
-		fin.open(fileName.c_str());
-		if (fin.fail()){
-			ROS_WARN("Failure to find File");
-		}
-		YAML:: Parser parser(fin);
-		YAML::Node doc;
-		parser.GetNextDocument(doc);
-		Joint_Calibrations joint;
-		
-		for(unsigned k=0;k<doc.size();k++) {
-			doc[k] >> joint;
-			j_cal[k] = joint.truezero;
-		}
+  std::string calibration_filename;
+  nh.param("calibration_filename", calibration_filename, std::string("") );
+
+	std::ifstream fin;
+	fin.open(calibration_filename.c_str());
+	if (fin.fail()){
+  	ROS_WARN("Failure to find calibration file, running uncalibrated");
+    g_bandit.useJointLimits(false);
 	}
- 
-	/* 
-    std::string::size_type i = 0;
-    std::string::size_type j = homestring.find(',');
+  else
+  {
+  	YAML:: Parser parser(fin);
+	 	YAML::Node doc;
+	  parser.GetNextDocument(doc);
+  	Joint_Calibrations joint;
+	
+	 	for(unsigned k=0;k<doc.size();k++) {
+	  	doc[k] >> joint;
+		  j_cal[k] = joint.truezero;
+  	}
+    g_bandit.useJointLimits(true);
+  }
 
-    int ii = 0;
-    printf( "home: \n\n" );
-    while( j != std::string::npos )
-    {
-      std::string s = homestring.substr(i,j-i);
-      home[ii] = atof(s.c_str());
-      printf( "%d:%s:%f\n", ii, s.c_str(), home[ii] );
-      ++ii;
-      i = ++j;
-      j = homestring.find(',',j);
-    }
 
-    printf( "\n" );
-*/
-    std::string::size_type i = 0;
-    std::string::size_type j = dirsstring.find(',');
-    int ii = 0;
-    printf( "direction: \n\n" );
-    while( j != std::string::npos )
-    {
-      std::string s = dirsstring.substr(i,j-i);
-      direction[ii] = atoi(s.c_str());
-      printf( "%d:%s:%d\n", ii, s.c_str(), direction[ii] );
-      ++ii;
-      i= ++j;
-      j = dirsstring.find(',',j);
-    }
-    printf( "\n" );
+  std::string::size_type i = 0;
+  std::string::size_type j = dirsstring.find(',');
+  int ii = 0;
+  ROS_INFO( "direction: " );
+  while( j != std::string::npos )
+  {
+    std::string s = dirsstring.substr(i,j-i);
+    direction[ii] = atoi(s.c_str());
+    ROS_INFO( "%d:%s:%d", ii, s.c_str(), direction[ii] );
+    ++ii;
+    i= ++j;
+    j = dirsstring.find(',',j);
+  }
     
   try 
   {
