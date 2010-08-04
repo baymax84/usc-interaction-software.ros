@@ -10,8 +10,12 @@
   <url>http://ros.org/wiki/sparky</url>
   <depend package="roscpp"/>
   <depend package="libsparky"/>
+  	<rosdep name="fltk"/>
   <depend package="joint_msgs"/>
   <depend package="sensor_msgs"/>
+  <rosdep name="xmlrpcpp"/>
+  <depend package="yaml_cpp"/>
+  <depend package="sparky_msgs" />
 
 </package>
 

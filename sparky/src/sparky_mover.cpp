@@ -72,7 +72,7 @@ int main(int argc, char** argv)
   // set up ROS services
   joint_msgs::Params::Request params_req;
   ros::Rate loop_rate(10);
-  while (nh.ok())
+  while (ros::ok())
   {
     if (ros::service::call("sparky_params", params_req, g_params_res)) break;
     printf(".");
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
   Fl_Value_Slider* sliders[n_sliders];
   for (int i = 0; i < n_sliders; i++)
   {
-    printf("Adding slider[%d] %s, (%f, %f)\n",
+    printf("Adding slider[%zu] %s, (%f, %f)\n",
            g_params_res.id[i],
            g_params_res.name[i].c_str(),
            g_params_res.min[i],
@@ -109,6 +109,7 @@ int main(int argc, char** argv)
     sliders[i]->type(FL_HORIZONTAL);
     sliders[i]->bounds(g_params_res.min[i], g_params_res.max[i]);
     sliders[i]->callback(sliderCallback);
+    sliders[i]->step(1);
   }
 
   // display window
@@ -117,7 +118,7 @@ int main(int argc, char** argv)
 
   //
   loop_rate = ros::Rate(50.0f);
-  while((nh.ok()) && (Fl::check()))
+  while((ros::ok()) && (Fl::check()))
   {
     printf("+");
     fflush(stdout);
