@@ -8,5 +8,8 @@
   <depend package="bandit_msgs" />
 	<depend package="sensor_msgs"/>
   <depend package="yaml_cpp"/>
+
+  <depend package="diagnostic_updater"/>
+
   <url></url>
 </package>

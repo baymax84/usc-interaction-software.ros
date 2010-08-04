@@ -17,10 +17,10 @@
 	<node name="rviz" type="rviz" pkg="rviz"/>
 
 	<!-- Diagnostics -->
-<!--
-  <node pkg="pr2_controller_manager" type="controllers_to_diagnostics.py" name="controller_diagnostics" />
-  <node pkg="pr2_controller_manager" type="joints_to_diagnostics.py" name="joint_state_logging" />
--->
+  <include file="$(find bandit_driver)/launch/diagnostics.xml"/>
+  <node name="robot_monitor" type="robot_monitor" pkg="robot_monitor"/>
+
+
 
 </launch>
 
