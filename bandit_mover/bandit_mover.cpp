@@ -201,7 +201,7 @@ int main( int argc, char* argv[] )
 	ros::init(argc,argv,"bandit_mover");
 	ros::NodeHandle n;
 	//joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_ind",1000);
-	joint_publisher = n.advertise<bandit_msgs::JointArray>("joints",5);
+	joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",5);
 	//joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
 
 
