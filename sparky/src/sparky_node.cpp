@@ -110,7 +110,7 @@ int main(int argc, char** argv)
   //
   if (!init_servo_controller()) return 1;
 
-  initSparky();
+  //initSparky();
   
   ros::spin();
 
@@ -161,44 +161,47 @@ bool initParams()
     g_params_res.curr[i] = g_params_res.min[i];//0.005f;
   }
 
-  g_params_res.min[ 0]  = 73.0f;
-  g_params_res.max[ 0]  = 115.0f;
-  g_params_res.min[ 1]  = 89.0f;
-  g_params_res.max[ 1]  = 150.0f;
+   g_params_res.min[ 0]  = -42.0f;
+  g_params_res.max[ 0]  = 0.0f;
+  g_params_res.min[ 1]  = -1.0f;
+  g_params_res.max[ 1]  = 60.0f;
   g_params_res.min[ 2]  = -25.0f;
   g_params_res.max[ 2]  = 45.0f;
-  g_params_res.min[ 3]  = -1.0f;
-  g_params_res.max[ 3]  = 88.0f;
-  g_params_res.min[ 4]  = 93.0f;
-  g_params_res.max[ 4]  = 162.0f;
-  g_params_res.min[ 5]  = 76.0f;
-  g_params_res.max[ 5]  = 167.0f;
-  g_params_res.min[ 6]  = 0.0f;
-  g_params_res.max[ 6]  = 77.0f;
-  g_params_res.min[ 7]  = 92.0f;
-  g_params_res.max[ 7]  = 162.0f;
-  g_params_res.min[ 8]  = 75.0f;
-  g_params_res.max[ 8]  = 165.0f;
-  g_params_res.min[ 9]  = 45.0f;
-  g_params_res.max[ 9]  = 180.0f;
-  g_params_res.min[10]  = 48.0f;
-  g_params_res.max[10]  = 180.0f;
+  g_params_res.min[ 3]  = 2.0f;
+  g_params_res.max[ 3]  = 91.0f;
+  g_params_res.min[ 4]  = 3.0f;
+  g_params_res.max[ 4]  = 72.0f;
+  g_params_res.min[ 5]  = 13.0f;
+  g_params_res.max[ 5]  = 104.0f;
+  g_params_res.min[ 6]  = 13.0f;
+  g_params_res.max[ 6]  = 90.0f;
+  g_params_res.min[ 7]  = 2.0f;
+  g_params_res.max[ 7]  = 72.0f;
+  g_params_res.min[ 8]  = 15.0f;
+  g_params_res.max[ 8]  = 105.0f;
+  g_params_res.min[ 9]  = -45.0f;
+  g_params_res.max[ 9]  = 90.0f;
+  g_params_res.min[10]  = -42.0f;
+  g_params_res.max[10]  = 90.0f;
   g_params_res.min[11]  = -76.0f;
   g_params_res.max[11]  = -1.0f;
-  g_params_res.min[12]  = 8.0f;
-  g_params_res.max[12]  = 110.0f;
+  g_params_res.min[12]  = 0.0f;
+  g_params_res.max[12]  = 102.0f;
   g_params_res.min[13]  = -30.0f;
   g_params_res.max[13]  = 40.0f;
-  /*
+ /*
   g_params_res.min[14]  = 1.00f;
   g_params_res.max[14]  = 0.50f;
-  g_params_res.min[15]  = 0.00f;
-  g_params_res.max[15]  = 0.73f;
+  */
+  g_params_res.min[15]  = -9.61f;
+  g_params_res.max[15]  = 7.8f;
+  /*
   g_params_res.min[16]  = 0.00f;
   g_params_res.max[16]  = 0.44f;
-  g_params_res.min[17]  = 0.07f;
-  g_params_res.max[17]  = 0.85f;
   */
+  g_params_res.min[17]  = -9.44f;
+  g_params_res.max[17]  = 5.74f;
+  
   
   return true;
 } // initParams()
@@ -303,99 +306,141 @@ bool jointMoveTo(int id, double angle)
     {
 		ROS_INFO("Mouth");
 		z=(angle+18)/15;
-		//position=0.0079*pow(z, 8)+0.1102*pow(z, 7)+0.0749*pow(z, 6)-0.3358*pow(z, 5)-0.1561*pow(z, 4)+0.3083*pow(z, 3)-0.0053*pow(z, 2)-0.2016*pow(z, 1)+0.4239;
-		position=(angle-46.7488628411476f)/113.6196641077f;
+		position=0.0030*pow(z,6)+0.0040*pow(z, 5)+0.0054*pow(z,4)-0.0098*pow(z,3)-0.0580*pow(z,2)-0.1260*pow(z,1)+0.4206;
+		//position=(angle-46.7488628411476f)/113.6196641077f;
 		ROS_INFO("Servo Position %f", position);
 	}
     else if (id==1)
     {
 		ROS_INFO("Head Nod");
-		position=(angle-38.3333333333333f)/115.714285714286f;
+		z=(angle-29)/22;
+		position=-0.0666*pow(z,6)+0.0109*pow(z,5)+0.1640*pow(z,4)+6.5731e-04*pow(z,3)-0.0721*pow(z,2)+0.1682*pow(z,1)+0.6943;
+		//position=(angle-38.3333333333333f)/115.714285714286f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==2)
     {
 		ROS_INFO("Head Turn");
-		position=(angle+69.6944444444444f)/120.833333333333f;
+		z=(angle-5.2)/27;
+		position=-0.1167*pow(z,6)+0.1532*pow(z,5)+0.1681*pow(z,4)-0.1587*pow(z,3)-0.0665*pow(z,2)+0.2005*pow(z,1)+0.6360;
+		//position=(angle+69.6944444444444f)/120.833333333333f;
 		ROS_INFO("Servo Position %f", position);
 	} 
 	else if (id==3)
     {
 		ROS_INFO("Right Arm Forw");
-		position=(angle-131.81111111111f)/-141.851851851852f;
+		z=(angle-48)/35;
+		position=0.0465*pow(z,6)+0.0776*pow(z,5)-0.1033*pow(z,4)-0.0777*pow(z,3)+0.0565*pow(z,2)+0.2056*pow(z,1)+0.6247;
+		//position=(angle-131.81111111111f)/-141.851851851852f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==4) 
     {
 		ROS_INFO("Right Arm Out");
-		position=(angle-219.549647417572f)/-144.139508290452f;
+		z=(angle-39)/25;
+		position=0.0091*pow(z,6)+0.0064*pow(z,5)-0.0215*pow(z,4)-0.0315*pow(z,3)-0.0047*pow(z,2)-0.1399*pow(z,1)+0.6374;
+		//position=(angle-219.549647417572f)/-144.139508290452f;
 		ROS_INFO("Servo Position %f", position);
 	}     
 	else if (id==5)
 	{
 		ROS_INFO("Right Elbow");
-		position=(angle-234.478603393623f)/-184.882528435577f;
+		z=(angle-58)/32;
+		position=0.0314*pow(z,6)+0.0027*pow(z,5)-0.1092*pow(z,4)+0.0036*pow(z,3)+0.1033*pow(z,2)+0.1592*pow(z,1)+0.5885;
+		//position=(angle-234.478603393623f)/-184.882528435577f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==6)
 	{
 		ROS_INFO("Left Arm Forward");
-		position=(angle-138.73899869476f)/-154.09752004475f;
+		z=(angle-48)/27;
+		position=0.0062*pow(z,6)-2.2328e-04*pow(z,5)-0.0171*pow(z,4)+0.0063*pow(z,3)-0.0083*pow(z,2)+0.1638*pow(z,1)+0.6417;
+		//position=(angle-138.73899869476f)/-154.09752004475f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==7)
 	{
 		ROS_INFO("Left Arm Out");
-		position=(angle-225.198577824599f)/-163.286805372664f;
+		z=(angle-39)/24;
+		position=-0.03178*pow(z,6)-1.1871e-04*pow(z,5)+0.1067*pow(z,4)-0.0120*pow(z,3)-0.0911*pow(z,2)-0.1343*pow(z,1)+0.6027;
+		//position=(angle-225.198577824599f)/-163.286805372664f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==8)
 	{
 		ROS_INFO("Left Elbow");
-		position=(angle-221.268404907975f)/-176.402278702892f;
+		z=(angle-59)/31;
+		position=0.0251*pow(z,6)-0.0074*pow(z,5)-0.0787*pow(z,4)+0.0243*pow(z,3)+0.0553*pow(z,2)+0.1596*pow(z,1)+0.5651;
+		//position=(angle-221.268404907975f)/-176.402278702892f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==9)
 	{
 		ROS_INFO("Right Wrist");
-		position=(angle-275.015397536393f)/-259.658454647255f;
+		z=(angle-28)/49;
+		position=0.0282*pow(z,6)-0.0092*pow(z,5)-0.0954*pow(z,4)+0.0073*pow(z,3)+0.0617*pow(z,2)-0.1738*pow(z,1)+0.6084;
+		//position=(angle-275.015397536393f)/-259.658454647255f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==10)
 	{
 		ROS_INFO("Left Wrist");
-		position=(angle-252.358992154496f)/-230.890162945081f;
+		z=(angle-32)/50;
+		position=0.0157*pow(z,6)-0.0065*pow(z,5)-0.0743*pow(z,4)-0.0683*pow(z,3)+0.0129*pow(z,2)-0.1286*pow(z,1)+0.5936;
+		//position=(angle-252.358992154496f)/-230.890162945081f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==11)
 	{
 		ROS_INFO("Body Forw");
-		position=(angle-41.9785136979112f)/-126.08507400021f;
+		z=(angle+38)/29;
+		position=-0.0380*pow(z,6)-0.04068*pow(z,5)+0.1093*pow(z,4)+0.0038*pow(z,3)-0.0979*pow(z,2)-0.1619*pow(z,1)+0.6570;
+		//position=(angle-41.9785136979112f)/-126.08507400021f;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==12)
 	{
 		ROS_INFO("Eyelids");
-		position= log((angle/0.174040401645988f))/log(1264.93953011707f) /*(x+169.36599634369f)/292.614259597802f*/;
+		z=(angle-41)/37;
+		position=0.0179*pow(z,6)-0.0401*pow(z,5)-0.0193*pow(z,4)+0.1019*pow(z,3)-0.0554*pow(z,2)+0.0697*pow(z,1)+0.7830;
+		//position= /*log((angle/0.174040401645988f))/log(1264.93953011707f)*/(angle+169.36599634369f)/292.614259597802f;
 		ROS_INFO("Servo Position %f", position);
 	}		
 	else if (id==13)
 	{
 		ROS_INFO("Eyes Left/Right");
-		position=(angle+92.5977777777777f)/182.0f;
+		z=(angle-0.22)/25;
+		position=0.0286*pow(z,6)-0.0611*pow(z,5)-0.0450*pow(z,4)+0.1518*pow(z,3)-0.0300*pow(z,2)+0.0558*pow(z,1)+0.5385;
+		//position=(angle+92.5977777777777f)/182.0f;
 		ROS_INFO("Servo Position %f", position);
 	}
-	
+	else if (id==15)
+	{
+		ROS_INFO("Right Foot Foward");
+		z=(angle-0.44)/6.8;
+		position=-0.1955*pow(z,6)+0.0206*pow(z,5)+0.5468*pow(z,4)-0.1139*pow(z,3)-0.4521*pow(z,2)-0.1703*pow(z,1)+0.4749;
+		//position=(angle+92.5977777777777f)/182.0f;
+		ROS_INFO("Servo Position %f", position);
+	}
+	else if (id==17)
+	{
+		ROS_INFO("Left Foot Forward");
+		z=(angle+1.6)/5.8;
+		position=-0.0784*pow(z,8)-0.1103*pow(z,7)+0.2432*pow(z,6)+0.2296*pow(z,5)-0.2460*pow(z,4)-0.1307*pow(z,3)+0.0595*pow(z,2)-0.2076*pow(z,1)+0.3943;
+		ROS_INFO("Servo Position %f", position);
+	}
+	else
+		position=angle;
   if ((/*position*/ angle < g_params_res.min[id]) || (/*position*/ angle >  g_params_res.max[id]))
   {
     ROS_ERROR("Joint angle %.2f out of range!", angle);
     return false;
   }
 
-  ROS_INFO("Moving joint[%d] to %.2f", id, angle);
+  ROS_INFO("Moving joint[%d] to %.2f servo position %.2f", id, angle,position);
   if (!g_sparky.moveTo(id, position))
   {
-    ROS_ERROR("Error moving joint[%d] to %.2f!", id, angle);
+    ROS_ERROR("Error moving joint[%d] to %.2f servo position %.2f!", id, angle, position);
     return false;
   }
 
