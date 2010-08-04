@@ -106,7 +106,7 @@ void stateCB(diagnostic_updater::DiagnosedPublisher<sensor_msgs::JointState>& jo
     }
   }
 
-  ROS_INFO( "publishing..." );
+  //ROS_INFO( "publishing..." );
 
   // Publish to other nodes
   joint_pub.publish(js);
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "bandit_driver");
   ros::NodeHandle nh;
-
+	ros::NodeHandle nh_priv("~");
   // Retrieve port from parameter server
   std::string port;
   nh.param("port", port, std::string("/dev/ttyUSB0"));
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 
     // joint offset parameters for Bandit #1 (RAM-2010Apr30)
     //nh.param( "home", homestring, std::string("-3,10,-62,-74,-28,62,-11,0.5,0.6,52,80,26,-58,12,0.5,0.5,0.2,0.25,0.25,"));
-    //nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
+    nh.param( "direction", dirsstring, std::string("-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1,"));
 
     for( int i = 0; i < 19; i++ )
     {
@@ -168,12 +168,12 @@ int main(int argc, char** argv)
     }
 	
   std::string calibration_filename;
-  nh.param("calibration_filename", calibration_filename, std::string("") );
+  nh_priv.param("calibration_filename", calibration_filename, std::string("") );
 
 	std::ifstream fin;
 	fin.open(calibration_filename.c_str());
 	if (fin.fail()){
-  	ROS_WARN("Failure to find calibration file, running uncalibrated");
+  	ROS_WARN("Failure to find calibration file [%s], running uncalibrated", calibration_filename.c_str());
     g_bandit.useJointLimits(false);
 	}
   else
@@ -186,6 +186,7 @@ int main(int argc, char** argv)
 	 	for(unsigned k=0;k<doc.size();k++) {
 	  	doc[k] >> joint;
 		  j_cal[k] = joint.truezero;
+		ROS_INFO("joint(%d): %0.2f", k, joint.truezero );
 		  direction[k] = joint.direction;
   	}
     g_bandit.useJointLimits(true);
@@ -195,6 +196,7 @@ int main(int argc, char** argv)
   std::string::size_type i = 0;
   std::string::size_type j = dirsstring.find(',');
   int ii = 0;
+
   ROS_INFO( "direction: " );
   while( j != std::string::npos )
   {
