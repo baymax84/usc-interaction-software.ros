@@ -100,7 +100,7 @@ void moveToPosition(){
 void button_cb( Fl_Widget* obj , void* )
 {
 	ros::NodeHandle n;
-	joint_publisher = n.advertise<bandit_msgs::JointArray>("joints",5);
+	joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",5);
 	moveToPosition();
 }
 

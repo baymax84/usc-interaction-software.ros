@@ -9,6 +9,10 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
+FIND_PACKAGE( FLTK REQUIRED )
+INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
+LINK_LIBRARIES(${FLTK_LIBRARIES})
+
 rosbuild_init()
 
 #set the default path for built executables to the "bin" directory
