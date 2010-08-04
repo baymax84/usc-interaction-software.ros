@@ -71,8 +71,7 @@ int main( int argc, char* argv[] )
 {
 	ros::init(argc, argv, "fake_bandit" );
 	ros::NodeHandle n;
-  ros::Subscriber joint_sub = n.subscribe("joint_ind", 1, jointCB );
-  ros::Subscriber joints_sub = n.subscribe("joints", 1, jointarrayCB );
+  ros::Subscriber joints_sub = n.subscribe("joint_cmd", 1, jointarrayCB );
   ros::Subscriber target_sub = n.subscribe("target_joints", 1, targetCB );
   joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
 
