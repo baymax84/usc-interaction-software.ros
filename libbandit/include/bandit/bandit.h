@@ -77,6 +77,7 @@ namespace bandit
                           int8_t direction, double scale, double offset, double min, double max);
 
   
+    //! value to set if we want to use software limits (should be true unless calibrating joints)
     void useJointLimits( bool use_limits );
   
     //! Return the type of a joint

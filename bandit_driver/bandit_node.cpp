@@ -13,6 +13,9 @@
 #include <boost/bind.hpp>
 #include <boost/ref.hpp>
 
+#include <diagnostic_updater/publisher.h>
+#include <diagnostic_updater/diagnostic_updater.h>
+
 bandit::Bandit g_bandit;
 
 #define DTOR( a ) a * M_PI / 180.0
@@ -50,7 +53,7 @@ void jointCB(const bandit_msgs::JointArrayConstPtr& j)
 
 void targetCB(const sensor_msgs::JointStateConstPtr &t )
 {
-  for( int i = 0; i < t->name.size(); i++ )
+  for( unsigned int i = 0; i < t->name.size(); i++ )
   {
     for( int j = 0; j < 19; j++ )
     {
@@ -66,7 +69,7 @@ void targetCB(const sensor_msgs::JointStateConstPtr &t )
 
 
 // This callback is invoked when we get new state from bandit
-void stateCB(ros::Publisher& joint_pub)
+void stateCB(diagnostic_updater::DiagnosedPublisher<sensor_msgs::JointState>& joint_pub)
 {
   sensor_msgs::JointState js;
 
@@ -141,7 +144,15 @@ int main(int argc, char** argv)
   std::string port;
   nh.param("port", port, std::string("/dev/ttyUSB0"));
 
-  ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
+  double desired_freq = 5.0;
+
+  diagnostic_updater::Updater diagnostic;
+  diagnostic_updater::DiagnosedPublisher<sensor_msgs::JointState> joints_pub(nh.advertise<sensor_msgs::JointState>("joint_states", 1000),
+    diagnostic,
+    diagnostic_updater::FrequencyStatusParam(&desired_freq,&desired_freq,0.5),
+    diagnostic_updater::TimeStampStatusParam());
+
+  //ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
 
     std::string homestring, dirsstring;
 
@@ -269,10 +280,18 @@ int main(int argc, char** argv)
     ros::Subscriber target_sub = nh.subscribe("target_joints", 1, targetCB );
     ros::ServiceServer service = nh.advertiseService("params", param);
 
+    ros::Rate loop_rate(10);
+
     while (ros::ok())
     {
+      diagnostic.update();
+
       // Process any pending messages from bandit
-      g_bandit.processIO(10000);
+      //ROS_INFO( "processIO: %ld", loop_rate.expectedCycleTime().toNSec());
+     
+      g_bandit.processIO(5000);
+      //g_bandit.processIO(loop_rate.expectedCycleTime().toNSec());
+      //ROS_INFO( "processPackets" );
       g_bandit.processPackets();
       ros::spinOnce();
     }

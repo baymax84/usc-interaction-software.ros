@@ -138,7 +138,7 @@ void MasterModule::processIO(uint32_t timeout)
   do
   {
     // If outgoing buf is not empty, set the position to 0 so we know we have stuff to write
-
+    //fprintf( stderr, "do loop" );
     // LOCK outgoing_queue
     {
       boost::mutex::scoped_lock(outgoing_mutex_);
@@ -248,6 +248,8 @@ void MasterModule::processIO(uint32_t timeout)
 
     for (;;)
     {
+      //fprintf( stderr, "for ;; loop (%d<%d, %d\n",i,incoming_pos_, j );
+
       // Read until we find a '<' or hit the number of characters we've read
       while ( (i < incoming_pos_) && (incoming_buf_[i] != '<') )
         i++;
@@ -280,10 +282,13 @@ void MasterModule::processIO(uint32_t timeout)
         incoming_queue_.push(IOPacket(&incoming_buf_[i], j-i+1));
       }
       incoming_queue_condition_.notify_one();
-
-
       // Shift i up to meet j
       i = j;
+  
+      // add timeout to for loop
+      gettimeofday(&checktime, NULL);
+      //fprintf(stderr, "timeout: %ld\n", stoptime-timeval_to_usec(&checktime) );
+
     }
 
     // If there are characters at the front, we need to shift our buffer
@@ -294,6 +299,7 @@ void MasterModule::processIO(uint32_t timeout)
     }
 
     gettimeofday(&checktime, NULL);
+    //fprintf(stderr, "other timeout: %ld\n", stoptime-timeval_to_usec(&checktime) );
   } while ( (timeout == 0) || timeval_to_usec(&checktime) < stoptime );
 
 }
