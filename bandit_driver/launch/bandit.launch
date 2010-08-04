@@ -11,7 +11,7 @@
 	<include file="$(find bandit_urdf)/controller.launch"/>
 
 	<node name="bandit_driver" pkg="bandit_driver" type="bandit_node">
-    <param name="calibration_file" type="str" value=""/>
+    <param name="calibration_file" type="str" value="$(find bandit_driver)/Bandit_Calibration_File_Bandit2.yaml"/>
   </node>
 	<node name="mover" pkg="bandit_mover" type="bandit_mover"/>
 	<node name="rviz" type="rviz" pkg="rviz"/>
