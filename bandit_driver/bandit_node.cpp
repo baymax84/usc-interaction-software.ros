@@ -151,7 +151,7 @@ struct Joint_Calibrations
 void operator >>( const YAML::Node& node, Joint_Calibrations& joint )
 {
 	node["JointID"] >> joint.id;
-	node["Direction"] >> joint.direction;
+	//node["Direction"] >> joint.direction;
 	node["TrueZero"] >> joint.truezero;
 	node["Offset"] >> joint.offset;
 	node["MaxAngle"] >> joint.maxAngle;
@@ -207,7 +207,7 @@ int main( int argc, char** argv )
 	fin.open( calibration_filename.c_str() );
 	if ( fin.fail() )
 	{
-		ROS_WARN( "Failure to find calibration file [%s], running uncalibrated", calibration_filename.c_str() );
+		ROS_WARN( "Failed to find calibration file [%s], running uncalibrated", calibration_filename.c_str() );
 		g_bandit.useJointLimits( false );
 	}
 	else
@@ -216,13 +216,15 @@ int main( int argc, char** argv )
 		YAML::Node doc;
 		parser.GetNextDocument( doc );
 
+		ROS_INFO("locating top-level in calibration file");
+
 		const YAML::Node & jointCalibrations = doc["JointCalibrations"];
 
 		Joint_Calibrations joint;
 
-		for ( unsigned k = 0; k < doc.size(); k++ )
+		for ( unsigned k = 0; k < jointCalibrations.size(); k++ )
 		{
-			doc[k] >> joint;
+			jointCalibrations[k] >> joint;
 			j_cal[k] = joint.truezero;
 			ROS_INFO( "joint(%d): %0.2f", k, joint.truezero );
 			direction[k] = joint.direction;
@@ -297,6 +299,8 @@ int main( int argc, char** argv )
 			YAML::Node doc;
 
 			parser.GetNextDocument( doc );
+
+			ROS_INFO("locating top-level in pid configuration");
 
 			const YAML::Node & jointPIDs = doc["JointPIDs"];
 
