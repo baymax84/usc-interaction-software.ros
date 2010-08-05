@@ -215,6 +215,9 @@ int main( int argc, char** argv )
 		YAML::Parser parser( fin );
 		YAML::Node doc;
 		parser.GetNextDocument( doc );
+
+		const YAML::Node & jointCalibrations = doc["JointCalibrations"];
+
 		Joint_Calibrations joint;
 
 		for ( unsigned k = 0; k < doc.size(); k++ )
