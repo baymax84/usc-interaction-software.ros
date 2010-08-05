@@ -17,7 +17,6 @@ using namespace std;
 bandit_msgs::Joint * desiredJointPos;
 ros::Publisher * joint_publisher;
 ros::Subscriber * joint_subscriber;
-//ros::ServiceServer * joint_calib_srv;
 ros::AsyncSpinner * spinner;
 
 std::vector<double> * joint_positions;
@@ -27,24 +26,36 @@ double maxAngle = 0;
 double position_zero = 0;
 double offset = 0;
 double truezero = 0;
-int direction[19] = { -1, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0};
-int direction_Emit[19] = {-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1};
+int direction[19] = { -1, 0, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0, 0}; //direction of testing
+int direction_Emit[19] = {-1,-1,1,1,1,-1,1,1,1,-1,-1,-1,1,-1,-1,1,1,1,-1};//direction of movement needed in bandit_node for bandit to move correctly
 
+/*
+	Converts degrees to radians and outputs radians
+*/
 double deg_to_rad(double deg)
 {
 	return deg * M_PI / 180;
 }
 
+/*
+	Converts radiangs to degrees and outputs degrees
+*/
 double rad_to_deg(double rad)
 {
 	return rad * 180 / M_PI;
 }
 
+/*
+	Publishes desiredJointPos (a vector of joint id and joint angle)
+*/
 void publish_joint_ind()
 {
 	joint_publisher->publish(*desiredJointPos);
 }
 
+/*
+	Resets all joints to its zero position
+*/
 void bandit_master_reset()
 {
 	for (int ii = 0; ii < 16; ii++){
@@ -56,12 +67,17 @@ void bandit_master_reset()
 	ROS_INFO("MASTER RESET COMMAND EXECUTED");
 }
 
+/*
+	Takes the encoder information about joint positiosn from the Bandit II encoders
+*/
 void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 {
 	*joint_positions = js->position;//pulls out all the positions for all joints and stores it to joint_positions
 }
 
-//designed to check that the true maxangle is recorded <not yet completed>
+/*
+	Checks the MaxAngle/MinAngle recorded is the true hardware limit by publishing more and checking
+*/
 bool joint_checker(const int& p_id, double& lastPose, const int& direction, bool& checker_sum, const double& p_angle_increment_deg){
 	desiredJointPos->id = p_id;
 	double angledeg;
@@ -80,6 +96,9 @@ bool joint_checker(const int& p_id, double& lastPose, const int& direction, bool
 	return checker_sum;
 }
 
+/*
+	The Main function that calibrates the joints by publishing increment angles and checking
+*/
 void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, double & position_zero)
 {
 	ROS_INFO("Running calibration on joint: [%i]", p_id);
@@ -109,7 +128,8 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 
 		ROS_INFO("currentPose: %f lastPose: %f", currentPose, lastPose);
 		ROS_INFO("desired angle: %f ID: %d", angle_deg, p_id);
-
+		
+		// Checks if the Joint Angle has not changed or has gone in the reverse direction
 		if (direction[p_id] == -1){
 			checker_sum = currentPose >= lastPose? true:false;
 		}
@@ -121,10 +141,12 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 				checker_sum = currentPose <= lastPose? true:false;
 		}
 		
+		//Checks again
 		if( checker_sum ){
 				joint_checker(p_id, lastPose, direction[p_id], checker_sum, p_angle_increment_deg);
 		}
 		
+		//Normalizes the encoder information
 		if( checker_sum )
 		{
 			if (direction[p_id] == -1){
@@ -156,36 +178,6 @@ void calibrateJoint(const int & p_id, const double & p_angle_increment_deg, doub
 	}
 	bandit_master_reset();//resets all joints to fixed position
 }
-
-/* //this is a modified service call for all joints with srv CalibrateJointAll.srv
-bool calibrateJointCallback(bandit_msgs::CalibrateJointAll::Request & req, bandit_msgs::CalibrateJointAll::Response & resp)
-{
-	double minAngle, maxAngle, position_zero;
-	int a = req.Engage;
-	for (int joint_i = 0; joint_i < 16; joint_i++){
-
-			calibrateJoint(joint_i, minAngle, maxAngle, 0, 40, position_zero);
-			minAngle = minAngle > position_zero ? position_zero - minAngle : minAngle - position_zero;
-			maxAngle = maxAngle > position_zero ? maxAngle - position_zero : maxAngle - position_zero;
-			resp.MinAngle[joint_i] = minAngle;
-			resp.MaxAngle[joint_i] = maxAngle;
-	}
-	return true;
-}
-*/
-
-/* //the service call for one specified joint
-bool calibrateJointCallback(bandit_msgs::CalibrateJoint::Request & req, bandit_msgs::CalibrateJoint::Response & resp)
-{
-	double minAngle, maxAngle, position_zero;
-	calibrateJoint(req.Id, minAngle, maxAngle, req.Angle_Increment, position_zero);	
-	minAngle = minAngle > position_zero ? position_zero - minAngle : minAngle - position_zero;
-	maxAngle = maxAngle > position_zero ? maxAngle - position_zero : maxAngle - position_zero;
-	resp.MinAngle = minAngle;
-	resp.MaxAngle = maxAngle;
-	return true;
-}
-*/
 
 /*
  * This function is used to set the offset for the physical hardware calibration limits for Bandit II
@@ -325,10 +317,7 @@ int main( int argc, char* argv[] )
 	
 	joint_subscriber = new ros::Subscriber;
 	*joint_subscriber = n.subscribe("joint_states", 10, jointStatesCallBack); //creates subscriber and subscribes to topic "joint_states"
-	
-	//joint_calib_srv = new ros::ServiceServer;
-	//*joint_calib_srv = n.advertiseService("calibrate_joint", calibrateJointCallback);//creates service and can be called by service calibrate_joint
-	
+
 	spinner = new ros::AsyncSpinner(2);//Use 2 threads
 	ros::Rate(1).sleep();
 	
@@ -345,7 +334,7 @@ int main( int argc, char* argv[] )
 	emitter << YAML::BeginSeq;
 	
 	if(ros::ok()){
-		
+		//calibrates each joint
 		for ( int z_id = 0; z_id < 19; z_id++){
 			if(z_id == 3 || z_id == 4 || z_id == 10 || z_id == 11){
 				calibrateJoint(z_id, 30, position_zero);
@@ -359,7 +348,7 @@ int main( int argc, char* argv[] )
 				calibrateJoint(z_id, 10, position_zero);
 				true_zero(z_id);				
 			}
-			
+			//output values for the YAML File
 			emitter << YAML::BeginMap;
 			emitter << YAML::Key << "Joint ID" << YAML::Value << z_id;
 			emitter << YAML::Key << "Direction" << YAML::Value << direction_Emit[z_id];
