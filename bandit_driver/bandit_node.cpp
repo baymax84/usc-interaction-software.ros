@@ -143,18 +143,19 @@ void stateCB( diagnostic_updater::DiagnosedPublisher<sensor_msgs::JointState>& j
 //This creates a data structure for mappings in yaml file
 struct Joint_Calibrations
 {
-	float id, direction, truezero, offset, maxAngle, minAngle;
+	int id, direction;
+	float truezero, offset, maxAngle, minAngle;
 };
 
 //This overrides the >> operator to insert mappings into joint
 void operator >>( const YAML::Node& node, Joint_Calibrations& joint )
 {
-	node["Joint ID"] >> joint.id;
+	node["JointID"] >> joint.id;
 	node["Direction"] >> joint.direction;
-	node["True Zero"] >> joint.truezero;
+	node["TrueZero"] >> joint.truezero;
 	node["Offset"] >> joint.offset;
-	node["Max Angle"] >> joint.maxAngle;
-	node["Min Angle"] >> joint.minAngle;
+	node["MaxAngle"] >> joint.maxAngle;
+	node["MinAngle"] >> joint.minAngle;
 }
 
 int main( int argc, char** argv )
@@ -173,9 +174,10 @@ int main( int argc, char** argv )
 	ros::NodeHandle nh_priv( "~" );
 	// Retrieve port from parameter server
 	std::string port;
-	nh.param( "port", port, std::string( "/dev/ttyUSB0" ) );
 
-	nh.param( "pid_config_uri", pid_config_uri, std::string( "null" ) );
+	nh_priv.param( "port", port, std::string( "/dev/ttyUSB0" ) );
+	nh_priv.param( "pid_config_uri", pid_config_uri, std::string( "" ) );
+	nh_priv.param( "calib_uri", calibration_filename, std::string( "" ) );
 
 	std::ifstream fin;
 
@@ -201,9 +203,6 @@ int main( int argc, char** argv )
 		//home[i] = 0;
 		j_cal[i] = 0;
 	}
-
-
-	nh_priv.param( "calibration_filename", calibration_filename, std::string( "" ) );
 	
 	fin.open( calibration_filename.c_str() );
 	if ( fin.fail() )
@@ -298,7 +297,7 @@ int main( int argc, char** argv )
 
 			const YAML::Node & jointPIDs = doc["JointPIDs"];
 
-			for ( int i = 0; i < jointPIDs.size(); i++ )
+			for ( unsigned int i = 0; i < jointPIDs.size(); i++ )
 			{
 				if ( g_bandit.getJointType( i ) == smartservo::SMART_SERVO )
 				{
