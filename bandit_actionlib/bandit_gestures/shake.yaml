@@ -1,55 +1,45 @@
 - Frame Num: 0
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: -15
 - Frame Num: 1
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: 15
 - Frame Num: 2
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: -15
 - Frame Num: 3
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: 15
 - Frame Num: 4
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: -15
 - Frame Num: 5
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: 15
 - Frame Num: 6
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: -15
 - Frame Num: 7
   Hold Time: 0
   Joints:
-   - Joint ID: 1
+   - Joint ID: 0
      Joint Angle: 15
 - Frame Num: 8
   Hold Time: 0
   Joints:
-   - Joint ID: 1
-     Joint Angle: -15
-- Frame Num: 9
-  Hold Time: 0
-  Joints:
-   - Joint ID: 1
-     Joint Angle: 15
-- Frame Num: 10
-  Hold Time: 0
-  Joints:
-   - Joint ID: 1
-     Joint Angle: -15
+   - Joint ID: 0
+     Joint Angle: 0
