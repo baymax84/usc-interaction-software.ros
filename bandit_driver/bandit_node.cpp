@@ -151,7 +151,7 @@ struct Joint_Calibrations
 void operator >>( const YAML::Node& node, Joint_Calibrations& joint )
 {
 	node["JointID"] >> joint.id;
-	//node["Direction"] >> joint.direction;
+	node["Direction"] >> joint.direction;
 	node["TrueZero"] >> joint.truezero;
 	node["Offset"] >> joint.offset;
 	node["MaxAngle"] >> joint.maxAngle;
