@@ -13,6 +13,10 @@
 #include <yaml-cpp/yaml.h>
 
 using namespace std;
+
+/*
+ * Initialize Objects
+ */
 bandit_msgs::JointArray * jarray;
 ros::Publisher * joint_publisher;
 ros::Subscriber * joint_subscriber;
@@ -20,41 +24,65 @@ ros::AsyncSpinner * spinner;
 
 std::vector<double> * joint_positions;
 
+/*
+ * Changes degrees to radians and outputs radians
+ */
 double deg_to_rad(double deg)
 {
 	return deg * M_PI / 180;
 }
 
+/*
+ * Changes radians to degrees and outputs degrees
+ */
 double rad_to_deg(double rad)
 {
 	return rad * 180 / M_PI;
 }
 
+/*
+ * Publishes the joint array: jarray with values for joint id and joint angle
+ */
 void publish_joint_ind()
 {
 	joint_publisher->publish(*jarray);
 }
 
+/*
+ * Subscribes to joint_states and takes the information from encoder and stores it to joint_positions
+ */
 void jointStatesCallBack(const sensor_msgs::JointStateConstPtr &js)
 {
 	*joint_positions = js->position;//pulls out all the positions for all joints and stores it to joint_positions
 }
 
+/*
+ * Initialize data structure Joints for parsing in YAML file
+ */
 struct Joints {
 	float id, joint_angle;
 };
 
+/*
+ * Initialize data structure Frame for parsing in YAML file
+ */
 struct Frame {
 	int frame_num;
 	int hold_time;
 	std::vector <Joints> joints;
 };
 
+/*
+ * operator for storing Joint Id and Joint Angle into object Joint
+ */
 void operator >> (const YAML::Node& node, Joints& joint){
 	node["Joint ID"] >> joint.id;
 	node["Joint Angle"] >> joint.joint_angle;
 }
 
+/*
+ * operator for storing Frame Num, Hold Time, and Joint into object Frame
+ */
 void operator >> (const YAML::Node& node, Frame& frame){
 	node["Frame Num"] >> frame.frame_num;
 	node["Hold Time"] >> frame.hold_time;
@@ -66,6 +94,9 @@ void operator >> (const YAML::Node& node, Frame& frame){
 	}
 }
 
+/*
+ * Creates class BanditAction
+ */
 class BanditAction
 {
 	
@@ -79,28 +110,33 @@ class BanditAction
 		bandit_actionlib::BanditResult result;
 
 	public:
-
+		/*
+		 * Constructors for BanditAction
+		 */
 		BanditAction(std::string name) :
 			as (n, name, boost::bind(&BanditAction::executeCB, this, _1)), action_name(name)
 		{
 		}
-
+		
 		~BanditAction(void)
 		{
 		}
 
+	/*
+	 * Whenever BanditAction Class is created this function is called, it executes the gestures on the Bandit II
+	 */
 	void executeCB ( const bandit_actionlib::BanditGoalConstPtr &goal )
 	{
 		bool success = true;
 		double current_time = 0;
 		double first_time = ros::Time::now().toSec();
 		joint_publisher = new ros::Publisher;
-		*joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",5);
+		*joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",5);//this topic can be changed to "joints" to actuate fake_bandit
 		joint_subscriber = new ros::Subscriber;
 		*joint_subscriber = n.subscribe("joint_states", 10, jointStatesCallBack); //creates subscriber and subscribes to topic "joint_states"
 		
 		bandit_msgs::Joint desired_joint_pos;
-		jarray = new bandit_msgs::JointArray;
+		jarray = new bandit_msgs::JointArray; //creates a new JointArray, jarray
 		joint_positions = new std::vector<double>;
 		
 		spinner = new ros::AsyncSpinner(2);//Use 2 threads
@@ -184,7 +220,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "bandit_action");
 
-  BanditAction bandit_action(ros::this_node::getName());
+  BanditAction bandit_action(ros::this_node::getName());//creates BanditAction object
   ros::spin();
 
   return 0;

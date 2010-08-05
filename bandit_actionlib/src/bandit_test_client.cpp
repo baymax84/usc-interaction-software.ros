@@ -28,9 +28,9 @@ int main (int argc, char **argv)
 	goal.frame = filename;
 	ac.sendGoal(goal);
 	
-	bool fin_before_timeout = ac.waitForResult(ros::Duration(30.0));
+	bool fin_before_timeout = ac.waitForResult(ros::Duration(30.0));//tells the client to wait 30.0 seconds before it declares timeout
 	
-	if (fin_before_timeout)
+	if (fin_before_timeout)//the server is not responding and the console outputs a timeout message
 	{
 		actionlib::SimpleClientGoalState state = ac.getState();
 		ROS_INFO("Action finished: %s",state.toString().c_str());
