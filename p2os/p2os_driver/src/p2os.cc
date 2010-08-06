@@ -30,7 +30,12 @@
 
 
 P2OSNode::P2OSNode( ros::NodeHandle nh ) :
-    n(nh), gripper_dirty_(false), ptz_(this)
+    n(nh), gripper_dirty_(false),
+    batt_pub_( n.advertise<p2os_driver::BatteryState>("battery_state",1000),
+               diagnostic_,
+               diagnostic_updater::FrequencyStatusParam( &desired_freq, &desired_freq, 0.1),
+               diagnostic_updater::TimeStampStatusParam() ),
+    ptz_(this)
 {
   // Use sonar
   ros::NodeHandle n_private("~");
@@ -87,10 +92,11 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
   n_private.param( "max_yawdecel", spd, 0.0);
   motor_max_rot_decel = (short)rint(RTOD(spd));
 
+  desired_freq = 10;
+
   // advertise services
-  pose_pub = n.advertise<nav_msgs::Odometry>("pose",1000);
-  batt_pub = n.advertise<p2os_driver::BatteryState>("battery_state",1000);
-  mstate_pub = n.advertise<p2os_driver::MotorState>("motor_state",1000);
+  pose_pub_ = n.advertise<nav_msgs::Odometry>("pose",1000);
+  mstate_pub_ = n.advertise<p2os_driver::MotorState>("motor_state",1000);
   grip_state_pub_ = n.advertise<p2os_driver::GripperState>("gripper_state",1000);
   ptz_state_pub_ = n.advertise<p2os_driver::PTZState>("ptz_state",1000);
   sonar_pub_ = n.advertise<p2os_driver::SonarArray>("sonar", 1000);
@@ -98,8 +104,8 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
   dio_pub_ = n.advertise<p2os_driver::DIO>("dio", 1000);
 
   // subscribe to services
-  cmdvel_sub = n.subscribe("cmd_vel", 1, &P2OSNode::cmdvel_cb, this);
-  cmdmstate_sub = n.subscribe("cmd_motor_state", 1, &P2OSNode::cmdmotor_state,
+  cmdvel_sub_ = n.subscribe("cmd_vel", 1, &P2OSNode::cmdvel_cb, this);
+  cmdmstate_sub_ = n.subscribe("cmd_motor_state", 1, &P2OSNode::cmdmotor_state,
                                this);
   gripper_sub_ = n.subscribe("gripper_control", 1, &P2OSNode::gripperCallback,
                              this);
@@ -462,6 +468,9 @@ P2OSNode::Setup()
   cnt += snprintf(subtype, sizeof(subtype), "%s", &receivedpacket.packet[cnt]);
   cnt++;
 
+  std::string hwID = std::string( name ) + std::string(": ") + std::string(type) + std::string("/") + std::string( subtype );
+  diagnostic_.setHardwareID(hwID);
+
   command = OPEN;
   packet.Build(&command, 1);
   packet.Send(this->psos_fd);
@@ -682,12 +691,13 @@ P2OSNode::StandardSIPPutData(ros::Time ts)
 {
 
   p2os_data.position.header.stamp = ts;
-  pose_pub.publish( p2os_data.position );
+  pose_pub_.publish( p2os_data.position );
   p2os_data.odom_trans.header.stamp = ts;
   odom_broadcaster.sendTransform( p2os_data.odom_trans );
 
-  batt_pub.publish( p2os_data.batt );
-  mstate_pub.publish( p2os_data.motors );
+  p2os_data.batt.header.stamp = ts;
+  batt_pub_.publish( p2os_data.batt );
+  mstate_pub_.publish( p2os_data.motors );
 
   // put sonar data
   p2os_data.sonar.header.stamp = ts;
@@ -767,6 +777,12 @@ P2OSNode::SendReceive(P2OSPacket* pkt, bool publish_data)
   }
 
   return(0);
+}
+
+void
+P2OSNode::updateDiagnostics()
+{
+  diagnostic_.update();
 }
 
 void

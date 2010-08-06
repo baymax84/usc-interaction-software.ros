@@ -43,6 +43,9 @@
 #include <p2os_driver/DIO.h>
 #include <p2os_driver/AIO.h>
 
+#include <diagnostic_updater/publisher.h>
+#include <diagnostic_updater/diagnostic_updater.h>
+
 typedef struct ros_p2os_data
 {
     nav_msgs::Odometry  position;
@@ -78,6 +81,9 @@ class P2OSNode
     int Shutdown();
 
     int SendReceive(P2OSPacket* pkt, bool publish_data = true );
+
+    void updateDiagnostics();
+
     void ResetRawPositions();
     void ToggleSonarPower(unsigned char val);
     void ToggleMotorPower(unsigned char val);
@@ -105,9 +111,14 @@ class P2OSNode
   protected:
     ros::NodeHandle n;
     ros::NodeHandle nh_private;
-    ros::Publisher pose_pub, batt_pub, mstate_pub, grip_state_pub_,
+ 
+    diagnostic_updater::Updater diagnostic_;
+
+    diagnostic_updater::DiagnosedPublisher<p2os_driver::BatteryState> batt_pub_;
+    ros::Publisher pose_pub_, mstate_pub_, grip_state_pub_,
       ptz_state_pub_, sonar_pub_, aio_pub_, dio_pub_;
-    ros::Subscriber cmdvel_sub, cmdmstate_sub, gripper_sub_, ptz_cmd_sub_;
+    ros::Subscriber cmdvel_sub_, cmdmstate_sub_, gripper_sub_, ptz_cmd_sub_;
+
     tf::TransformBroadcaster odom_broadcaster;
     ros::Time veltime;
 
@@ -133,6 +144,7 @@ class P2OSNode
     short motor_max_trans_accel, motor_max_trans_decel;
     short motor_max_rot_accel, motor_max_rot_decel;
     double pulse; // Pulse time
+    double desired_freq;
     double lastPulseTime; // Last time of sending a pulse or command to the robot
     bool use_sonar_;
 
