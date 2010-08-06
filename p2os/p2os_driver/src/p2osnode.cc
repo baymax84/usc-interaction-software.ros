@@ -71,6 +71,7 @@ int main( int argc, char** argv )
     // checks of the serial port - peek in sendreceive, maybe? Because if there
     // is no data waiting this will sit around waiting until one comes
     p->SendReceive(NULL,true);
+    p->updateDiagnostics();
     ros::spinOnce();
   }
 
