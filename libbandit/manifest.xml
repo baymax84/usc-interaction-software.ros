@@ -3,7 +3,7 @@
   <author>Jeremy Leibs</author>
   <license>BSD</license>
   <review status="experimental" notes=""/>
-  <depend package="diagnostic_updater" />
+  <!--<depend package="diagnostic_updater" />-->
     <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lbandit"/>
   </export>
