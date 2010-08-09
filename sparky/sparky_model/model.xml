@@ -7,7 +7,7 @@
 
 <link name="world" />
 
-<link name="shoulders">
+<link name="sholders">
 
 <inetrial>
 		<mass value="5"/>
@@ -20,7 +20,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>	
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/Shoulders.stl"/>
+		<mesh filename="package://sparky_model/meshes/Sholders.stl"/>
 	</geometry>
 	</visual>
 </link>
@@ -131,7 +131,7 @@
 	<origin xyz="0 0 0" rpy="0 0 0"/>
 	<axis xyz="0 0 1" /> 
 	 <limit upper=".785" lower="-.436" effort="10" velocity="3" />
-	<parent link="shoulders"/>
+	<parent link="sholders"/>
 	<child link="throat"/>
 </joint>
 
@@ -424,7 +424,7 @@
 	<child link="Reye"/>
 </joint>
 
-<joint name="LeyeJoint" type="revolute">
+<joint name="ReyeJoint" type="revolute">
 	<origin xyz="-.6 1.43 .82" rpy="0 0 0"/>
 	<axis xyz="0 0 1" /> 
 	<limit upper=".698" lower="-.524" effort="10" velocity="3" />
@@ -526,7 +526,7 @@
 	</visual>
 </link>
 
-<link name="rightshoulderball" >
+<link name="rightsholderball" >
 
 <inetrial>
 		<mass value="5"/>
@@ -539,7 +539,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/ShoulderConnecter.stl" />
+		<mesh filename="package://sparky_model/meshes/SholderConnecter.stl" />
 	</geometry>
 	</visual>
 </link>
@@ -585,15 +585,15 @@
 	<origin xyz="2.67 -.2 .1" rpy="0 0 0"/>
 	<axis xyz="1 0 0" /> 
 	  <limit upper="4" lower="0" effort="10" velocity="3" />
-	<parent link="shoulders"/>
-	<child link="rightshoulderball"/>
+	<parent link="sholders"/>
+	<child link="rightsholderball"/>
 </joint>
 
 <joint name="RtArmOut" type="revolute">
 	<origin xyz="0 0 0" rpy=".28 0 0"/>
 	<axis xyz="0 1 0" /> 
 	  <limit upper="1.257" lower=".052" effort="10" velocity="3" />
-	<parent link="rightshoulderball"/>
+	<parent link="rightsholderball"/>
 	<child link="rightbicept"/>
 </joint>
 
@@ -636,7 +636,7 @@
 	
 </link>
 
-<link name="leftshoulderball" >
+<link name="leftsholderball" >
 
 <inetrial>
 		<mass value="5"/>
@@ -649,7 +649,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/LeftShoulderConnecter.stl" />
+		<mesh filename="package://sparky_model/meshes/LeftSholderConnecter.stl" />
 	</geometry>
 	</visual>
 </link>
@@ -697,15 +697,15 @@
 	<origin xyz="-2.67 .2 .05" rpy="3.14 0 0"/>
 	<axis xyz="1 0 0" /> 
 		  <limit upper="1.257" lower=".035" effort="10" velocity="3" />
-	<parent link="shoulders"/>
-	<child link="leftshoulderball"/>
+	<parent link="sholders"/>
+	<child link="leftsholderball"/>
 </joint>
 
 <joint name="LtArmOut" type="revolute">
 	<origin xyz="0 0 0" rpy="3.42 0 0"/>
 	<axis xyz="0 1 0" /> 
 		  <limit upper="1.344" lower="0" effort="10" velocity="3" />
-	<parent link="leftshoulderball"/>
+	<parent link="leftsholderball"/>
 	<child link="leftbicept"/>
 </joint>
 
@@ -1602,11 +1602,11 @@
 		<axis xyz="1 0 0" /> 
 </joint>
 
-<joint name="TSShoulderJoint" type="fixed">
+<joint name="TSSholderJoint" type="fixed">
 	<origin xyz="0 -.85 .45" rpy="-.28 0 0"/>
 	<axis xyz="1 0 0" /> 
 	<parent link="TS24"/>
-	<child link="shoulders"/>
+	<child link="sholders"/>
 </joint>
 
 <!--
