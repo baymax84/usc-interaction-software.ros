@@ -110,9 +110,14 @@ int main(int argc, char** argv)
     sliders[i]->bounds(g_params_res.min[i], g_params_res.max[i]);
     sliders[i]->callback(sliderCallback);
     sliders[i]->step(1);
-    //if (i==14||16)
-		//sliders[14]->step(0.1);
-		//sliders[16]->step(0.1);
+    if (i==14)
+		sliders[14]->step(0.1);
+	else if (i==15)
+		sliders[15]->step(0.1);
+	else if (i==16)
+		sliders[16]->step(0.1);
+	else if (i==17)
+		sliders[17]->step(0.1);
   }
 
   // display window
@@ -134,4 +139,3 @@ int main(int argc, char** argv)
   // exit program
   return 0;
 } // main(int, char**)
-

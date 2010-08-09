@@ -161,7 +161,7 @@ bool initParams()
     g_params_res.curr[i] = g_params_res.min[i];//0.005f;
   }
 
-   g_params_res.min[ 0]  = -42.0f;
+  g_params_res.min[ 0]  = -42.0f;
   g_params_res.max[ 0]  = 0.0f;
   g_params_res.min[ 1]  = -1.0f;
   g_params_res.max[ 1]  = 60.0f;
@@ -189,16 +189,12 @@ bool initParams()
   g_params_res.max[12]  = 102.0f;
   g_params_res.min[13]  = -30.0f;
   g_params_res.max[13]  = 40.0f;
- /*
-  g_params_res.min[14]  = 1.00f;
-  g_params_res.max[14]  = 0.50f;
-  */
+  g_params_res.min[14]  = 0.00f;
+  g_params_res.max[14]  = 5.84f;
   g_params_res.min[15]  = -9.61f;
   g_params_res.max[15]  = 7.8f;
-  /*
   g_params_res.min[16]  = 0.00f;
-  g_params_res.max[16]  = 0.44f;
-  */
+  g_params_res.max[16]  = 5.92f;
   g_params_res.min[17]  = -9.44f;
   g_params_res.max[17]  = 5.74f;
   
@@ -413,13 +409,26 @@ bool jointMoveTo(int id, double angle)
 		position=0.0286*pow(z,6)-0.0611*pow(z,5)-0.0450*pow(z,4)+0.1518*pow(z,3)-0.0300*pow(z,2)+0.0558*pow(z,1)+0.5385;
 		//position=(angle+92.5977777777777f)/182.0f;
 		ROS_INFO("Servo Position %f", position);
+	}		
+	else if (id==14)
+	{
+		ROS_INFO("Right Foot Up");
+		z=(angle-3.1)/2.2;
+		position=-0.0056*pow(z,6)-0.0164*pow(z,5)-0.0012*pow(z,4)-0.0095*pow(z,3)-0.0030*pow(z,2)-0.1536*pow(z,1)+0.4547;
+		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==15)
 	{
 		ROS_INFO("Right Foot Foward");
 		z=(angle-0.44)/6.8;
 		position=-0.1955*pow(z,6)+0.0206*pow(z,5)+0.5468*pow(z,4)-0.1139*pow(z,3)-0.4521*pow(z,2)-0.1703*pow(z,1)+0.4749;
-		//position=(angle+92.5977777777777f)/182.0f;
+		ROS_INFO("Servo Position %f", position);
+	}
+	else if (id==16)
+	{
+		ROS_INFO("Left Foot Up");
+		z=(angle-3.1)/2.3;
+		position=0.0202*pow(z,6)-0.0050*pow(z,5)-0.0593*pow(z,4)-0.0458*pow(z,3)+0.0251*pow(z,2)-0.1369*pow(z,1)+0.4743;
 		ROS_INFO("Servo Position %f", position);
 	}
 	else if (id==17)
