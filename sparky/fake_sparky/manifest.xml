@@ -9,18 +9,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/fake_sparky</url>
 
-
-  	<rosdep name="fltk"/>
+  <rosdep name="fltk"/>
   <depend package="joint_msgs"/>
   <depend package="sensor_msgs"/>
   <rosdep name="xmlrpcpp"/>
   <depend package="yaml_cpp"/>
-  <depend package="sparky_msgs" />
-
 </package>
-
-
-
-
-
 

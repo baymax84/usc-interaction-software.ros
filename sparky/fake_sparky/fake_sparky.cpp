@@ -1,8 +1,8 @@
 #include "ros/ros.h"
-#include <sparky_msgs/Params.h>
-#include <sparky_msgs/JointArray.h>
+#include <joint_msgs/Params.h>
+#include <joint_msgs/JointArray.h>
 #include <sensor_msgs/JointState.h>
-sparky_msgs::Params::Response param_res;
+joint_msgs::Params::Response param_res;
 #define DTOR( a ) a * M_PI / 180.0
 #define RTOD( a ) a * 180.0 / M_PI
 
@@ -11,8 +11,8 @@ std::vector<std::string> joint_names;
 std::vector<double> joint_pos;
 std::vector<double> zeroes;
 
-bool param(sparky_msgs::Params::Request    &req,
-           sparky_msgs::Params::Response   &res )
+bool param(joint_msgs::Params::Request    &req,
+           joint_msgs::Params::Response   &res )
 {
   res = param_res;
   return true;
@@ -30,12 +30,12 @@ void add_param( int id, std::string name, float min, float max, float pos )
   zeroes.push_back(0);
 }
 
-void jointCB( const sparky_msgs::JointConstPtr& j )
+void jointCB( const joint_msgs::JointConstPtr& j )
 {
   joint_pos[j->id] = j->angle;
 }
 
-void jointarrayCB( const sparky_msgs::JointArrayConstPtr& j )
+void jointarrayCB( const joint_msgs::JointArrayConstPtr& j )
 {
 	for( int i = 0; i < j->joints.size(); i++ )
 	{
