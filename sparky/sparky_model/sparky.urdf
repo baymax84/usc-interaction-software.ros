@@ -915,7 +915,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/LeftShoulderConnecter.stl"    />
+		<mesh filename="package://sparky_model/meshes/LeftShoulderConnector.stl"    />
 	</geometry>
 	</visual>
 	    <collision>
