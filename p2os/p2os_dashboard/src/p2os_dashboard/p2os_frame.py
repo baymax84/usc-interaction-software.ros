@@ -75,7 +75,7 @@ from rosout_frame import RosoutFrame
 
 from power_state_control import PowerStateControl
 
-#from diagnostics_frame import DiagnosticsFrame
+from diagnostics_frame import DiagnosticsFrame
 
 class P2OSFrame(wx.Frame):
     _CONFIG_WINDOW_X="/Window/X"
@@ -111,9 +111,9 @@ class P2OSFrame(wx.Frame):
         sizer.Add(static_sizer, 0)
         
         # Diagnostics
-#        self._diagnostics_button = StatusControl(self, wx.ID_ANY, icons_path, "diag", True)
-#        self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics"))
-#        static_sizer.Add(self._diagnostics_button, 0)
+        self._diagnostics_button = StatusControl(self, wx.ID_ANY, icons_path, "diag", True)
+        self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics"))
+        static_sizer.Add(self._diagnostics_button, 0)
         
         # Rosout
         self._rosout_button = StatusControl(self, wx.ID_ANY, icons_path, "rosout", True)
@@ -141,11 +141,11 @@ class P2OSFrame(wx.Frame):
         self.Layout()
         self.Fit()
         
-#        self._diagnostics_frame = DiagnosticsFrame(self, wx.ID_ANY, "Diagnostics")
-#        self._diagnostics_frame.Hide()
-#        self._diagnostics_frame.Center()
-#        self._diagnostics_button.Bind(wx.EVT_BUTTON, self.on_diagnostics_clicked)
-#        
+        self._diagnostics_frame = DiagnosticsFrame(self, wx.ID_ANY, "Diagnostics")
+        self._diagnostics_frame.Hide()
+        self._diagnostics_frame.Center()
+        self._diagnostics_button.Bind(wx.EVT_BUTTON, self.on_diagnostics_clicked)
+        
         self._rosout_frame = RosoutFrame(self, wx.ID_ANY, "Rosout")
         self._rosout_frame.Hide()
         self._rosout_frame.Center()
@@ -160,8 +160,8 @@ class P2OSFrame(wx.Frame):
         self.battery_msg_last_time = rospy.Time.now()
         #self.motor_msg_good = false;
         
-    #def __del__(self):
-    #    self._dashboard_agg_sub.unregister()
+    def __del__(self):
+        self._dashboard_agg_sub.unregister()
 
     def battStateCallback(self, msg):
 		self.battery_msg_last_time = rospy.Time.now()
@@ -178,20 +178,20 @@ class P2OSFrame(wx.Frame):
 			self._motors_button.SetToolTip(wx.ToolTip("Motors: Halted"))
 
     def on_timer(self, evt):
-#      level = self._diagnostics_frame._diagnostics_panel.get_top_level_state()
-#      if (level == -1 or level == 3):
-#        if (self._diagnostics_button.set_stale()):
-#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Stale"))
-#      elif (level >= 2):
-#        if (self._diagnostics_button.set_error()):
-#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Error"))
-#      elif (level == 1):
-#        if (self._diagnostics_button.set_warn()):
-#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Warning"))
-#      else:
-#        if (self._diagnostics_button.set_ok()):
-#            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: OK"))
-#        
+      level = self._diagnostics_frame._diagnostics_panel.get_top_level_state()
+      if (level == -1 or level == 3):
+        if (self._diagnostics_button.set_stale()):
+            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Stale"))
+      elif (level >= 2):
+        if (self._diagnostics_button.set_error()):
+            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Error"))
+      elif (level == 1):
+        if (self._diagnostics_button.set_warn()):
+            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: Warning"))
+      else:
+        if (self._diagnostics_button.set_ok()):
+            self._diagnostics_button.SetToolTip(wx.ToolTip("Diagnostics: OK"))
+        
       
       if (rospy.Time.now() > self.battery_msg_last_time + rospy.Duration(5.0)):
 		  #battery msg status is stale
@@ -204,9 +204,9 @@ class P2OSFrame(wx.Frame):
       if (rospy.is_shutdown()):
         self.Close()
         
-#    def on_diagnostics_clicked(self, evt):
-#      self._diagnostics_frame.Show()
-#      self._diagnostics_frame.Raise()
+    def on_diagnostics_clicked(self, evt):
+      self._diagnostics_frame.Show()
+      self._diagnostics_frame.Raise()
 		
     def on_rosout_clicked(self, evt):
       self._rosout_frame.Show()
