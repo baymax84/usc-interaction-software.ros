@@ -7,7 +7,7 @@
 
 <link name="world" />
 
-<link name="sholders">
+<link name="shoulders">
 
 <inetrial>
 		<mass value="5"/>
@@ -20,7 +20,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>	
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/Sholders.stl"/>
+		<mesh filename="package://sparky_model/meshes/Shoulders.stl"/>
 	</geometry>
 	</visual>
 </link>
@@ -131,7 +131,7 @@
 	<origin xyz="0 0 0" rpy="0 0 0"/>
 	<axis xyz="0 0 1" /> 
 	 <limit upper=".785" lower="-.436" effort="10" velocity="3" />
-	<parent link="sholders"/>
+	<parent link="shoulders"/>
 	<child link="throat"/>
 </joint>
 
@@ -526,7 +526,7 @@
 	</visual>
 </link>
 
-<link name="rightsholderball" >
+<link name="rightshoulderball" >
 
 <inetrial>
 		<mass value="5"/>
@@ -539,7 +539,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/SholderConnecter.stl" />
+		<mesh filename="package://sparky_model/meshes/ShoulderConnector.stl" />
 	</geometry>
 	</visual>
 </link>
@@ -585,15 +585,15 @@
 	<origin xyz="2.67 -.2 .1" rpy="0 0 0"/>
 	<axis xyz="1 0 0" /> 
 	  <limit upper="4" lower="0" effort="10" velocity="3" />
-	<parent link="sholders"/>
-	<child link="rightsholderball"/>
+	<parent link="shoulders"/>
+	<child link="rightshoulderball"/>
 </joint>
 
 <joint name="RtArmOut" type="revolute">
 	<origin xyz="0 0 0" rpy=".28 0 0"/>
 	<axis xyz="0 1 0" /> 
 	  <limit upper="1.257" lower=".052" effort="10" velocity="3" />
-	<parent link="rightsholderball"/>
+	<parent link="rightshoulderball"/>
 	<child link="rightbicept"/>
 </joint>
 
@@ -636,7 +636,7 @@
 	
 </link>
 
-<link name="leftsholderball" >
+<link name="leftshoulderball" >
 
 <inetrial>
 		<mass value="5"/>
@@ -649,7 +649,7 @@
       <color rgba=".2 .2 .2 .2" />
   </material>
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/LeftSholderConnecter.stl" />
+		<mesh filename="package://sparky_model/meshes/LeftShoulderConnector.stl" />
 	</geometry>
 	</visual>
 </link>
@@ -697,15 +697,15 @@
 	<origin xyz="-2.67 .2 .05" rpy="3.14 0 0"/>
 	<axis xyz="1 0 0" /> 
 		  <limit upper="1.257" lower=".035" effort="10" velocity="3" />
-	<parent link="sholders"/>
-	<child link="leftsholderball"/>
+	<parent link="shoulders"/>
+	<child link="leftshoulderball"/>
 </joint>
 
 <joint name="LtArmOut" type="revolute">
 	<origin xyz="0 0 0" rpy="3.42 0 0"/>
 	<axis xyz="0 1 0" /> 
 		  <limit upper="1.344" lower="0" effort="10" velocity="3" />
-	<parent link="leftsholderball"/>
+	<parent link="leftshoulderball"/>
 	<child link="leftbicept"/>
 </joint>
 
@@ -1602,11 +1602,11 @@
 		<axis xyz="1 0 0" /> 
 </joint>
 
-<joint name="TSSholderJoint" type="fixed">
+<joint name="TSShoulderJoint" type="fixed">
 	<origin xyz="0 -.85 .45" rpy="-.28 0 0"/>
 	<axis xyz="1 0 0" /> 
 	<parent link="TS24"/>
-	<child link="sholders"/>
+	<child link="shoulders"/>
 </joint>
 
 <!--
