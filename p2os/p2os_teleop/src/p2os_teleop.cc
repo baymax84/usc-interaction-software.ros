@@ -65,6 +65,7 @@ class TeleopBase
   int deadman_button, run_button;
   bool deadman_no_publish_;
   bool deadman_;
+	bool running_;
 
   ros::Time last_recieved_joy_message_time_;
   ros::Duration joy_msg_timeout_;
@@ -74,7 +75,7 @@ class TeleopBase
   ros::Subscriber joy_sub_;
   ros::Subscriber passthrough_sub_;
 
-  TeleopBase(bool deadman_no_publish = false) : max_vx(0.6), max_vy(0.6), max_vw(0.8), max_vx_run(0.6), max_vy_run(0.6), max_vw_run(0.8), deadman_no_publish_(deadman_no_publish)
+  TeleopBase(bool deadman_no_publish = false) : max_vx(0.6), max_vy(0.6), max_vw(0.8), max_vx_run(0.6), max_vy_run(0.6), max_vw_run(0.8), deadman_no_publish_(deadman_no_publish), running_(false)
   { }
 
   void init()
@@ -122,8 +123,8 @@ class TeleopBase
         ROS_DEBUG("axis_vw: %d\n", axis_vw);
 
         
-        ROS_DEBUG("deadman_button: %d\n", deadman_button);
-        ROS_DEBUG("run_button: %d\n", run_button);
+        ROS_INFO("deadman_button: %d", deadman_button);
+        ROS_INFO("run_button: %d", run_button);
         ROS_DEBUG("joy_msg_timeout: %f\n", joy_msg_timeout);
         
         vel_pub_ = n_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
@@ -143,63 +144,65 @@ class TeleopBase
 
 	void joy_cb(const joy::Joy::ConstPtr& joy_msg)
 	{
-	//Record this message reciept
-	last_recieved_joy_message_time_ = ros::Time::now();
         
-        deadman_ = (((unsigned int)deadman_button < joy_msg->get_buttons_size()) && joy_msg->buttons[deadman_button]);
+    deadman_ = (((unsigned int)deadman_button < joy_msg->get_buttons_size()) && joy_msg->buttons[deadman_button]);
 
-        if (!deadman_)
-          return;
+    if (!deadman_)
+    	return;
+		
+		//Record this message reciept
+		last_recieved_joy_message_time_ = ros::Time::now();
 
-        // Base
-        bool running = (((unsigned int)run_button < joy_msg->get_buttons_size()) && joy_msg->buttons[run_button]);
-        double vx = running ? max_vx_run : max_vx;
-        double vy = running ? max_vy_run : max_vy;
-        double vw = running ? max_vw_run : max_vw;
+    // Base
+    running_ = (((unsigned int)run_button < joy_msg->get_buttons_size()) && joy_msg->buttons[run_button]);
+    double vx = running_ ? max_vx_run : max_vx;
+    double vy = running_ ? max_vy_run : max_vy;
+    double vw = running_ ? max_vw_run : max_vw;
 
-         if((axis_vx >= 0) && (((unsigned int)axis_vx) < joy_msg->get_axes_size()))
-            req_vx = joy_msg->axes[axis_vx] * vx;
-         else
-            req_vx = 0.0;
-         if((axis_vy >= 0) && (((unsigned int)axis_vy) < joy_msg->get_axes_size()))
-            req_vy = joy_msg->axes[axis_vy] * vy;
-         else
-            req_vy = 0.0;
-         if((axis_vw >= 0) && (((unsigned int)axis_vw) < joy_msg->get_axes_size()))
-            req_vw = joy_msg->axes[axis_vw] * vw;
-         else
-            req_vw = 0.0;
+    if((axis_vx >= 0) && (((unsigned int)axis_vx) < joy_msg->get_axes_size()))
+    	req_vx = joy_msg->axes[axis_vx] * vx;
+    else
+      req_vx = 0.0;
+    if((axis_vy >= 0) && (((unsigned int)axis_vy) < joy_msg->get_axes_size()))
+    	req_vy = joy_msg->axes[axis_vy] * vy;
+    else
+      req_vy = 0.0;
+    if((axis_vw >= 0) && (((unsigned int)axis_vw) < joy_msg->get_axes_size()))
+      req_vw = joy_msg->axes[axis_vw] * vw;
+    else
+      req_vw = 0.0;
 
-      }
+  }
 
-      void send_cmd_vel()
+  void send_cmd_vel()
+  {
+    if(deadman_ &&
+		  last_recieved_joy_message_time_ + joy_msg_timeout_ > ros::Time::now() && running_ )
+    {
+    	cmd.linear.x = req_vx;
+      cmd.linear.y = req_vy;
+      cmd.angular.z = req_vw;
+      vel_pub_.publish(cmd);
+         
+      fprintf(stdout,"teleop_base:: %f, %f, %f\n",cmd.linear.x,cmd.linear.y,cmd.angular.z);
+    }
+    else
+    {
+      //cmd.linear.x = cmd.linear.y = cmd.angular.z = 0;
+      cmd = passthrough_cmd;
+      //if (!deadman_no_publish_)
       {
-        if(deadman_ &&
-	    last_recieved_joy_message_time_ + joy_msg_timeout_ > ros::Time::now())
-         {
-           cmd.linear.x = req_vx;
-           cmd.linear.y = req_vy;
-           cmd.angular.z = req_vw;
-           vel_pub_.publish(cmd);
-           
-           fprintf(stdout,"teleop_base:: %f, %f, %f\n",cmd.linear.x,cmd.linear.y,cmd.angular.z);
-         }
-         else
-         {
-           //cmd.linear.x = cmd.linear.y = cmd.angular.z = 0;
-           cmd = passthrough_cmd;
-           if (!deadman_no_publish_)
-           {
-             vel_pub_.publish(cmd);//Only publish if deadman_no_publish is enabled
+        vel_pub_.publish(cmd);//Only publish if deadman_no_publish is enabled
 
-           }
-         }
       }
+    }
+  }
 };
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "teleop_base");
+	ros::NodeHandle nh;
   const char* opt_no_publish    = "--deadman_no_publish";
   
   bool no_publish = false;
@@ -214,7 +217,7 @@ int main(int argc, char **argv)
   TeleopBase teleop_base(no_publish);
   teleop_base.init();
   
-  while (teleop_base.n_.ok())
+  while (ros::ok())
   {
     ros::spinOnce(); 
     teleop_base.send_cmd_vel();
