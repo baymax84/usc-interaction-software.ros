@@ -1,0 +1,116 @@
+#Calibration for Bandit #5, Belle Starr
+JointCalibrations:
+- JointID: 0
+  TrueZero: 5.11523
+  Offset: -27
+  MaxAngle: 0
+  MinAngle: -21.8848
+  Direction: -1
+- JointID: 1
+  TrueZero: 1 #25
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: -1
+- JointID: 2
+  TrueZero: -54.4355
+  Offset: -97
+  MaxAngle: 0
+  MinAngle: -151.436
+  Direction: 1
+- JointID: 3
+  TrueZero: -75 #-86.3184
+  Offset: 175
+  MaxAngle: 88.6816
+  MinAngle: 0
+  Direction: 1
+- JointID: 4
+  TrueZero: -28 #-19.268
+  Offset: -55
+  MaxAngle: 0
+  MinAngle: -74.268
+  Direction: 1
+- JointID: 5
+  TrueZero: 65 #71.4863
+  Offset: 128
+  MaxAngle: 56.5137
+  MinAngle: 0
+  Direction: -1
+- JointID: 6
+  TrueZero: -11 #-0.3223
+  Offset: 77
+  MaxAngle: 77.322
+  MinAngle: 0
+  Direction: 1
+- JointID: 7
+  TrueZero: 0.5 #29.2958
+  Offset: 28
+  MaxAngle: 57.2958
+  MinAngle: 0
+  Direction: 1
+- JointID: 8
+  TrueZero: 0.6
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: 1
+- JointID: 9
+  TrueZero: 54.5781
+  Offset: -98
+  MaxAngle: 0
+  MinAngle: -152.578
+  Direction: -1
+- JointID: 10
+  TrueZero: 75 #76, 81.6699
+  Offset: 170
+  MaxAngle: 88.3301
+  MinAngle: 0
+  Direction: -1
+- JointID: 11
+  TrueZero: 31.5234
+  Offset: -120
+  MaxAngle: 0
+  MinAngle: -151.523
+  Direction: -1
+- JointID: 12
+  TrueZero: -63.2559
+  Offset: 121
+  MaxAngle: 57.7441
+  MinAngle: 0
+  Direction: 1
+- JointID: 13
+  TrueZero: 12 #0.539063
+  Offset: 87
+  MaxAngle: 87.5391
+  MinAngle: 0
+  Direction: -1
+- JointID: 14
+  TrueZero: 0.5 #-28
+  Offset: 28
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: -1
+- JointID: 15
+  TrueZero: 0.5
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: 1
+- JointID: 16
+  TrueZero: 0.2
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: 1
+- JointID: 17
+  TrueZero: 0.25
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: 1
+- JointID: 18
+  TrueZero: 0.25
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+  Direction: -1
