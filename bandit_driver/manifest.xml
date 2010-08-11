@@ -10,4 +10,5 @@
 	<depend package="sensor_msgs"/>
   <rosdep name="xmlrpcpp"/>
   <depend package="yaml_cpp"/>
+	<depend package="diagnostic_updater" />
 </package>
