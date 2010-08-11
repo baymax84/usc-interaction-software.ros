@@ -44,6 +44,17 @@ int main( int argc, char* argv[] )
   ros::Rate loop_rate(50);
   sensor_msgs::JointState js;
 
+	js.name.push_back(std::string("base_swivel_joint"));
+	js.position.push_back(0);
+	js.name.push_back(std::string("swivel_hubcap_joint"));
+	js.position.push_back(0);
+	js.name.push_back(std::string("base_left_hubcap_joint"));
+	js.position.push_back(0);
+	js.name.push_back(std::string("base_right_hubcap_joint"));
+	js.position.push_back(0);
+
+
+
 	while( n.ok() )
 	{
     js.header.frame_id="/base_link";
