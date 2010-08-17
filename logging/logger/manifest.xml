@@ -1,0 +1,17 @@
+<package>
+  <description brief="logger">
+
+     logger
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/logger</url>
+  <depend package="rosrecord"/>
+  <depend package="roscpp"/>
+  <depend package="log_msgs"/>
+
+</package>
+
+

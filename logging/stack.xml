@@ -1,0 +1,9 @@
+<stack>
+  <description brief="logging">logging</description>
+  <author>Maintained by David Feil-Seifer</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/logging</url>
+  <depend stack="ros" />
+
+</stack>
