@@ -1,0 +1,17 @@
+<package>
+  <description brief="log_gui">
+
+     log_gui
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/log_gui</url>
+  <depend package="roscpp"/>
+  <depend package="log_msgs"/>
+  <rosdep name="fltk"/>
+
+</package>
+
+
