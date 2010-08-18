@@ -321,9 +321,8 @@ int main( int argc, char* argv[] )
 	*joint_subscriber = n.subscribe("joint_states", 10, jointStatesCallBack); //creates subscriber and subscribes to topic "joint_states"
 
 	spinner = new ros::AsyncSpinner(2);//Use 2 threads
-	spinner->start();//starts threads
 	ros::Duration(1).sleep();
-
+  spinner->start();//starts threads
 	desiredJointPos = new bandit_msgs::Joint;
 	
 	joint_positions = new std::vector<double>;
