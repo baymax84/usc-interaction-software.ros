@@ -50,7 +50,9 @@ double rad_to_deg(double rad)
 */
 void publish_joint_ind()
 {
-	joint_publisher->publish(*desiredJointPos);
+  bandit_msgs::JointArray ja;
+  ja.joints.push_back(*desiredJointPos);
+	joint_publisher->publish(ja);
 }
 
 /*
@@ -313,16 +315,15 @@ int main( int argc, char* argv[] )
 	
 	ros::NodeHandle n;
 	joint_publisher = new ros::Publisher;
-	*joint_publisher = n.advertise<bandit_msgs::Joint>("joint_ind",10); //creates publisher and publishes to topic "joint_ind"
+	*joint_publisher = n.advertise<bandit_msgs::JointArray>("joint_cmd",10); //creates publisher and publishes to topic "joint_ind"
 	
 	joint_subscriber = new ros::Subscriber;
 	*joint_subscriber = n.subscribe("joint_states", 10, jointStatesCallBack); //creates subscriber and subscribes to topic "joint_states"
 
 	spinner = new ros::AsyncSpinner(2);//Use 2 threads
-	ros::Rate(1).sleep();
-	
 	spinner->start();//starts threads
-	
+	ros::Duration(1).sleep();
+
 	desiredJointPos = new bandit_msgs::Joint;
 	
 	joint_positions = new std::vector<double>;
@@ -350,12 +351,12 @@ int main( int argc, char* argv[] )
 			}
 			//output values for the YAML File
 			emitter << YAML::BeginMap;
-			emitter << YAML::Key << "Joint ID" << YAML::Value << z_id;
+			emitter << YAML::Key << "JointID" << YAML::Value << z_id;
 			emitter << YAML::Key << "Direction" << YAML::Value << direction_Emit[z_id];
-			emitter << YAML::Key << "True Zero" << YAML::Value << truezero;
+			emitter << YAML::Key << "TrueZero" << YAML::Value << truezero;
 			emitter << YAML::Key << "Offset" << YAML::Value << offset;
-			emitter << YAML::Key << "Max Angle" << YAML::Value << maxAngle;
-			emitter << YAML::Key << "Min Angle" << YAML::Value << minAngle;
+			emitter << YAML::Key << "MaxAngle" << YAML::Value << maxAngle;
+			emitter << YAML::Key << "MinAngle" << YAML::Value << minAngle;
 			emitter << YAML::EndMap;
 			std::cout << emitter.c_str() << endl;	
 		}
