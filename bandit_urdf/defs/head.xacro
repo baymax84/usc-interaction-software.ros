@@ -259,10 +259,10 @@
 
 		</xacro:bandit_head_tilt>
 		<xacro:bandit_eye name="${name}_right_camera" parent="${name}_tilt_link">
-			<origin xyz="0.05 -0.0320 .060" rpy="0 ${M_PI/2} 0"/>
+			<origin xyz="0.05 -0.0320 .060" rpy="-${M_PI/2} 0 -${M_PI/2}"/>
 		</xacro:bandit_eye>
 		<xacro:bandit_eye name="${name}_left_camera" parent="${name}_tilt_link">
-			<origin xyz="0.05 0.0320 .060" rpy="0 ${M_PI/2} 0"/>
+      <origin xyz="0.05 0.0320 .060" rpy="-${M_PI/2} 0 -${M_PI/2}"/>
 		</xacro:bandit_eye>
 		<xacro:bandit_eyebrow name="${name}_left_brow" parent="${name}_tilt_link" side="left" reflect="1">
 			<origin xyz="0.06 0.0470 .085" rpy="${-M_PI/2} ${-M_PI/2} 0"/>

@@ -8,8 +8,8 @@
 
 	<include file="$(find bandit_urdf)/controller.launch"/>
 
-	<node name="fake_bandit" pkg="bandit_driver" type="fake_bandit"/>
-	<node name="mover" pkg="bandit_driver" type="bandit_mover"/>
+	<!--<node name="fake_bandit" pkg="bandit_driver" type="fake_bandit"/>
+	<node name="mover" pkg="bandit_driver" type="bandit_mover"/>-->
 	<node name="rviz" type="rviz" pkg="rviz"/>
 
 	<!-- Diagnostics -->
