@@ -30,5 +30,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(bandit_calib bandit_calib.cpp)
+rosbuild_add_executable(dave_calib dave_calib.cc)
 rosbuild_add_executable(bandit_calib_version1 bandit_calib_version1.cpp)
 
