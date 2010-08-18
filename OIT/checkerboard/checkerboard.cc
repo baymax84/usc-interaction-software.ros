@@ -92,7 +92,7 @@ void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraI
       
       tf::Transform checktf;
       checktf.setOrigin( tf::Vector3(fT3[0], fT3[1], fT3[2] ) );
-      double rx = fR3[0], ry = fR3[1], rz = fR3[2];
+      double rx = fR3[0] + M_PI, ry = fR3[1], rz = fR3[2];
       ROS_INFO( "tx: (%0.2f,%0.2f,%0.2f) rx: (%0.2f,%0.2f,%0.2f)", fT3[0],fT3[1], fT3[2], fR3[0],fR3[1],fR3[2]);
 			tf::Quaternion quat;
       quat.setRPY(rx, ry, rz);
@@ -121,7 +121,6 @@ int main( int argc, char* argv[] )
 	nh_priv.param("child_frame_id", checkerboard_frame,std::string("checkerboard"));
   image_transport::ImageTransport it(nh);
   image_transport::CameraSubscriber image_sub = it.subscribeCamera("image", 1, image_cb );
-	ROS_INFO("getting ready to spin");
   ros::spin();
   return 0;
 
