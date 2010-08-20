@@ -85,8 +85,6 @@ runloop()
 		    tl->lookupTransform("/ovh",frame_strings[i], ros::Time(0), tr );
 				transforms.push_back( tr );
 			}
-    //tl->lookupTransform("/ovh","/parent/base_link", ros::Time(0), ptrans );
-
   }
   catch (tf::TransformException  &ex ) {
     if( !notified_tf )
@@ -224,6 +222,9 @@ runloop()
     //printf( "iii: %d\n", iii );
     if( *i > 300 ) continue;
     //double b = ri;
+
+/************************** flbr ****************/
+/*
     double sx = r * cos(ri);
     double sy = r * sin(ri);
 
@@ -246,9 +247,15 @@ runloop()
       if( sy <= FSPAN && sy >= -FSPAN )
         if( sx >= bdist )
           bdist = sx;
+
+*/
+/************************** flbr ****************/
   }
  
   scene_.clear();
+
+/************************** flbr ****************/
+/*
 
   // set velocity based on flbr values
   obs_vel_.linear.x = cmd_vel_.linear.x;
@@ -257,7 +264,7 @@ runloop()
 
   if( cmd_vel_.linear.x > 0 )
   {
-    if( fdist < 1.5 /*&& _state != MOVE_STATE_APPROACH && _state != MOVE_STATE_ROCK && _state != MOVE_STATE_WIGGLE*/  )
+    if( fdist < 1.5 ) //&& _state != MOVE_STATE_APPROACH && _state != MOVE_STATE_ROCK && _state != MOVE_STATE_WIGGLE  )
     {
       //if( ldist +rdist >  0.0 ) obs_vel_.angular.z = (1.5-fdist) / 4.0 * _rvelspeed;
       //if( ldist +rdist <= 0.0 ) obs_vel_.angular.z = -(1.5-fdist) / 4.0 *_rvelspeed;
@@ -287,9 +294,15 @@ runloop()
 
   ROS_DEBUG( "(%0.2f|%0.2f|%0.2f|%0.2f) (%0.2f,%0.2f) ==> (%0.2f,%0.2f)", fdist, ldist, rdist, bdist, cmd_vel_.linear.x, cmd_vel_.angular.z, obs_vel_.linear.x, obs_vel_.angular.z );
 
-  poseDot_pub.publish(obs_vel_); 
+  poseDot_pub.publish(obs_vel_);
+*/
+/************************** flbr ****************/
+
+
   laserScan_pub.publish(laserscan);
   tf::Transform t(tf::Quaternion(0,0,0,1),tf::Point(0,0,0));
+
+	// TODO: make more general (specify as param strings 
   tf::StampedTransform ti( t, laserscan.header.stamp, "/robot/base_link", "/robot/base_laser" );
   tb->sendTransform(ti);
 }
@@ -300,17 +313,23 @@ int main( int argc, char* argv[] )
   ros::init( argc, argv, "obs" );
   ros::NodeHandle n;
 	ros::NodeHandle nh_priv("~");
-  poseDot_pub = n.advertise<geometry_msgs::Twist>("/robot/des_vel",1000);
+  ros::Rate loop_rate(20);
+
   laserScan_pub = n.advertise<sensor_msgs::LaserScan>("/robot/laser", 1000);
- 
-  ros::Subscriber cmd_sub = n.subscribe("des_vel",1,cmdvel_cb);
   ros::Subscriber obs_sub = n.subscribe("/obstacles",1,obs_cb);
 
-  ros::Rate loop_rate(20);
+/**************************** flbr *********************/
+/*
+  poseDot_pub = n.advertise<geometry_msgs::Twist>("/robot/des_vel",1000); 
+  ros::Subscriber cmd_sub = n.subscribe("des_vel",1,cmdvel_cb);
   
   n.param( "lvel", _lvelspeed, 0.25 );
   n.param( "rvel", _rvelspeed, 0.75 );
   n.param( "min_speed", _min_speed, 0.15 );
+*/
+/**************************** flbr *********************/
+
+	// parse frame string as list of frames delimited by commas
 
 	std::string frame_string;
 	nh_priv.param( "frames", frame_string, std::string("/child/base_link,/parent/base_link") );
@@ -349,8 +368,12 @@ int main( int argc, char* argv[] )
 
   while( ros::ok() )
   {
-		//ROS_INFO(".");
 		ros::spinOnce();
+
+		// TODO: change to a system where laserscan is updated only when needed
+		// (1): when obstacle message received
+		// (2): when new tf message received
+
     runloop();
     loop_rate.sleep();
   }
