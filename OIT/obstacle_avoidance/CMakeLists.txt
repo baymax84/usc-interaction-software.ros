@@ -22,5 +22,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-rosbuild_add_executable(obs src/obs.cc src/raytrace.cpp)
+rosbuild_add_library(${PROJECT_NAME} src/raytrace.cpp)
+
+rosbuild_add_executable(obs src/obs.cc)
+target_link_libraries(obs ${PROJECT_NAME})
 
