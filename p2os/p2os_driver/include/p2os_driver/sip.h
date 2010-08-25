@@ -60,6 +60,7 @@ class SIP
   public:
     // these values are returned in every standard SIP
     bool lwstall, rwstall;
+		unsigned char  motors_enabled, sonar_flag;
     unsigned char status, battery, sonarreadings, analog, digin, digout;
     unsigned short ptu, compass, timer, rawxpos;
     unsigned short rawypos, frontbumpers, rearbumpers;

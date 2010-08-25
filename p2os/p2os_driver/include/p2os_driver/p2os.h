@@ -108,6 +108,10 @@ class P2OSNode
     void gripperCallback(const p2os_driver::GripperStateConstPtr &msg);
     double get_pulse() {return pulse;}
 
+		// diagnostic messages
+		void check_voltage( diagnostic_updater::DiagnosticStatusWrapper &stat );
+		void check_stall( diagnostic_updater::DiagnosticStatusWrapper &stat );
+
   protected:
     ros::NodeHandle n;
     ros::NodeHandle nh_private;
