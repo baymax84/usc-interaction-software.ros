@@ -113,6 +113,10 @@ P2OSNode::P2OSNode( ros::NodeHandle nh ) :
 
   veltime = ros::Time::now();
 
+	// add diagnostic functions
+	diagnostic_.add("Motor Stall", this, &P2OSNode::check_stall );
+	diagnostic_.add("Battery Voltage", this, &P2OSNode::check_voltage );
+
   // initialize robot parameters (player legacy)
   initialize_robot_params();
 }
@@ -783,6 +787,37 @@ void
 P2OSNode::updateDiagnostics()
 {
   diagnostic_.update();
+}
+
+void
+P2OSNode::check_voltage( diagnostic_updater::DiagnosticStatusWrapper &stat )
+{
+	double voltage = sippacket->battery / 10.0;
+	if( voltage < 11.0 )
+	{
+		stat.summary( diagnostic_msgs::DiagnosticStatus::ERROR, "battery voltage critically low" );
+	}
+	else if( voltage < 11.75 )
+	{
+		stat.summary( diagnostic_msgs::DiagnosticStatus::WARN, "battery voltage getting low" );
+
+	}
+	else stat.summary( diagnostic_msgs::DiagnosticStatus::OK, "battery voltage OK" );
+
+	stat.add("voltage", voltage );
+}
+
+void
+P2OSNode::check_stall( diagnostic_updater::DiagnosticStatusWrapper &stat )
+{
+	if( sippacket->lwstall || sippacket->rwstall )
+	{
+		stat.summary( diagnostic_msgs::DiagnosticStatus::ERROR, "wheel stalled" );
+	}
+	else stat.summary( diagnostic_msgs::DiagnosticStatus::OK, "no wheel stall" );
+
+	stat.add("left wheel stall", sippacket->lwstall );
+	stat.add("right wheel stall", sippacket->rwstall );
 }
 
 void

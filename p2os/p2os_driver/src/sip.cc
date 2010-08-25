@@ -93,6 +93,7 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   // The below will tell us if the motors are currently moving or not, it does
   // not tell us whether they have been enabled
   // data->motors.state = (status & 0x01);
+	data->motors.state = (motors_enabled & 0x01);
   /*
   ///////////////////////////////////////////////////////////////
   // compass
@@ -413,6 +414,8 @@ void SIP::ParseStandard( unsigned char *buffer )
   cnt += sizeof(short);
 
   ptu = (buffer[cnt] | (buffer[cnt+1] << 8));
+	motors_enabled = buffer[cnt];
+	sonar_flag = buffer[cnt+1];
   cnt += sizeof(short);
 
   //compass = buffer[cnt]*2;
