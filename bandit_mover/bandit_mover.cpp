@@ -360,6 +360,7 @@ getchar();
 
 	Fl_Check_Button* checkbutn = new Fl_Check_Button( padding, (i+3)*padding+i*slider_h,slider_w, slider_h, "Enable Instantaneous Movement");
 		checkbutn->callback( ( Fl_Callback* ) check_cb );
+	checkbutn->value(1);
 	p = checkbutn;
 
 	win.end();
