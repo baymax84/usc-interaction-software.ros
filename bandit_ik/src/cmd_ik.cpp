@@ -13,9 +13,15 @@ int main( int argc, char* argv[] )
   t.header.frame_id = "bandit_torso_link";
 
 
-  t.pose.position.x = 0.257;
-  t.pose.position.y = 0.232;
-  t.pose.position.z = 0.082;
+  //  Reachable position (goto_cart test)
+//  t.pose.position.x = 0.257;
+//  t.pose.position.y = 0.232;
+//  t.pose.position.z = 0.082;
+
+  //  Unreachable position (point_to_cart test)
+  t.pose.position.x = 0.5;
+  t.pose.position.y = 0.5;
+  t.pose.position.z = 0.5;
  
   t.pose.orientation.x = -0.404;
   t.pose.orientation.y = 0.417;
