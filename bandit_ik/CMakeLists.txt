@@ -17,5 +17,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_executable(goto_cart src/goto_cart.cpp src/bandit_arm_kinematics_utils.cpp)
+rosbuild_add_executable(point_to_cart src/point_to_cart.cpp src/bandit_arm_kinematics_utils.cpp)
 rosbuild_add_executable(cmd_ik src/cmd_ik.cpp)
 
