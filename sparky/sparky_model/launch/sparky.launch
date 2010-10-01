@@ -2,7 +2,8 @@
         <param name="robot_description" command="cat $(find sparky_model)/model.xml" />
               <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 				<node name="state_publisher" pkg="sparky_model" type="state_publisher" />
-				<node name="subscriber" pkg="sparky_model" type="subscriber" />
+				<node name="subscriber" pkg="sparky_model" type="subscriber"  />
+
 
 </launch>
 

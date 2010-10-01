@@ -1,6 +1,6 @@
 <robot name="sparky">
 
-<resource type="stl_meshes" location="/home/gavin/ros/stacks/sparky_model/meshes
+<resource type="stl_meshes" location="/home/gavin/usc-cturtle/stacks/interaction_ros_pkg/sparky/sparky_model/meshes
 "/>
 
 <!---------------------Sparky Body ------------------------------>
@@ -9,11 +9,11 @@
 
 <link name="shoulders">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="1.15 1.57 3.78" />	
 	<material name="grey" >
@@ -27,11 +27,11 @@
 
 <link name="centerplate">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="0 0 0" />
 		 <material name="grey" >
@@ -46,18 +46,16 @@
 
 <link name="stand">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
-	<origin xyz="0 0 -0" rpy="0 0 -1.57" />
-	<material name="grey" >
+	<origin xyz="0 0 0" rpy="0 0 -1.57" />
 		 <material name="grey" >
       <color rgba=".2 .2 .2 .2" />
   </material>
-  </material>	
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/Stand.stl"/>
 	</geometry>
@@ -68,11 +66,11 @@
 	
 <link name="hips">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="0 1.57 1.57" />
 		<material name="grey" >
@@ -85,7 +83,7 @@
 </link>
 
 <joint name="worldjoint" type="fixed">
-	<origin xyz="0 0 12" rpy="0 0 0"/>
+	<origin xyz="0 0 0" rpy="0 0 0"/>
 	<parent link="world"/>
 	<child link="stand"/>
 </joint>
@@ -103,11 +101,11 @@
 
 <link name="throat">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="0 1.57 0" />
 		 <material name="grey" >
@@ -140,11 +138,11 @@
 -->
 <link name="head">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 -2.5 1" rpy="1.57 0 1.57" />
   <material name="grey" >
@@ -157,11 +155,11 @@
 
 <link name="lowerjaw">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 -2.65 -2.15" rpy="0 1.57 0" />
 	 <material name="grey" >
@@ -187,11 +185,11 @@
 
 <link name="Reye">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="1.57 3.14 0" />
 		<material name="white" >
@@ -207,11 +205,11 @@
 
 <link name="Leye">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="1.57 3.14 0" />
 		    <material name="white" >
@@ -226,11 +224,11 @@
 
 <link name="LLid">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-.03 .4 0" rpy="0 0 -1.57" />
 		<material name="Gold" >
@@ -246,11 +244,11 @@
 
 <link name="RLid">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz=".03 .4 0" rpy="0 0 -1.57" />
 			<material name="Gold" />
@@ -264,11 +262,11 @@
 
 <link name="RPupil">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 .3 0" rpy="0 0 0" />
 		<material name="Black" >
@@ -284,11 +282,11 @@
 	
 <link name="LPupil">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 .3 0" rpy="0 0 0" />
 		<material name="Black" >
@@ -304,11 +302,11 @@
 
 <link name="RIris">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 .2 0" rpy="0 0 0" />
 		<material name="LightBlue" >
@@ -324,11 +322,11 @@
 	
 <link name="LIris">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 .15 0" rpy="0 0 0" />
 		<material name="LightBlue" >
@@ -344,11 +342,11 @@
 
 <link name="EyeLPin">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="-1.57 1.57 0" />
 			<material name="grey" />
@@ -362,11 +360,11 @@
 
 <link name="EyeBeam">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="0 0 0" />
 			<material name="grey" />
@@ -380,11 +378,11 @@
 	
 	<link name="EyeBallPin">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz=".25 -1.31 -.066" rpy="1.57 0 2.15" />
 	<material name="whitegray" >
@@ -400,11 +398,11 @@
 
 	<link name="EyeBallPin2">
 
-	<inetrial>
+	<inertial>
 		<mass value="2.2"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz=".25 -1.31 -.066" rpy="1.57 0 2.12" />
 			<material name="whitegray" />
@@ -416,34 +414,30 @@
 
 
 
-<joint name="EyesLtRt" type="revolute">
+<joint name="EyesLtRt" type="continuous">
 	<origin xyz=".6 1.43 .82" rpy="0 0 0"/>
 	<axis xyz="0 0 1" /> 
-	<limit upper=".698" lower="-.524" effort="10" velocity="3" />
 	<parent link="head"/>
 	<child link="Reye"/>
 </joint>
 
-<joint name="ReyeJoint" type="revolute">
+<joint name="LeyeJoint" type="continuous">
 	<origin xyz="-.6 1.43 .82" rpy="0 0 0"/>
 	<axis xyz="0 0 1" /> 
-	<limit upper=".698" lower="-.524" effort="10" velocity="3" />
 	<parent link="head"/>
 	<child link="Leye"/>
 </joint>
 
-<joint name="EyeBlink" type="revolute">
+<joint name="EyeBlink" type="continuous">
 	<origin xyz="-.6 1.43 .82" rpy="1.57 0 0"/>
 	<axis xyz="1 0 0" /> 
-	  <limit upper="1.431" lower=".349" effort="10" velocity="3" />	
 	<parent link="head"/>
 	<child link="LLid"/>
 </joint>
 
-<joint name="RLidJoint" type="revolute">
+<joint name="RLidJoint" type="continuous">
 	<origin xyz=".6 1.43 .82" rpy="1.57 0 0"/>
 	<axis xyz="1 0 0" /> 
-	<limit upper="1.431" lower=".349" effort="10" velocity="3" />
 	<parent link="head"/>
 	<child link="RLid"/>
 </joint>
@@ -510,11 +504,11 @@
 
 <link name="rightbicept" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 .15 -.5" rpy="1.63 -.08 -1.57" />
 	<material name="grey" >
@@ -528,11 +522,11 @@
 
 <link name="rightshoulderball" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz=".53 0 -.1" rpy="4 1.57 .35" />
 		<material name="grey" >
@@ -546,11 +540,11 @@
 
 <link name="rightforearm" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz=".2 3 .08" rpy="0 3.92 0" />
 		<material name="grey" >
@@ -565,15 +559,15 @@
 
 <link name="righthand" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 .9 -.52" rpy="-1.57 0 1.57" />
 	<material name="whitegray" >
-      <color rgba=".8 .8 .8 .8" />
+      <color rgba=".8 .8 .8 1" />
   </material>
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/RightHand.stl" scale="1 1 1" />
@@ -619,11 +613,11 @@
 
 <link name="leftbicept" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz=".2 .2 -.5" rpy="-1.53 3.2 0" />
 		 <material name="grey" >
@@ -638,11 +632,11 @@
 
 <link name="leftshoulderball" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="2.8 .15 -.15" rpy=".4 -1.57 .15" />
 		 <material name="grey" >
@@ -658,11 +652,11 @@
 
 <link name="leftforearm" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-1.05 6.6 0" rpy="0 2.355 .3" />
 	<material name="grey" >
@@ -677,15 +671,15 @@
 
 <link name="lefthand" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-.85 0 -.5" rpy="-1.57 0 3.14" />
 	<material name="whitegray" >
-      <color rgba=".8 .8 .8 .8" />
+      <color rgba=".8 .8 .8 1" />
   </material>
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/LeftHand.stl" />
@@ -730,11 +724,11 @@
 
 <link name="rightthigh" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-1.3 -.89 .37" rpy="-.05 .3 -1.57" />
 	<material name="grey" >
@@ -750,11 +744,11 @@
 
 <link name="rightcalf" >
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-1.6 4.7 2.05" rpy="0 -1 -1.57" />
 	<material name="grey" >
@@ -768,11 +762,11 @@
 
 <link name="rightfoot">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="3.6 0 -.5" rpy="0 0 -1.57" />
 	<material name="whitegray" />
@@ -810,11 +804,11 @@
 
 <link name="leftthigh">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-1.3 -.89 .37" rpy="-.05 .3 -1.57" />
 	<material name="grey" >
@@ -829,11 +823,11 @@
 
 <link name="leftcalf">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="-1.6 4.7 2.05" rpy="0 -1 -1.57" />
 	<material name="grey" >
@@ -848,11 +842,11 @@
 
 <link name="leftfoot">
 
-<inetrial>
+<inertial>
 		<mass value="5"/>
 		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
 		<origin/>
-	</inetrial>
+	</inertial>
 	<visual>
 	<origin xyz="0 0 -.5" rpy="0 0 -1.57" />
 	<material name="whitegray" />
