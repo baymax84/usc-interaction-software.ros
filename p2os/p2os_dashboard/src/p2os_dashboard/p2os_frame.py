@@ -87,7 +87,7 @@ class P2OSFrame(wx.Frame):
         wx.InitAllImageHandlers()
 
         self.motorStatePub = rospy.Publisher('cmd_motor_state', MotorState)
-        self.motorStateSub = rospy.Subscriber("cmd_motor_state", MotorState, self.motorStateCallback)
+        self.motorStateSub = rospy.Subscriber("motor_state", MotorState, self.motorStateCallback)
 
         self.battStateSub = rospy.Subscriber("battery_state", BatteryState, self.battStateCallback)
 
