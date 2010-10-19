@@ -7,14 +7,14 @@ analyzers:
     analyzers:
       p2os:
         type: GenericAnalyzer
-        path: robot p2os 
-        find_and_remove_prefix: robot
+        path: p2os 
+        find_and_remove_prefix: p2os
         num_items: 3
-  computers:
-    type: GenericAnalyzer
-    path: Computers
-    contains: [
-      'CPU Usage',
-      'CPU Temperature'
-      ]
+  #computers:
+  #  type: GenericAnalyzer
+  #  path: Computers
+  #  contains: [
+  #    'CPU Usage',
+  #    'CPU Temperature'
+  #    ]
 
