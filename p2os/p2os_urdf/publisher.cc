@@ -41,7 +41,7 @@ int main( int argc, char* argv[] )
   ros::NodeHandle n;
 
   ros::Publisher joint_state_publisher = n.advertise<sensor_msgs::JointState>("joint_states",1000);
-  ros::Rate loop_rate(50);
+  ros::Rate loop_rate(15);
   sensor_msgs::JointState js;
 
 	js.name.push_back(std::string("base_swivel_joint"));
