@@ -6,6 +6,10 @@
 	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
 	xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <!--<include filename="$(find p2os_urdf)/defs/materials.xacro"/>-->
+  <include filename="$(find p2os_urdf)/defs/pioneer3dx_wheel.xacro"/>
+  
+
 <!-- Chassis -->
 	<link name="base_link">
 		<inertial>
@@ -165,81 +169,6 @@
 		<parent link="center_hubcap"/>
 		<child link="center_wheel"/>
 	</joint>
-
-<!-- Right/Left Hubcap + Wheel -->
-<xacro:macro name="p3dx_wheel" params="suffix reflect">
-	<link name="p3dx_${suffix}_wheel">
-		<inertial>
-			<mass value="0"/>	
-			<origin xyz="0 0 0"/>
-			<inertia ixx="1" ixy="0" ixz="0"
-				 iyy="1" iyz="0" izz="1"/>
-  	 	</inertial>
-	<visual name="base_visual">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/${suffix}_wheel.stl"/>
-		</geometry>
-		<material name="WheelBlack">
-			<color rgba="0.117 0.117 0.117 1"/>
-		</material>
-	</visual>
-	<collision>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry>
-			<box size="0 0 0"/>
-		</geometry>
-	</collision>
-	</link>
-
-	<joint name="base_${suffix}_wheel_joint" type="fixed">
-		<origin xyz="0 0 0" rpy="0 0 0" />
-		<parent link="p3dx_${suffix}_hubcap"/>
-		<child link="p3dx_${suffix}_wheel"/>
-	</joint>
-
-	<link name="p3dx_${suffix}_hubcap">
-		<inertial>
-			<mass value="0"/>	
-			<origin xyz="0 0 0"/>
-			<inertia ixx="1" ixy="0" ixz="0"
-				 iyy="1" iyz="0" izz="1"/>
-  	 	</inertial>
-	<visual name="base_visual">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry name="pioneer_geom">
-			<mesh filename="package://p2os_urdf/meshes/p3dx_meshes/${suffix}_hubcap.stl"/>
-		</geometry>
-		<material name="HubcapYellow">
-			<color rgba="1.0 0.811 0.151 1.0"/>
-		</material>
-	</visual>
-	<collision>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry>
-			<box size="0 0 0"/>
-		</geometry>
-	</collision>
-	</link>
-
-	<joint name="base_${suffix}_hubcap_joint" type="continuous"> 
-		<origin xyz="0 ${reflect*0.158} 0.091" rpy="0 0 0" />
-		<axis xyz="0 1 0" />
-		<anchor xyz="0 0 0" />
-		<limit effort="100" velocity="100" />
-		<joint_properties damping="0.0" friction="0.0" />
-		<parent link="base_link"/>
-		<child link="p3dx_${suffix}_hubcap"/>
-	</joint>
-
-	<gazebo reference="p3dx_${suffix}_hubcap" >
-		<elem key="mu1" value="50.0" />
-		<elem key="mu2" value="50.0" />
-		<elem key="kp"  value="100000000.0" />
-		<elem key="kd"  value="1.0" />
-	</gazebo>
-
-</xacro:macro>
 
 <xacro:p3dx_wheel suffix="left" reflect="1"/>
 <xacro:p3dx_wheel suffix="right" reflect="-1"/>
