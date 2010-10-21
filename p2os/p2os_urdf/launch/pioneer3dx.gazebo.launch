@@ -5,7 +5,7 @@
   <include file="$(find p2os_urdf)/launch/upload_pioneer3dx.xml"/>
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="spawn_pioneer" pkg="gazebo_tools" type="gazebo_model" args="-z 0.051 -p robot_description spawn robot_description" respawn="false" output="screen" />
+  <node name="spawn_pioneer" pkg="gazebo" type="spawn_model" args="-z 0.051 -urdf -param robot_description -model robot_description" respawn="false" output="screen" />
 
   <!-- Controller Manager -->
   <include file="$(find pr2_controller_manager)/controller_manager.launch" />
