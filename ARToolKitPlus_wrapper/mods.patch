@@ -1,0 +1,47 @@
+diff -ruN artkp/include/ARToolKitPlus/TrackerImpl.h artkp_mod/include/ARToolKitPlus/TrackerImpl.h
+--- artkp/include/ARToolKitPlus/TrackerImpl.h	2006-07-25 16:05:46.000000000 -0700
++++ artkp_mod/include/ARToolKitPlus/TrackerImpl.h	2010-10-21 20:34:26.921812070 -0700
+@@ -633,7 +633,7 @@
+ 
+ 	ARToolKitPlus::Logger	*logger;
+ 
+-	int						screenWidth, screenHeight;
++	static int				screenWidth, screenHeight;
+ 	int						thresh;
+ 
+ 	ARParam					cparam;
+diff -ruN artkp/sample/simple/src/main.cpp artkp_mod/sample/simple/src/main.cpp
+--- artkp/sample/simple/src/main.cpp	2006-07-25 16:05:46.000000000 -0700
++++ artkp_mod/sample/simple/src/main.cpp	2010-10-21 20:34:27.693086492 -0700
+@@ -46,7 +46,6 @@
+ 
+ #include "ARToolKitPlus/TrackerSingleMarkerImpl.h"
+ 
+-
+ class MyLogger : public ARToolKitPlus::Logger
+ {
+     void artLog(const char* nStr)
+diff -ruN artkp/src/librpp/rpp.cpp artkp_mod/src/librpp/rpp.cpp
+--- artkp/src/librpp/rpp.cpp	2006-04-19 23:28:10.000000000 -0700
++++ artkp_mod/src/librpp/rpp.cpp	2010-10-21 20:34:27.071812283 -0700
+@@ -50,6 +50,7 @@
+ #include "rpp.h"
+ #include "rpp_const.h"
+ #include "rpp_vecmat.h"
++#include <string.h>
+ 
+ namespace rpp {
+ 
+diff -ruN artkp/src/librpp/rpp_vecmat.cpp artkp_mod/src/librpp/rpp_vecmat.cpp
+--- artkp/src/librpp/rpp_vecmat.cpp	2006-04-19 23:28:10.000000000 -0700
++++ artkp_mod/src/librpp/rpp_vecmat.cpp	2010-10-21 20:34:27.071812283 -0700
+@@ -44,7 +44,8 @@
+ #include "rpp_vecmat.h"
+ #include "math.h"
+ #include "assert.h"
+-
++#include <stdio.h>
++#include <malloc.h>
+ 
+ namespace rpp {
+ 
