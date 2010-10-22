@@ -24,7 +24,7 @@ const int NUM_JOINTS = 19;
 const unsigned int MESSAGE_BUFLEN = 5;
 
 /* Maximum joint velocity in degrees/second */
-const double MAX_VELOCITY = DTOR(40);
+const double MAX_VELOCITY = DTOR(70);
 
 /* Array of current joint angles */
 double current_joints[NUM_JOINTS];
