@@ -62,6 +62,12 @@ bool param( bandit_msgs::Params::Request &req, bandit_msgs::Params::Response &re
 	return true;
 }
 
+void rosOK()
+{
+  if( !ros::ok() )
+    ROS_INFO("ROS is not OK" );
+}
+
 // This callback is invoked when we get a new joint command
 void jointCB( const bandit_msgs::JointArrayConstPtr& j )
 {
@@ -178,6 +184,16 @@ int main( int argc, char** argv )
 	nh_priv.param( "port", port, std::string( "/dev/ttyUSB0" ) );
 	nh_priv.param( "pid_config_uri", pid_config_uri, std::string( "" ) );
 	nh_priv.param( "calib_uri", calibration_filename, std::string( "" ) );
+    
+    ROS_INFO( "creating services and subscribing to topics" );
+    rosOK();
+
+    // Now that things are supposeldy up and running, subscribe to
+		// joint messages
+		ros::Subscriber joint_sub = nh.subscribe( "joint_cmd", 1, jointCB );
+		ros::Subscriber target_sub = nh.subscribe( "target_joints", 1, targetCB );
+		ros::ServiceServer service = nh.advertiseService( "params", param );
+
 
 	std::ifstream fin;
 
@@ -191,6 +207,7 @@ int main( int argc, char** argv )
 	//ros::Publisher joints_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
 
 	std::string homestring, dirsstring;
+  rosOK();
 
 
 	// joint offset parameters for Bandit #1 (RAM-2010Apr30)
@@ -225,14 +242,17 @@ int main( int argc, char** argv )
 		for ( unsigned k = 0; k < jointCalibrations.size(); k++ )
 		{
 			jointCalibrations[k] >> joint;
-			j_cal[k] = joint.truezero;
-			ROS_INFO( "joint(%d): %0.2f", k, joint.truezero );
-			direction[k] = joint.direction;
+			j_cal[joint.id] = joint.truezero;
+			ROS_INFO( "joint(%d): %0.2f", joint.id, joint.truezero );
+			direction[joint.id] = joint.direction;
 		}
 		g_bandit.useJointLimits( true );
 	}
 	fin.close();
 
+  rosOK();
+
+/*
 	std::string::size_type i = 0;
 	std::string::size_type j = dirsstring.find( ',' );
 	int ii = 0;
@@ -247,15 +267,14 @@ int main( int argc, char** argv )
 		i = ++j;
 		j = dirsstring.find( ',', j );
 	}
+*/
+
 
 	try
 	{
-		// This callback gets called whenever processPendingMessages
-		// receives a valid state update from bandit
-		g_bandit.registerStateCB( boost::bind( &stateCB, boost::ref( joints_pub ) ) );
-
 		ROS_INFO( "connecting to bandit on port: [%s]\n", port.c_str() );
 
+  rosOK();
 
 		// Open the port
 		g_bandit.openPort( port.c_str() );
@@ -287,6 +306,7 @@ int main( int argc, char** argv )
 			param_res.max.push_back( RTOD(g_bandit.getJointMax(i)) );
 			param_res.pos.push_back( RTOD(g_bandit.getJointPos(i)) );
 		}
+  rosOK();
 
 		fin.open( pid_config_uri.c_str() );
 		if ( !fin.good() )
@@ -315,6 +335,7 @@ int main( int argc, char** argv )
 			}
 		}
 		fin.close();
+  rosOK();
 
 		// Synchronize PID gains
 		// we set the first time back in time to guarantee it gets hit
@@ -332,29 +353,40 @@ int main( int argc, char** argv )
 			g_bandit.processIO( 10000 );
 			g_bandit.processPackets();
 
+      ros::spinOnce();
+
 		}
 		while ( !g_bandit.checkAllPIDConfigs() );
+  rosOK();
 
 		ROS_INFO( "All PID settings configured successfully" );
-
 
 		// Push out initial state
 		for ( int i = 0; i < 19; i++ )
 		{
-			g_bandit.setJointPos( i, 0.0f );
+      if( i == 3 || i == 10 )
+			  g_bandit.setJointPos( i, DTOR(15.0) );
+			else 
+        g_bandit.setJointPos( i, 0.0f );
+
+      ros::spinOnce();
 		}
+
+    ROS_INFO( "Sending initial joint positions" );
 
 		// Send bandit position commands:
 		g_bandit.sendAllJointPos();
+    ros::spinOnce();
 
 
-		// Now that things are supposeldy up and running, subscribe to
-		// joint messages
-		ros::Subscriber joint_sub = nh.subscribe( "joint_cmd", 1, jointCB );
-		ros::Subscriber target_sub = nh.subscribe( "target_joints", 1, targetCB );
-		ros::ServiceServer service = nh.advertiseService( "params", param );
-
-		ros::Rate loop_rate( 10 );
+    ROS_INFO( "initializing IO processing loop" );
+		rosOK();
+    // This callback gets called whenever processPendingMessages
+		// receives a valid state update from bandit
+		g_bandit.registerStateCB( boost::bind( &stateCB, boost::ref( joints_pub ) ) );
+    ROS_INFO( "registered state callback" );
+    rosOK();
+    ros::spinOnce();
 
 		while ( ros::ok() )
 		{
@@ -370,6 +402,8 @@ int main( int argc, char** argv )
 			g_bandit.processPackets();
 			ros::spinOnce();
 		}
+
+    ROS_INFO( "ros is not ok, quitting..." );
 
 	}
 	catch ( bandit::BanditException& e )
