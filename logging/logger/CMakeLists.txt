@@ -22,11 +22,20 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-rosbuild_add_executable(logger src/logger.cc)
-target_link_libraries(logger rosrecorder)
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
+rosbuild_add_library(${PROJECT_NAME} src/recorder.cc)
+target_link_libraries(${PROJECT_NAME} rosbag)
+
+
+#rosbuild_add_executable(log_node src/logger.cc)
+#target_link_libraries(log_node rosbag)
+
+rosbuild_add_executable(log src/log.cc)
+target_link_libraries(log ${PROJECT_NAME})
+
+rosbuild_add_boost_directories()
+rosbuild_link_boost(log thread)
+
+rosbuild_add_executable(test_data test/test_data.cc)
+
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
