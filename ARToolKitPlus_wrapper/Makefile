@@ -10,6 +10,7 @@ include $(shell rospack find mk)/download_unpack_build.mk
 artkp: $(SOURCE_DIR)/unpacked
 	cp artkp.cmake $(SOURCE_DIR)/artkp/CMakeLists.txt
 	cd $(SOURCE_DIR)/artkp && cmake . && make
+	cp -r $(SOURCE_DIR)/artkp .
 	touch artkp
 clean:
 	-rm -rf src $(SOURCE_DIR) artkp

@@ -1,0 +1,15 @@
+<package>
+  <description brief="multi">
+
+     multi
+
+  </description>
+  <author>Aaron St.Clair</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/multi</url>
+  <depend package="ARToolKitPlus_wrapper"/>
+
+</package>
+
+
