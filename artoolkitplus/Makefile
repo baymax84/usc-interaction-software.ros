@@ -19,13 +19,14 @@ artkp: $(SOURCE_DIR)/unpacked
 	cp -r $(SOURCE_DIR)/artkp/include/* include
 	mkdir -p $(PKG_DIR)/src
 	cp -r $(SOURCE_DIR)/artkp/src/* src
+	cp -r $(SOURCE_DIR)/artkp/sample/multi/data data
 	touch artkp
 installed: artkp
 	cd $(PKG_DIR)/build && cmake ..
 	cd $(PKG_DIR)/build && make $(ROS_PARALLEL_JOBS)
 
 clean:
-	rm -rf include id-markers lib src $(SOURCE_DIR) artkp
+	rm -rf data include id-markers lib src $(SOURCE_DIR) artkp bin/*
 
 wipe: clean
 	-rm -rf build
