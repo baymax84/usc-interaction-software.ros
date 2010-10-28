@@ -29,5 +29,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-include_directories(${PROJECT_SOURCE_DIR}/../ARToolKitPlus_wrapper/build/artkp_src/artkp)
-rosbuild_add_executable(multi main.cpp)
+include_directories(include)
+rosbuild_add_executable(multitag ${PROJECT_SOURCE_DIR}/artoolkitplus.cpp)
+find_library(ARTKP_LIB ARToolKitPlus ${PROJECT_SOURCE_DIR}/lib)
+target_link_libraries(multitag ${ARTKP_LIB})
+
+

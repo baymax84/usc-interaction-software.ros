@@ -1,0 +1,17 @@
+<package>
+  <description brief="artoolkitplus_wrapper">
+	
+	Wrapper node for ARToolKitPlus. Subscribes to an image message and utputs a transform and id for each detected tag.
+	
+  </description>
+  <author>Aaron St.Clair</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.ros.org/wiki/usc-ros-pkg#artoolkitplus_wrapper/</url>
+  <depend package="artoolkitplus"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

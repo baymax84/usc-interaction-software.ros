@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.4.6)
-project(ARToolKitPlus)
+project(artoolkitplus)
 
 # Set the build type.  Options are:
 #  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
@@ -29,8 +29,7 @@ set(LIBRARY_OUTPUT_PATH lib)
 
 
 # include directories
-include_directories(src)
-#include_directories(${PROJECT_SOURCE_DIR}/ARToolKitPlus_2.1.1/sample)
+#include_directories(src)
 include_directories(include)
 
 # set sources
@@ -47,12 +46,26 @@ src/extra/FixedPoint.cpp
 )
 
 # add libraries
-add_library(ARTKP ${sources})
+add_library(ARToolKitPlus ${sources})
 
 # add executables
+#include_directories(include)
+#add_executable(CameraCalib
+#tools/CameraCalib/src/arFileGrabber.cpp
+#tools/CameraCalib/src/calib_camera.h
+#tools/CameraCalib/src/calib_inp.cpp
+#tools/CameraCalib/src/arFileGrabber.h
+#tools/CameraCalib/src/calib_dist.cpp
+#tools/CameraCalib/src/main.cpp
+#)
+
+#target_link_libraries(CameraCalib ARTKP)
+#add_executable(IdPatGen tools/IdPatGen/src)
+#add_executable(MirrorPatt tools/MirrorPatt/src)
+#add_executable(PATT_to_PPM tools/PATT_to_PPM/src)
+
 #rosbuild_add_executable(Multi ARToolKitPlus_2.1.1/sample/multi/src/main.cpp)
 #rosbuild_add_executable(Simple ARToolKitPlus_2.1.1/sample/simple/src/main.cpp)
-#rosbuild_add_exectuable(Tools ARToolKitPlus_2.1.1/tools/src/main.cpp)
 
 # link executables with libraries
 #target_link_libraries(Multi ARTKP)
