@@ -45,7 +45,7 @@ int main( int argc, char* argv[] )
   stop.callback( stop_cb );
   win.show();
 
-  log_pub = n.advertise<log_msgs::LogState>("/b3ia/logstate",1000);
+  log_pub = n.advertise<log_msgs::LogState>("logstate",1000);
 
   ros::Rate loop(10);
 
