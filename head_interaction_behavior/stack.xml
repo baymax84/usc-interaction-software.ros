@@ -1,0 +1,9 @@
+<stack>
+  <description brief="head_interaction_behavior">head_interaction_behavior</description>
+  <author>Maintained by David Feil-Seifer</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/head_interaction_behavior</url>
+  <depend stack="ros" />
+
+</stack>

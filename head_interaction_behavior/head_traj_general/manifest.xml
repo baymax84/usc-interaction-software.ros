@@ -1,0 +1,17 @@
+<package>
+  <description brief="head_traj_general">
+
+     head_traj_general
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/head_traj_general</url>
+  <depend package="tf"/>
+  <depend package="bandit_msgs"/>
+  <depend package="people_msgs"/>
+
+</package>
+
+
