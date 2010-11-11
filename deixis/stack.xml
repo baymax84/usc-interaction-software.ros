@@ -1,9 +1,0 @@
-<stack>
-  <description brief="deixis">deixis</description>
-  <author>Maintained by Ross Mead</author>
-  <license>BSD</license>  
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/deixis</url>
-  <depend stack="ros" />
-
-</stack>
