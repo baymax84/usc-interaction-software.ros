@@ -1,17 +1,17 @@
 <package>
-  <description brief="head_traj_general">
+  <description brief="head_follow_people">
 
-     head_traj_general
+     head_follow_people
 
   </description>
   <author>David Feil-Seifer</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/head_traj_general</url>
-  <depend package="tf"/>
-  <depend package="bandit_msgs"/>
+  <url>http://ros.org/wiki/head_follow_people</url>
   <depend package="people_msgs"/>
+  <depend package="geometry_msgs"/>
   <depend package="opencv2"/>
+  <depend package="tf"/>
 
 </package>
 
