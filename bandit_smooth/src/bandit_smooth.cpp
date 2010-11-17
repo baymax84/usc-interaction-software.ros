@@ -24,7 +24,10 @@ const int NUM_JOINTS = 19;
 const unsigned int MESSAGE_BUFLEN = 5;
 
 /* Maximum joint velocity in degrees/second */
-const double MAX_VELOCITY = DTOR(70);
+const double MAX_VELOCITY = DTOR(50);
+
+/* Maximum joint acceleration in degrees/second^2 */
+const double MAX_ACCE = DTOR(10);
 
 /* Array of current joint angles */
 double current_joints[NUM_JOINTS];
@@ -45,9 +48,13 @@ void targetRequestCB(const bandit_msgs::JointArrayConstPtr& j){
     double angle = j->joints[i].angle;
 
     /* Set target joint angle if valid */
-    if(id>=0 && id<NUM_JOINTS)
-      target_joints[id] = angle;
-
+    if(id>=0 && id<NUM_JOINTS){
+      if(fabs(current_joints[id] - angle) > DTOR(5))
+        target_joints[id] = angle;
+      else
+        target_joints[id] = current_joints[id];
+   
+    }
     printf("   updating joint %d to %f\n",id,angle);
   }
 }
@@ -96,7 +103,7 @@ int main(int argc, char **argv)
     cur_time = ros::Time::now().toSec();
     diff_time = (cur_time - last_time);
     last_time = cur_time;
-    vel = diff_time * MAX_VELOCITY;
+    vel = (0.5 * MAX_ACCE * diff_time*diff_time) + diff_time* MAX_VELOCITY; //vel = diff_time * MAX_VELOCITY;
 
     /* Keep track of robot arm update status */
     last_moving = moving;
@@ -107,7 +114,7 @@ int main(int argc, char **argv)
       double c = current_joints[i];  // Current joint position
       double g = target_joints[i];   // Target joint position
 
-      /* Current joint position not at target position */
+      /*Current joint position not at target position */
       if(fabs(g - c) > 1e-6){
 	/* Calculate distance from target */
 	double dist = fabs(g - c);
