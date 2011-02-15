@@ -8,6 +8,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Value_Slider.H>
+#include <FL/Fl_Box.H>
 #include <stdio.h>
 #include <sys/time.h>
 
@@ -230,7 +231,7 @@ int main( int argc, char* argv[] )
 
 	int slider_w = 400;
 	int slider_h = 20;
-	int padding = 20;
+	int padding = 22;
 	int num_sliders = res.name.size();
 
 	for (int asdf = 0; asdf < 20; asdf++)
@@ -338,6 +339,7 @@ getchar();
 	Fl_Window win( win_w, win_h, "Bandit Mover" );
 	win.begin();
 	Fl_Value_Slider* sliders[19];
+	Fl_Box* boxes[19];
 
 //	char names[19][256];
 	int i=0;
@@ -345,6 +347,9 @@ getchar();
 	{
 		printf( "adding slider[%d] %s, (%f,%f)\n", res.id[i], res.name[i].c_str(), res.min[i], res.max[i] );
 
+        boxes[i] = new Fl_Box(padding-2, (i+1)*padding+i*slider_h-2,slider_w+5, slider_h+20);
+        boxes[i]->box(FL_BORDER_FRAME);
+        boxes[i]->color(FL_BLACK);
 		sliders[i] = new Fl_Value_Slider( padding, (i+1)*padding+i*slider_h,slider_w, slider_h, res.name[i].c_str() );
 		sliders[i]->type(FL_HORIZONTAL);
 		sliders[i]->bounds(res.min[i], res.max[i] );
