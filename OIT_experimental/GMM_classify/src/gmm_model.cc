@@ -12,12 +12,14 @@ class DaveEM : public CvEM {
 
 };
 
-int main( int argc, char** argv )
-{
-	ros::init(argc,argv,"gmm_model");
-	ros::NodeHandle nh;
-	ros::NodeHandle nh_priv("~");
 
+CvEMParams params;
+DaveEM em_model;
+CvMat* labels;
+CvMat* truths;
+
+void train_model( ros::NodeHandle nh_priv )
+{
   // open file
   FILE* model_file;
 
@@ -32,7 +34,7 @@ int main( int argc, char** argv )
 	fscanf( model_file, "%d %d\n", &nsamples, &d );
 
 	CvMat* samples = cvCreateMat( nsamples, d, CV_32FC1 );
-	CvMat* labels = cvCreateMat( nsamples, 1, CV_32SC1 );
+	labels = cvCreateMat( nsamples, 1, CV_32SC1 );
 
 	for( int i = 0; i < nsamples; i++ )
 	{
@@ -68,7 +70,7 @@ int main( int argc, char** argv )
 
 	CvMat trainData = C;
 
-  CvEMParams params;
+
   // initialize model's parameters
   params.covs      = NULL;
   params.means     = NULL;
@@ -81,7 +83,7 @@ int main( int argc, char** argv )
   params.term_crit.type     = CV_TERMCRIT_EPS;//CV_TERMCRIT_ITER|CV_TERMCRIT_EPS;
 	// load groups from file
 
-	CvMat* truths = cvCreateMat( nsamples, 1, CV_32SC1 );
+	truths = cvCreateMat( nsamples, 1, CV_32SC1 );
 	for( int i = 0; i < nsamples; i++ )
 	{
 		int x = 0;
@@ -127,33 +129,27 @@ int main( int argc, char** argv )
 	double vals[200];
 	double smallval = DBL_MAX;
 	int idx = 40;
-	//int idx = 34;
-/*
-	for( int i = 2; i < 100; i++ ) 
-	{
-	  DaveEM em_model;
-		params.nclusters = i;
-		em_model.train( &trainData, 0, params, labels );
-		vals[i] = em_model.get_likelihood();
-		double add = (i-1)*log(nsamples)/2.0 + ((d*d+3*d)/4.0)*i*log(nsamples);
-		printf( "%4d: %8.2lf %8.4lf %8.4lf\n", i, vals[i], add, -vals[i] + add );
-		vals[i] = -vals[i]+add;
-		if( vals[i] < smallval ) 
-		{
-			smallval = vals[i];
-			idx = i;
-		}
-	}
 
+	ROS_INFO("starting model training..." );
 
-	printf( "smallest is: %d with: %lf\n", idx, smallval );
-*/
-
-	DaveEM em_model;
 	params.nclusters = idx;
 	em_model.train(&trainData,0,params,labels);
 
-	
+
+	fclose(model_file);
+}
+
+
+int main( int argc, char** argv )
+{
+	ros::init(argc,argv,"gmm_model");
+	ros::NodeHandle nh;
+	ros::NodeHandle nh_priv("~");
+
+	train_model(nh_priv);
+
+	ROS_INFO("done model training... training classifier" );
+
 	// gmm model is trained, but classifier needs to be trained now
 
 
@@ -176,7 +172,7 @@ int main( int argc, char** argv )
 		//printf( "%d: %0.12f\n", i, pC[i]*100. );
 	}
 
-	printf( "labels: %d clusters: %d\n", labels->rows, params.nclusters );
+	//printf( "labels: %d clusters: %d\n", labels->rows, params.nclusters );
 
 	for( int i = 0; i < params.nclusters; i++ ) pO[i] = 0;
 	for( int i = 0; i < labels->rows; i++ )
@@ -217,24 +213,32 @@ int main( int argc, char** argv )
 		//printf( "\n" );
 	}
 
+
+	ROS_INFO( "starting node" );
+
 	// classifier is trained... start listening for data
 
 	ros::Rate loop_rate(15);
 	while( ros::ok() )
 	{
+		// do update of state prediction
 
+		loop_rate.sleep();
+		ros::spinOnce();
 	}
 
 	// cluster test data using model (pO)
-	CvMat* po = cvCreateMat(ntest,params.nclusters, CV_32FC1 );
+	CvMat* po = cvCreateMat(30,params.nclusters, CV_32FC1 );
 	CvMat* pot = cvCreateMat(1,params.nclusters,CV_32FC1);
-	cv::Mat testDataMat(&testData);
+	//cv::Mat testDataMat(&testData);
 
-	int ntiles = ntest / 30;
 
-	for( int i = 0; i < ntest; i++ )
+
+	for( int i = 0; i < 30; i++ )
 	{
-		CvMat testRow = testDataMat.row(i);
+		// build CvMat from read in data
+		//CvMat testRow = testDataMat.row(i);
+		CvMat testRow;
 		em_model.predict( &testRow, pot );
 		for( int j = 0; j < params.nclusters; j++ )
 		{
@@ -243,22 +247,13 @@ int main( int argc, char** argv )
 	}
 
 	
-	CvMat* pCO = cvCreateMat( ntest, num_groups, CV_32FC1 );
+	CvMat* pCO = cvCreateMat( 30, num_groups, CV_32FC1 );
 	cvMatMul( po, pOC, pCO );
 	cv::Mat pCOmat(pCO);
 
-	int ** confusion = new int*[num_groups];
-	for( int i = 0; i < num_groups; i++ ) 
-	{
-		confusion[i] = new int[num_groups];
-		for( int j = 0; j < num_groups; j++ )
-			confusion[i][j] = 0;
-	}
 
-	for( int i = 0; i < ntiles; i++ )
+	//for( int i = 0; i < ntiles; i++ )
 	{
-		const int tile_min = i*30;
-		const int tile_max = (i+1)*30;
 
 		int* true_hist = new int[num_groups];
 		double* vis_hist = new double[num_groups];
@@ -267,16 +262,12 @@ int main( int argc, char** argv )
 			true_hist[j] = 0;
 			vis_hist[j] = 0;
 		}
+
+/*		
 		// get tile's true class
 		for( int j = tile_min; j < tile_max; j++ )
 		{
 			true_hist[test_truths->data.i[j]-1]++;
-/*		
-			cv::Mat matrow = pCOmat.row(j);
-			CvMat row = matrow;
-			
-			CvMat obs_dist = row * 
-*/
 			for( int k = 0; k < num_groups; k++ )
 			{
 				vis_hist[k] += pCO->data.fl[j*num_groups+k];
@@ -294,6 +285,7 @@ int main( int argc, char** argv )
 				true_value = j;
 			}
 		}
+		*/
 		//printf( "\n" );
 		// get pCO for tile
 		int obs_value = -1;
@@ -305,10 +297,7 @@ int main( int argc, char** argv )
 				obs_value = j;
 			}
 
-		if( true_value == 1 ) true_value = 2;
 		if( obs_value == 1 ) obs_value = 2;
-		//printf( "true_value: %d obs_value: %d\n", true_value, obs_value );
-		confusion[true_value][obs_value] ++;
 	}
 
 /*
@@ -340,7 +329,7 @@ int main( int argc, char** argv )
 
 	printf( "correct: %0.2f\n", 100.0*correct / all );
 */
-	fclose(model_file);
+
 
 
 	return 0;
