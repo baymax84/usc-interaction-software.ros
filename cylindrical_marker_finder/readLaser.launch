@@ -1,0 +1,8 @@
+<launch>
+  <master auto="start"/>
+  <node pkg="sicktoolbox_wrapper" type="sicklms"/>
+  <param name="sicklms/port" value="/dev/ttyUSB0"/>
+  <param name="sicklms/baud" value="500000"/>
+  <param name="sicklms/inverted" value="false"/>
+  <node pkg="cylindrical_marker_finder" type="cylindrical_marker_finder"/>
+</launch>
