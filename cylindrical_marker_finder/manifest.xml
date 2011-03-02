@@ -1,0 +1,25 @@
+<package>
+  <description brief="cylindrical_marker_finder">
+
+     cylindrical_marker_finder
+
+  </description>
+  <author>Aaron St.Clair</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cylindrical_marker_finder</url>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="laser_geometry"/>
+  <depend package="visualization_msgs"/>
+  <depend package="tf"/>
+  <depend package="roscpp"/>
+  <depend package="rospy"/> 
+  <export>
+    <cpp cflags="-I${prefix}/msg/cpp -I${prefix}/srv/cpp"/>
+  </export>
+
+</package>
+
+

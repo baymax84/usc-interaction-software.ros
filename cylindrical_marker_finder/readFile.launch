@@ -1,0 +1,4 @@
+<launch>
+  <master auto="start"/>
+  <node pkg="cylindrical_marker_finder" type="cylindrical_marker_finder"/>
+</launch>
