@@ -52,9 +52,9 @@ ColorFinder::image_cb( IplImage* hsv )
   cvSplit( hsv, hue_, 0, 0, 0 );
   cvCalcBackProject( &hue_, backproject_img_, hist_ );
   cvAnd( backproject_img_, mask_, backproject_img_, 0 );
-  cvDilate( backproject_img_, backproject_img_, NULL, 1 );
-  cvErode( backproject_img_, backproject_img_, NULL, 1 );
-  cvDilate( backproject_img_, backproject_img_, kernel_, 1 );
+  cvDilate( backproject_img_, backproject_img_, NULL, 2 );
+  cvErode( backproject_img_, backproject_img_, NULL, 2 );
+  //cvDilate( backproject_img_, backproject_img_, kernel_, 1 );
 
   //cvShowImage( color_histfile_.c_str(), backproject_img_ );
   //cvWaitKey(10);
