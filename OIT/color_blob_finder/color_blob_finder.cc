@@ -33,7 +33,7 @@
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 #include "image_transport/image_transport.h"
-#include "image_geometry/pinhole_camera_model.h"
+//#include "image_geometry/pinhole_camera_model.h"
 #include "sensor_msgs/Image.h"
 #include "cv_bridge/CvBridge.h"
 #include "sensor_msgs/fill_image.h"
@@ -56,9 +56,6 @@ private:
   sensor_msgs::CvBridge img_bridge_;
   sensor_msgs::Image img_;
   IplImage *hsv_img_, *disp_;
-  //IplImage *foreground_img_, *background_, *foreground_thresh_, *foreground_tmp_, *foreground_, *foreground_mask_;
-
-	image_geometry::PinholeCameraModel pcam_;
 	bool first;
   int display;
 
@@ -67,17 +64,12 @@ private:
   vector<ColorFinder> color_finders_;
   vector<CvScalar> colors_;
 
+	//int vmin, vmax, smin;
+
   public:
 
-  void image_cb( const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::CameraInfoConstPtr& infomsg )
+  void image_cb( const sensor_msgs::ImageConstPtr& msg )
   {
-		{
-      sensor_msgs::CameraInfo cam2 = *infomsg;
-      cam2.header.frame_id = "/ovh";
-      pcam_.fromCameraInfo(cam2);
-      first = false;
-		}
-
     sensor_msgs::Image img_msg = *(msg.get());
     if( img_bridge_.fromImage( img_msg, "bgr8" ) )
     {
@@ -90,22 +82,12 @@ private:
         //resize images
         cvReleaseImage( &hsv_img_ );
         cvReleaseImage( &disp_ );
-        //cvReleaseImage( &foreground_img_ );
-
         hsv_img_ = cvCreateImage( cvGetSize(frame), 8, 3 );
         disp_ = cvCreateImage( cvGetSize(frame), 8, 3 );
-        //foreground_img_ = cvCreateImage( cvGetSize(frame), 8, 1 );
       }
       cvCopy( frame, disp_ );
       cvCvtColor( frame, hsv_img_, CV_BGR2HSV );
       
-			
-			//cv::Mat matFrame(frame);
-			//cv::Mat rectified;
-			//pcam_.rectifyImage(matFrame, rectified );
-
-			
-
       // color finders
       int c = 0;
       for( vector<ColorFinder>::iterator i = color_finders_.begin();
@@ -131,17 +113,7 @@ private:
 
       // robot detector
 
-
-			//cv::imshow("rectified", rectified);
-      // foreground detector
-     /* 
-        // difference image
-      cvAbsDiff( frame, background_, foreground_tmp_ );
-      cvZero( foreground_thresh_ );
-      cvCvtColor( foreground_tmp_, foreground_thresh_, CV_BGR2GRAY );
-        // threshold
-      cvThreshold(foreground_thresh_,foreground_thresh_,15,1,CV_THRESH_BINARY);
-
+			/*
         // contours
 
       cvErode( foreground_thresh_, foreground_thresh_, NULL, 2 );
@@ -178,15 +150,7 @@ private:
         // undo robot contour
         // undo child contour
       */
-      // publish hsv images (probably don't need this anymore)
-/*
-      img_.header.stamp = img_time;
-      fillImage( img_, "image_rect_color",
-                 frame->height, frame->width, 3, "bgr", "uint8",
-                 hsv_img_->imageData );
 
-      hsv_pub.publish( img_ );
-*/      
       // TODO: fill for foreground color
       if( display > 0 )
       {
@@ -238,18 +202,11 @@ private:
     if( display > 0 )
     {
       cvNamedWindow( "output", 1 );
-  		//cvNamedWindow( "rectified", 1 );
-      //cvNamedWindow( "foreground", 1 );
+			cvCreateTrackbar( "Vmin", "output", color_finders_[0].vmin(), 256, 0);
+			cvCreateTrackbar( "Vmax", "output", color_finders_[0].vmax(), 256, 0);
+			cvCreateTrackbar( "Smin", "output", color_finders_[0].smin(), 256, 0);
     }
 
-/*
-    printf( "background image: [%s]\n", background_file.c_str() );
-    background_ = cvLoadImage(background_file.c_str() );
-    foreground_ = cvCreateImage( cvGetSize( background_ ), 8, 3 );
-    foreground_thresh_ = cvCreateImage(cvGetSize(background_),IPL_DEPTH_8U, 1 );
-    foreground_mask_ = cvCreateImage(cvGetSize(background_ ), IPL_DEPTH_8U, 1 );
-    foreground_tmp_ = cvCreateImage(cvGetSize( background_ ), IPL_DEPTH_8U, 3 );
-*/
     kernel_ = cvCreateStructuringElementEx( 15, 15, 8, 8, CV_SHAPE_RECT );
     storage_ = cvCreateMemStorage(0);
 
@@ -258,19 +215,17 @@ private:
 
   void cleanup()
   {
-    //cvReleaseImage( &hsv_img_ );
-    //cvReleaseImage( &foreground_img_ );
   }
 };
 
 int main( int argc, char* argv[] )
 {
-  ros::init(argc,argv,"image_splitter" );
+  ros::init(argc,argv,"color_blob_finder" );
   ImageSplitter* i = new ImageSplitter();
   boost::shared_ptr<ImageSplitter> foo_object(i);
 	ros::NodeHandle nh;
 	image_transport::ImageTransport it(nh);
-  image_transport::CameraSubscriber image_sub = it.subscribeCamera("image_raw", 1, &ImageSplitter::image_cb, foo_object );
+  image_transport::Subscriber image_sub = it.subscribe("image_raw", 1, &ImageSplitter::image_cb, foo_object );
   i->init();
   ros::spin();
   ROS_INFO( "image_splitter quitting..." );

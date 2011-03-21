@@ -57,6 +57,10 @@ class ColorFinder
     void image_cb( IplImage* img );
     void find_blobs(ros::Time t);
 
+		int* smin() {return &smin_;}
+		int* vmax() {return &vmax_;}
+		int* vmin() {return &vmin_;}
+
     std::vector<oit_msgs::Blob> get_blobs() { return blobs_.blobs; }
     
 };
