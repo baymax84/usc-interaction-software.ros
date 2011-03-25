@@ -36,7 +36,32 @@ void jointCallback(const sensor_msgs::JointStateConstPtr &state)
          RtWrist, LtFootForward, RtFootForward, LtFootUp, RtFootUp,
          TorsoBend, HeadTurn,  angle=0;
 
-  float radcorrect=3.14159f/180.0f;
+  float radcorrect=3.14159f/180.0f,
+        L1=12.7f,
+        L2=13.0f,
+        //Transform vertical and horrizontal inputs into angles for Left Leg
+        h_left=state->position[16],
+        w_left=L1+L2-h_left-(10.0f-h_left)/30.0f,
+        dx_left=state->position[17],
+		r2_left=pow(w_left,2)+pow(dx_left,2),
+		//theta2_left is the angle formed by bending the left knee
+		theta2_left=acos((r2_left-pow(L1,2)-pow(L2,2))/(-1*2*L1*L2)),
+		vert_left=sin(theta2_left),
+		//theta1_left is the angle formed by the left thigh with respect to the vertical
+		theta1_left=atan(dx_left/w_left)+asin(L2*vert_left/pow(r2_left,.5)),
+        //Transform vertical and horrizontal inputs into angles for Right Leg
+        h_right=state->position[14],
+        w_right=L1+L2-h_right-(10.0f-h_right)/30.0f,
+        dx_right=state->position[15],
+		r2_right=pow(w_right,2)+pow(dx_right,2),
+		//theta2_right is the angle formed by bending the left knee
+		theta2_right=acos((r2_right-pow(L1,2)-pow(L2,2))/(-1*2*L1*L2)),
+		vert_right=sin(theta2_right),
+		//theta1_right is the angle formed by the right thigh with respect to the vertical
+		theta1_right=atan(dx_right/w_right)+asin(L2*vert_right/pow(r2_right,.5));
+		
+
+		  
   joint_state.header.stamp = ros::Time::now();
   joint_state.name.resize(64);
   joint_state.position.resize(64);
@@ -104,19 +129,19 @@ void jointCallback(const sensor_msgs::JointStateConstPtr &state)
 
   // left leg
   joint_state.name[19] ="LtFootForward";
-  LtFootForward = radcorrect*state->position[17];
+  LtFootForward = theta1_left;
   joint_state.position [19] =LtFootForward;
   joint_state.name[20] ="LtFootUp";
-  LtFootUp = radcorrect*state->position[16];
-  joint_state.position [20] =-LtFootUp;
+  LtFootUp = theta2_left+3.14159f;
+  joint_state.position [20] =LtFootUp;
 
   //right leg
   joint_state.name[21] ="RtFootForward";
-  RtFootForward = radcorrect*state->position[15];
+  RtFootForward = theta1_right;
   joint_state.position [21] =RtFootForward;
   joint_state.name[22] ="RtFootUp";
-  RtFootUp = radcorrect*state->position[14];
-  joint_state.position [22] =-RtFootUp;
+  RtFootUp = theta2_right+3.14159f;
+  joint_state.position [22] =RtFootUp;
 
   //upper spine
   joint_state.name [23] ="TorsoBend";

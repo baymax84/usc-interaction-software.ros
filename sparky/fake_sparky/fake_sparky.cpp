@@ -50,6 +50,7 @@ int main( int argc, char* argv[] )
 	ros::init(argc, argv, "fake_sparky" );
 	ros::NodeHandle n;
   ros::Subscriber joint_sub = n.subscribe("joint_cmd", 1, jointCB );
+  //ros::Subscriber joint_sub = n.subscribe("joint_cmd", 1, jointCB );
   ros::Subscriber joints_sub = n.subscribe("joints", 1, jointarrayCB );
   joint_state_publisher = n.advertise<sensor_msgs::JointState>("fake_sparky",1000);
 
@@ -69,10 +70,10 @@ int main( int argc, char* argv[] )
   add_param( 11, "TorsoBend", 1.3, 75.8, 0);  
   add_param( 12, "EyesBlink", 0, 102, 0);  
   add_param( 13, "EyesLtRt", -30, 40, 0);
-  add_param( 14, "RtFootUp", -90, 90, 0);
-  add_param( 15, "RtFootForward", -90, 90, 0);
-  add_param( 16, "LtFootUp", -90, 90, 0);
-  add_param( 17, "LtFootForward", -90, 90, 0);
+  add_param( 14, "RtFootUp", 0, 4, 0);
+  add_param( 15, "RtFootForward", -10, 10, 0);
+  add_param( 16, "LtFootUp", 0, 4, 0);
+  add_param( 17, "LtFootForward", -10, 10, 0);
 
   
 

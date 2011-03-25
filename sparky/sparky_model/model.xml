@@ -17,7 +17,7 @@
 	<visual>
 	<origin xyz="0 0 0" rpy="1.15 1.57 3.78" />	
 	<material name="grey" >
-      <color rgba=".2 .2 .2 .2" />
+      <color rgba=".2 .2 .2 1" />
   </material>	
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/Shoulders.stl"/>
@@ -35,7 +35,7 @@
 	<visual>
 	<origin xyz="0 0 0" rpy="0 0 0" />
 		 <material name="grey" >
-      <color rgba=".2 .2 .2 .2" />
+      <color rgba=".2 .2 .2 1" />
   </material>
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/CenterPlate.stl"/>
@@ -54,7 +54,7 @@
 	<visual>
 	<origin xyz="0 0 0" rpy="0 0 -1.57" />
 		 <material name="grey" >
-      <color rgba=".2 .2 .2 .2" />
+      <color rgba=".2 .2 .2 1" />
   </material>
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/Stand.stl"/>
@@ -74,7 +74,6 @@
 	<visual>
 	<origin xyz="0 0 0" rpy="0 1.57 1.57" />
 		<material name="grey" >
-      <color rgba=".2 .2 .2 .2" />
   </material>	
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/Hips.stl"/>
@@ -109,7 +108,7 @@
 	<visual>
 	<origin xyz="0 0 0" rpy="0 1.57 0" />
 		 <material name="grey" >
-      <color rgba=".2 .2 .2 .2" />
+      <color rgba=".2 .2 .2 1" />
   </material>
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/neck.stl" />
@@ -163,7 +162,7 @@
 	<visual>
 	<origin xyz="0 -2.65 -2.15" rpy="0 1.57 0" />
 	 <material name="grey" >
-      <color rgba=".2 .2 .2 .2" />
+      <color rgba=".2 .2 .2 1" />
   </material>
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/Jaw.stl" />
@@ -273,7 +272,7 @@
 			<color rgba="0 0 0 0" />
 		</material>
 	<geometry>
-		<sphere radius=".2" />
+		<sphere radius=".1" />
 	</geometry>
 	</visual>
 </link>
@@ -293,7 +292,7 @@
 			<color rgba="0 0 0 0" />
 		</material>
 	<geometry>
-		<sphere radius=".2" />
+		<sphere radius=".1" />
 	</geometry>
 	</visual>
 </link>
@@ -313,7 +312,7 @@
 			<color rgba="0 .4 .4 0" />
 		</material>
 	<geometry>
-		<sphere radius=".35" />
+		<sphere radius=".2" />
 	</geometry>
 	</visual>
 </link>
@@ -333,7 +332,7 @@
 
 		</material>
 	<geometry>
-		<sphere radius=".4" />
+		<sphere radius=".2" />
 	</geometry>
 	</visual>
 </link>
@@ -570,7 +569,7 @@
       <color rgba=".8 .8 .8 1" />
   </material>
 	<geometry>
-		<mesh filename="package://sparky_model/meshes/RightHand.stl" scale="1 1 1" />
+		<mesh filename="package://sparky_model/meshes/RightHand.stl"  />
 	</geometry>
 	</visual>
 </link>
@@ -893,7 +892,7 @@
 	<visual>
 	<origin xyz="0 0 0" rpy="0 0 0" />
 	<material name="silver" >
-		<color rgba=".5 .5 .5 .5" />
+		<color rgba=".5 .5 .5 1" />
 	</material>
 	<geometry>
 		<cylinder radius=".25" length=".104" />
