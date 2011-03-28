@@ -410,25 +410,39 @@ int main( int argc, char* argv[] )
 
 				// get position of red dot 
 				cv::Point2d uv;
-  	    uv.x = rb.x + rb.width/2.0; uv.y = rb.y + rb.height/2.0;
 	      cv::Point2d uvrect;
-      	pcam.rectifyPoint( uv, uvrect );
+    	  cv::Point3d red3d, yellow3d;
 
-    	  cv::Point3d imgray;
+				uv.x = rb.x + rb.width/2.0; uv.y = rb.y + rb.height/2.0;
+      	pcam.rectifyPoint( uv, uvrect ); 
+  	    pcam.projectPixelTo3dRay( uvrect, red3d );
       
-  	    pcam.projectPixelTo3dRay( uvrect, imgray );
-      
-	      tf::Vector3 imgray_rel_cam (imgray.x, imgray.y, imgray.z);
-      	tf::Vector3 imgray_uv ( floor_to_cam * imgray_rel_cam );
+	      tf::Vector3 red3d_rel_cam (red3d.x, red3d.y, red3d.z);
+      	tf::Vector3 red3d_uv ( floor_to_cam * red3d_rel_cam );
 
     	  // project to correct distance from camera
-  	    cv::Point3d proj_pt (ir_plane * imgray_uv.x() / imgray_uv.z(), ir_plane * imgray_uv.y() / imgray_uv.z(), ir_plane);
+  	    cv::Point3d red_pt (ir_plane * red3d_uv.x() / red3d_uv.z(), ir_plane * red3d_uv.y() / red3d_uv.z(), ir_plane);
 				// x,y is proj_pt.x, proj_pt.y
+
+				uv.x = yb.x + yb.width/2.0; uv.y = yb.y + yb.height/2.0;
+      	pcam.rectifyPoint( uv, uvrect ); 
+  	    pcam.projectPixelTo3dRay( uvrect, yellow3d );
+
+	      tf::Vector3 yellow3d_rel_cam (yellow3d.x, yellow3d.y, yellow3d.z);
+      	tf::Vector3 yellow3d_uv ( floor_to_cam * yellow3d_rel_cam );
+
+    	  // project to correct distance from camera
+  	    cv::Point3d yellow_pt (ir_plane * yellow3d_uv.x() / yellow3d_uv.z(), ir_plane * yellow3d_uv.y() / yellow3d_uv.z(), ir_plane);
+
+
+				// get orientation of red dot
+
+				double yaw = atan2( yellow_pt.y-red_pt.y, yellow_pt.x-red_pt.x );
 
 				tf::Transform robot_pub;
 				ROS_INFO( "height: %0.2f floor_to_cam: %0.2f ir_plane: %0.2f", height, floor_to_cam.getOrigin().z(), ir_plane );
-				robot_pub.setOrigin( tf::Vector3(proj_pt.x, proj_pt.y, ir_plane ));//floor_to_cam.getOrigin().z()) );
-				robot_pub.setRotation( tf::Quaternion(0,0,0));
+				robot_pub.setOrigin( tf::Vector3(red_pt.x, red_pt.y, ir_plane ));//floor_to_cam.getOrigin().z()) );
+				robot_pub.setRotation( tf::Quaternion(yaw,0,0));
 				tb->sendTransform(tf::StampedTransform(robot_pub, yellows_->header.stamp, "cam_plane_flat", "red_dot" ));
 
 			}
