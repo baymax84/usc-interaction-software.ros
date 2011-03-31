@@ -1,0 +1,124 @@
+<robot name="sparky">
+
+<resource type="stl_meshes" location="/home/gavin/usc-cturtle/stacks/interaction_ros_pkg/sparky/sparky_model/meshes
+"/>
+
+<link name="world" />
+
+
+<link name="stand">
+
+<inertial>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<mass value="5"/>
+		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+		<origin/>
+</inertial>
+<visual>
+	<origin xyz="0 0 0" rpy="0 0 -1.57" />
+		 <material name="grey" >
+      <color rgba=".2 .2 .2 1" />
+  </material>
+	<geometry>
+		<mesh filename="package://sparky_model/meshes/Stand.stl"  />
+	</geometry>
+	</visual>
+	    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0 " />
+      <geometry name="stand">
+        <mesh filename="package://sparky_model/meshes/Stand.stl" scale=".1 .1 .1"   />
+      </geometry>
+    </collision>
+
+</link>	
+
+  <gazebo reference="stand">
+<material>Gazebo/Black</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  
+  	<joint name="standWorld_joint" type="fixed">
+		<parent link="world"/>
+		<origin xyz="0 0 2" rpy="0 0 0"/>
+		<child link="stand"/>
+	</joint>
+	
+	
+<link name="hips">
+
+<inertial>
+		<mass value="5"/>
+		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+		<origin/>
+	</inertial>
+	<visual>
+	<origin xyz="0 0 0" rpy="0 1.57 1.57" />
+		<material name="grey" >
+      <color rgba=".2 .2 .2 1" />
+  </material>	
+	<geometry>
+		<mesh filename="package://sparky_model/meshes/Hips.stl"  />
+	</geometry>
+	</visual>
+	    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0 " />
+      <geometry name="hips">
+		<mesh filename="package://sparky_model/meshes/Hips.stl"  />
+      </geometry>
+    </collision>
+
+</link>
+  <gazebo reference="hips">
+<material>Gazebo/Black</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+
+
+
+<joint name="hipjoint" type="fixed">
+	<origin xyz="-.1 .7 -.5" rpy="0 0 0"/>
+	<parent link="stand"/>
+	<child link="hips"/>
+</joint>
+
+<link name="throat">
+
+	<inertial>
+		<mass value="2.2"/>
+		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+		<origin/>
+	</inertial>
+	<visual>
+	<origin xyz="0 0 0" rpy="0 1.57 0" />
+		 <material name="grey" >
+      <color rgba=".2 .2 .2 1" />
+  </material>
+	<geometry>
+		<mesh filename="package://sparky_model/meshes/neck.stl"   />
+	</geometry>
+	</visual>
+	    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0 " />
+      <geometry name="throat">
+		<mesh filename="package://sparky_model/meshes/neck.stl"   />
+      </geometry>
+    </collision>
+
+</link>
+
+  <gazebo reference="throat">
+<material>Gazebo/Black</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+
+
+<joint name="HeadNod" type="fixed">
+	<origin xyz="0 0 2.53" rpy=".28 0 0"/>
+	<axis xyz="1 0 0" /> 
+		  <limit upper=".785" lower="-.279" effort="10" velocity="3" />
+	<parent link="hips"/>
+	<child link="throat"/>
+</joint>
+
+
+</robot>
