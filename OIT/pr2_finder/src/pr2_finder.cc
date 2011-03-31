@@ -61,7 +61,7 @@ void setHeightFromPublishedTransform()
   try
   {
     listener->lookupTransform("/ovh_height", "/ovh", ros::Time(0), cam_height_tf);
-    //listener->lookupTransform("/robot/ir", "/robot/base_link", ros::Time(0), height_tf);
+    listener->lookupTransform("/pr2_ovh_target", "/base_link", ros::Time(0), height_tf);
   }
   catch (tf::TransformException ex)
   {
@@ -69,8 +69,8 @@ void setHeightFromPublishedTransform()
       return;
   }
   cam_height = cam_height_tf.getOrigin().z();
-	height = 1.25;
-  //height = -height_tf.getOrigin().z();
+	//height = 1.25;
+  height = -height_tf.getOrigin().z();
 }
 
 void image_cb( const sensor_msgs::ImageConstPtr &img )
