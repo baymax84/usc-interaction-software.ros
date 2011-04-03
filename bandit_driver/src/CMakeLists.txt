@@ -1,0 +1,6 @@
+rosbuild_add_executable(bandit_node bandit_node.cpp)
+#rosbuild_add_executable(bandit_mover bandit_mover.cpp)
+#rosbuild_add_executable(bandit_calib bandit_calib.cpp)
+#rosbuild_add_executable(bandit_calib_version1 bandit_calib_version1.cpp)
+#rosbuild_add_executable(bandit_yaml_parser bandit_yaml_parser.cpp)
+#rosbuild_add_executable(bandit_demo_gestures bandit_demo_gestures.cpp)

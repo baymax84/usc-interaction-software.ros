@@ -64,7 +64,11 @@ namespace bandit
                 direction(0), scale(0.0), offset(0), min(0), max(0) { }
     };
 
-    std::map<uint16_t, Joint> joints_;
+    typedef std::map<uint16_t, Joint> _JointMap;
+    typedef typename _JointMap::iterator _JointMapIterator;
+    typedef typename _JointMap::const_iterator _JointMapConstIterator;
+
+    _JointMap joints_;
 
   public:
     //! Constructor
@@ -86,6 +90,11 @@ namespace bandit
     //! Return the name of a joint
     std::string getJointName(int id);
     std::string getJointRosName(int id);
+
+    // return the number of joints
+    size_t getNumJoints();
+
+    size_t getJointIndexByROSName( std::string name );
 
     //! Return the minimum position of a joint
     double getJointMin(int id);

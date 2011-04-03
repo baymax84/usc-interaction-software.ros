@@ -1,20 +1,20 @@
 <launch>
 
-  <node name="console" type="rxconsole" pkg="rxtools"/>
+  <!--<node name="console" type="rxconsole" pkg="rxtools"/>-->
 
 	<!-- send bandit urdf to param server -->
-	<include file="$(find bandit_urdf)/launch/upload_bandit.launch"/>
+	<!--<include file="$(find bandit_urdf)/launch/upload_bandit.launch"/>-->
 
   <!-- push table_description to factory and spawn robot in gazebo -->
   <!--<node name="spawn_bandit" pkg="gazebo_tools" type="gazebo_model" args="-z 0.01 -p robot_description spawn" respawn="false" output="screen" />-->
 
-	<include file="$(find bandit_urdf)/controller.launch"/>
+	<!--<include file="$(find bandit_urdf)/controller.launch"/>-->
 
 	<node name="bandit_driver" pkg="bandit_driver" type="bandit_node">
-    <param name="calibration_file" type="str" value="$(find bandit_driver)/Bandit_Calibration_File_Bandit2.yaml"/>
+    <!-- <param name="calibration_file" type="str" value="$(find bandit_driver)/config/<robot_name>/<config_file>.yaml"/> -->
   </node>
 	<node name="mover" pkg="bandit_mover" type="bandit_mover"/>
-	<node name="rviz" type="rviz" pkg="rviz"/>
+	<!--<node name="rviz" type="rviz" pkg="rviz"/>-->
 
 	<!-- Diagnostics -->
   <include file="$(find bandit_driver)/launch/diagnostics.xml"/>

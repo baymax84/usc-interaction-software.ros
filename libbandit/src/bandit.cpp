@@ -2,6 +2,7 @@
 #include <math.h>
 #include <cstdio>
 #include "bandit/bandit.h"
+#include <string>
 
 using namespace bandit;
 
@@ -118,7 +119,7 @@ void Bandit::setJointDirection(uint16_t id, int8_t direction)
 
 void Bandit::setJointOffset(uint16_t id, double offset)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -132,7 +133,7 @@ void Bandit::setJointOffset(uint16_t id, double offset)
 
 void Bandit::setJointPos(uint16_t id, double angle)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -168,7 +169,7 @@ void Bandit::setJointPos(uint16_t id, double angle)
 
 double Bandit::getJointPos(uint16_t id)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapConstIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -194,7 +195,7 @@ double Bandit::getJointPos(uint16_t id)
 
 smartservo::JointType Bandit::getJointType(int id)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapConstIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -204,7 +205,7 @@ smartservo::JointType Bandit::getJointType(int id)
 
 std::string Bandit::getJointName(int id)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapConstIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -214,7 +215,7 @@ std::string Bandit::getJointName(int id)
 
 std::string Bandit::getJointRosName(int id)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapConstIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -222,9 +223,23 @@ std::string Bandit::getJointRosName(int id)
   return joint->second.ros_name;
 }
 
+size_t Bandit::getNumJoints()
+{
+	return joints_.size();
+}
+
+size_t Bandit::getJointIndexByROSName( std::string name )
+{
+	_JointMapConstIterator joint_it = joints_.begin();
+	for( size_t i = 0; joint_it != joints_.end(); ++joint_it, ++i )
+	{
+		if( joint_it->second.name == name ) return i;
+	}
+}
+
 double Bandit::getJointMin(int id)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapConstIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
@@ -234,7 +249,7 @@ double Bandit::getJointMin(int id)
 
 double Bandit::getJointMax(int id)
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
+  _JointMapConstIterator joint = joints_.find(id);
 
   if (joint == joints_.end())
     BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
