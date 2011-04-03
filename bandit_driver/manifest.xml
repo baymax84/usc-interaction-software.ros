@@ -11,4 +11,5 @@
   <rosdep name="xmlrpcpp"/>
   <depend package="yaml_cpp"/>
 	<depend package="diagnostic_updater" />
+	<depend package="interaction_common" />
 </package>
