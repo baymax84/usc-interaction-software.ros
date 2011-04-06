@@ -37,8 +37,9 @@ void jointCallback(const sensor_msgs::JointStateConstPtr &state)
          TorsoBend, HeadTurn,  angle=0;
 
   float radcorrect=3.14159f/180.0f,
-        L1=12.7f,
-        L2=13.0f,
+        L1=12.5f, // length of calf (cm)
+        L2=13.0f, // length of thigh (cm)
+
         //Transform vertical and horrizontal inputs into angles for Left Leg
         h_left=state->position[16],
         w_left=L1+L2-h_left-(10.0f-h_left)/30.0f,

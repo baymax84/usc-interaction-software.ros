@@ -71,9 +71,9 @@ int main( int argc, char* argv[] )
   add_param( 12, "EyesBlink", 0, 102, 0);  
   add_param( 13, "EyesLtRt", -30, 40, 0);
   add_param( 14, "RtFootUp", 0, 4, 0);
-  add_param( 15, "RtFootForward", -10, 10, 0);
+  add_param( 15, "RtFootForward", -4, 4, 0);
   add_param( 16, "LtFootUp", 0, 4, 0);
-  add_param( 17, "LtFootForward", -10, 10, 0);
+  add_param( 17, "LtFootForward", -4, 4, 0);
 
   
 
