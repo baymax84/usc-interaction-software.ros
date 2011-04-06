@@ -107,11 +107,11 @@ class BanditNode
 {
 public:
 
-	typedef typename _JointCalibrationVector::iterator _JointCalibrationIterator;
-	typedef typename _JointCalibrationVector::const_iterator _JointCalibrationConstIterator;
+	typedef _JointCalibrationVector::iterator _JointCalibrationIterator;
+	typedef _JointCalibrationVector::const_iterator _JointCalibrationConstIterator;
 
-	typedef typename YAML::Iterator _YAMLNodeIterator;
-	typedef typename YAML::Iterator _YAMLNodeConstIterator;
+	typedef YAML::Iterator _YAMLNodeIterator;
+	typedef YAML::Iterator _YAMLNodeConstIterator;
 
 	bandit::Bandit bandit_driver_;
 	std::string pid_config_uri_;
@@ -321,7 +321,7 @@ public:
 		for ( size_t i = 0; joint_it != joint_array->joints.end(); ++joint_it, ++i )
 		{
 			// Set the joint position
-			ROS_INFO( "setting joint %zu to angle: %f\n", i, radToDeg( joint_it->angle ) );
+			ROS_INFO( "setting joint %zu to angle: %f\n", joint_it->id, radToDeg( joint_it->angle ) );
 
 			// Set the joint position
 			bandit_driver_.setJointPos( joint_it->id, joint_it->angle );
@@ -333,8 +333,8 @@ public:
 
 	void targetCB( const sensor_msgs::JointStateConstPtr & target_joint_state )
 	{
-		typename std::vector<std::string>::const_iterator joint_name_it = target_joint_state->name.begin();
-		typename std::vector<double>::const_iterator joint_position_it = target_joint_state->position.begin();
+		std::vector<std::string>::const_iterator joint_name_it = target_joint_state->name.begin();
+		std::vector<double>::const_iterator joint_position_it = target_joint_state->position.begin();
 		for ( ; joint_name_it != target_joint_state->name.end(); ++joint_name_it, ++joint_position_it )
 		{
 			for ( size_t joint_index = 0; joint_index < bandit_driver_.getNumJoints(); ++joint_index )

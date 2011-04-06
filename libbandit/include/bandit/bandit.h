@@ -65,8 +65,8 @@ namespace bandit
     };
 
     typedef std::map<uint16_t, Joint> _JointMap;
-    typedef typename _JointMap::iterator _JointMapIterator;
-    typedef typename _JointMap::const_iterator _JointMapConstIterator;
+    typedef _JointMap::iterator _JointMapIterator;
+    typedef _JointMap::const_iterator _JointMapConstIterator;
 
     _JointMap joints_;
 
