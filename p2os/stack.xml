@@ -9,10 +9,13 @@
   <url>http://ros.org/wiki/p2os</url>
   <depend stack="common" /> <!-- xacro -->
   <depend stack="common_msgs" /> <!-- nav_msgs, geometry_msgs -->
-  <depend stack="diagnostics" /> <!-- diagnostic_updater, robot_monitor -->
+  <depend stack="diagnostics" /> <!-- diagnostic_updater -->
+  <depend stack="diagnostics_monitors" /> <!-- robot_monitor -->
   <depend stack="geometry" /> <!-- tf -->
   <depend stack="joystick_drivers" /> <!-- joy -->
   <depend stack="robot_model" /> <!-- robot_state_publisher, urdf -->
-  <depend stack="ros" /> <!-- rxtools, std_srvs, roscpp, roslib, std_msgs, rospy -->
+  <depend stack="ros" /> <!-- roslib -->
+  <depend stack="ros_comm" /> <!-- std_msgs, std_srvs, rospy, roscpp -->
+  <depend stack="rx" /> <!-- rxtools -->
 
 </stack>
