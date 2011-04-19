@@ -67,8 +67,8 @@ int main( int argc, char* argv[] )
   add_param( 8, "LtElbow", 15, 105, 0);  
   add_param( 9, "RtWrist", -45, 90, 0); 
   add_param( 10, "LtWrist", -42, 90, 0);  
-  add_param( 11, "TorsoBend", 1.3, 75.8, 0);  
-  add_param( 12, "EyesBlink", 0, 102, 0);  
+  add_param( 11, "TorsoBend", -75.8, -1.3, 0);  
+  add_param( 12, "EyesBlink", -102, 0, 0);  
   add_param( 13, "EyesLtRt", -30, 40, 0);
   add_param( 14, "RtFootUp", 0, 4, 0);
   add_param( 15, "RtFootForward", -4, 4, 0);
