@@ -50,6 +50,7 @@ void jointCallback(const sensor_msgs::JointStateConstPtr &state)
 		vert_left=sin(theta2_left),
 		//theta1_left is the angle formed by the left thigh with respect to the vertical
 		theta1_left=atan(dx_left/w_left)+asin(L2*vert_left/pow(r2_left,.5)),
+		
         //Transform vertical and horrizontal inputs into angles for Right Leg
         h_right=state->position[14],
         w_right=L1+L2-h_right-(10.0f-h_right)/30.0f,
