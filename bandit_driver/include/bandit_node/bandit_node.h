@@ -189,18 +189,20 @@ public:
 				{
 					JointCalibration joint_calibration;
 					*joint_it >> joint_calibration;
+					int id = joint_calibration.id;
+					printf(" id = %d \n" , id);
 					// These default PID gains and offsets should be read from a config file
-					if ( bandit_driver_.getJointType( i ) == smartservo::SMART_SERVO )
+					if ( bandit_driver_.getJointType( id ) == smartservo::SMART_SERVO )
 					{
-						bandit_driver_.setJointPIDConfig( i, 100, 0, 0, -4000, 4001, 50, 0 );
+						bandit_driver_.setJointPIDConfig( id, 100, 0, 0, -4000, 4001, 50, 0 );
 					}
 
 					//set joint offsets and directions
-					bandit_driver_.setJointDirection( i, joint_calibration.direction );
+					bandit_driver_.setJointDirection( id, joint_calibration.direction );
 					//bandit_driver_.setJointOffset(i, DTOR(home[i]));
-					if ( bandit_driver_.getJointType( i ) == smartservo::SMART_SERVO ) bandit_driver_.setJointOffset( i, degToRad( joint_calibration.true_zero ) );
+					if ( bandit_driver_.getJointType( id ) == smartservo::SMART_SERVO ) bandit_driver_.setJointOffset( id, degToRad( joint_calibration.true_zero ) );
 					//g_bandit_.setJointOffset(i, DTOR(home[i]));
-					else bandit_driver_.setJointOffset( i, joint_calibration.true_zero );
+					else bandit_driver_.setJointOffset( id, joint_calibration.true_zero );
 					//bandit_driver_.setJointOffset(i, home[i]);
 				}
 
@@ -323,7 +325,7 @@ public:
 			// Set the joint position
 			ROS_INFO( "setting joint %zu to angle: %f\n", joint_it->id, radToDeg( joint_it->angle ) );
 
-			// Set the joint position
+			// Set the joint position; if this index doesn't exist, Bandit will throw an error so make sure to account for this
 			bandit_driver_.setJointPos( joint_it->id, joint_it->angle );
 		}
 		// Push out positions to bandit
