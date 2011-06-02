@@ -1,0 +1,9 @@
+<stack>
+  <description brief="turn_taking">turn_taking</description>
+  <author>Maintained by David Feil-Seifer</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/turn_taking</url>
+  <depend stack="ros" />
+
+</stack>
