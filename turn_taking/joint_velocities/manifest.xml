@@ -1,0 +1,15 @@
+<package>
+  <description brief="joint_velocities">
+
+     joint_velocities
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/joint_velocities</url>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+
