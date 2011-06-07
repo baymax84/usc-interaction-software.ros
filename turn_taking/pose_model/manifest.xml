@@ -1,0 +1,17 @@
+<package>
+  <description brief="pose_model">
+
+     pose_model
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pose_model</url>
+  <depend package="sensor_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="yaml_cpp"/>
+
+</package>
+
+
