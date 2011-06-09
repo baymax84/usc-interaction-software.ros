@@ -82,6 +82,23 @@
 	</visual>
 </link>
 
+<link name="hip_plate">
+
+<inertial>
+		<mass value="5"/>
+		<inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+		<origin/>
+	</inertial>
+	<visual>
+	<origin xyz="0 0 0" rpy="3.14 0 0" />
+		<material name="grey" >
+  </material>	
+	<geometry>
+		<mesh filename="package://sparky_model/meshes/HipPlate.stl"/>
+	</geometry>
+	</visual>
+</link>
+
 <joint name="worldjoint" type="fixed">
 	<origin xyz="0 0 0" rpy="0 0 0"/>
 	<parent link="world"/>
@@ -92,6 +109,12 @@
 	<origin xyz="-.1 .7 -.5" rpy="0 0 0"/>
 	<parent link="stand"/>
 	<child link="hips"/>
+</joint>
+
+<joint name="hip_plate" type="fixed">
+	<origin xyz="0 .01 .876" rpy="0 0 0"/>
+	<parent link="hips"/>
+	<child link="hip_plate"/>
 </joint>
 
 
@@ -731,7 +754,7 @@
 		<origin/>
 	</inertial>
 	<visual>
-	<origin xyz="-1.3 -.89 .37" rpy="-.05 .3 -1.57" />
+	<origin xyz="-1.5 -.89 .37" rpy="-.05 .3 -1.57" />
 	<material name="grey" >
       <color rgba=".2 .2 .2 .2" />
   </material>
@@ -750,7 +773,7 @@
 		<origin/>
 	</inertial>
 	<visual>
-	<origin xyz="-1.6 4.7 2.05" rpy="0 -1 -1.57" />
+	<origin xyz="1.7 3.95 4.8" rpy="0 .15 1.57" />
 	<material name="grey" >
       <color rgba=".2 .2 .2 .2" />
   </material>
@@ -769,7 +792,7 @@
 		<origin/>
 	</inertial>
 	<visual>
-	<origin xyz="3.6 0 -.5" rpy="0 0 -1.57" />
+	<origin xyz="1.3 .5 -.1" rpy="1.57 0 0" />
 	<material name="whitegray" />
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/RightFoot.stl" />
@@ -780,21 +803,21 @@
 <joint name="RtFootForward" type="continuous">
 	<parent link="hips"/>
 	<child link="rightthigh" />
-	<origin xyz="1.5 0 0" rpy="0 -.05 0"/>
+	<origin xyz="1.65 0 0" rpy="-.15 -.05 0"/>
 	<axis xyz="1.05 0 0" /> 
 </joint>
 
 <joint name="RtFootUp" type="continuous" >
 	<parent link="rightthigh" />
 	<child link="rightcalf" />
-	<origin xyz="0 0 -5.0" rpy="-.23 .05 0" />
+	<origin xyz="0 0 -4.95" rpy=".3 .05 0" />
 	<axis xyz="1.23 -.05 0" /> 
 </joint>
 
 <joint name="RtFootjoint" type="fixed">
 	<parent link="rightcalf" />
 	<child link="rightfoot" />
-	<origin xyz="0 .8 -4.3" rpy="-.2 0 0" />
+	<origin xyz="0 0 -4.95" rpy="0 0 0" />
 	<axis xyz="1 0 0" /> 
 </joint>
 
@@ -829,7 +852,7 @@
 		<origin/>
 	</inertial>
 	<visual>
-	<origin xyz="-1.6 4.7 2.05" rpy="0 -1 -1.57" />
+	<origin xyz="1.7 3.95 4.8" rpy="0 .15 1.57" />
 	<material name="grey" >
       <color rgba=".2 .2 .2 .2" />
   </material>
@@ -848,7 +871,7 @@
 		<origin/>
 	</inertial>
 	<visual>
-	<origin xyz="0 0 -.5" rpy="0 0 -1.57" />
+	<origin xyz="1.3 .5 -.1" rpy="1.57 0 0" />
 	<material name="whitegray" />
 	<geometry>
 		<mesh filename="package://sparky_model/meshes/LeftFoot.stl" />
@@ -860,21 +883,21 @@
 <joint name="LtFootForward" type="continuous">
 	<parent link="hips"/>
 	<child link="leftthigh"/>
-	<origin xyz="-1.65 0 0" rpy="0 -.05 0"/>
+	<origin xyz="-1.65 0 0" rpy="-.15 -.05 0"/>
 	<axis xyz="1.05 0 0" /> 
 </joint>
 
 <joint name="LtFootUp" type="continuous">
 	<parent link="leftthigh" />
 	<child link="leftcalf" />
-	<origin xyz="0 0 -5" rpy="-.23 .05 0" />
+	<origin xyz="0 0 -5" rpy=".3 .05 0" />
 	<axis xyz="1.23 -.05 0" /> 
 </joint>
 
 <joint name="LtFootjoint" type="fixed">
 	<parent link="leftcalf" />
 	<child link="leftfoot" />
-	<origin xyz="0 .8 -4.3" rpy="-.2 0 0" />
+	<origin xyz="0 0 -4.95" rpy="0 0 0" />
 	<axis xyz="1 0 0" /> 
 </joint>
 

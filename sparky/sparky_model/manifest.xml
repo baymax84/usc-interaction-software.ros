@@ -11,6 +11,7 @@
   <depend package="urdf"/>
   <depend package="tf"/>
   <depend package="sensor_msgs"/>
+  <depend package="opende" />
 <!--
   <depend package="gazebo_plugins"/>
   <depend package="gazebo_tools"/>

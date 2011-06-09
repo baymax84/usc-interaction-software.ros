@@ -64,7 +64,7 @@
 	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="0 0 -1.57" />
-		 <material name="grey" >
+		<material name="grey" >
       <color rgba=".2 .2 .2 1" />
   </material>
 	<geometry>
@@ -125,7 +125,7 @@
 	</inertial>
 	<visual>
 	<origin xyz="0 0 0" rpy="0 1.57 0" />
-		 <material name="grey" >
+		<material name="grey" >
       <color rgba=".2 .2 .2 1" />
   </material>
 	<geometry>
