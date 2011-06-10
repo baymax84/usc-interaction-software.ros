@@ -1,0 +1,15 @@
+<package>
+  <description brief="strike_pose">
+
+     strike_pose
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/strike_pose</url>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

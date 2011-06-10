@@ -54,7 +54,7 @@ void setHeightFromPublishedTransform()
   try
   {
     listener->lookupTransform("/ovh_height", "/ovh", ros::Time(0), cam_height_tf);
-    listener->lookupTransform("/robot/ir", "/robot/base_link", ros::Time(0), height_tf);
+    listener->lookupTransform("/robot/ir_filtered", "/robot/base_link", ros::Time(0), height_tf);
   }
   catch (tf::TransformException ex)
   {
@@ -143,10 +143,11 @@ void blob_cb( const oit_msgs::BlobArrayConstPtr& blobs )
 
       //double fact = (cam_height-height)/imgray.z;
       //double px = fact*imgray.x; double py = -fact*imgray.y;
-      x.push_back(proj_pt.x); y.push_back(proj_pt.y); area.push_back(blob.size);
+      x.push_back(proj_pt.x); y.push_back(proj_pt.y); area.push_back(blob.width*blob.height);
+      //x.push_back(proj_pt.x); y.push_back(proj_pt.y); area.push_back(blob.size);
       //rays.push_back(imgray); //save the original rays to the blobs
       
-      //ROS_INFO("x %f y %f area %d", px, py, blob.size);
+      //ROS_INFO("x %f y %f area %d newarea: %d", proj_pt.x, proj_pt.y, blob.size, blob.width*blob.height);
       
     }
     // figure out most likely correspondence

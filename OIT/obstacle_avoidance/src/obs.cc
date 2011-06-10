@@ -69,20 +69,20 @@ obs_cb( const oit_msgs::ObstacleArrayConstPtr& msg)
 void
 runloop()
 {
-  double odist = 0.35;
+  double odist = 0.15;
 
   /* robot pose relative to ovh frame */
 	std::vector<tf::StampedTransform> transforms;
   tf::StampedTransform rtrans;
 
   try {
-    tl->lookupTransform("/ovh","/robot/base_link", ros::Time(0), rtrans );
+    tl->lookupTransform("/map","/robot/base_link", ros::Time(0), rtrans );
 		
 		for( unsigned int i = 0; i < frame_strings.size(); i++ )
-			if( tl->canTransform( "/ovh",frame_strings[i], ros::Time(0) ) )
+			if( tl->canTransform( "/map",frame_strings[i], ros::Time(0) ) )
 			{
 				tf::StampedTransform tr;
-		    tl->lookupTransform("/ovh",frame_strings[i], ros::Time(0), tr );
+		    tl->lookupTransform("/map",frame_strings[i], ros::Time(0), tr );
 				transforms.push_back( tr );
 			}
   }

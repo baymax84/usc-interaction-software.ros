@@ -1,0 +1,7 @@
+<launch>
+
+	<include file="$(find dave_demo)/bandit_teleop.launch"/>
+	<node name="joint_velocities" pkg="joint_velocities" type="joint_velocities"/>
+	<node name="pose_writer" pkg="detect_pose" type="pose_writer" output="screen"/>
+
+</launch>
