@@ -10,8 +10,9 @@
 
 
 double resolution = .01;
-int map_width = (int) (6.0 / resolution);
-int map_height = (int) (6.0 / resolution);
+double map_size = 7.0;
+int map_width = (int) (map_size / resolution);
+int map_height = (int) (map_size / resolution);
 
 template<typename _T>
 struct Point2D
@@ -148,8 +149,8 @@ int main( int argc, char* argv[] )
 	map_msg.info.width = map_width;
 	map_msg.info.height = map_height;
 	geometry_msgs::Pose pose;
-	pose.position.x = -3.0;
-	pose.position.y = -3.0;
+	pose.position.x = -map_size/2.;
+	pose.position.y = -map_size/2.;
 	map_msg.info.origin = pose;
 	
 	int ncells = map_width*map_height;
@@ -171,7 +172,7 @@ int main( int argc, char* argv[] )
 	
 	if(!fin.good())
 	{
-		ROS_WARN("File not found.");
+		ROS_WARN("File not found: [%s]", argv[1]);
 		return 1;
 	}
 	

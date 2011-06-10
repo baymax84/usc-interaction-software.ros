@@ -41,6 +41,8 @@
 #include "LinearMath/btMatrix3x3.h"
 #include <math.h>
 
+#include <nav_msgs/Odometry.h>
+
 // need pinhole camera model
 bool model_initialized = false;
 double height = 0.0;//0.812;
@@ -115,6 +117,8 @@ int main( int argc, char* argv[] )
   ros::Subscriber yellow_sub = nh.subscribe( "yellow_blobs", 1, &yellow_cb );
   ros::Subscriber red_sub = nh.subscribe( "red_blobs", 1, &red_cb );
   ros::Subscriber camera_sub = nh.subscribe( "camera_info", 1, &camera_cb );
+
+	ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("ovh_odom",100);
 	image_transport::ImageTransport it(nh);
 	image_transport::Subscriber image_sub = it.subscribe("image", 1, image_cb );
 
@@ -124,6 +128,17 @@ int main( int argc, char* argv[] )
 
 	cvNamedWindow("pr2_finder",0);
 
+	// construct the base odometry message
+	nav_msgs::Odometry odom;
+	odom.header.frame_id = "ovh";
+	odom.pose.covariance[0] = 60;
+	odom.pose.covariance[7] = 60;
+	odom.pose.covariance[14] = 60;
+	odom.pose.covariance[21] = 999999;
+	odom.pose.covariance[28] = 999999;
+	odom.pose.covariance[35] = 2380;
+
+	odom.pose.pose.position.z = 0;
 
 	while( ros::ok() )
 	{
@@ -173,6 +188,7 @@ int main( int argc, char* argv[] )
 		  if( model_initialized )
   		{
 				//ROS_INFO( "blobs.size: %d", blobs->blobs.size() );
+
 	    	setHeightFromPublishedTransform();
 	  	  //ROS_INFO( "height: %0.2f cam_height: %0.2f", height, cam_height );
   	  	// rectify blobs to real-world points
@@ -241,6 +257,19 @@ int main( int argc, char* argv[] )
 				ROS_INFO( "height: %0.2f floor_to_cam: %0.2f ir_plane: %0.2f", height, floor_to_cam.getOrigin().z(), ir_plane );
 				robot_pub.setOrigin( tf::Vector3(red_pt.x, red_pt.y, ir_plane ));//floor_to_cam.getOrigin().z()) );
 				robot_pub.setRotation( tf::Quaternion(yaw,0,0));
+
+				odom.header.stamp = yellows_->header.stamp;
+
+				odom.pose.pose.position.x = red_pt.x;
+				odom.pose.pose.position.y = red_pt.y;
+
+				odom.pose.pose.orientation.x = robot_pub.getRotation().getAxis().getX();
+				odom.pose.pose.orientation.y = robot_pub.getRotation().getAxis().getY();
+				odom.pose.pose.orientation.z = robot_pub.getRotation().getAxis().getZ();
+				odom.pose.pose.orientation.w = robot_pub.getRotation().getW();
+
+				odom_pub.publish( odom );
+
 				tb->sendTransform(tf::StampedTransform(robot_pub, yellows_->header.stamp, "cam_plane_flat", "pr2_ovh_target" ));
 
 			}

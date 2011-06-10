@@ -100,7 +100,7 @@ void blob_cb( const oit_msgs::BlobArrayConstPtr& blobs )
 
       // project to correct distance from camera
       double fact = (cam_height-height)/imgray.z;
-      double px = fact*imgray.x; double py = -fact*imgray.y;
+      double px = -fact*imgray.x; double py = fact*imgray.y;
 
       // publish transform
       tf::Quaternion quat; quat.setRPY(0,0,0);
@@ -120,10 +120,11 @@ int main( int argc, char* argv[] )
   tb = new tf::TransformBroadcaster();
   listener = new tf::TransformListener();
   ros::NodeHandle nh;
+  ros::NodeHandle nh_priv("~");
   ros::Subscriber blobs_sub = nh.subscribe( "child_blobs", 1, &blob_cb );
   ros::Subscriber camera_sub = nh.subscribe( "camera_info", 1, &camera_cb );
-  nh.param( "tfname", tfname, std::string("/child/odom") );
-  nh.param( "height", height, 1.0 );
+  nh_priv.param( "tfname", tfname, std::string("/child/base_link") );
+  nh_priv.param( "height", height, 1.0 );
   ros::spin();
   return 0;
 }

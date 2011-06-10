@@ -1,0 +1,16 @@
+<package>
+  <description brief="detect_pose">
+
+     detect_pose
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/detect_pose</url>
+  <depend package="sensor_msgs"/>
+  <depend package="oit_models"/>
+
+</package>
+
+
