@@ -75,10 +75,10 @@ int main( int argc, char* argv[] )
   add_param(13, "EyesLtRt",   -30, 22, 0);
 
   // distance in centimeters
-  add_param(14, "RtFootUp",       3.25, 9.00, 0.00);
-  add_param(15, "RtFootForward", -6.00, 6.00, 0.00);
-  add_param(16, "LtFootUp",       3.50, 9.00, 0.00);
-  add_param(17, "LtFootForward", -8.00, 4.00, 0.00);
+  add_param(14, "RtFootUp",       3.25, 8.25, 0.00);
+  add_param(15, "RtFootForward", -5.00, 4.00, 0.00);
+  add_param(16, "LtFootUp",       3.50, 8.25, 0.00);
+  add_param(17, "LtFootForward", -4.00, 5.00, 0.00);
 
   ROS_INFO("Advertising service 'sparky_params'...");
   ros::ServiceServer service = n.advertiseService("sparky_params", param);
