@@ -38,13 +38,23 @@ void jointCallback(const sensor_msgs::JointStateConstPtr &state)
   double angle = 0.0l;
 
   float radcorrect = M_PI / 180.0f;
-  float L1         = 12.5f; // length of calf (cm)
-  float L2         = 13.0f; // length of thigh (cm)
+  float L1         = 4.95f; // length of calf (cm)
+  float L2         = 4.95f; // length of thigh (cm)
 
   // transform vertical and horizontal inputs into angles for Left Leg
   float h_left  = state->position[16];
-  float w_left  = L1 + L2 - h_left - (10.0f - h_left) / 30.0f;
+  
+  if    (h_left == 0.0f) h_left = 0.0f;
+  else                   h_left = (h_left - 3.5f)*1.8457f/4.754f; // set scaling factor
+   
+   //h_left  = h_left*1.94118f/5.0f;  
+  float w_left  = L1 + L2 - h_left - .387252f;
   float dx_left = state->position[17];
+  
+  //set scaling factor
+  if    (dx_left >= 0.0f) dx_left = dx_left*1.94118f/5.0f;
+  else                    dx_left = dx_left*1.55292f/4.0f;
+  
   float r2_left = pow(w_left, 2) + pow(dx_left, 2);
 
   // theta2_left is the angle formed by bending the left knee
@@ -59,8 +69,17 @@ void jointCallback(const sensor_msgs::JointStateConstPtr &state)
 
   // transform vertical and horrizontal inputs into angles for Right Leg
   float h_right  = state->position[14];
-  float w_right  = L1 + L2 - h_right - (10.0f - h_right) / 30.0f;
+  
+    if (h_right == 0.0f) h_right = 0.0f;
+  else                   h_right = (h_right - 3.25f)*1.8457f/4.754f; // set scaling factor
+  
+  float w_right  = L1 + L2 - h_right - .387252f; // (10.0f - h_right) / 30.0f;
   float dx_right = state->position[15];
+    
+  //set scaling factor
+  if    (dx_right >= 0.0f) dx_right = dx_right*1.94118f/5.0f;
+  else                     dx_right = dx_right*1.55292f/4.0f;
+  
   float r2_right = pow(w_right, 2) + pow(dx_right, 2);
 
   // theta2_right is the angle formed by bending the left knee
