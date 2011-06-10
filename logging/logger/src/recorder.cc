@@ -90,7 +90,7 @@ RecorderOptions::RecorderOptions() :
     append_date(true),
     snapshot(false),
     verbose(false),
-    compression(rosbag::compression::None),
+    compression(rosbag::compression::Uncompressed),
     prefix(""),
     name(""),
     exclude_regex(),
