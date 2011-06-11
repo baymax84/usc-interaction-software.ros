@@ -5,12 +5,12 @@
  * commands and smoothly interpolates the joint positions to the 
  * target positions by enforcing a maximum joint velocity constraint. 
  *
- * Authors: Juan Fasola and Dan Ho
+ * Authors: Juan Fasola, David Feil-Seifer  and Dan Ho
  * Date Written: 9/6/10
  */
 
 #include "ros/ros.h"
-#include "bandit_msgs/JointArray.h"
+#include "sensor_msgs/JointState.h"
 #include <stdio.h>
 
 /* Degrees/radians macro */
@@ -18,7 +18,6 @@
 #define RTOD(a) ((a) * 180.0/M_PI)
 
 /* Number of bandit joints */
-const int NUM_JOINTS = 19;
 
 /* Size of publisher/subscriber message buffer */
 const unsigned int MESSAGE_BUFLEN = 5;
@@ -30,13 +29,15 @@ const double MAX_VELOCITY = DTOR(70);
 const double MAX_ACCELERATION = DTOR(130);
 
 /* Array of current joint angles */
-double current_joints[NUM_JOINTS];
+std::map<std::string,double> current_joints;
 
 /* Array of target joint angles */
-double target_joints[NUM_JOINTS];
+std::map<std::string,double> target_joints;
 
 /* Array of current velocity of joints */
-double velocities[NUM_JOINTS];
+std::map<std::string,double> velocities;
+
+std::vector<std::string> joint_names;
 
 /* Use of joint dead zone */
 const bool USE_DEAD_ZONE = true;
@@ -48,25 +49,39 @@ const double ZONE_THRESHOLD = DTOR(5);
 /**
  * Callback function for joint array target requests.
  */
-void targetRequestCB(const bandit_msgs::JointArrayConstPtr& j){
+void targetRequestCB(const sensor_msgs::JointStateConstPtr& j){
   printf("Received joint target message!\n");
 
   /* Address all joint target positions */
-  for(unsigned int i=0; i<j->joints.size(); i++){
+  for(unsigned int i=0; i<j->position.size(); i++){
     /* Get target information for joint */
-    int id = j->joints[i].id;
-    double angle = j->joints[i].angle;
+   	std::string name = j->name[i];
+		int found = -1;
+		printf( "joint_names: %d, %s", joint_names.size(), name.c_str() );
+		for( int ii = 0; ii < joint_names.size(); ii++ )
+		{
+			if( joint_names[ii] == name ) found = ii;
+		}
+
+		if( found < 0  ) 
+		{
+			joint_names.push_back( name );
+			current_joints[name] = 0;
+			velocities[name] = 0;
+			target_joints[name] = 0;
+		}
+
+
+    double angle = j->position[i];
 
     /* Set target joint angle if valid */
-    if(id>=0 && id<NUM_JOINTS){
-      if(!USE_DEAD_ZONE || 
-	 (fabs(angle - current_joints[id]) >= ZONE_THRESHOLD)){
-	target_joints[id] = angle;
-	velocities[id] = 0;
-      }
+
+    if(!USE_DEAD_ZONE || (fabs(angle - current_joints[name]) >= ZONE_THRESHOLD)){
+			target_joints[name] = angle;
+			velocities[name] = 0;
     }
 
-    printf("   updating joint %d to %f\n",id,angle);
+    printf("   updating joint %s to %f\n",name.c_str(),angle);
   }
 }
 
@@ -82,18 +97,10 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   /* Setup publisher to communicate with motion control node */
-  ros::Publisher joint_pub = n.advertise<bandit_msgs::JointArray>("joint_cmd", MESSAGE_BUFLEN);
+  ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("joint_cmd", MESSAGE_BUFLEN);
 
   /* Subscribe to topic to receive target joint angles */
   ros::Subscriber target_sub = n.subscribe("joint_smooth", MESSAGE_BUFLEN, targetRequestCB);
-
-  /* Initialize joint arrays to default position */
-  int i;
-  for(i=0; i<NUM_JOINTS; i++){
-    current_joints[i] = 0;
-    target_joints[i] = 0;
-    velocities[i] = 0;
-  }
 
   /* Set loop rate */
   ros::Rate loop_rate(30);
@@ -103,13 +110,15 @@ int main(int argc, char **argv)
   double last_time = ros::Time::now().toSec();
   bool last_moving, moving = false;
 
+	joint_names.clear();
+
   printf("Running bandit_smooth node...\n\n");
 
   /* Loop and send updated movement commands for each joint */
   while (ros::ok())
   {
     /* Build joint array message to send to motion control */
-    bandit_msgs::JointArray msg;
+    sensor_msgs::JointState msg;
 
     /* Update time variables for velocity control */
     cur_time = ros::Time::now().toSec();
@@ -121,46 +130,49 @@ int main(int argc, char **argv)
     moving = false;
 
     /* Update joint positions according to target positions */
-    for(i=0; i<NUM_JOINTS; i++){
-      double c = current_joints[i];  // Current joint position
-      double g = target_joints[i];   // Target joint position
+    for(unsigned i = 0; i<joint_names.size(); i++){
+
+      double c = current_joints[joint_names[i]];  // Current joint position
+      double g = target_joints[joint_names[i]];   // Target joint position
 
       /* Current joint position not at target position */
       if(fabs(g - c) > 1e-6){
-	/* Calculate distance from target */
-	double dist = fabs(g - c);
+				/* Calculate distance from target */
+				double dist = fabs(g - c);
 
-	/* Update velocity of joint */
-	velocities[i] = velocities[i] + MAX_ACCELERATION * diff_time;
-	if(velocities[i] > MAX_VELOCITY){
-	  velocities[i] = MAX_VELOCITY;
-	}
-	vel = diff_time * velocities[i];
+				/* Update velocity of joint */
+				velocities[joint_names[i]] = velocities[joint_names[i]] + MAX_ACCELERATION * diff_time;
+				if(velocities[joint_names[i]] > MAX_VELOCITY){
+				  velocities[joint_names[i]] = MAX_VELOCITY;
+				}
+				vel = diff_time * velocities[joint_names[i]];
 
-	/* Move to target */
-	if(g > c){
-	  if(dist > vel){
-	    c+=vel;
-	  }else{
-	    c+=dist;
-	  }
-	}else{
-	  if(dist > vel){
-	    c-=vel;
-	  }else{
-	    c-=dist;
-	  }
-	}
+				/* Move to target */
+				if(g > c){
+				  if(dist > vel){
+				    c+=vel;
+				  }else{
+				    c+=dist;
+				  }
+				}else{
+				  if(dist > vel){
+				    c-=vel;
+				  }else{
+			    c-=dist;
+	  			}
+				}
 
-	/* Update internal position of joint */
-	current_joints[i] = c;
+				printf( "%s: %0.2f ==> %0.2f\n", joint_names[i].c_str(), c, g );
 
-	/* Add updated joint position to joint array message */
-	bandit_msgs::Joint j;
-	j.id = i;
-	j.angle = c;
-	msg.joints.push_back(j);
-	moving = true;
+				/* Update internal position of joint */
+				current_joints[joint_names[i]] = c;
+
+				/* Add updated joint position to joint state message */
+				msg.name.push_back(joint_names[i]);
+				msg.position.push_back(c);
+				msg.velocity.push_back(0);
+				msg.effort.push_back(0);
+				moving = true;
       }
     }
 
@@ -168,10 +180,9 @@ int main(int argc, char **argv)
     if(moving){
       /* Publish joint array message to motion control */
       joint_pub.publish(msg);
-
       if(!last_moving)
-	printf("moving... cur time: %f\n",cur_time);
-    }else if(last_moving){
+				printf("moving... cur time: %f\n",cur_time);
+    } else if(last_moving){
       printf("Done moving! cur time: %f\n\n",cur_time);
     }
 
