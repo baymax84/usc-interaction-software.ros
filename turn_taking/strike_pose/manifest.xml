@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/strike_pose</url>
   <depend package="sensor_msgs"/>
-
+	<depend package="pose_model"/>
 </package>
 
 

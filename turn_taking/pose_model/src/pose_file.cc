@@ -1,4 +1,5 @@
 #include <pose_model/SimonPose.h>
+#include <pose_model/pose_file.h>
 #include <opencv/cv.h>
 #include <stdio.h>
 
@@ -74,16 +75,17 @@ pose_model::SimonPose load_pose_from_file( const char* filename  )
 	return pose;
 }
 
-std::vector<pose_model::SimonPose> read_poses_from_yaml( std::string filename )
+std::vector<pose_model::SimonPose> read_poses_from_yaml( std::string filename, std::string prefix )
 {
 	std::ifstream fin;
-	fin.open( filename.c_str() );
+	std::string new_filename = prefix + "/" + filename;
+	fin.open( new_filename.c_str() );
 
 	std::vector<pose_model::SimonPose> ret;
 
 	if( fin.fail() )
 	{
-		ROS_WARN("couldn't find the file: [%s]", filename.c_str() );
+		ROS_WARN("couldn't find the file: [%s]", new_filename.c_str() );
 		return ret;
 	}
 
@@ -97,6 +99,7 @@ std::vector<pose_model::SimonPose> read_poses_from_yaml( std::string filename )
 	{
 		std::string fname;
 		y_files[i]["filename"] >> fname;
+		fname = prefix + "/" + fname;
 		ret.push_back(load_pose_from_file( fname.c_str() ));
 		ROS_INFO( "adding: [%s] to model", fname.c_str() );
 	}
@@ -105,7 +108,7 @@ std::vector<pose_model::SimonPose> read_poses_from_yaml( std::string filename )
 
 int main( int argc, char* argv[] )
 {
-	read_poses_from_yaml( argv[1] );
+	read_poses_from_yaml( argv[1], argv[2] );
 	return 0;
 }
 
