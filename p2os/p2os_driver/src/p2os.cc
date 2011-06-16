@@ -484,7 +484,7 @@ P2OSNode::Setup()
   packet.Send(this->psos_fd);
   usleep(P2OS_CYCLETIME_USEC);
 
-  ROS_INFO("Done.\n   Connected to %s, a %s %s", name, type, subtype);
+  ROS_INFO("Done: Connected to %s, a %s %s", name, type, subtype);
 
   // now, based on robot type, find the right set of parameters
   for(i=0;i<PLAYER_NUM_ROBOT_TYPES;i++)
@@ -492,6 +492,7 @@ P2OSNode::Setup()
     if(!strcasecmp(PlayerRobotParams[i].Class.c_str(),type) &&
        !strcasecmp(PlayerRobotParams[i].Subclass.c_str(),subtype))
     {
+      //ROS_INFO( "P2OS: using params: %d", i );
       param_idx = i;
       break;
     }

@@ -76,7 +76,21 @@ void SIP::FillStandard(ros_p2os_data_t* data)
   data->position.twist.twist.linear.y = 0.0;
   data->position.twist.twist.angular.z = ((double)(rvel-lvel)/(2.0/PlayerRobotParams[param_idx].DiffConvFactor));
 
-  //publish transform
+	data->position.pose.covariance[0] = 0.2;
+	data->position.pose.covariance[7] = 0.2;
+	data->position.pose.covariance[14] = 999999;
+	data->position.pose.covariance[21] = 999999;
+	data->position.pose.covariance[28] = 999999;
+	data->position.pose.covariance[35] = 0.2;
+
+  data->position.twist.covariance[0] = 0.2;
+	data->position.twist.covariance[7] = 0.2;
+	data->position.twist.covariance[14] = 999999;
+	data->position.twist.covariance[21] = 999999;
+	data->position.twist.covariance[28] = 999999;
+	data->position.twist.covariance[35] = 0.2;
+	
+	//publish transform
 
   data->odom_trans.header = data->position.header;
   data->odom_trans.child_frame_id = data->position.child_frame_id;
