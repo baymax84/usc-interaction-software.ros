@@ -32,6 +32,7 @@
 #include <ros/ros.h>
 #include <oit_msgs/BlobArray.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <nav_msgs/Odometry.h>
 #include <image_geometry/pinhole_camera_model.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
@@ -47,6 +48,8 @@ double blob_dist_tolerance;
 image_geometry::PinholeCameraModel pcam;
 tf::TransformBroadcaster* tb;
 tf::TransformListener* listener;
+
+ros::Publisher odom_pub;
 
 void setHeightFromPublishedTransform()
 {
@@ -270,6 +273,28 @@ void blob_cb( const oit_msgs::BlobArrayConstPtr& blobs )
 		tb->sendTransform( tf::StampedTransform(ir1_tf, blobs->header.stamp, "/cam_plane_flat", "/robot/ir1" ) );
 		tb->sendTransform( tf::StampedTransform(ir2_tf, blobs->header.stamp, "/cam_plane_flat", "/robot/ir2" ) );
 		tb->sendTransform( tf::StampedTransform(irc_tf, blobs->header.stamp, "/cam_plane_flat", "/robot/ir" ) );
+
+		nav_msgs::Odometry odom;
+		odom.header.stamp = blobs->header.stamp;
+		odom.header.frame_id = "/cam_plane_flat";
+		odom.child_frame_id = "/robot/ir";
+		odom.pose.pose.position.x = irc.x;
+		odom.pose.pose.position.y = irc.y;
+		odom.pose.pose.position.z = ir_plane;
+
+		odom.pose.pose.orientation.x = quat.getX();
+		odom.pose.pose.orientation.y = quat.getY();
+		odom.pose.pose.orientation.z = quat.getZ();
+		odom.pose.pose.orientation.w = quat.getW();
+
+		odom.pose.covariance[0] = 20;
+		odom.pose.covariance[7] = 20;
+		odom.pose.covariance[14] = 99999999;
+		odom.pose.covariance[21] = 99999999;
+		odom.pose.covariance[28] = 99999999;
+		odom.pose.covariance[35] = 20;
+
+		odom_pub.publish(odom);
     }
   }
   else
@@ -285,8 +310,12 @@ int main( int argc, char* argv[] )
   tb = new tf::TransformBroadcaster();
   listener = new tf::TransformListener();
   ros::NodeHandle nh;
+	ros::NodeHandle nh_priv;
   nh.param("blob_dist_baseline", blob_dist_baseline, 0.3);
   nh.param("blob_dist_tolerance", blob_dist_tolerance, 0.25);
+
+	odom_pub = nh_priv.advertise<nav_msgs::Odometry>("odom", 1 );
+
   ros::Subscriber blobs_sub = nh.subscribe( "ir_blobs", 1, &blob_cb );
   ros::Subscriber camera_sub = nh.subscribe( "camera_info", 1, &camera_cb );
   ros::spin();
