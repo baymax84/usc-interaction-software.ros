@@ -11,7 +11,7 @@ JointCalibrations:
   Direction: -1
   MaxAngle: 175.000
   MinAngle: -175.000
-  TrueZero: -0.0 #-46.4375
+  TrueZero: -6.65 #-46.4375
   Offset: 0
 -
   JointID: 2
