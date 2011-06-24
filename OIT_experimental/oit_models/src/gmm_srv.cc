@@ -46,14 +46,16 @@ bool classify(oit_models::GMMClassify::Request  &req,
 				 			oit_models::GMMClassify::Response &res )
 {
 	// infer time from robot distance
-  double p1 = -0.72641;
-  double p2 =  0.97636;
-  double p3 = -1.1394;
-  double p4 =  1.0673;
+  double p1 = -0.8173;
+  double p2 =  1.0319;
+  double p3 = -1.0939;
+  double p4 =  1.0616;
 
   //double t = -0.86466*req.data[1] + 1.0661;
   double x = req.data[1];
   double t = p1 * x*x*x + p2 * x*x + p3 * x + p4;
+
+	if( t > 1. ) t = 1.;
 
 	std::vector<double> data;
 	data.push_back(t);
@@ -119,8 +121,8 @@ bool lookup_prob(oit_models::LookupProb::Request  &req,
   rx = req.robot_pos.x;
   ry = req.robot_pos.y;
 
-  cx = -child_tf.getOrigin().x();
-  cy = -child_tf.getOrigin().y();
+  cx = child_tf.getOrigin().x();
+  cy = child_tf.getOrigin().y();
 
   gx = updated_goal.pose.position.x;
   gy = updated_goal.pose.position.y;

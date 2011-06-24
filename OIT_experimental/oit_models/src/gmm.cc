@@ -151,7 +151,7 @@ bool GMM::train_model( int num_clusters, std::vector<int> *dimensions )
 			windowName[0] = '\0';
 			sprintf( windowName, "%d / %d", d, dd );
 
-			//cvNamedWindow( windowName, 1 );
+			cvNamedWindow( windowName, 1 );
 			IplImage * displayImage = cvCreateImage( cvSize(256, 256), 8, 3 );
 
 			for( int i = 0; i < N; i++ )
@@ -178,7 +178,7 @@ bool GMM::train_model( int num_clusters, std::vector<int> *dimensions )
 				cvRectangle( displayImage, p1, p2, colors[labels->data.i[i]], 1 );
 			}
 
-			//cvShowImage( windowName, displayImage );
+			cvShowImage( windowName, displayImage );
 		}
 	}
 
