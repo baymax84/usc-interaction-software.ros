@@ -48,9 +48,9 @@ int main( int argc, char* argv[] )
 	js.position.push_back(0);
 	js.name.push_back(std::string("swivel_hubcap_joint"));
 	js.position.push_back(0);
-	js.name.push_back(std::string("base_left_hubcap_joint"));
+	js.name.push_back(std::string("base_left_wheel_joint"));
 	js.position.push_back(0);
-	js.name.push_back(std::string("base_right_hubcap_joint"));
+	js.name.push_back(std::string("base_right_wheel_joint"));
 	js.position.push_back(0);
 
 
