@@ -490,7 +490,7 @@ bool initSparky()
   bool enabled = true;
   int speed = 0;
   int accel = 0;
-  int target = 0;
+  //int target = 0;
 
   bool success = true;
   for (int i = 0, n = N_JOINTS; i < n; ++i)
