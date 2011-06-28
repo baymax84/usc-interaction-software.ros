@@ -1,5 +1,5 @@
 <launch>
-        <param name="robot_description" command="cat $(find sparky_model)/sparky_model.xml" />
+        <param name="robot_description" command="cat $(find sparky_model)/model.xml" />
 				
 		<node name="fake_sparky" pkg="fake_sparky" type="fake_sparky" />
 		
