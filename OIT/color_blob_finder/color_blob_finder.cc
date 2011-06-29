@@ -169,8 +169,9 @@ private:
     //hsv_pub = n.advertise<sensor_msgs::Image>("image_hsv",1000);
     foreground_pub = n.advertise<oit_msgs::BlobArray>("foreground_blobs",1000);
     n = ros::NodeHandle("~");
-    std::string colorfile, irfile;
+    std::string colorfile, irfile, childfile;
     n.param("parent_hist", colorfile, std::string(""));
+    n.param("child_hist", childfile, std::string(""));
     n.param("ir_hist", irfile, std::string(""));
 
     hsv_img_ = cvCreateImage( cvSize( 320,240), 8, 3 );
@@ -188,13 +189,20 @@ private:
       colors_.push_back( CV_RGB( 0, 0, 255 ) );
     }
 
+		if( childfile != std::string( "" ) )
+    {
+      ColorFinder p;
+      p.init( childfile.c_str(), "child" );
+      color_finders_.push_back( p );
+      colors_.push_back( CV_RGB( 255, 128, 0 ) );
+    }
 
     if( colorfile != std::string( "" ) )
     {
       ColorFinder p;
-      p.init( colorfile.c_str(), "child" );
+      p.init( colorfile.c_str(), "parent" );
       color_finders_.push_back( p );
-      colors_.push_back( CV_RGB( 255, 128, 0 ) );
+      colors_.push_back( CV_RGB( 128, 255, 0 ) );
     }
     //std::string background_file;
     //n.param( "background", background_file, std::string("") );
@@ -202,9 +210,9 @@ private:
     if( display > 0 )
     {
       cvNamedWindow( "output", 1 );
-			cvCreateTrackbar( "Vmin", "output", color_finders_[0].vmin(), 256, 0);
-			cvCreateTrackbar( "Vmax", "output", color_finders_[0].vmax(), 256, 0);
-			cvCreateTrackbar( "Smin", "output", color_finders_[0].smin(), 256, 0);
+			cvCreateTrackbar( "Vmin", "output", color_finders_[1].vmin(), 256, 0);
+			cvCreateTrackbar( "Vmax", "output", color_finders_[1].vmax(), 256, 0);
+			cvCreateTrackbar( "Smin", "output", color_finders_[1].smin(), 256, 0);
     }
 
     kernel_ = cvCreateStructuringElementEx( 15, 15, 8, 8, CV_SHAPE_RECT );
