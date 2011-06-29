@@ -151,7 +151,7 @@ bool GMM::train_model( int num_clusters, std::vector<int> *dimensions )
 			windowName[0] = '\0';
 			sprintf( windowName, "%d / %d", d, dd );
 
-			cvNamedWindow( windowName, 1 );
+			//cvNamedWindow( windowName, 1 );
 			IplImage * displayImage = cvCreateImage( cvSize(256, 256), 8, 3 );
 
 			for( int i = 0; i < N; i++ )
@@ -178,7 +178,7 @@ bool GMM::train_model( int num_clusters, std::vector<int> *dimensions )
 				cvRectangle( displayImage, p1, p2, colors[labels->data.i[i]], 1 );
 			}
 
-			cvShowImage( windowName, displayImage );
+			//cvShowImage( windowName, displayImage );
 		}
 	}
 
@@ -193,9 +193,9 @@ GMM::prob( std::vector<double> *vec )
 
 	for( unsigned i = 0; i < data.size(); i++ )
 	{
-		printf( "%0.6f ", data[i] );
+		//printf( "%0.6f ", data[i] );
 	}
-	printf("==> " );
+	//printf("==> " );
 	cv::Mat uu;
 	em_model_.getMeans().copyTo(uu);
 	cv::Mat w(1, num_trained_dims_, CV_64FC1);
@@ -251,7 +251,7 @@ GMM::prob( std::vector<double> *vec )
 
 
 		mdists.push_back( mahal );
-		printf( "%0.2f/%0.4f ", mahal, prob );
+		//printf( "%0.2f/%0.4f ", mahal, prob );
 		if( mdists[i] < min )
 		{
 			min = mdists[i];
@@ -260,7 +260,7 @@ GMM::prob( std::vector<double> *vec )
 		}
 	}
 
-	printf( "==> %0.2f\n", ret / norm );
+	//printf( "==> %0.2f\n", ret / norm );
 	//printf("\n----------------------------------------\n\n" );
 	return ret / norm;
 }
