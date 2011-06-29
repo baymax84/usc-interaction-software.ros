@@ -147,7 +147,7 @@ bool initParams()
     g_params_res.id[i] = i;
     g_params_res.min[i] = 0.0f;
     g_params_res.max[i] = 1.0f;
-    g_params_res.curr[i] = g_params_res.min[i]; //0.005f;
+    g_params_res.curr[i] = 0.5f;//g_params_res.min[i]; //0.005f;
   }
   /*
    g_params_res.min[0] = -42.0f;
@@ -489,22 +489,33 @@ bool initSparky()
   pololu::MaestroServoController::ServoLimits servo_limits(900, 2100);
   bool enabled = true;
   int speed = 0;
-  int accel = 0;
+  int accel = 5;
   //int target = 0;
 
   bool success = true;
   for (int i = 0, n = N_JOINTS; i < n; ++i)
   {
+    bool joint_success = true;
     device = getJointDevice(i);
     channel = getJointChannel(i);
-    success = g_sparky.setServoLimits(device, channel, servo_limits) && success;
-    success = g_sparky.setServoSpeed(device, channel, speed) && success;
-    success = g_sparky.setServoAcceleration(device, channel, accel) && success;
-    //success = g_sparky.setServoTarget(device, channel, target) && success;
-    success = g_sparky.setServoEnabled(device, channel, enabled) && success;
 
-    if (!success)
+    int sleep_time = 10000;
+    joint_success = g_sparky.setServoLimits(device, channel, servo_limits) && joint_success;
+    usleep(sleep_time);
+    joint_success = g_sparky.setServoEnabled(device, channel, enabled) && joint_success;
+    usleep(sleep_time);
+    joint_success = g_sparky.setServoSpeed(device, channel, speed) && joint_success;
+    usleep(sleep_time);
+    joint_success = g_sparky.setServoAcceleration(device, channel, accel) && joint_success;
+    usleep(sleep_time);
+    //joint_success = g_sparky.setServoTarget(device, channel, target) && joint_success;
+
+    if (!joint_success)
       ROS_ERROR("Unable to initialize joint[%d] (servo[%d, %d])...", i, device, channel);
+    else
+      ROS_INFO("Initialized joint[%d] (servo[%d, %d])!!!", i, device, channel);
+
+    success &= joint_success;
   }
 
   //success = true;

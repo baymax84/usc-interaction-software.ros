@@ -109,7 +109,9 @@ int main(int argc, char** argv)
     sliders[i]->type(FL_HORIZONTAL);
     sliders[i]->bounds(g_params_res.min[i], g_params_res.max[i]);
     sliders[i]->callback(sliderCallback);
-    sliders[i]->step(1);
+    sliders[i]->step(0.01);  //step(1);
+    sliders[i]->value(0.5);
+    /*
     if (i==14)
 		sliders[14]->step(0.1);
 	else if (i==15)
@@ -118,6 +120,7 @@ int main(int argc, char** argv)
 		sliders[16]->step(0.1);
 	else if (i==17)
 		sliders[17]->step(0.1);
+		*/
   }
 
   // display window
