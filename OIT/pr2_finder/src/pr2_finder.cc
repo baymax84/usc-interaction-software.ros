@@ -114,7 +114,7 @@ int main( int argc, char* argv[] )
   ros::NodeHandle nh;
   nh.param("blob_dist_baseline", blob_dist_baseline, 0.3);
   nh.param("blob_dist_tolerance", blob_dist_tolerance, 0.25);
-  ros::Subscriber yellow_sub = nh.subscribe( "yellow_blobs", 1, &yellow_cb );
+  ros::Subscriber yellow_sub = nh.subscribe( "blue_blobs", 1, &yellow_cb );
   ros::Subscriber red_sub = nh.subscribe( "red_blobs", 1, &red_cb );
   ros::Subscriber camera_sub = nh.subscribe( "camera_info", 1, &camera_cb );
 
@@ -254,7 +254,7 @@ int main( int argc, char* argv[] )
 				double yaw = atan2( yellow_pt.y-red_pt.y, yellow_pt.x-red_pt.x );
 
 				tf::Transform robot_pub;
-				ROS_INFO( "height: %0.2f floor_to_cam: %0.2f ir_plane: %0.2f", height, floor_to_cam.getOrigin().z(), ir_plane );
+				ROS_DEBUG( "height: %0.2f floor_to_cam: %0.2f ir_plane: %0.2f", height, floor_to_cam.getOrigin().z(), ir_plane );
 				robot_pub.setOrigin( tf::Vector3(red_pt.x, red_pt.y, ir_plane ));//floor_to_cam.getOrigin().z()) );
 				robot_pub.setRotation( tf::Quaternion(yaw,0,0));
 
@@ -263,9 +263,9 @@ int main( int argc, char* argv[] )
 				odom.pose.pose.position.x = red_pt.x;
 				odom.pose.pose.position.y = red_pt.y;
 
-				odom.pose.pose.orientation.x = robot_pub.getRotation().getAxis().getX();
-				odom.pose.pose.orientation.y = robot_pub.getRotation().getAxis().getY();
-				odom.pose.pose.orientation.z = robot_pub.getRotation().getAxis().getZ();
+				odom.pose.pose.orientation.x = robot_pub.getRotation().getX();
+				odom.pose.pose.orientation.y = robot_pub.getRotation().getY();
+				odom.pose.pose.orientation.z = robot_pub.getRotation().getZ();
 				odom.pose.pose.orientation.w = robot_pub.getRotation().getW();
 
 				odom_pub.publish( odom );
