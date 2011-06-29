@@ -33,7 +33,7 @@ void goal_cb( const geometry_msgs::PoseStampedConstPtr &goal )
     curr_goal.pose = local_pose.pose;
     curr_goal.header = local_pose.header;
     init_robot_dist = hypot( local_pose.pose.position.y-rf.getOrigin().y(), local_pose.pose.position.x-rf.getOrigin().x() );
-		ROS_INFO( "(%0.2f,%0.2f) (%0.2f,%0.2f)", local_pose.pose.position.x,local_pose.pose.position.y,rf.getOrigin().x(),rf.getOrigin().y() );
+		ROS_DEBUG( "(%0.2f,%0.2f) (%0.2f,%0.2f)", local_pose.pose.position.x,local_pose.pose.position.y,rf.getOrigin().x(),rf.getOrigin().y() );
     init_child_dist = hypot( local_pose.pose.position.y-cf.getOrigin().y(), local_pose.pose.position.x-cf.getOrigin().x() );
   }
   catch (tf::TransformException &ex )
@@ -46,10 +46,10 @@ bool classify(oit_models::GMMClassify::Request  &req,
 				 			oit_models::GMMClassify::Response &res )
 {
 	// infer time from robot distance
-  double p1 = -0.8173;
-  double p2 =  1.0319;
-  double p3 = -1.0939;
-  double p4 =  1.0616;
+  double p1 = -1.0676;
+  double p2 =  1.4255;
+  double p3 = -1.2337;
+  double p4 =  1.0497;
 
   //double t = -0.86466*req.data[1] + 1.0661;
   double x = req.data[1];
@@ -132,7 +132,7 @@ bool lookup_prob(oit_models::LookupProb::Request  &req,
   child_dist = hypot( cx-gx, cy-gy );
   robot_child_dist = hypot( cx-rx, cy-ry );
 
-	printf( "(%0.2f,%0.2f) (%0.2f,%0.2f) (%0.2f,%0.2f) [%0.2f %0.2f]\n", rx, ry, cx, cy, gx, gy, init_robot_dist, init_child_dist );
+	ROS_DEBUG( "(%0.2f,%0.2f) (%0.2f,%0.2f) (%0.2f,%0.2f) [%0.2f %0.2f]", rx, ry, cx, cy, gx, gy, init_robot_dist, init_child_dist );
 
   // scale all values to initial values
   robot_dist /= init_robot_dist;
@@ -162,6 +162,7 @@ int main( int argc, char* argv[] )
 	ros::AsyncSpinner as(50);
 
   tf_ = new tf::TransformListener(ros::Duration(100.0));
+	tf_->setExtrapolationLimit( ros::Duration(1.0));
 
 	ros::ServiceServer service = nh.advertiseService( "gmm_classifier", classify );
   ros::ServiceServer other_service = nh.advertiseService("lookup_prob", lookup_prob );
