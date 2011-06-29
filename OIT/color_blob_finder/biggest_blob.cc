@@ -104,7 +104,7 @@ void blob_cb( const oit_msgs::BlobArrayConstPtr& blobs )
 
       // publish transform
       tf::Quaternion quat; quat.setRPY(0,0,0);
-      tf::Transform blobt( quat, tf::Point( px, py, -(cam_height-height) ));
+      tf::Transform blobt( quat, tf::Point( -px, -py, -(cam_height-height) ));
       tb->sendTransform( tf::StampedTransform(blobt, blobs->header.stamp, "/cam_plane_flat", tfname ));
     }
   }
