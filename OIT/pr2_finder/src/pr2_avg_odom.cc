@@ -1,5 +1,5 @@
 /*
- * pr2_target_tf_publisher
+ * pr2_odom_avg
  * Copyright (c) 2011, David Feil-Seifer, University of Southern California
  * All rights reserved.
  * 
@@ -30,51 +30,59 @@
 
 
 #include <ros/ros.h>
-#include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
+#include <tf/transform_broadcaster.h>
+int good_values_ = 0;
 
 int main( int argc, char* argv[] )
 {
-	ros::init( argc, argv, "pr2_target_tf_publisher" );
+	ros::init( argc, argv, "pr2_odom" );
 	ros::NodeHandle nh;
-
 	tf::TransformListener tl;
 	tf::TransformBroadcaster tb;
+	ros::Rate loop_rate( 10 );
 
-	ros::Rate loop_rate( 20 );
+	tf::Transform avg_tf;
+
+	double sx = 0,sy = 0,sz = 0, sqx = 0, sqy = 0, sqz = 0, sqw = 0;
+
 	while( ros::ok() )
 	{
-		// publish frame for target
-
-		tf::Transform target_tf;
-		//target_tf.setOrigin( tf::Vector3( -.2032, 0.03095625, 0.0381 ) );
-		target_tf.setOrigin( tf::Vector3( -.2032, 0.03095625, 0.0481 ) );
-		target_tf.setRotation( tf::Quaternion( 0,0,0 ) );
-		
-		tb.sendTransform( tf::StampedTransform( target_tf, ros::Time::now(), "narrow_stereo_gazebo_r_stereo_camera_frame", "pr2_tmp_target" ) );
-
-		tf::StampedTransform reverse_tf;
-
-		// get the transform from the base to the top link of the pr2
-		
-		try
+		if( good_values_ < 50 )
 		{
-			tl.lookupTransform( "pr2_tmp_target", "map", ros::Time(0), reverse_tf );
-			tf::Transform reverse_target_tf;
-			reverse_target_tf.setOrigin( reverse_tf.getOrigin() );
-			reverse_target_tf.setRotation( reverse_tf.getRotation() );
-			tb.sendTransform( tf::StampedTransform( reverse_target_tf, reverse_tf.stamp_, "pr2_ovh_target", "map" ));
+			try {
+				tf::StampedTransform new_tf;
+				tl.lookupTransform( "ovh", "map", ros::Time(0), new_tf );
+				sx += new_tf.getOrigin().x();
+				sy += new_tf.getOrigin().y();
+				sz += new_tf.getOrigin().z();
+				sqx += new_tf.getRotation().getX();
+				sqy += new_tf.getRotation().getY();
+				sqz += new_tf.getRotation().getZ();
+				sqw += new_tf.getRotation().getW();
+				good_values_++;
 
+				if( good_values_ == 50 )
+				{
+					avg_tf.setOrigin( tf::Vector3(sx / 50., sy / 50., sz / 50.) );
+					avg_tf.setRotation( tf::Quaternion( sqx / 50., sqy / 50., sqz / 50., sqw / 50. ) );
+				}
+			}
+			catch( tf::TransformException &ex )
+			{
+				ROS_WARN( "could not do transform: [%s]", ex.what() );
+			}
 		}
-		catch (tf::TransformException &ex)
+		else
 		{
-			ROS_WARN("unable to do transformation: [%s]", ex.what());
+			// publish transform
+			tb.sendTransform(tf::StampedTransform(avg_tf,ros::Time::now(), "ovh", "map" ));
 		}
-			
+
 		loop_rate.sleep();
 		ros::spinOnce();
 	}
 
+
 	return 0;
 }
-
