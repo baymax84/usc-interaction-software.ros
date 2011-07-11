@@ -142,8 +142,8 @@ public:
 
 		// Now that things are supposeldy up and running, subscribe to
 		// joint messages
-		joint_sub_ = nh.subscribe( "joint_cmd", 1, &BanditNode::jointCB, this );
-		target_sub_ = nh.subscribe( "target_joints", 1, &BanditNode::targetCB, this );
+		joint_sub_ = nh.subscribe( "joint_cmd", 100, &BanditNode::jointCB, this );
+		target_sub_ = nh.subscribe( "target_joints", 100, &BanditNode::targetCB, this );
 		service_ = nh.advertiseService( "params", &BanditNode::paramCB, this );
 
 		std::ifstream fin;
