@@ -1,0 +1,17 @@
+<package>
+  <description brief="tf_to_pose">
+
+     tf_to_pose
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tf_to_pose</url>
+  <depend package="tf"/>
+  <depend package="kdl"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+
