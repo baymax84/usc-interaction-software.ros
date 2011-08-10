@@ -1,0 +1,21 @@
+<package>
+  <description brief="openni_unstable">
+
+     openni_unstable
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_unstable</url>
+
+	<rosdep name="glut"/>
+	<rosdep name="graphviz"/>
+	<rosdep name="libusb1.0"/>
+	<rosdep name="doxygen"/>
+	<rosdep name="git"/>
+	<rosdep name="java"/>
+	<rosdep name="mono"/>
+</package>
+
+
