@@ -3,7 +3,7 @@
   <author>Maintained by David Feil-Seifer</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/openni_unstable</url>
+  <url>http://ros.org/wiki/openni_usc</url>
   <depend stack="ros" />
 
 </stack>

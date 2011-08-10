@@ -1,0 +1,13 @@
+libusb1.0:
+  ubuntu: libusb-1.0-0-dev
+glut:
+  ubuntu: libglut3-dev
+doxygen:
+  ubuntu: doxygen
+java:
+  ubuntu: |
+    sudo add-apt-repository "deb http://archive.canonical.com/ natty partner"
+    sudo apt-get update
+    sudo apt-get install sun-java6-jdk
+mono:
+  ubuntu: mono-complete
