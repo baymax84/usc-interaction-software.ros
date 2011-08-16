@@ -1,0 +1,8 @@
+# goal definition
+sensor_msgs/JointState goal_state
+time duration
+---
+# feedback definition
+---
+# result definition
+

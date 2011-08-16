@@ -1,0 +1,17 @@
+<package>
+  <description brief="pose_action">
+
+     pose_action
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pose_action</url>
+  <depend package="actionlib_msgs"/>
+	<depend package="actionlib"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+
