@@ -26,15 +26,15 @@ class PoseActionServer {
 
 		void goalCB()
 		{
-			boost::shared_ptr<PoseGoal> goal_ptr =	as_.acceptNewGoal();
-			ROS_INFO( "%s: Goal Accepted", action_name.c_str() );
-			pose_action::PoseActionResult res;
-			as_->setSuceeded(res);
+			boost::shared_ptr<const pose_action::PoseGoal> goal_ptr =	as_.acceptNewGoal();
+			ROS_INFO( "%s: Goal Accepted", action_name_.c_str() );
+			pose_action::PoseResult res;
+			as_.setSucceeded(res);
 		}
 
 		void preemptCB()
 		{
-			ROS_INFO("%s: Preempted", action_name.c_str());
+			ROS_INFO("%s: Preempted", action_name_.c_str());
 			as_.setPreempted();
 		}
 
