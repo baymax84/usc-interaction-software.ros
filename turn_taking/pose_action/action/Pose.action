@@ -1,6 +1,6 @@
 # goal definition
 sensor_msgs/JointState goal_state
-time duration
+duration duration
 ---
 # feedback definition
 ---
