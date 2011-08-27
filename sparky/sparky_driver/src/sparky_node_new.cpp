@@ -489,7 +489,7 @@ bool initSparky()
   pololu::MaestroServoController::ServoLimits servo_limits(900, 2100);
   bool enabled = true;
   int speed = 0;
-  int accel = 5;
+  int accel = 0;
   //int target = 0;
 
   bool success = true;
