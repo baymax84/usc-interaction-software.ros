@@ -2,7 +2,8 @@
 sensor_msgs/JointState goal_state
 duration duration
 ---
-# feedback definition
----
 # result definition
 
+---
+# feedback definition
+float64 progress

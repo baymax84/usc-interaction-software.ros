@@ -34,6 +34,8 @@ tf::TransformListener* tl;
 std::string global_frame;
 std::string prefix;
 
+ros::Time time_;
+
 void set_vector( tf::StampedTransform t, KDL::Vector& v )
 {
 	v.x(t.getOrigin().x());
@@ -61,6 +63,7 @@ bool get_poses()
 		set_vector( stf, right_hand );
 		tl->lookupTransform( global_frame, prefix + "neck", ros::Time(0), stf );
 		set_vector( stf, neck );
+		time_ = stf.stamp_;
 /*
 		tl->lookupTransform( prefix + "torso", global_frame, ros::Time(0), stf );
 		set_vector( stf, torso );
@@ -204,6 +207,7 @@ int main( int argc, char* argv[] )
 
 		// get joint angles from positions
 		sensor_msgs::JointState js;
+		js.header.stamp = time_;
 		js.name.push_back("left_bicep_forearm_joint");
 		js.position.push_back(-left_elbow_angle_roll);
 		js.velocity.push_back(0);

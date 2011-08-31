@@ -19,7 +19,7 @@ pose_model::SimonPose load_pose_from_file( const char* filename  )
 	while( !feof( infile ) )
 	{
 		num_lines++;
-		for( int i = 0; i < 9; i++ )
+		for( int i = 0; i < 8; i++ )
 		{
 			float x = 0;
 			fscanf( infile, "%f ", &x );
@@ -36,7 +36,7 @@ pose_model::SimonPose load_pose_from_file( const char* filename  )
 	{
 		for( int j = 0; j < 8; j++ )
 		{
-			pose_mat.at<double>(i,j) = values[i*9+j+1];
+			pose_mat.at<double>(i,j) = values[i*8+j];
 			printf( "%0.2f ", pose_mat.at<double>(i,j)  );
 		}
 		printf( "\n" );
@@ -65,7 +65,7 @@ pose_model::SimonPose load_pose_from_file( const char* filename  )
 
 	for( int i = 0; i < 8; i++ )
 	{
-		pose.joint_poses.push_back( mean.at<double>(0,i) );
+		pose.joint_poses.push_back( mean.at<double>(0,i%4) );
 		for( int j = 0; j < 8; j++ )
 		{
 			pose.covariance.push_back( covar.at<double>(i,j) );

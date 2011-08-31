@@ -1,0 +1,16 @@
+<package>
+  <description brief="simon_says">
+
+     simon_says
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/simon_says</url>
+  <depend package="pose_action"/>
+  <depend package="pose_model"/>
+	<depend package="wait_for_response_action"/>
+</package>
+
+
