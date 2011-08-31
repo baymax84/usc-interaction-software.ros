@@ -13,5 +13,5 @@ installed: patched
 	touch installed
 
 clean:
-	rm -rf build bin patched openni_unstable* include lib src
+	rm -rf build bin patched openni-unstable Include Documentation Jar insatlled Samples mainpage.dox install.sh Lib Bin GPL.txt LGPL.txt
 	
