@@ -13,6 +13,8 @@ int main( int argc, char* argv[] )
 	ROS_INFO( "action server started, sending goal" );
 
 	pose_action::PoseGoal goal;
+	goal.goal_state.name.push_back("left_bicep_forearm_joint");
+	goal.goal_state.position.push_back( M_PI/2 );
 	goal.duration = ros::Duration(3.0);
 	ac.sendGoal(goal);
 

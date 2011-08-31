@@ -1,0 +1,17 @@
+<package>
+  <description brief="wait_for_response_action">
+
+     wait_for_response_action
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/wait_for_response_action</url>
+  <depend package="actionlib"/>
+  <depend package="actionlib_msgs"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

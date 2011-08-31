@@ -11,7 +11,8 @@
   <depend package="sensor_msgs"/>
   <depend package="opencv2"/>
   <depend package="yaml_cpp"/>
-
+	<depend package="sound_play"/>
+	<depend package="wait_for_response_action"/>
   <export>
 	  <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lpose_model"/>
 	</export>

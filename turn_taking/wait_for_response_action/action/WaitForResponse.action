@@ -1,0 +1,10 @@
+# goal definition
+
+# TODO: might be good to pass a list of joints to watch to make it more general...
+
+---
+#result definition
+sensor_msgs/JointState pose
+---
+# feedback definition
+
