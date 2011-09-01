@@ -32,10 +32,11 @@ int main( int argc, char* argv[] )
 	// load model files
   std::string prefix;
   std::string model_filename;
+	bool add = false;
 
   nh.param( "prefix", prefix, std::string("/home/dfseifer/diamondback-usc/stacks/usc-ros-pkg/trunk/turn_taking/simon_says") );
   nh.param( "model_filename", model_filename, std::string("newer_poses.yaml") );
-
+	nh.param( "add", add, true );
   ros::Publisher pose_pub = nh.advertise<sensor_msgs::JointState>( "target_pose", 1 );
   std::vector<pose_model::SimonPose> poses;
   poses = read_poses_from_yaml( model_filename, prefix );
@@ -66,13 +67,19 @@ int main( int argc, char* argv[] )
 		char name[256];
 		name[0] = '\0';
 		sprintf( name, "%d.pose", i );
-	
-		ofiles[i] = fopen( name, "w" );
-		for( int j = 0; j < 8; j++ )
+		if( add )
 		{
-			fprintf( ofiles[i], "%0.4f ", poses[i].joint_poses[j] );
+			ofiles[i] = fopen( name, "a" );
+		}	
+		else
+		{
+			ofiles[i] = fopen( name, "w" );
+			for( int j = 0; j < 8; j++ )
+			{
+				fprintf( ofiles[i], "%0.4f ", poses[i].joint_poses[j] );
+			}
+			fprintf( ofiles[i], "\n" );
 		}
-		fprintf( ofiles[i], "\n" );
 	}
 
 	while( spinning_ )
