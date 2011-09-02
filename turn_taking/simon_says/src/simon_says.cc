@@ -69,7 +69,8 @@ int main( int argc, char* argv[] )
 
 		pose_action::PoseGoal goal;
 		goal.goal_state = pose;
-		goal.duration = ros::Duration(1.0);
+		goal.pose_duration = ros::Duration(1.0);
+		goal.move_duration = ros::Duration(1.0);
 
 		pose_client.sendGoal(goal);
 
