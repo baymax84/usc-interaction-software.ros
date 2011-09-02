@@ -36,7 +36,7 @@ int main( int argc, char* argv[] )
 
   nh.param( "prefix", prefix, std::string("/home/dfseifer/diamondback-usc/stacks/usc-ros-pkg/trunk/turn_taking/simon_says") );
   nh.param( "model_filename", model_filename, std::string("newer_poses.yaml") );
-	nh.param( "add", add, true );
+	nh.param( "add", add, false );
   ros::Publisher pose_pub = nh.advertise<sensor_msgs::JointState>( "target_pose", 1 );
   std::vector<pose_model::SimonPose> poses;
   poses = read_poses_from_yaml( model_filename, prefix );
@@ -100,7 +100,8 @@ int main( int argc, char* argv[] )
 
 		pose_action::PoseGoal goal;
 		goal.goal_state = pose;
-		goal.duration = ros::Duration(0.5);
+		goal.move_duration = ros::Duration(0.5);
+		goal.pose_duration = ros::Duration(2.0);
 
     // play initial prompt
     sc.playWave("/home/dfseifer/Downloads/snds/C/CAttention.wav");

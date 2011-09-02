@@ -1,7 +1,7 @@
 <launch>
 	<include file="$(find dave_demo)/bandit_alt.launch"/>
 
-	<node pkg="pose_action" type="pose_action_server" name="pose_action_server">
+	<node pkg="pose_action" type="pose_action_server" name="pose_action_server" output="screen">
 		
 	</node>
 
