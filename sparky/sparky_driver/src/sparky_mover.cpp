@@ -13,7 +13,7 @@
 
 
 // angle (degrees and radians) definitions
-#define DTOR(deg) ((deg) * M_PI / 180.0f)
+#define DTOR(deg) ((deg) * M_PI / 180.0)
 #define RTOD(deg) ((deg) * 180.0 / M_PI)
 
 
