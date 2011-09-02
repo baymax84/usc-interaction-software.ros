@@ -14,6 +14,7 @@
 
 // angle (degrees and radians) definitions
 #define DTOR(deg) ((deg) * M_PI / 180.0f)
+#define RTOD(deg) ((deg) * 180.0 / M_PI)
 
 
 
@@ -44,7 +45,7 @@ void sliderCallback(Fl_Widget* o, void*)
 
   joint_msgs::Joint joint;
   joint.id     = id;
-  joint.angle  = oo->value();
+  joint.angle  = DTOR(oo->value());
   joint.active = true;
 
   g_joint_pub.publish(joint);
@@ -96,21 +97,24 @@ int main(int argc, char** argv)
   Fl_Value_Slider* sliders[n_sliders];
   for (int i = 0; i < n_sliders; i++)
   {
+    double min_angle = RTOD(g_params_res.min[i]);
+    double max_angle = RTOD(g_params_res.max[i]);
+    double curr_angle = RTOD(g_params_res.curr[i]);
     printf("Adding slider[%zu] %s, (%f, %f)\n",
            g_params_res.id[i],
            g_params_res.name[i].c_str(),
-           g_params_res.min[i],
-           g_params_res.max[i]);
+           min_angle,
+           max_angle);
     sliders[i] = new Fl_Value_Slider(padding,
                                      (i + 1) * padding + i * slider_h,
                                      slider_w,
                                      slider_h,
                                      g_params_res.name[i].c_str());
     sliders[i]->type(FL_HORIZONTAL);
-    sliders[i]->bounds(g_params_res.min[i], g_params_res.max[i]);
+    sliders[i]->bounds(min_angle, max_angle);
     sliders[i]->callback(sliderCallback);
-    sliders[i]->step(0.01);  //step(1);
-    sliders[i]->value(0.5);
+    sliders[i]->step(1);  //step(0.01);
+    sliders[i]->value(curr_angle);
     /*
     if (i==14)
 		sliders[14]->step(0.1);

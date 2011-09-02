@@ -4,22 +4,22 @@
 #include <joint_msgs/Params.h>
 #include <sensor_msgs/JointState.h>
 //#include <sparky/controller.hh>
-#include <sparky/maestro_servo_controller.h>
+#include <sparky/angle_servo_controller.h>
 #include <math.h>
 
 // angle (degrees and radians) definitions
-#define DTOR(rad) ((rad) * M_PI / 180.0f)
-#define RTOD(deg) ((deg) * 180.0f / M_PI)
+#define DTOR(rad) ((rad) * M_PI / 180.0)
+#define RTOD(deg) ((deg) * 180.0 / M_PI)
 
 // Sparky joint definitions
-#define N_JOINTS (18)
+#define N_JOINTS (19)
 #define N_DEVICES (2)
 #define N_CHANNELS_EACH (24)
 #define PATH ("/dev/ttyACM0")
 
 // global variables
 //controller::Controller       g_sparky;
-pololu::MaestroServoController g_sparky(N_DEVICES, N_CHANNELS_EACH, PATH);
+pololu::AngleServoController g_sparky(N_DEVICES, N_CHANNELS_EACH, PATH);
 joint_msgs::Params::Response g_params_res;
 
 // function prototypes
@@ -140,52 +140,61 @@ bool initParams()
   g_params_res.name[15] = "Right Foot Forward";
   g_params_res.name[16] = "Left Foot Up";
   g_params_res.name[17] = "Left Foot Forward";
+  g_params_res.name[18] = "Base Turn";
 
   // set remaining parameters
   for (int i = 0; i < n_channels; ++i)
   {
     g_params_res.id[i] = i;
-    g_params_res.min[i] = 0.0f;
-    g_params_res.max[i] = 1.0f;
-    g_params_res.curr[i] = 0.5f;//g_params_res.min[i]; //0.005f;
+    if (i == 18) // base_turn
+    {
+      g_params_res.min[i] = DTOR(-335.0);
+      g_params_res.max[i] = DTOR(340.0);
+    }
+    else
+    {
+      g_params_res.min[i] = 0.0;
+      g_params_res.max[i] = DTOR(150.0);
+    }
+    g_params_res.curr[i] = 0.5 * (g_params_res.min[i] + g_params_res.max[i]);//g_params_res.min[i];
   }
   /*
-   g_params_res.min[0] = -42.0f;
-   g_params_res.max[0] = 0.0f;
-   g_params_res.min[1] = -1.0f;
-   g_params_res.max[1] = 60.0f;
-   g_params_res.min[2] = -25.0f;
-   g_params_res.max[2] = 45.0f;
-   g_params_res.min[3] = 2.0f;
-   g_params_res.max[3] = 91.0f;
-   g_params_res.min[4] = 3.0f;
-   g_params_res.max[4] = 72.0f;
-   g_params_res.min[5] = 13.0f;
-   g_params_res.max[5] = 104.0f;
-   g_params_res.min[6] = 13.0f;
-   g_params_res.max[6] = 90.0f;
-   g_params_res.min[7] = 2.0f;
-   g_params_res.max[7] = 72.0f;
-   g_params_res.min[8] = 15.0f;
-   g_params_res.max[8] = 105.0f;
-   g_params_res.min[9] = -45.0f;
-   g_params_res.max[9] = 90.0f;
-   g_params_res.min[10] = -42.0f;
-   g_params_res.max[10] = 90.0f;
-   g_params_res.min[11] = -76.0f;
-   g_params_res.max[11] = -1.0f;
-   g_params_res.min[12] = 0.0f;
-   g_params_res.max[12] = 102.0f;
-   g_params_res.min[13] = -30.0f;
-   g_params_res.max[13] = 40.0f;
-   g_params_res.min[14] = 0.00f;
-   g_params_res.max[14] = 5.84f;
-   g_params_res.min[15] = -9.61f;
-   g_params_res.max[15] = 7.8f;
-   g_params_res.min[16] = 0.00f;
-   g_params_res.max[16] = 5.92f;
-   g_params_res.min[17] = -9.44f;
-   g_params_res.max[17] = 5.74f;
+   g_params_res.min[0] = -42.0;
+   g_params_res.max[0] = 0.0;
+   g_params_res.min[1] = -1.0;
+   g_params_res.max[1] = 60.0;
+   g_params_res.min[2] = -25.0;
+   g_params_res.max[2] = 45.0;
+   g_params_res.min[3] = 2.0;
+   g_params_res.max[3] = 91.0;
+   g_params_res.min[4] = 3.0;
+   g_params_res.max[4] = 72.0;
+   g_params_res.min[5] = 13.0;
+   g_params_res.max[5] = 104.0;
+   g_params_res.min[6] = 13.0;
+   g_params_res.max[6] = 90.0;
+   g_params_res.min[7] = 2.0;
+   g_params_res.max[7] = 72.0;
+   g_params_res.min[8] = 15.0;
+   g_params_res.max[8] = 105.0;
+   g_params_res.min[9] = -45.0;
+   g_params_res.max[9] = 90.0;
+   g_params_res.min[10] = -42.0;
+   g_params_res.max[10] = 90.0;
+   g_params_res.min[11] = -76.0;
+   g_params_res.max[11] = -1.0;
+   g_params_res.min[12] = 0.0;
+   g_params_res.max[12] = 102.0;
+   g_params_res.min[13] = -30.0;
+   g_params_res.max[13] = 40.0;
+   g_params_res.min[14] = 0.00;
+   g_params_res.max[14] = 5.84;
+   g_params_res.min[15] = -9.61;
+   g_params_res.max[15] = 7.8;
+   g_params_res.min[16] = 0.00;
+   g_params_res.max[16] = 5.92;
+   g_params_res.min[17] = -9.44;
+   g_params_res.max[17] = 5.74;
    */
   return true;
 } // initParams()
@@ -277,7 +286,7 @@ bool outputPositions(double* vals, bool* active)
   return true;
 } // outputPositions(double*, bool*)
 
-bool jointMoveTo(int id, double param) //double angle)
+bool jointMoveTo(int id, double angle)
 {
   //if ((id < 0) || (id >= controller::NChannels))
   if ((id < 0) || (id >= N_JOINTS))
@@ -458,14 +467,15 @@ bool jointMoveTo(int id, double param) //double angle)
    }
    */
 
-  int min_limit = g_sparky.getServoMinLimit(device, channel);
-  int max_limit = g_sparky.getServoMaxLimit(device, channel);
-  int target = min_limit + param * (max_limit - min_limit); // assumes param [0, 1]
+  //int min_limit = g_sparky.getAngleMinLimit(device, channel);
+  //int max_limit = g_sparky.getAngleMaxLimit(device, channel);
+  //int target = min_limit + angle * (max_limit - min_limit); // assumes param [0, 1]
+  double target = angle;
 
-  ROS_INFO("Moving joint[%d] (servo[%d, %d]) to %.2f (%d)", id, device, channel, param, target);
-  if (!g_sparky.setServoTarget(device, channel, target))
+  ROS_INFO("Moving joint[%d] (servo[%d, %d]) to %.2f (%.2f)", id, device, channel, RTOD(angle), target);
+  if (!g_sparky.setAngleTarget(device, channel, target))
   {
-    ROS_ERROR("Error moving joint[%d] (servo[%d, %d] to %.2f (%d)!", id, device, channel, param, target);
+    ROS_ERROR("Error moving joint[%d] (servo[%d, %d] to %.2f (%.2f)!", id, device, channel, RTOD(angle), target);
     return false;
   }
 
@@ -474,11 +484,15 @@ bool jointMoveTo(int id, double param) //double angle)
 
 int getJointDevice(int id)
 {
+  if (id == 18)
+    return 1; // base_turn device = 1
   return (id < (N_JOINTS / 2)) ? 0 : 1;
 } // getJointDevice(int)
 
 int getJointChannel(int id)
 {
+  if (id == 18)
+    return 1; // base_turn device = 1
   return 2 * ((getJointDevice(id) == 0) ? id : (id - (N_JOINTS / 2)));
 } // getJointChannel(int)
 
@@ -487,6 +501,13 @@ bool initSparky()
   int device = -1;
   int channel = -1;
   pololu::MaestroServoController::ServoLimits servo_limits(900, 2100);
+  pololu::AngleServoController::AngleServoPair min_limit(0.0, 1100);
+  pololu::AngleServoController::AngleServoPair max_limit(DTOR(150.0), 2100);
+  pololu::AngleServoController::AngleLimits angle_limits(min_limit, max_limit);
+  pololu::MaestroServoController::ServoLimits base_servo_limits(754, 2254);
+  pololu::AngleServoController::AngleServoPair base_min_limit(DTOR(-335), 754);
+  pololu::AngleServoController::AngleServoPair base_max_limit(DTOR(340.0), 2254);
+  pololu::AngleServoController::AngleLimits base_angle_limits(min_limit, max_limit);
   bool enabled = true;
   int speed = 0;
   int accel = 0;
@@ -500,8 +521,21 @@ bool initSparky()
     channel = getJointChannel(i);
 
     int sleep_time = 10000;
-    joint_success = g_sparky.setServoLimits(device, channel, servo_limits) && joint_success;
-    usleep(sleep_time);
+
+    if (i == 18) // base_turn
+    {
+      joint_success = g_sparky.setServoLimits(device, channel, base_servo_limits) && joint_success;
+      usleep(sleep_time);
+      joint_success = g_sparky.setAngleLimits(device, channel, base_angle_limits) && joint_success;
+      usleep(sleep_time);
+    }
+    else
+    {
+      joint_success = g_sparky.setServoLimits(device, channel, servo_limits) && joint_success;
+      usleep(sleep_time);
+      joint_success = g_sparky.setAngleLimits(device, channel, angle_limits) && joint_success;
+      usleep(sleep_time);
+    }
     joint_success = g_sparky.setServoEnabled(device, channel, enabled) && joint_success;
     usleep(sleep_time);
     joint_success = g_sparky.setServoSpeed(device, channel, speed) && joint_success;
@@ -518,25 +552,28 @@ bool initSparky()
     success &= joint_success;
   }
 
-  //success = true;
-  success = jointMoveTo(0, 0.25f) && success;
-  success = jointMoveTo(1, 0.50f) && success;
-  success = jointMoveTo(2, 0.50f) && success;
-  success = jointMoveTo(3, 0.25f) && success;
-  success = jointMoveTo(4, 0.25f) && success;
-  success = jointMoveTo(5, 0.25f) && success;
-  success = jointMoveTo(6, 0.33f) && success;
-  success = jointMoveTo(7, 0.25f) && success;
-  success = jointMoveTo(8, 0.25f) && success;
-  success = jointMoveTo(9, 0.25f) && success;
-  success = jointMoveTo(10, 0.60f) && success;
-  success = jointMoveTo(11, 0.58f) && success;
-  success = jointMoveTo(12, 0.58f) && success;
-  success = jointMoveTo(13, 0.57f) && success;
-  success = jointMoveTo(14, 0.00f) && success;
-  success = jointMoveTo(15, 0.37f) && success;
-  success = jointMoveTo(16, 0.05f) && success; // standing upright
-  success = jointMoveTo(17, 0.40f) && success;
-
+  for (int i = 0, n = N_JOINTS; i < n; ++i)
+    success = jointMoveTo(i, g_params_res.curr[i]) && success;
+  /*
+   //success = true;
+   success = jointMoveTo(0, 0.25) && success;
+   success = jointMoveTo(1, 0.50) && success;
+   success = jointMoveTo(2, 0.50) && success;
+   success = jointMoveTo(3, 0.25) && success;
+   success = jointMoveTo(4, 0.25) && success;
+   success = jointMoveTo(5, 0.25) && success;
+   success = jointMoveTo(6, 0.33) && success;
+   success = jointMoveTo(7, 0.25) && success;
+   success = jointMoveTo(8, 0.25) && success;
+   success = jointMoveTo(9, 0.25) && success;
+   success = jointMoveTo(10, 0.60) && success;
+   success = jointMoveTo(11, 0.58) && success;
+   success = jointMoveTo(12, 0.58) && success;
+   success = jointMoveTo(13, 0.57) && success;
+   success = jointMoveTo(14, 0.00) && success;
+   success = jointMoveTo(15, 0.37) && success;
+   success = jointMoveTo(16, 0.05) && success; // standing upright
+   success = jointMoveTo(17, 0.40) && success;
+   */
   return success;
 } // initSparky()
