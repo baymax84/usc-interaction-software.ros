@@ -1,6 +1,7 @@
 # goal definition
 sensor_msgs/JointState goal_state
-duration duration
+duration pose_duration
+duration move_duration
 ---
 # result definition
 

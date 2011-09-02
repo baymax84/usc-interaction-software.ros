@@ -4,6 +4,8 @@
 #include <pose_action/PoseAction.h>
 #include <pose_action/PoseActionGoal.h>
 
+#define DTOR( a ) (M_PI * (a) / 180.0)
+
 class PoseActionServer {
 
 	public:
@@ -12,7 +14,8 @@ class PoseActionServer {
 			action_name_(name),
 			action_running_(false),
 			joints_received_(false),
-			going_home_(false)
+			going_home_(false),
+			waiting_(false)
 		{
 			as_.registerGoalCallback(boost::bind(&PoseActionServer::goalCB, this));			
 			as_.registerPreemptCallback(boost::bind(&PoseActionServer::preemptCB, this));			
@@ -47,11 +50,15 @@ class PoseActionServer {
 				end_pose.position.push_back(0);
 			}
 
+			end_pose.position[3] = DTOR(20);
+			end_pose.position[10] = DTOR(20);
+
 			start_pose_ = curr_pose_;
 			start_time_ = ros::Time::now();
 			goal_pose_ = end_pose;
-			goal_duration_ = ros::Duration(5.0);
+			goal_duration_ = ros::Duration(2.0);
 			going_home_ = true;
+			waiting_ = false;
 		}
 
 		void goalCB()
@@ -73,7 +80,8 @@ class PoseActionServer {
 
 			// record start time
 
-			goal_duration_ = goal_ptr_->duration;
+			goal_duration_ = goal_ptr_->move_duration;
+			wait_duration_ = goal_ptr_->pose_duration;
 			goal_pose_ = goal_ptr_->goal_state;
 			action_running_ = true;
 
@@ -95,17 +103,24 @@ class PoseActionServer {
 				ros::Duration elapsed = ros::Time::now() - start_time_;
 				double progress = elapsed.toSec() / goal_duration_.toSec();
 
-				if( progress >= 1.0 && (action_running_ || going_home_) )
+				if( progress >= 1.0 && (action_running_ || going_home_ || waiting_) )
 				{
 					pose_action::PoseResult res;
 					// if finished
 
-
 					action_running_ = false;
-					if( ! going_home_ )
+					if( !waiting_ && !going_home_)
+					{
+						waiting_start_time_ = ros::Time::now();
+						as_.setSucceeded(res);
+						waiting_ = true;
+					}
+					bool waiting_done = (ros::Time::now() - waiting_start_time_) > wait_duration_;
+					//ROS_INFO( "%0.2d < %0.2d", (ros::Time::now()-waiting_start_time_).toSec(), wait_duration_.toSec() );
+					if( !going_home_ && (waiting_ && waiting_done) )
 					{
 						ROS_INFO( "%s: Goal Finished", action_name_.c_str() );
-						as_.setSucceeded(res);
+
 						resetToHome();
 						progress = 0.0; // needed to keep arm from moving to goal at start of going home
 					}
@@ -174,6 +189,8 @@ class PoseActionServer {
 
 		boost::shared_ptr<const pose_action::PoseGoal> goal_ptr_;
 		ros::Time start_time_;
+		ros::Time waiting_start_time_;
+		ros::Duration wait_duration_;
 		ros::Duration goal_duration_;
 
 		sensor_msgs::JointState start_pose_;
@@ -183,6 +200,7 @@ class PoseActionServer {
 		bool action_running_;
 		bool joints_received_;
 		bool going_home_;
+		bool waiting_;
 };
 
 int main( int argc, char* argv[] )
