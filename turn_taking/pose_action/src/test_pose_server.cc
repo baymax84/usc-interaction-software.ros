@@ -15,7 +15,8 @@ int main( int argc, char* argv[] )
 	pose_action::PoseGoal goal;
 	goal.goal_state.name.push_back("left_bicep_forearm_joint");
 	goal.goal_state.position.push_back( M_PI/2 );
-	goal.duration = ros::Duration(3.0);
+	goal.pose_duration = ros::Duration(3.0);
+	goal.move_duration = ros::Duration(1.0);
 	ac.sendGoal(goal);
 
 	bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
