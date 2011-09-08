@@ -1,0 +1,5 @@
+<launch>
+	<arg name="world_frame" default="/world" />
+	<arg name="pr2_world_frame" default="/odom_combined" />
+	<node pkg="tf" type="static_transform_publisher" name="world_frame_to_pr2_world_frame" args="0 0 0 0 0 0 $(arg world_frame) $(arg pr2_world_frame) 100" />
+</launch>
