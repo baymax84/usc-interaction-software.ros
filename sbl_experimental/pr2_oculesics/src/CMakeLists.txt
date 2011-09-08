@@ -1,0 +1,1 @@
+rosbuild_add_executable( pr2_head_controller pr2_head_controller.cpp )

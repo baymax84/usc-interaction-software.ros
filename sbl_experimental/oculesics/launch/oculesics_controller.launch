@@ -1,0 +1,4 @@
+<launch>
+	<arg name="policy" default="probabilistic" />
+	<include file="$(arg policy)_policy.launch" />
+</launch>

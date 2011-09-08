@@ -1,0 +1,9 @@
+<stack>
+  <description brief="sbl">sbl</description>
+  <author>Maintained by Ross Mead and Edward T. Kaszubski</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sbl</url>
+  <depend stack="ros" />
+
+</stack>
