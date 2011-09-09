@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gravity>
+   <model>GRAVITY_SIMPLE</model>
+   <vector>
+      <f> 0.000000 </f>
+      <r> 0.000000 </r>
+      <d> 9.796000 </d>
+   </vector>
+</gravity>

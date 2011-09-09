@@ -1,0 +1,12 @@
+<stack>
+  <description brief="Power-On-and-Go Calibration">
+    The Power-On-and-Go (POGO) stack provides packages for visual and
+    visual-inertial sensor calibration, with the goal of enabling 
+    persistent autonomous operation.
+  </description>
+  <author>Maintained by Jonathan Kelly</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://robotics.usc.edu/ros</url>
+  <depend stack="ros" />
+</stack>

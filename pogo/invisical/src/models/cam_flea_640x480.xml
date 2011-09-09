@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<camera>
+   <model>CAMERA_LINEAR</model>
+   <imgsize>
+      <width> 640.000000 </width>
+      <height> 480.000000 </height>
+   </imgsize>
+   <intrinsic>
+      <fx> 566.636976 </fx>
+      <fy> 565.986869 </fy>
+      <sx> 0.000000 </sx>
+      <cx> 336.591741 </cx>
+      <cy> 226.714768 </cy>
+   </intrinsic>
+</camera>
