@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<imu>
+   <model>IMU_3AXIS_BASIC</model>
+   <noise>
+      <gyroscope>
+         <xstdev> 0.001112 </xstdev>
+         <ystdev> 0.001112 </ystdev>
+         <zstdev> 0.001008 </zstdev>
+      </gyroscope>
+      <accelerometer>
+         <xstdev> 0.001564 </xstdev>
+         <ystdev> 0.001525 </ystdev>
+         <zstdev> 0.002169 </zstdev>
+      </accelerometer>
+   </noise>
+   <drift>
+      <gyroscope>
+         <xstdev> 0.000226 </xstdev>
+         <ystdev> 0.000268 </ystdev>
+         <zstdev> 0.000231 </zstdev>
+      </gyroscope>
+      <accelerometer>
+         <xstdev> 0.000482 </xstdev>
+         <ystdev> 0.000588 </ystdev>
+         <zstdev> 0.001065 </zstdev>
+      </accelerometer>
+   </drift>
+</imu>

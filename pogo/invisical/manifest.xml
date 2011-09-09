@@ -1,0 +1,10 @@
+<package>
+  <description brief="InVisiCal Visual-Inertial Calibration">
+    InVisiCal is a MATLAB/Octave package for calibrating the
+    6-DOF transform between a camera and an IMU.
+  </description>
+  <author>Jonathan Kelly</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://robotics.usc.edu/ros</url>
+</package>
