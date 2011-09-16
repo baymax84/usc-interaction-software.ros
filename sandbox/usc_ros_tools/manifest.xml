@@ -1,0 +1,15 @@
+<package>
+  <description brief="usc_ros_tools">
+
+     usc_ros_tools
+
+  </description>
+  <author>Edward</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/usc_ros_tools</url>
+  <depend package="roscpp"/>
+
+</package>
+
+
