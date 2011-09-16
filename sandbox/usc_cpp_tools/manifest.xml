@@ -1,0 +1,14 @@
+<package>
+  <description brief="usc_cpp_tools">
+
+     usc_cpp_tools
+
+  </description>
+  <author>Edward</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/usc_cpp_tools</url>
+
+</package>
+
+
