@@ -31,18 +31,35 @@ public:
 	
 	ParamArrayReader(){}
 	
-	ParamArrayReader( ros::NodeHandle & nh, const std::string & prefix, const std::string & postfix = "", unsigned int start_index = 1 ) : nh_( nh ), prefix_( prefix ), postfix_( postfix ), start_index_( start_index )
+	ParamArrayReader(
+		ros::NodeHandle & nh,
+		const std::string & prefix,
+		const std::string & postfix = "",
+		unsigned int start_index = 1 )
+	:
+		nh_( nh ),
+		prefix_( prefix ),
+		postfix_( postfix ),
+		start_index_( start_index )
 	{
 		//
 	}
 	
 public:
-	_Array readParams()
+	_Array
+		readParams()
 	{
-		return readParams( prefix_, postfix_, start_index_ );
+		return readParams(
+			prefix_,
+			postfix_,
+			start_index_ );
 	}
 	
-	_Array readParams( const std::string & prefix, const std::string & postfix = "", unsigned int start_index = 1 )
+	_Array
+		readParams(
+			const std::string & prefix,
+			const std::string & postfix = "",
+			unsigned int start_index = 1 )
 	{
 		params_.clear();
 		bool new_param_found = true;
@@ -55,7 +72,9 @@ public:
 			__Storage param_value;
 			const std::string param_name = ss.str();
 			
-			if( nh_.getParam( param_name.c_str(), param_value ) )
+			if( nh_.getParam(
+				param_name.c_str(),
+				param_value ) )
 			{
 				std::cout << "Loaded param [" << param_name.c_str() << "] with value " << param_value << std::endl;
 				params_.push_back( param_value );
@@ -85,26 +104,55 @@ public:
 	ros::NodeHandle nh_;
 	
 	std::string param_name_;
-	__Storage default_value_;
+	
+	__Storage
+		default_value_,
+		last_value_;
 	
 	ParamArrayReader(){}
 	
-	ParamArrayReader( ros::NodeHandle & nh, const std::string & param_name = "", const __Storage & default_value = __Storage() ) : nh_( nh )
+	ParamArrayReader(
+		ros::NodeHandle & nh,
+		const std::string & param_name = "",
+		const __Storage & default_value = __Storage() )
+	:
+		nh_( nh ),
+		default_value_( default_value ),
+		last_value_( default_value_ )
 	{
 		//
 	}
 	
-	__Storage readParam()
+	__Storage
+		readParam()
 	{
-		return readParam( param_name_, default_value_ );
+		return readParam(
+			param_name_,
+			default_value_ );
 	}
 	
-	__Storage readParam( const std::string & param_name, const __Storage & default_value = __Storage() )
+	__Storage
+		readParam(
+			const std::string & param_name,
+			const __Storage & default_value = __Storage() )
 	{
-		__Storage param_value( default_value );
-		if( !nh_.getParam( param_name.c_str(), param_value ) )
-			ROS_WARN( "Could not find param %s under the given nodehandle", param_name );
-		return param_value;
+		return tryReadParam( param_name ) ? last_value_ : default_value;
+	}
+	
+	bool tryReadParam( const std::string & param_name )
+	{
+		if( nh_.getParam(
+			param_name.c_str(),
+			last_value_ ) )
+		{
+			return true;
+		}
+		
+		ROS_WARN(
+			"Could not find param %s under the given nodehandle",
+			param_name );
+		
+		return false;
 	}
 };
 
