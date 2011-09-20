@@ -1,0 +1,11 @@
+<launch>
+  <!-- load planning -->
+  <include file="$(find pr2_3dnav)/launch/right_arm_navigation.launch"/>
+  
+  <!-- load perception -->
+  <include file="$(find pr2_arm_navigation_perception)/launch/collision_map_self_occ.launch"/>
+
+  </node>
+
+</launch>
+

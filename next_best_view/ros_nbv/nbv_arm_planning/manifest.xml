@@ -1,0 +1,29 @@
+<package>
+  <description brief="nbv_arm_planning">
+
+     nbv_arm_planning
+
+  </description>
+  <author>Christian Potthast</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/nbv_arm_planning</url>
+  <depend package="roscpp"/>
+  <depend package="tf"/>
+  <depend package="tf2"/>
+  <depend package="opencv2"/>
+  <depend package="sensor_msgs"/>
+  <depend package="pcl"/>
+  <depend package="eigen"/>
+  <depend package="visualization_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="kinematics_msgs"/>
+  <depend package="actionlib"/>
+  <depend package="move_base_msgs"/>
+  <depend package="pr2_msgs"/>
+  <depend package="nbv_utilities"/>
+<!--  <depend package="nbv_main"/> -->
+
+</package>
+
+

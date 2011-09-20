@@ -1,0 +1,25 @@
+<package>
+  <description brief="nbv_utilities">
+
+     nbv_utilities
+
+  </description>
+  <author>Christian Potthast</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/nbv_utilities</url>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="pcl"/>
+  <depend package="pcl_ros"/>
+  <depend package="pr2_laser_snapshotter"/>
+  <depend package="pr2_msgs"/>
+ <!-- <depend package="nbv_main"/> -->
+  <depend package="actionlib"/>
+  <depend package="move_base_msgs"/>
+  <depend package="tf"/>
+  <depend package="move_arm_msgs"/>
+  
+</package>
+
+

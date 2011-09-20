@@ -1,0 +1,10 @@
+sensor_msgs/PointCloud2 cloud
+geometry_msgs/PoseWithCovarianceStamped robot_pose
+float32 dir
+---
+int8 result
+int8 SUCCEEDED=1
+int8 FAILED=0
+int8 DONE=2
+geometry_msgs/PoseStamped goal_pose
+geometry_msgs/PoseArray arm_pose

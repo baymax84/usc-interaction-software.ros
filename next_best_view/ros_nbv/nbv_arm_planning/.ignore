@@ -1,0 +1,6 @@
+.project
+.cproject
+cmake_install.cmake
+bin
+build
+srv_gen

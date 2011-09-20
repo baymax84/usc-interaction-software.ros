@@ -1,0 +1,7 @@
+move_arm_msgs/MoveArmGoal arm_pose_goal
+motion_planning_msgs/SimplePoseConstraint simple_pose_constraint
+---
+int8 result
+int8 SUCCEEDED=1
+int8 FAILED=0
+int8 DONE=2

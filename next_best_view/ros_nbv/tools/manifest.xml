@@ -1,0 +1,18 @@
+<package>
+  <description brief="tools">
+
+     tools
+
+  </description>
+  <author>Christian Potthast</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tools</url>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+  <depend package="pcl_ros"/>
+  <depend package="visualization_msgs"/>
+
+</package>
+
+

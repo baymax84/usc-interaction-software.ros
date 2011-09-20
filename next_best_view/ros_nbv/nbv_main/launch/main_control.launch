@@ -1,0 +1,22 @@
+<launch>
+
+  <!-- Laser stuff -->   
+  <include file="$(find nbv_utilities)/launch/pr2_laser_node.launch" />
+   
+  <!-- Extracts objects service -->
+  <node type="extract_objects" pkg="nbv_main" 
+        name="extract_objects">
+  </node>
+  
+  <!-- Grab one kinect frame service -->
+    <node type="kinect_grab_one_pc_srv" pkg="nbv_utilities" 
+        name="kinect_grab_one_pc_srv">
+  </node>
+  
+    <!-- Drive to init position -->
+  <node type="drive_to_init_pos" pkg="nbv_utilities" 
+        name="drive_to_init_pos">
+  </node>
+  
+ 
+</launch>
