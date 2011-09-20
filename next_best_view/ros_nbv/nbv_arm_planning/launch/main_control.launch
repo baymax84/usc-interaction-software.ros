@@ -1,0 +1,9 @@
+<launch>
+   
+  <!-- Extracts objects service -->
+  <node type="extract_objects" pkg="nbv_arm_planning" 
+        name="extract_objects">
+  </node>
+    
+  
+</launch>
