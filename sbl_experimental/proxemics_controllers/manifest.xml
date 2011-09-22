@@ -1,13 +1,13 @@
 <package>
-  <description brief="proxemics">
+  <description brief="proxemics_controllers">
 
-     proxemics
+     proxemics_controllers
 
   </description>
   <author>Ross Mead</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/proxemics</url>
+  <url>http://ros.org/wiki/proxemics_controllers</url>
   <depend package="bullet"/>
   <depend package="driver_base"/>
   <depend package="dynamic_reconfigure"/>
