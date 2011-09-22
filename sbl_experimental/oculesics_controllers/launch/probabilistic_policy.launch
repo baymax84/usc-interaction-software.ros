@@ -1,6 +1,6 @@
 <launch>
-	<include file="$(find oculesics)/launch/test_frames.launch" />
-	<node pkg="oculesics" type="probabilistic_oculesics_controller" name="probabilistic_oculesics_controller" output="screen"
+	<include file="$(find oculesics_controllers)/launch/test_frames.launch" />
+	<node pkg="oculesics_controllers" type="probabilistic_oculesics_controller" name="probabilistic_oculesics_controller" output="screen"
 		args="_world_frame_name:=/world _frame1_name:=/frame1 _frame1_probability:=0.15 _frame2_name:=/frame2 _frame2_probability:=0.4 _frame3_name:=/frame3 _frame3_probability:=0.15
 		_frame4_name:=/frame4 _frame4_probability:=0.15 _frame5_name:=/frame5 _frame5_probability:=0.15 _look_time/min:=0.5 _look_time/max:=3.0" />
 </launch>

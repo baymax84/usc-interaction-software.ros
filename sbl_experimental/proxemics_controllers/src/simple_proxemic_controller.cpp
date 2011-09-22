@@ -5,7 +5,7 @@
 #include <angles/angles.h>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/Twist.h>
-#include <proxemics/ProxemicControllerConfig.h>
+#include <proxemics_controllers/ProxemicControllerConfig.h>
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 
@@ -33,7 +33,7 @@ double getAngle(double target_x, double target_y, double origin_x = 0.0, double 
 double sign(double x);
 
 // callback function prototypes
-void cbReconfigure(proxemics::ProxemicControllerConfig &config, uint32_t level);
+void cbReconfigure(proxemics_controllers::ProxemicControllerConfig &config, uint32_t level);
 
 // executes main program code
 int main(int argc, char** argv)
@@ -59,8 +59,8 @@ int main(int argc, char** argv)
   nh.setParam("g_max_speed_ang_z", g_max_speed_ang_z);
 
   // initialize dynamic reconfigure parameter server
-  dynamic_reconfigure::Server<proxemics::ProxemicControllerConfig> srv_reconfig;
-  dynamic_reconfigure::Server<proxemics::ProxemicControllerConfig>::CallbackType cb_reconfig;
+  dynamic_reconfigure::Server<proxemics_controllers::ProxemicControllerConfig> srv_reconfig;
+  dynamic_reconfigure::Server<proxemics_controllers::ProxemicControllerConfig>::CallbackType cb_reconfig;
   cb_reconfig = boost::bind(&cbReconfigure, _1, _2);
   srv_reconfig.setCallback(cb_reconfig);
 
@@ -160,7 +160,7 @@ double sign(double x)
   return ((x < 0.0) ? -1.0 : 1.0);} // sign(double x)
 
       void
-cbReconfigure (proxemics::ProxemicControllerConfig &config, uint32_t level)
+cbReconfigure (proxemics_controllers::ProxemicControllerConfig &config, uint32_t level)
 {
   g_social_distance = config.social_distance;
   g_origin_frame = config.origin_frame;
@@ -175,4 +175,4 @@ cbReconfigure (proxemics::ProxemicControllerConfig &config, uint32_t level)
   g_max_speed_lin_x = config.max_speed_lin_x;
   g_max_speed_lin_y = config.max_speed_lin_y;
   g_max_speed_ang_z = config.max_speed_ang_z;
-} // cbReconfigure(proxemics::ProxemicControllerConfig &, uint32_t)
+} // cbReconfigure(proxemics_controllers::ProxemicControllerConfig &, uint32_t)

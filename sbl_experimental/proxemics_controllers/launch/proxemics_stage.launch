@@ -1,6 +1,6 @@
 <launch>
   <param name="use_sim_time" value="true" type="bool"/>
-  <node pkg="stage" type="stageros" name="world" args="$(find proxemics)/worlds/empty.world"/>
+  <node pkg="stage" type="stageros" name="world" args="$(find proxemics_controllers)/worlds/empty.world"/>
   
   <group ns="robot">
     <param name="axis_vx" type="int" value="1"/>

@@ -2,7 +2,7 @@
   <!--DEBUGGING-->
   <!--<node pkg="tf" type="static_transform_publisher" name="target" args="0 0 0 0 0 0 /odom_combined /target 50"/>-->
   
-  <node pkg="proxemics" type="simple_proxemic_controller" name="simple_proxemic_controller" output="screen">
+  <node pkg="proxemics_controllers" type="simple_proxemic_controller" name="simple_proxemic_controller" output="screen">
     <param name="use_orientation" value="true"/>
   </node>
 </launch>
