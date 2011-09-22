@@ -1,0 +1,9 @@
+<stack>
+  <description brief="pr2_sbl_experimental">pr2_sbl_experimental</description>
+  <author>Maintained by Edward</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pr2_sbl_experimental</url>
+  <depend stack="ros" />
+
+</stack>
