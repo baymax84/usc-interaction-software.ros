@@ -1,4 +1,4 @@
 <launch>
 	<arg name="policy" default="probabilistic" />
-	<include file="$(arg policy)_policy.launch" />
+	<include file="$(find oculesics_controllers)/launch/$(arg policy)_policy.launch" />
 </launch>

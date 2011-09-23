@@ -48,18 +48,18 @@ public:
 		try
 		{
 			ros::spinOnce();
-			tf_listener_.waitForTransform( world_frame_name_, frame_name_reader_.params_[target_index], ros::Time(0), ros::Duration( 0.5 ) );
+			tf_listener_.waitForTransform( world_frame_name_, frame_name_reader_.params_[target_index], ros::Time(0), ros::Duration( 0.25 ) );
 			tf_listener_.lookupTransform( world_frame_name_, frame_name_reader_.params_[target_index], ros::Time(0), transform );
-			
+	
+			auto target = transform.getOrigin();
+		
+			publishTarget( _OculesicsPolicy::_Target( target[0], target[1], target[2] ), world_frame_name_, "/target" );
 		}
 		catch ( tf::TransformException & ex )
 		{
 			ROS_ERROR("%s",ex.what() );
 		}
 		
-		auto target = transform.getOrigin();
-		
-		publishTarget( _OculesicsPolicy::_Target( target[0], target[1], target[2] ), world_frame_name_, "/target" );
 		return ( look_duration_range_.max - look_duration_range_.min ) * target_generator_.getProbability( 0, target_index ) + look_duration_range_.min;
 	}
 	
