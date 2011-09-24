@@ -1,0 +1,18 @@
+<launch>
+<!-- general tools -->
+	<!-- kinect -->
+	<include file="$(find openni_multitracker)/launch/openni_multitracker.launch" />
+	<!-- pr2 head control -->
+	<include file="$(find pr2_oculesics_adapters)/launch/pr2_head_controller.launch" />
+	
+<!-- oculesics -->
+	<!-- oculesics controller -->
+	<include file="$(find oculesics_controllers)/launch/oculesics_controller" />
+	<!-- no oculesics recognizer -->
+	
+<!-- proxemics -->
+	<!-- proxemics controller -->
+	<include file="$(find proxemics_recognizers)/launch/simple_proxemics_controller.launch" />
+	<!-- proxemics recognizer -->
+	<include file="$(find csci599)/launch/icsr2011.launch" />
+</launch>
