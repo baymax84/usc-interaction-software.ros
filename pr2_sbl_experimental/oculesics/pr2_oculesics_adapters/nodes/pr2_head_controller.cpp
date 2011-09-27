@@ -66,7 +66,7 @@ public:
 	{
 		while( ros::ok() )
 		{
-			lookAt( "/target", 0, 0, 0 );
+			lookAt( "/pr2_head_look_target", 0, 0, 0 );
 			loop_rate_.sleep();
 		}
 	}
