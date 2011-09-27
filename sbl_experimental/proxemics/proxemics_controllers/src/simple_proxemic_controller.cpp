@@ -15,7 +15,7 @@ using namespace std;
 // proxemic global variables
 double g_social_distance = 1.0;
 std::string g_origin_frame = "/base_link";
-std::string g_target_frame = "/target";
+std::string g_target_frame = "/proxemics_target";
 bool g_use_orientation = false;
 double g_gain_lin_x = 1.0;
 double g_gain_lin_y = 1.0;
@@ -83,6 +83,7 @@ int main(int argc, char** argv)
   while (ros::ok())
   {
     vel_x = vel_y = vel_th = 0.0;
+    ros::Time t_now = ros::Time::now();
 
     try // get person position
     {
@@ -90,8 +91,9 @@ int main(int argc, char** argv)
       {
         tf::StampedTransform tf_rp;
         tf::StampedTransform tf_pr;
-        tf_listener.lookupTransform(g_origin_frame, g_target_frame, ros::Time(0), tf_rp);
-        tf_listener.lookupTransform(g_target_frame, g_origin_frame, ros::Time(0), tf_pr);
+        tf_listener.waitForTransform(g_origin_frame, g_target_frame, t_now, ros::Duration(0.25));
+        tf_listener.lookupTransform(g_origin_frame, g_target_frame, t_now, tf_rp);
+        tf_listener.lookupTransform(g_target_frame, g_origin_frame, t_now, tf_pr);
 
         // get range/angle to target frame
         range_rp = getDistance(tf_rp.getOrigin().x(), tf_rp.getOrigin().y());

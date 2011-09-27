@@ -53,7 +53,7 @@ public:
 	
 			auto target = transform.getOrigin();
 		
-			publishTarget( _OculesicsPolicy::_Target( target[0], target[1], target[2] ), world_frame_name_, "/target" );
+			publishTarget( _OculesicsPolicy::_Target( target[0], target[1], target[2] ), world_frame_name_, "/pr2_head_look_target" );
 		}
 		catch ( tf::TransformException & ex )
 		{
