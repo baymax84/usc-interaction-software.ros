@@ -14,6 +14,8 @@ using namespace std;
 
 // proxemic global variables
 double g_social_distance = 1.0;
+double g_angle_robot_to_person = 0.0;
+double g_angle_person_to_robot = 0.0;
 std::string g_origin_frame = "/base_link";
 std::string g_target_frame = "/proxemics_target";
 bool g_use_orientation = false;
@@ -45,6 +47,8 @@ int main(int argc, char** argv)
 
   // initialize parameters
   nh.setParam("social_distance", g_social_distance);
+  nh.setParam("angle_robot_to_person", g_angle_robot_to_person);
+  nh.setParam("angle_person_to_robot", g_angle_person_to_robot);
   nh.setParam("origin_frame", g_origin_frame);
   nh.setParam("target_frame", g_target_frame);
   nh.setParam("use_orientation", g_use_orientation);
@@ -76,6 +80,7 @@ int main(int argc, char** argv)
   double range_rp = 0.0;
   double angle_rp = 0.0;
   double angle_pr = 0.0;
+  double vel_r = 0.0;
   double vel_x = 0.0;
   double vel_y = 0.0;
   double vel_th = 0.0;
@@ -102,10 +107,21 @@ int main(int argc, char** argv)
 
         // proportional control: velocity(error) = gain * error
         //vel_x = g_gain_lin_x * (range_rp - g_social_distance);
+        //vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
+        //if (g_use_orientation)
+        //  vel_y = g_gain_lin_y * sin(sign(angle_pr) * min(abs(angle_pr), 0.5 * M_PI));
+        //vel_th = g_gain_ang_z * angle_rp;
+
+        // proportional control: velocity(error) = gain * error
         vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
         if (g_use_orientation)
-          vel_y = g_gain_lin_y * sin(sign(angle_pr) * min(abs(angle_pr), 0.5 * M_PI));
-        vel_th = g_gain_ang_z * angle_rp;
+          vel_y = g_gain_lin_y * sin(sign(angle_pr - g_angle_person_to_robot) * min(abs(angle_pr - g_angle_person_to_robot), 0.5 * M_PI));
+        vel_th = g_gain_ang_z * (angle_rp - g_angle_robot_to_person);
+
+        // "rotate" velocities based on desired angle from robot to person
+        vel_r = sqrt(pow(vel_x, 2) + pow(vel_y, 2));
+        vel_x = vel_r * cos(g_angle_robot_to_person);
+        vel_y = vel_r * sin(g_angle_robot_to_person);
 
         // clip linear x velocity
         if (abs(vel_x) < g_min_speed_lin_x)
@@ -165,6 +181,8 @@ double sign(double x)
 cbReconfigure (proxemics_controllers::ProxemicControllerConfig &config, uint32_t level)
 {
   g_social_distance = config.social_distance;
+  g_angle_robot_to_person = config.angle_robot_to_person;
+  g_angle_person_to_robot = config.angle_person_to_robot;
   g_origin_frame = config.origin_frame;
   g_target_frame = config.target_frame;
   g_use_orientation = config.use_orientation;
