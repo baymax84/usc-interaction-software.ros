@@ -99,6 +99,12 @@ class WaitForResponseServer {
 					ROS_INFO( "%s: pose detected", action_name_.c_str() );
 					wait_for_response_action::WaitForResponseResult res;
 					res.pose = curr_pose_;
+          printf ("\n");
+          for( int i = 0; i < 8; i++ )
+          {
+            printf( "%0.2f ", res.pose.position[i] );
+          }
+          printf ("\n");
 
 					as_.setSucceeded(res);
 
