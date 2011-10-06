@@ -7,6 +7,7 @@
 #include <actionlib/client/terminal_state.h>
 
 #include <pose_model/pose_file.h>
+#include <simon_says/Prob.h>
 
 bool spinning_ = true;
 
@@ -32,8 +33,8 @@ int main( int argc, char* argv[] )
   std::string prefix;
   std::string model_filename;
 
-  nh.param( "prefix", prefix, std::string("/home/dfseifer/diamondback-usc/stacks/usc-ros-pkg/trunk/turn_taking/pose_model") );
-  nh.param( "model_filename", model_filename, std::string("poses.yaml") );
+  nh.param( "prefix", prefix, std::string("/home/dfseifer/diamondback-usc/stacks/usc-ros-pkg/trunk/turn_taking/simon_says") );
+  nh.param( "model_filename", model_filename, std::string("newer_poses.yaml") );
 
   ros::Publisher pose_pub = nh.advertise<sensor_msgs::JointState>( "target_pose", 1 );
   std::vector<pose_model::SimonPose> poses;
@@ -69,21 +70,35 @@ int main( int argc, char* argv[] )
 
 		pose_action::PoseGoal goal;
 		goal.goal_state = pose;
-		goal.pose_duration = ros::Duration(1.0);
-		goal.move_duration = ros::Duration(1.0);
+		goal.pose_duration = ros::Duration(2.0);
+		goal.move_duration = ros::Duration(0.5);
 
 		pose_client.sendGoal(goal);
-
+		ros::Duration(1.0).sleep();
 		// wait for response
 		wait_for_response_action::WaitForResponseGoal responseGoal;
+
 		response_client.sendGoal(responseGoal);
 
 		bool response_received = response_client.waitForResult(ros::Duration(15.0));
 
 		if( ! response_received )
 			ROS_INFO( "timeout" );
+		else
+		{
+			wait_for_response_action::WaitForResponseResult responseResult = *(response_client.getResult());
 
-		// feedback
+			// feedback
+			simon_says::Prob::Request  req;
+			simon_says::Prob::Response res;
+
+			req.goal_state = pose;
+			req.current_state = responseResult.pose;
+
+			ros::service::call("/pose_prob", req, res );
+
+			ROS_INFO( "result: %f", res.prob );
+		}
 
 		usleep( 100*1000 );
 	}
