@@ -11,6 +11,14 @@
   <depend package="pose_action"/>
   <depend package="pose_model"/>
 	<depend package="wait_for_response_action"/>
+	<depend package="smach_ros"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/srv/cpp"/>
+  </export>
+
+  <rosdep name="python-yaml"/>
+
 </package>
 
 

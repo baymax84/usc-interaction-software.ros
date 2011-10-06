@@ -1,11 +1,15 @@
 <launch>
 	<include file="$(find dave_demo)/bandit_alt.launch"/>
 
-	<node pkg="pose_action" type="pose_action_server" name="pose_action_server" output="screen">
+	<node pkg="pose_action" type="pose_action_server" name="pose_action_server">
 		
 	</node>
 
-	<node pkg="wait_for_response_action" type="wait_for_response_server" name="wait_for_response_server"/>
-	
+	<node pkg="wait_for_response_action" type="wait_for_response_server" name="wait_for_response_server" output="screen"/>
+
+  <node pkg="simon_says" type="prob_srv_lr" name="probs" output="screen" respawn="true">
+    <param name="prefix" type="str" value="$(find simon_says)"/>
+  </node>
+
 	<!--<node pkg="simon_says" type="simon_says" name="simon_says"/>-->
 </launch>

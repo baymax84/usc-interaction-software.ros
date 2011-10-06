@@ -1,0 +1,5 @@
+sensor_msgs/JointState goal_state
+sensor_msgs/JointState current_state
+---
+float64 left_prob
+float64 right_prob
