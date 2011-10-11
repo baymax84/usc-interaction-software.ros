@@ -6,10 +6,4 @@
 		name="probabilistic_oculesics_controller"
 		output="screen"
 		args="_world_frame_name:=/world _frame1_name:=/oculesics_target _frame1_probability:=1.0 _look_time/min:=0.01 _look_time/max:=0.01" />
-	<node
-                pkg="tf"
-                type="static_transform_publisher"
-                name="proxemics_target_to_oculesics_target"
-                output="screen"
-                args="0 0 0 0 0 0 /proxemics_target /oculesics_target 100" />
 </launch>
