@@ -1,4 +1,3 @@
 <launch>
-	<!--include file="$(find pr2_oculesics_adapters)/launch/frames.launch" /-->
 	<node pkg="pr2_oculesics_adapters" type="pr2_head_controller" name="pr2_head_controller" output="screen" args="" />
 </launch>
