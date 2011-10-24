@@ -50,7 +50,7 @@ public:
 		goal.pointing_frame = "high_def_frame";
 		
 		//take at least 0.5 seconds to get there
-		goal.min_duration = ros::Duration( 0.5 );
+		goal.min_duration = ros::Duration( 0.25 );
 		
 		//and go no faster than 1 rad/s
 		goal.max_velocity = 1.0;
