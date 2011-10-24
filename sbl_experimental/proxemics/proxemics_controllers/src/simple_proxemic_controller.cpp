@@ -106,22 +106,22 @@ int main(int argc, char** argv)
         angle_pr = getAngle(tf_pr.getOrigin().x(), tf_pr.getOrigin().y());
 
         // proportional control: velocity(error) = gain * error
-        //vel_x = g_gain_lin_x * (range_rp - g_social_distance);
-        //vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
-        //if (g_use_orientation)
-        //  vel_y = g_gain_lin_y * sin(sign(angle_pr) * min(abs(angle_pr), 0.5 * M_PI));
-        //vel_th = g_gain_ang_z * angle_rp;
-
-        // proportional control: velocity(error) = gain * error
+        vel_x = g_gain_lin_x * (range_rp - g_social_distance);
         vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
         if (g_use_orientation)
-          vel_y = g_gain_lin_y * sin(sign(angle_pr - g_angle_person_to_robot) * min(abs(angle_pr - g_angle_person_to_robot), 0.5 * M_PI));
-        vel_th = g_gain_ang_z * (angle_rp - g_angle_robot_to_person);
+          vel_y = g_gain_lin_y * sin(sign(angle_pr) * min(abs(angle_pr), 0.5 * M_PI));
+        vel_th = g_gain_ang_z * angle_rp;
+
+        // proportional control: velocity(error) = gain * error
+        //vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
+        //if (g_use_orientation)
+        //  vel_y = g_gain_lin_y * sin(sign(angle_pr - g_angle_person_to_robot) * min(abs(angle_pr - g_angle_person_to_robot), 0.5 * M_PI));
+        //vel_th = g_gain_ang_z * (angle_rp - g_angle_robot_to_person);
 
         // "rotate" velocities based on desired angle from robot to person
-        vel_r = sqrt(pow(vel_x, 2) + pow(vel_y, 2));
-        vel_x = vel_r * cos(g_angle_robot_to_person);
-        vel_y = vel_r * sin(g_angle_robot_to_person);
+        //vel_r = sqrt(pow(vel_x, 2) + pow(vel_y, 2));
+        //vel_x = vel_r * cos(g_angle_robot_to_person);
+        //vel_y = vel_r * sin(g_angle_robot_to_person);
 
         // clip linear x velocity
         if (abs(vel_x) < g_min_speed_lin_x)
