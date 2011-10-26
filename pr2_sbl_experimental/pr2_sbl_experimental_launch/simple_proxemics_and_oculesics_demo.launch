@@ -25,7 +25,7 @@
 			type="person_auto_selector"
 			name="person_auto_selector"
 			output="screen"
-			args="~user_states:=/openni_multitracker/user_states _distance_frame:=neck" />
+			args="~user_states:=/openni_multitracker/user_states _distance_frame:=torso" />
 		<node
 			pkg="tf"
 			type="static_transform_publisher"
