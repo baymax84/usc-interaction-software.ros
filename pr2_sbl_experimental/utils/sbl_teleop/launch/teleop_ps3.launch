@@ -4,7 +4,7 @@
 		type="sbl_teleop_node"
 		name="sbl_teleop"
 		output="screen"
-		args="~joystick:=/joy _loop_rate:=30" >
+		args="~joystick:=/joy ~cmd_vel:=/base_controller/command _loop_rate:=30" >
 		
 		<param name="keep_alive_period" type="double" value="0.5" />
 	
