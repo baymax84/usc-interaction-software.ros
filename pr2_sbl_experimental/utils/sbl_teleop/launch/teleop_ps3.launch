@@ -1,0 +1,42 @@
+<launch>
+	<node
+		pkg="sbl_teleop"
+		type="sbl_teleop_node"
+		name="sbl_teleop"
+		output="screen"
+		args="~joystick:=/joy _loop_rate:=30" >
+		
+		<param name="keep_alive_period" type="double" value="0.5" />
+	
+	<!-- axes -->
+		<param name="axis0_name" type="string" value="linear.x" />
+		<param name="axis0_index" type="int" value="1" />
+	
+		<param name="axis1_name" type="string" value="linear.y" />
+		<param name="axis1_index" type="int" value="0" />
+	
+		<param name="axis2_name" type="string" value="linear.z" />
+		<param name="axis2_index" type="int" value="3" />
+		
+		<param name="axis3_name" type="string" value="angular.z" />
+		<param name="axis3_index" type="int" value="2" />
+		
+		<param name="axis4_name" type="string" value="fire_device" />
+		<param name="axis4_index" type="double" value="12" />
+	
+	<!-- speed in m/s -->
+		<param name="axis0_scale" type="double" value="1.0" />
+		<param name="axis1_scale" type="double" value="1.0" />
+		<param name="axis2_scale" type="double" value="1.0" />
+		
+	<!-- speed in rad/sec -->
+		<param name="axis3_scale" type="double" value="1.57079633" />
+	
+	<!-- buttons -->
+		<param name="button0_name" type="string" value="enable" />
+		<param name="button0_index" type="int" value="10" />
+	
+		<param name="button1_name" type="string" value="cmd_vel_publish_toggle" />
+		<param name="button1_index" type="int" value="2" />
+	</node>
+</launch>
