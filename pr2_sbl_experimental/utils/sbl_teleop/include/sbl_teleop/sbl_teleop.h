@@ -98,10 +98,8 @@ public:
 	
 	void spinOnce()
 	{
-		// update but don't publish
-		_JoystickPolicy::update( false );
-		// publish only if we've toggled publishing on
-		if( publish_cmd_vel_ ) _JoystickPolicy::publish();
+		// update but only publish if we've toggled publishing on
+		_JoystickPolicy::update( publish_cmd_vel_ );
 	}
 };
 
