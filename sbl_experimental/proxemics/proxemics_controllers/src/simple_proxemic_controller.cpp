@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
   //
   tf::TransformListener tf_listener;
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(30);
 
   //
   double range_rp = 0.0;
@@ -128,20 +128,20 @@ int main(int argc, char** argv)
         //  vel_y = g_gain_lin_y * sin(sign(angle_pr - g_angle_person_to_robot) * min(abs(angle_pr - g_angle_person_to_robot), 0.5 * M_PI));
         //vel_th = g_gain_ang_z * (angle_rp - g_angle_robot_to_person);
 		
-		ROS_INFO( "%.2f %.2f", g_angle_robot_to_person, angle_rp );
+		//ROS_INFO( "%.2f %.2f", g_angle_robot_to_person, angle_rp );
 		
-		ROS_INFO( "%.2f", a1 );
-		ROS_INFO( "%.2f", a2 );
+		//ROS_INFO( "%.2f", a1 );
+		//ROS_INFO( "%.2f", a2 );
 		
 		vel_th = g_gain_ang_z * a1;
 
         // "rotate" velocities based on desired angle from robot to person
         double vel_x_p = vel_x * cos( a2 ) + vel_y * sin( a2 );
         double vel_y_p = -vel_x * sin( a2 ) + vel_y * cos( a2 );
-        ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
+        //ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
         vel_x = vel_x_p;
         vel_y = vel_y_p;
-        ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
+        //ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
 
         // clip linear x velocity
         if (abs(vel_x) < g_min_speed_lin_x)
@@ -168,8 +168,8 @@ int main(int argc, char** argv)
     }
 
     // print linear (vel_x and vel_y) and angular (vel_th) velocities
-    ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
-    ROS_INFO( "----------" );
+    //ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
+    //ROS_INFO( "----------" );
 
     // publish linear (vel_x and vel_y) and angular (vel_th) velocities
     cmd_vel.linear.x = vel_x;
