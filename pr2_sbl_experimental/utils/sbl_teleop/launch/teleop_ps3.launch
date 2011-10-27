@@ -20,9 +20,6 @@
 		
 		<param name="axis3_name" type="string" value="angular.z" />
 		<param name="axis3_index" type="int" value="2" />
-		
-		<param name="axis4_name" type="string" value="fire_device" />
-		<param name="axis4_index" type="double" value="12" />
 	
 	<!-- speed in m/s -->
 		<param name="axis0_scale" type="double" value="1.0" />
