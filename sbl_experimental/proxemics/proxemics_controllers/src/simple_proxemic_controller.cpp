@@ -100,28 +100,48 @@ int main(int argc, char** argv)
         tf_listener.lookupTransform(g_origin_frame, g_target_frame, t_now, tf_rp);
         tf_listener.lookupTransform(g_target_frame, g_origin_frame, t_now, tf_pr);
 
+	// +
+	// v
+	// 
+	// 
+	// ^
+	// +
+
         // get range/angle to target frame
         range_rp = getDistance(tf_rp.getOrigin().x(), tf_rp.getOrigin().y());
         angle_rp = getAngle(tf_rp.getOrigin().x(), tf_rp.getOrigin().y());
         angle_pr = getAngle(tf_pr.getOrigin().x(), tf_pr.getOrigin().y());
 
         // proportional control: velocity(error) = gain * error
-        vel_x = g_gain_lin_x * (range_rp - g_social_distance);
-        vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
-        if (g_use_orientation)
-          vel_y = g_gain_lin_y * sin(sign(angle_pr) * min(abs(angle_pr), 0.5 * M_PI));
-        vel_th = g_gain_ang_z * angle_rp;
+        //vel_x = g_gain_lin_x * (range_rp - g_social_distance);
+        
+        double a1 = angle_rp - g_angle_robot_to_person;
+        double a2 = -angle_rp;
+        
+        vel_x = g_gain_lin_x * cos( a1 ) * ( range_rp - g_social_distance );
+        if ( g_use_orientation ) vel_y = g_gain_lin_y * sin( sign( angle_pr - g_angle_person_to_robot ) * min( abs( angle_pr - g_angle_person_to_robot ), M_PI_2 ) );
+        //vel_th = g_gain_ang_z * angle_rp;
 
         // proportional control: velocity(error) = gain * error
         //vel_x = g_gain_lin_x * cos(angle_rp) * (range_rp - g_social_distance);
         //if (g_use_orientation)
         //  vel_y = g_gain_lin_y * sin(sign(angle_pr - g_angle_person_to_robot) * min(abs(angle_pr - g_angle_person_to_robot), 0.5 * M_PI));
         //vel_th = g_gain_ang_z * (angle_rp - g_angle_robot_to_person);
+		
+		ROS_INFO( "%.2f %.2f", g_angle_robot_to_person, angle_rp );
+		
+		ROS_INFO( "%.2f", a1 );
+		ROS_INFO( "%.2f", a2 );
+		
+		vel_th = g_gain_ang_z * a1;
 
         // "rotate" velocities based on desired angle from robot to person
-        //vel_r = sqrt(pow(vel_x, 2) + pow(vel_y, 2));
-        //vel_x = vel_r * cos(g_angle_robot_to_person);
-        //vel_y = vel_r * sin(g_angle_robot_to_person);
+        double vel_x_p = vel_x * cos( a2 ) + vel_y * sin( a2 );
+        double vel_y_p = -vel_x * sin( a2 ) + vel_y * cos( a2 );
+        ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
+        vel_x = vel_x_p;
+        vel_y = vel_y_p;
+        ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
 
         // clip linear x velocity
         if (abs(vel_x) < g_min_speed_lin_x)
@@ -149,6 +169,7 @@ int main(int argc, char** argv)
 
     // print linear (vel_x and vel_y) and angular (vel_th) velocities
     ROS_INFO("vel = [%.2f, %.2f, %.2f]", vel_x, vel_y, vel_th);
+    ROS_INFO( "----------" );
 
     // publish linear (vel_x and vel_y) and angular (vel_th) velocities
     cmd_vel.linear.x = vel_x;
