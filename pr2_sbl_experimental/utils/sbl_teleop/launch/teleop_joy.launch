@@ -2,7 +2,9 @@
 	<node
 		pkg="joy"
 		type="joy_node"
-		name="joy_node" />
+		name="joy_node"
+		output="screen"
+		args="_dev:=/dev/input/js1" />
 	
 	<arg name="controller" default="ps3" />
 	
