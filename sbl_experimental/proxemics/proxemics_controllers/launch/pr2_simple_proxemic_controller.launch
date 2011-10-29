@@ -3,7 +3,7 @@
   <!--<node pkg="tf" type="static_transform_publisher" name="target" args="0 0 0 0 0 0 /odom_combined /target 50"/>-->
   
   <node pkg="proxemics_controllers" type="simple_proxemic_controller" name="simple_proxemic_controller" output="screen">
-    <param name="social_distance" value="1.2"/>
+    <param name="social_distance" value="1.5"/>
     <param name="angle_robot_to_person" value="0.0"/>
     <param name="angle_person_to_robot" value="0.0"/>
     <param name="origin_frame" value="/base_link"/>
@@ -12,11 +12,11 @@
     <param name="gain_lin_x" value="1.0"/>
     <param name="gain_lin_y" value="1.0"/>
     <param name="gain_ang_z" value="1.0"/>
-    <param name="min_speed_lin_x" value="0.02"/>
-    <param name="min_speed_lin_y" value="0.02"/>
-    <param name="min_speed_ang_z" value="0.02"/>
-    <param name="max_speed_lin_x" value="0.7"/>
-    <param name="max_speed_lin_y" value="0.7"/>
+    <param name="min_speed_lin_x" value="0.05"/>
+    <param name="min_speed_lin_y" value="0.05"/>
+    <param name="min_speed_ang_z" value="0.05"/>
+    <param name="max_speed_lin_x" value="1"/>
+    <param name="max_speed_lin_y" value="1"/>
     <param name="max_speed_ang_z" value="0.7"/>
   </node>
 </launch>
