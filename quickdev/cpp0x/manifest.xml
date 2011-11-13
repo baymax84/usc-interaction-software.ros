@@ -1,0 +1,16 @@
+<package>
+  <description brief="cpp0x">
+
+     cpp0x
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cpp0x</url>
+  <export>
+	<cpp cflags="-std=c++0x"/>
+  </export>
+</package>
+
+

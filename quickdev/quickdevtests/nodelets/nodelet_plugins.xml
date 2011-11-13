@@ -1,0 +1,52 @@
+<library path="lib/libquickdevtests_nodelets">
+  <class name="quickdevtests/image_proc_policy" type="quickdevtests::ImageProcPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/joystick_policy" type="quickdevtests::JoystickPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/node" type="quickdevtests::NodeNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/publisher_policy" type="quickdevtests::PublisherPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/reconfigure_policy" type="quickdevtests::ReconfigurePolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/robot_controller_policy" type="quickdevtests::RobotControllerPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/robot_driver_policy" type="quickdevtests::RobotDriverPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/service_client_policy" type="quickdevtests::ServiceClientPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/service_server_policy" type="quickdevtests::ServiceServerPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdevtests/tf_tranceiver_policy" type="quickdevtests::TfTranceiverPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>

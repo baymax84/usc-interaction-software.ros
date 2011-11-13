@@ -1,0 +1,19 @@
+<package>
+  <description brief="roscpp_simple">
+
+     provides the basic functionality of ROS message serialization without depending on rosconsole (for applications that are not compatible with log4cxx/rosconsole)
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/roscpp_simple</url>
+  <depend package="roscpp_serialization"/>
+  <depend package="rostime"/>
+  <depend package="roscpp_traits"/>
+  <depend package="cpp0x"/>
+  <export>
+	<cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lroscpp_simple"/>
+  </export>
+
+</package>
