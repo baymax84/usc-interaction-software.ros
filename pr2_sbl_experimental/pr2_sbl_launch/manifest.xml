@@ -1,14 +1,12 @@
 <package>
-  <description brief="pr2_sbl_experimental_launch">
+  <description brief="pr2_sbl_launch">
 
-     pr2_sbl_experimental_launch
+     pr2_sbl_launch
 
   </description>
-  <author>Edward T. Kaszubski</author>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/pr2_sbl_experimental_launch</url>
+  <url>http://ros.org/wiki/pr2_sbl_launch</url>
 
 </package>
-
-
