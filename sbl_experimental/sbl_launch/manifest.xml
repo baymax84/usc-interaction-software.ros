@@ -1,0 +1,11 @@
+<package>
+  <description brief="sbl_launch">
+
+     sbl_launch
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sbl_launch</url>
+</package>
