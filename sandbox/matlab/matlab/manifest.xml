@@ -1,0 +1,19 @@
+<package>
+  <description brief="matlab">
+
+     provides flags and tools for compiling matlab mex libraries
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/matlab</url>
+  <depend package="rosbuild"/>
+  <export>
+    <!--cpp cflags="-DMATLAB_MEX_FILE -ansi -D_GNU_SOURCE -fPIC -fno-omit-frame-pointer -pthread -DMX_COMPAT_32 -O -DNDEBUG -I/usr/local/MATLAB/R2011a/extern/include -I/usr/local/MATLAB/R2011a/simulink/include" lflags="-L/usr/local/MATLAB/R2011a/bin/glnxa64 -Wl,-rpath,/usr/local/MATLAB/R2011a/bin/glnxa64 -Wl,--version-script,/usr/local/MATLAB/R2011a/extern/lib/glnxa64/mexFunction.map -Wl,--no-undefined -lmx -lmex -lmat -lm"/-->
+    <rosbuild cmake_directory="${prefix}/cmake"/>
+  </export>
+
+</package>
+
+

@@ -1,0 +1,16 @@
+<package>
+  <description brief="cpp11">
+
+     cpp11
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cpp11</url>
+  <depend package="cpp0x"/>
+  <!-- waiting for the c++11 std flag; for now, we use the flags given by cpp0x
+  <export>
+	<cpp cflags="-std=c++11"/>
+  </export-->
+</package>
