@@ -6,6 +6,7 @@
 #ifndef OCULESICS_RANDOM_GENERATOR_H_
 #define OCULESICS_RANDOM_GENERATOR_H_
 
+// implementation of a discrete probability distribution using roulette-wheel-style selection of values
 template<class __DataType = double>
 class DiscreteDistribution
 {
@@ -14,17 +15,17 @@ public:
 	typedef std::vector<__DataType> _Array;
 	// probabilities will be normalized beforehand
 	_Array probabilities_;
-	
+
 	DiscreteDistribution( const _Array & probabilities = _Array() ) : probabilities_( probabilities ) {}
-	
+
 	template<class __Engine>
 	unsigned int operator() ( __Engine & engine )
 	{
 		__DataType total = 0;
 		const __DataType selection ( __DataType ( engine() - engine.min() ) / __DataType( engine.max() - engine.min() ) );
-		
+
 		printf( "selection: %f\n", selection );
-		
+
 		for( unsigned int i = 0; i < probabilities_.size(); ++i )
 		{
 			total += probabilities_[i];
@@ -40,7 +41,7 @@ class Range
 {
 public:
 	typedef __DataType _DataType;
-	
+
 	__DataType min, max;
 };
 
@@ -52,27 +53,29 @@ public:
 	typedef __Distribution _Distribution;
 	const static unsigned int dim_ = __Dim__;
 	typedef __Engine _Engine;
-	
+
 	__Engine engine_;
 	_DistributionArray distributions_;
 };
 
+// RandomGenerator template declaration
 template<class __Distribution, unsigned int __Dim__, class __Engine>
 class RandomGenerator : public RandomGeneratorBase<__Distribution, __Dim__, __Engine>{};
 
+// RandomGenerator specialization for a uniform probability distribution (boost::uniform_real)
 template<unsigned int __Dim__, class __Engine>
 class RandomGenerator<boost::uniform_real<>, __Dim__, __Engine> : public RandomGeneratorBase<boost::uniform_real<>, __Dim__, __Engine>
 {
 public:
 	typedef RandomGeneratorBase<boost::uniform_real<>, __Dim__, __Engine> _RandomGeneratorBase;
 	typedef std::array<double, __Dim__> _OutputArray;
-	
+
 	template<class __DataType>
 	void update( unsigned int index, __DataType & min, __DataType & max )
 	{
 		this->distributions_[index] = typename _RandomGeneratorBase::_Distribution( min, max );
 	}
-	
+
 	_OutputArray sample()
 	{
 		_OutputArray outputs;
@@ -84,18 +87,19 @@ public:
 	}
 };
 
-template<unsigned int __Dim__, class __Engine>
-class RandomGenerator<DiscreteDistribution<>, __Dim__, __Engine> : public RandomGeneratorBase<DiscreteDistribution<>, __Dim__, __Engine>
+// RandomGenerator specialization for a discrete probability distribution (::DiscreteDistribution)
+template<unsigned int __Dim__, class __Engine, class __DiscreteDistributionDataType>
+class RandomGenerator<DiscreteDistribution<__DiscreteDistributionDataType>, __Dim__, __Engine> : public RandomGeneratorBase<DiscreteDistribution<__DiscreteDistributionDataType>, __Dim__, __Engine>
 {
 public:
-	typedef RandomGeneratorBase<DiscreteDistribution<>, __Dim__, __Engine> _RandomGeneratorBase;
+	typedef RandomGeneratorBase<DiscreteDistribution<__DiscreteDistributionDataType>, __Dim__, __Engine> _RandomGeneratorBase;
 	typedef std::array<int, __Dim__> _OutputArray;
-	
+
 	void update( unsigned int index, const typename _RandomGeneratorBase::_Distribution::_Array & probabilities )
 	{
 		this->distributions_[index] = typename _RandomGeneratorBase::_Distribution( probabilities );
 	}
-	
+
 	_OutputArray sample()
 	{
 		_OutputArray outputs;
@@ -105,7 +109,7 @@ public:
 		}
 		return outputs;
 	}
-	
+
 	typename _RandomGeneratorBase::_Distribution::_Array::value_type getProbability( unsigned int distribution_index, unsigned int probability_index )
 	{
 		return this->distributions_[distribution_index].probabilities_[probability_index];
