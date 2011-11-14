@@ -1,0 +1,10 @@
+<stack>
+  <description brief="humanoid">humanoid</description>
+  <author>Maintained by Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/humanoid</url>
+  <depend stack="ros" />
+  <depend stack="common_msgs"/>
+
+</stack>

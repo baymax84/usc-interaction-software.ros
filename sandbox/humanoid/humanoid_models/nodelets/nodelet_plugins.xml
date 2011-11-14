@@ -1,0 +1,12 @@
+<library path="lib/libhumanoid_models_nodelets">
+  <class name="humanoid_models/kinect_adapter" type="humanoid_models::KinectAdapterNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="humanoid_models/gavam_adapter" type="humanoid_models::GAVAMAdapterNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>

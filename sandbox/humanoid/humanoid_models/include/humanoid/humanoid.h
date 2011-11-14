@@ -1,0 +1,83 @@
+/***************************************************************************
+ *  include/humanoid/humanoid.h
+ *  --------------------
+ *
+ *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following disclaimer
+ *    in the documentation and/or other materials provided with the
+ *    distribution.
+ *  * Neither the name of usc-ros-pkg nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ **************************************************************************/
+
+#ifndef HUMANOIDMODELS_HUMANOID_HUMANOID_H_
+#define HUMANOIDMODELS_HUMANOID_HUMANOID_H_
+
+#include <vector>
+#include <string>
+#include <humanoid_models/HumanoidStateArray.h>
+
+namespace humanoid
+{
+
+typedef std::string _JointName;
+typedef std::vector<_JointName> _JointNames;
+typedef humanoid_models::PoseWithConfidence _PoseWithConfidenceMsg;
+typedef humanoid_models::HumanoidJoint _HumanoidJointMsg;
+typedef humanoid_models::HumanoidState _HumanoidStateMsg;
+typedef humanoid_models::HumanoidStateArray _HumanoidStateArrayMsg;
+
+const static _JointNames JOINT_NAMES_
+{
+	"head",
+	"neck",
+	"torso",
+	"waist",
+	"right_collar",
+	"right_shoulder",
+	"right_elbow",
+	"right_wrist",
+	"right_hand",
+	"right_finger_tip",
+	"left_collar",
+	"left_shoulder",
+	"left_elbow",
+	"left_wrist",
+	"left_hand",
+	"left_finger_tip",
+	"right_hip",
+	"right_knee",
+	"right_ankle",
+	"right_foot",
+	"left_hip",
+	"left_knee",
+	"left_ankle",
+	"left_foot"
+};
+
+} // humanoid
+
+#endif // HUMANOIDMODELS_HUMANOID_HUMANOID_H_
