@@ -172,7 +172,7 @@ echo "  <license>BSD</license>
   <url>http://ros.org/wiki/$package</url>" >> $manifest_file
 
 if [ "$nodelets" != "" ]; then deps="nodelet $deps"; fi
-if [ "$sources" != "" ] || [ "$nodes" != "" ] || [ "$nodelets" != "" ]; then  deps="quickdev $deps"; fi
+if [ "$sources" != "" ] || [ "$nodes" != "" ] || [ "$nodelets" != "" ]; then  deps="quickdev_cpp $deps"; fi
 
 for dep in $deps; do
   echo "  <depend package=\"$dep\"/>" >> $manifest_file
