@@ -1,0 +1,18 @@
+<launch>
+	<arg name="2pi" value="6.28318531" />
+	<arg name="pi" value="3.14159265" />
+	<arg name="pi_2" value="1.57079633" />
+	
+	<node
+		pkg="tf"
+		type="static_transform_publisher"
+		name="openni_depth_frame_to_openni_depth_tracking_frame"
+		output="screen"
+		args="0 0 0 $(arg pi_2) 0 $(arg pi_2) /openni_depth_frame /openni_depth_tracking_frame 100" />
+	<node
+		pkg="tf"
+		type="static_transform_publisher"
+		name="openni_rgb_frame_to_openni_depth_frame"
+		output="screen"
+		args="0 0 0 0 0 0 /openni_rgb_frame /openni_depth_frame 100" />
+</launch>

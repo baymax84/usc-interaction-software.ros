@@ -1,0 +1,11 @@
+<launch>
+	<include file="$(find openni_camera)/launch/openni_node.launch" />
+	<include file="$(find openni_multitracker)/launch/frames_standalone.launch" />
+	<node
+		pkg="openni_multitracker"
+		type="openni_multitracker"
+		name="openni_multitracker"
+		output="screen"
+		args=""
+		respawn="true" />
+</launch>
