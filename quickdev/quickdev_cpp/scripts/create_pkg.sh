@@ -190,11 +190,11 @@ fi
 
 echo "</package>" >> $manifest_file
 
-if [ "$deps[0]" == "quickdev_cpp" ]; then
+#if [ "$deps[0]" == "quickdev_cpp" ]; then
 	echo 'include $(shell rospack find quickdev_cpp)/cmake.mk' >> $makefile_file
-else
-	echo 'include $(shell rospack find mk)/cmake.mk' >> $makefile_file
-fi
+#else
+#	echo 'include $(shell rospack find mk)/cmake.mk' >> $makefile_file
+#fi
 
 echo 'cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
@@ -218,10 +218,13 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
+# uncomment if you have defined messages
 #rosbuild_genmsg()
-#uncomment if you have defined services
+# uncomment if you have defined services
 #rosbuild_gensrv()
+# uncomment if you have defined dynamic reconfigure files
+# Note: requires "rosbuild_import( quickdev_cpp dynamic_reconfigure )"
+#quickdev_gencfg()
 ' >> $cmakelists_file
 
 if [ "$sources" != "" ]; then echo 'add_subdirectory( src )' >> $cmakelists_file; fi
