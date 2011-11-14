@@ -12,8 +12,7 @@ rosbuild_add_library( ${PROJECT_NAME} oculesics_policy.cpp
 									  probabilistic_oculesics_policy.cpp
 									  random_oculesics_policy.cpp
 									  oculesics_controller.cpp )
-									 
-rosbuild_add_compile_flags( ${PROJECT_NAME} -std=c++0x )
+
 rosbuild_link_boost( ${PROJECT_NAME} math_tr1 )
 
 #target_link_libraries( test_pid ${PROJECT_NAME} )
