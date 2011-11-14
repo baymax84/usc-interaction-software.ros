@@ -190,8 +190,8 @@ fi
 
 echo "</package>" >> $manifest_file
 
-if [ "$deps[0]" == "quickdev" ]; then
-	echo 'include $(shell rospack find quickdev)/cmake.mk' >> $makefile_file
+if [ "$deps[0]" == "quickdev_cpp" ]; then
+	echo 'include $(shell rospack find quickdev_cpp)/cmake.mk' >> $makefile_file
 else
 	echo 'include $(shell rospack find mk)/cmake.mk' >> $makefile_file
 fi
@@ -209,7 +209,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()' >> $cmakelists_file
 
-if [ "$sources" != "" ]; then echo 'rosbuild_include( quickdev add_library_auto )' >> $cmakelists_file; fi
+if [ "$sources" != "" ]; then echo 'rosbuild_include( quickdev_cpp add_library_auto )' >> $cmakelists_file; fi
 
 echo '
 
