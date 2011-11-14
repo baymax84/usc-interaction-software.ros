@@ -308,7 +308,7 @@ fi
 #convert_filename_component_to_ifdef_component="$convert_lower_to_upper | $convert_remove_underscores"
 
 for source in $sources; do
-  source_file=`echo $source | sed 's:\([a-z]\)\([A-Z][A-Z]\):\1_\2:g; s:[A-Z][a-z]:_&:2g' | tr A-Z a-z`
+  source_file=`echo $source | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
   source_h_relpath="include/$include_dir/$source_file.h"
   source_cpp_relpath="src/$source_file.cpp"
 
@@ -331,7 +331,7 @@ class $source
 done
 
 for node in $nodes; do
-  node_file=`echo "$node" | sed 's:\([a-z]\)\([A-Z][A-Z]\):\1_\2:g; s:[A-Z][a-z]:_&:2g' | tr A-Z a-z`
+  node_file=`echo "$node" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
   node_h_relpath="include/$include_dir/$node_file.h"
   node_cpp_relpath="nodes/$node_file.cpp"
 
@@ -373,7 +373,7 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
 done
 
 for nodelet in $nodelets; do
-  nodelet_file=`echo "$nodelet" | sed 's:\([a-z]\)\([A-Z][A-Z]\):\1_\2:g; s:[A-Z][a-z]:_&:2g' | tr A-Z a-z`
+  nodelet_file=`echo "$nodelet" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
   nodelet_cpp_relpath="nodelets/$nodelet_file.cpp"
 
   echo "#include <quickdev/nodelet.h>
