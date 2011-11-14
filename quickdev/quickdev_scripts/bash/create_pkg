@@ -78,7 +78,7 @@ addNodelet()
 	fi
 }
 
-if [ $# -le 0 ]; then
+if [ $# -le 0 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
         usage
         exit
 fi
