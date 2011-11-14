@@ -285,4 +285,12 @@ std::function
 std::string( ros::message_traits::DataType<__Message>::value() )
 //#__Message::__s_getDataType();
 
+// ########## General Utility Macros ###################################
+// ---------------------------------------------------------------------
+#define QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_name ) \
+auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE::RunablePolicy::getNodeHandle()
+// ---------------------------------------------------------------------
+#define QUICKDEV_GET_NODEHANDLE( nh_name ) \
+auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE::NodeHandlePolicy::getNodeHandle()
+
 #endif // QUICKDEVCPP_QUICKDEV_MACROS_H_

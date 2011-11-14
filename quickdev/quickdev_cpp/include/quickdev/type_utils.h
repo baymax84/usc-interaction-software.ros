@@ -42,6 +42,8 @@
 #include <stdlib.h>
 #include <quickdev/console.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/type_traits/is_base_of.hpp>
+#include <ros/message.h>
 
 namespace quickdev
 {
@@ -167,6 +169,20 @@ namespace quickdev
 		typedef boost::shared_ptr<__Type> _Shared;
 		typedef boost::shared_ptr<__Type const> _Const;
 	};
+
+	template<class __Message>
+	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::ConstPtr>::type
+	static make_const_shared( const __Message & message )
+	{
+		return typename __Message::ConstPtr( new __Message( message ) );
+	}
+
+	template<class __Message>
+	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::Ptr>::type
+	static make_shared( const __Message & message )
+	{
+		return typename __Message::Ptr( new __Message( message ) );
+	}
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
