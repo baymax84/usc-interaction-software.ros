@@ -36,26 +36,31 @@
 #ifndef QUICKDEVCPP_QUICKDEV_SUBSCRIBERPOLICY_H_
 #define QUICKDEVCPP_QUICKDEV_SUBSCRIBERPOLICY_H_
 
-#include <quickdev/node_handle_policy.h>
+#include <quickdev/policy.h>
 #include <quickdev/multi_subscriber.h>
 
 namespace quickdev
 {
 
-QUICKDEV_DECLARE_POLICY( Subscriber, NodeHandlePolicy )
+QUICKDEV_DECLARE_POLICY( Subscriber, Policy )
 
 template<class __Subscriber = ros::Subscriber>
 QUICKDEV_DECLARE_POLICY_CLASS( Subscriber )
 {
 	QUICKDEV_MAKE_POLICY_FUNCS( Subscriber )
 
-protected:
+private:
 	ros::MultiSubscriber<__Subscriber> multi_sub_;
 
 	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Subscriber )
 	{
 		printPolicyActionStart( "create", this );
 		printPolicyActionDone( "create", this );
+	}
+
+	ros::MultiSubscriber<__Subscriber> & getMultiSub()
+	{
+		return multi_sub_;
 	}
 };
 

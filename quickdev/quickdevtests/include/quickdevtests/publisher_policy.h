@@ -48,13 +48,13 @@ QUICKDEV_DECLARE_NODE_CLASS( PublisherPolicy )
 public:
 	PublisherPolicyNode( ros::NodeHandle & nh ) : _PublisherPolicyNodeAdapterType( nh )
 	{
-		publishers_.addPublishers<
+		getMultiPub().addPublishers<
 			std_msgs::String,
 			geometry_msgs::Point>(
 				nh,
 				{ "string", "point" } );
 
-		publishers_.addPublishers<
+		getMultiPub().addPublishers<
 			std_msgs::String,
 			geometry_msgs::Point>(
 				nh,
@@ -73,22 +73,22 @@ public:
 
 		// it is possible to publish 1 or more key-value pairs with a
 		// single call to publish( ... )
-		publishers_.publish(
+		getMultiPub().publish(
 			"string", string_msg,
 			"point", point_msg );
 
 		string_msg.data = "goodbye";
 
-		publishers_.publish( "string2", string_msg );
+		getMultiPub().publish( "string2", string_msg );
 
 		point_msg.z = 5;
 
-		publishers_.publish( "point2", point_msg );
+		getMultiPub().publish( "point2", point_msg );
 
 		string_msg.data = "whatever";
 		point_msg = geometry_msgs::Point();
 
-		publishers_.publish(
+		getMultiPub().publish(
 			"string", string_msg,
 			"point", point_msg,
 			"string2", string_msg,

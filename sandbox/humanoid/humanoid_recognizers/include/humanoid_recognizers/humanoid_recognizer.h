@@ -37,29 +37,22 @@
 #define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
 
 #include <quickdev/node.h>
-#include <quickdev/multi_subscriber.h>
-#include <quickdev/multi_publisher.h>
 
-#include <humanoid/humanoid.h>
-
-#include <visualization_msgs/MarkerArray.h>
+#include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
 #include <deque>
 
-QUICKDEV_DECLARE_NODE( HumanoidRecognizer )
+typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( HumanoidRecognizer, _HumanoidRecognizerPolicy )
 
-using humanoid::_HumanoidStateArrayMsg;
 using humanoid::_PoseWithConfidenceMsg;
+typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
+typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
+typedef _HumanoidRecognizerPolicy::_MarkerMsg _MarkerMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( HumanoidRecognizer )
 {
 private:
-	typedef visualization_msgs::MarkerArray _MarkerArrayMsg;
-	typedef visualization_msgs::Marker _MarkerMsg;
-
-	ros::MultiSubscriber<> multi_sub_;
-	ros::MultiPublisher<> multi_pub_;
-
 	std::deque<_HumanoidStateArrayMsg::ConstPtr> state_arrays_cache_;
 
 	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidRecognizer )
@@ -70,11 +63,12 @@ private:
 	QUICKDEV_SPIN_FIRST
 	{
 		initAll();
+		_HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidRecognizerNode::humanoidStatesCB, this ) );
 
 		QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
-		multi_pub_.addPublishers<_HumanoidStateArrayMsg, _MarkerArrayMsg>( nh_rel, { "humanoid_states", "/visualization_marker_array" } );
-		multi_sub_.addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerNode::humanoidStatesCB, this );
+		auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
+		multi_pub.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states_agg" } );
 	}
 
 	void appendLineMarker( _MarkerMsg & msg, const std::string & from, const std::string & to, const std::map<std::string, _PoseWithConfidenceMsg> & point_map )
@@ -183,8 +177,10 @@ private:
 			}
 		}
 
-		multi_pub_.publish( "humanoid_states", quickdev::make_const_shared( combined_states_msg ) );
-		multi_pub_.publish( "/visualization_marker_array", quickdev::make_const_shared( markers ) );
+		_HumanoidRecognizerPolicy::update( markers );
+
+		auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
+		multi_pub.publish( "humanoid_states_agg", quickdev::make_const_shared( combined_states_msg ) );
 
 		state_arrays_cache_.clear();
 	}

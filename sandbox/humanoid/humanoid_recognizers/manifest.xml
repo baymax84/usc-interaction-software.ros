@@ -13,6 +13,7 @@
   <depend package="humanoid_models"/>
   <depend package="visualization_msgs"/>
   <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lhumanoid_recognizers"/>
     <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
   </export>
 </package>

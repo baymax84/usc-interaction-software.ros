@@ -38,27 +38,16 @@
 
 #include <quickdev/node.h>
 
-#include <quickdev/multi_subscriber.h>
-#include <quickdev/multi_publisher.h>
+#include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
-#include <humanoid/humanoid.h>
+typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( SchegloffRecognizer, _HumanoidRecognizerPolicy )
 
-#include <visualization_msgs/MarkerArray.h>
-
-QUICKDEV_DECLARE_NODE( SchegloffRecognizer )
-
-using humanoid::_HumanoidStateArrayMsg;
+typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
+typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
 {
-private:
-	typedef visualization_msgs::Marker _MarkerArrayMsg;
-
-	ros::MultiSubscriber<> multi_sub_;
-	ros::MultiPublisher<> multi_pub_;
-
-	_HumanoidStateArrayMsg::ConstPtr states_cache_;
-
 	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( SchegloffRecognizer )
 	{
 		//
@@ -67,11 +56,6 @@ private:
 	QUICKDEV_SPIN_FIRST
 	{
 		initAll();
-
-		QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
-
-		multi_pub_.addPublishers<_MarkerArrayMsg>( nh_rel, { "/visualization_marker_array" } );
-		multi_sub_.addSubscriber( nh_rel, "humanoid_states", &SchegloffRecognizerNode::humanoidStatesCB, this );
 	}
 
 	QUICKDEV_SPIN_ONCE
@@ -85,12 +69,7 @@ private:
 			//
 		}
 
-		multi_pub_.publish( "/visualization_marker_array", quickdev::make_const_shared( markers ) );
-	}
-
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
-	{
-		states_cache_ = msg;
+		_HumanoidRecognizerPolicy::update( markers );
 	}
 };
 
