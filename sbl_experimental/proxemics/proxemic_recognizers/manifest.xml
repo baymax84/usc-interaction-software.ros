@@ -1,0 +1,17 @@
+<package>
+  <description brief="proxemic_recognizers">
+
+     proxemic_recognizers
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/proxemic_recognizers</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="nodelet"/>
+  <depend package="humanoid_models"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>
