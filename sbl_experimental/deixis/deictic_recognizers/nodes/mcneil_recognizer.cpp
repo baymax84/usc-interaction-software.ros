@@ -34,4 +34,4 @@
  **************************************************************************/
 
 #include <deictic_recognizers/mcneil_recognizer.h>
-QUICKDEV_INST_NODE( McneilRecognizerNode, "mcneil_recognizer" )
+QUICKDEV_INST_NODE( McNeilRecognizerNode, "mcneil_recognizer" )

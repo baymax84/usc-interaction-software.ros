@@ -36,6 +36,6 @@
 #include <quickdev/nodelet.h>
 #include <deictic_recognizers/mcneil_recognizer.h>
 
-QUICKDEV_DECLARE_NODELET( deictic_recognizers, McneilRecognizer )
+QUICKDEV_DECLARE_NODELET( deictic_recognizers, McNeilRecognizer )
 
-QUICKDEV_INST_NODELET( deictic_recognizers, McneilRecognizer, mcneil_recognizer )
+QUICKDEV_INST_NODELET( deictic_recognizers, McNeilRecognizer, mcneil_recognizer )
