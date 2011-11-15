@@ -10,6 +10,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_init()
+rosbuild_include( quickdev_cpp add_library_auto )
 
 
 #set the default path for built executables to the "bin" directory
@@ -22,5 +23,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+add_subdirectory( src )
 add_subdirectory( nodes )
 add_subdirectory( nodelets )

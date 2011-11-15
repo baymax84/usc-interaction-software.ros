@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev/publisher_policy.h
+ *  src/humanoid_recognizer_policy.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,37 +33,4 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEVCPP_QUICKDEV_PUBLISHERPOLICY_H_
-#define QUICKDEVCPP_QUICKDEV_PUBLISHERPOLICY_H_
-
-#include <quickdev/policy.h>
-#include <quickdev/multi_publisher.h>
-
-namespace quickdev
-{
-
-QUICKDEV_DECLARE_POLICY( Publisher, Policy )
-
-template<class __Publisher = ros::Publisher>
-QUICKDEV_DECLARE_POLICY_CLASS( Publisher )
-{
-	QUICKDEV_MAKE_POLICY_FUNCS( Publisher )
-
-private:
-	ros::MultiPublisher<__Publisher> multi_pub_;
-
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Publisher )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
-
-	ros::MultiPublisher<__Publisher> & getMultiPub()
-	{
-		return multi_pub_;
-	}
-};
-
-}
-
-#endif // QUICKDEVCPP_QUICKDEV_PUBLISHERPOLICY_H_
+#include <humanoid_recognizers/humanoid_recognizer_policy.h>
