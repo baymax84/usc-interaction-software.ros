@@ -38,11 +38,17 @@
 
 #include <quickdev/node.h>
 
-QUICKDEV_DECLARE_NODE( McneilRecognizer )
+#include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
-QUICKDEV_DECLARE_NODE_CLASS( McneilRecognizer )
+typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( McNeilRecognizer, _HumanoidRecognizerPolicy )
+
+typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
+typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
+
+QUICKDEV_DECLARE_NODE_CLASS( McNeilRecognizer )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( McneilRecognizer )
+	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( McNeilRecognizer )
 	{
 		//
 	}
@@ -54,7 +60,16 @@ QUICKDEV_DECLARE_NODE_CLASS( McneilRecognizer )
 
 	QUICKDEV_SPIN_ONCE
 	{
-		//
+		if( !states_cache_ ) return;
+
+		_MarkerArrayMsg markers;
+
+		for( auto humanoid = states_cache_->states.begin(); humanoid != states_cache_->states.end(); ++humanoid )
+		{
+			//
+		}
+
+		_HumanoidRecognizerPolicy::update( markers );
 	}
 };
 

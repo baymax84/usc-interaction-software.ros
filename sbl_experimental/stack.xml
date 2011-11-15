@@ -1,9 +1,16 @@
 <stack>
   <description brief="sbl">sbl</description>
   <author>Maintained by Ross Mead and Edward T. Kaszubski</author>
-  <license>BSD</license>  
+  <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/sbl</url>
-  <depend stack="ros" />
+  <depend stack="ros"/>
+  <depend stack="common_msgs"/> <!-- visualization_msgs, nav_msgs -->
+  <depend stack="driver_common"/> <!-- driver_base -->
+  <depend stack="geometry"/> <!-- tf, bullet -->
+  <depend stack="ros_comm"/> <!-- roscpp -->
+  <depend stack="perception_pcl"/> <!-- pcl, pcl_ros -->
+  <depend stack="quickdev"/> <!-- quickdev_cpp -->
+  <depend stack="humanoid"/> <!-- humanoid_recognizers -->
 
 </stack>

@@ -38,7 +38,13 @@
 
 #include <quickdev/node.h>
 
-QUICKDEV_DECLARE_NODE( HallRecognizer )
+#include <humanoid_recognizers/humanoid_recognizer_policy.h>
+
+typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( HallRecognizer, _HumanoidRecognizerPolicy )
+
+typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
+typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 {
@@ -54,7 +60,16 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
 	QUICKDEV_SPIN_ONCE
 	{
-		//
+		if( !states_cache_ ) return;
+
+		_MarkerArrayMsg markers;
+
+		for( auto humanoid = states_cache_->states.begin(); humanoid != states_cache_->states.end(); ++humanoid )
+		{
+			//
+		}
+
+		_HumanoidRecognizerPolicy::update( markers );
 	}
 };
 
