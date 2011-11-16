@@ -58,7 +58,15 @@ struct PublisherAdapterStorage {};
 
 // ## PublisherAdapterStorage for ros::Publisher #######################
 template<>
-struct PublisherAdapterStorage<ros::Publisher> {};
+struct PublisherAdapterStorage<ros::Publisher>
+{
+	unsigned int cache_size_;
+
+	PublisherAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
+	:
+		cache_size_( cache_size )
+	{}
+};
 
 // ## PublisherAdapter #################################################
 template<class __Publisher, class __Message>
@@ -74,12 +82,11 @@ public:
 	static _Publisher createPublisher(
 		ros::NodeHandle & nh,
 		const std::string & topic,
-		const unsigned int & cache_size,
 		PublisherAdapterStorage<_Publisher> & storage )
 	{
 		return nh.advertise<__Message>(
 			topic,
-			cache_size );
+			storage.cache_size_ );
 	}
 };
 
@@ -127,10 +134,9 @@ public:
 		typedef typename ContainerTypes<__MessagesSubset>::_Front _CurrentMessageType;
 
 		const ros::NodeHandle topic_nh( nh, *current_topic );
-		const std::string & message_name = QUICKDEV_GET_MESSAGE_NAME( _CurrentMessageType );
-		PRINT_INFO( ">>> Creating publisher [ %s ] on topic [ %s ]", message_name.c_str(), topic_nh.getNamespace().c_str() );
+		PRINT_INFO( ">>> Creating publisher [ %s ] on topic [ %s ]", QUICKDEV_GET_MESSAGE_NAME( _CurrentMessageType ).c_str(), topic_nh.getNamespace().c_str() );
 
-		publishers_[*current_topic] = PublisherAdapter<__Publisher, _CurrentMessageType>::createPublisher( nh, *current_topic, 10, storage );
+		publishers_[*current_topic] = PublisherAdapter<__Publisher, _CurrentMessageType>::createPublisher( nh, *current_topic, storage );
 		createPublishers<typename ContainerTypes<__MessagesSubset>::_Rest>( nh, current_topic + 1, last_topic, storage );
 	}
 

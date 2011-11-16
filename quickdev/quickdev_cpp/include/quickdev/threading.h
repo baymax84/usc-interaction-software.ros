@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_THREADING_H_
 
 #include <boost/thread/mutex.hpp>
+#include <quickdev/type_utils.h>
 
 namespace quickdev
 {
@@ -46,9 +47,14 @@ namespace quickdev
 		boost::mutex mutex_;
 		typedef boost::unique_lock<boost::mutex> _UniqueLock;
 
-		_UniqueLock getLock()
+		_UniqueLock tryLock()
 		{
 			return _UniqueLock( mutex_, boost::try_to_lock_t() );
+		}
+
+		_UniqueLock lock()
+		{
+			return _UniqueLock( mutex_ );
 		}
 	};
 
@@ -60,9 +66,14 @@ namespace quickdev
 
 		_UniqueLock tryLockAndUpdate( const __Storage & cache )
 		{
-			auto lock = getLock();
+			auto lock = tryLock();
 			if( lock ) cache_ = cache;
 			return lock;
+		}
+
+		const __Storage & get() const
+		{
+			return cache_;
 		}
 	};
 

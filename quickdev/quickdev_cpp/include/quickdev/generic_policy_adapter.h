@@ -38,6 +38,7 @@
 
 #include <quickdev/macros.h>
 #include <quickdev/container.h>
+#include <quickdev/policy.h>
 #include <utility>
 
 namespace quickdev
@@ -72,7 +73,9 @@ public:
 	typename std::enable_if<( __Policy::HAS_INIT_ ), void>::type
 	tryInit( __Args&&... args )
 	{
+		printPolicyActionStart( "initialize", &__Policy::getInstance() );
 		__Policy::init( args... );
+		printPolicyActionDone( "initialize", &__Policy::getInstance() );
 	}
 
 	// initialize the first policy in the subset

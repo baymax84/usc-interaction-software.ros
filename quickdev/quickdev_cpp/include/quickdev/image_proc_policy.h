@@ -51,9 +51,18 @@ namespace ros
 {
 
 template<>
-struct PublisherAdapterStorage<image_transport::Publisher>
+struct PublisherAdapterStorage<image_transport::Publisher> : PublisherAdapterStorage<ros::Publisher>
 {
+	typedef PublisherAdapterStorage<ros::Publisher> _Parent;
+
 	image_transport::ImageTransport * image_transport_;
+
+	template<class... __ParentArgs>
+	PublisherAdapterStorage( const decltype( image_transport_ ) & image_transport, __ParentArgs&&... parent_args )
+	:
+		_Parent( parent_args... ),
+		image_transport_( image_transport )
+	{}
 };
 
 // ## PublisherAdapter for image_transport::Publisher ##################
@@ -67,20 +76,28 @@ public:
 	static _Publisher createPublisher(
 		ros::NodeHandle & nh,
 		const std::string & topic,
-		const unsigned int & cache_size,
 		PublisherAdapterStorage<_Publisher> & storage )
 	{
 		return storage.image_transport_->advertise(
 			topic,
-			cache_size );
+			storage.cache_size_ );
 	}
 };
 
 // ## SubscriberAdapterStorage for image_transport::Subscriber #########
 template<>
-struct SubscriberAdapterStorage<image_transport::Subscriber>
+struct SubscriberAdapterStorage<image_transport::Subscriber> : SubscriberAdapterStorage<ros::Subscriber>
 {
+	typedef SubscriberAdapterStorage<ros::Subscriber> _Parent;
+
 	image_transport::ImageTransport * image_transport_;
+
+	template<class... __ParentArgs>
+	SubscriberAdapterStorage( const decltype( image_transport_ ) & image_transport, __ParentArgs&&... parent_args )
+	:
+		_Parent( parent_args... ),
+		image_transport_( image_transport )
+	{}
 };
 
 // ## SubscriberAdapter for image_transport::Subscriber ################
@@ -94,13 +111,12 @@ public:
 	static _Subscriber createSubscriber(
 		ros::NodeHandle & nh,
 		const std::string & topic,
-		const unsigned int & cache_size,
 		const std::function<void( const boost::shared_ptr<__Message const>& )> & callback,
 		SubscriberAdapterStorage<_Subscriber> & storage )
 	{
 		return storage.image_transport_->subscribe(
 			topic,
-			cache_size,
+			storage.cache_size_,
 			boost::function< void( const boost::shared_ptr< __Message const>& )>( callback ) );
 	}
 };
@@ -134,10 +150,10 @@ protected:
 
 	void preInit()
 	{
-		ros::PublisherAdapterStorage<image_transport::Publisher> publisher_storage;
-		ros::SubscriberAdapterStorage<image_transport::Subscriber> subscriber_storage;
-		publisher_storage.image_transport_ = &image_transport_;
-		subscriber_storage.image_transport_ = &image_transport_;
+		ros::PublisherAdapterStorage<image_transport::Publisher> publisher_storage( &image_transport_, 10 );
+		ros::SubscriberAdapterStorage<image_transport::Subscriber> subscriber_storage( &image_transport_, 10 );
+		//publisher_storage.image_transport_ = &image_transport_;
+		//subscriber_storage.image_transport_ = &image_transport_;
 
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 

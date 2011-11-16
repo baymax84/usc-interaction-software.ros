@@ -53,7 +53,15 @@ struct SubscriberAdapterStorage {};
 
 // ## SubscriberAdapterStorage for ros::Subscriber #####################
 template<>
-struct SubscriberAdapterStorage<ros::Subscriber> {};
+struct SubscriberAdapterStorage<ros::Subscriber>
+{
+	unsigned int cache_size_;
+
+	SubscriberAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
+	:
+		cache_size_( cache_size )
+	{}
+};
 
 // ## SubscriberAdapter ################################################
 template<class __Subscriber>
@@ -70,13 +78,12 @@ public:
 	static _Subscriber createSubscriber(
 		ros::NodeHandle & nh,
 		const std::string & topic,
-		const unsigned int & cache_size,
 		const std::function<void( const boost::shared_ptr<__Message const>& )> & callback,
 		SubscriberAdapterStorage<_Subscriber> & storage )
 	{
 		return nh.subscribe(
 			topic,
-			cache_size,
+			storage.cache_size_,
 			boost::function< void( const boost::shared_ptr< __Message const>& )>( callback ) );
 	}
 };
@@ -117,10 +124,9 @@ public:
 	MultiSubscriber & addSubscriber( ros::NodeHandle & nh, const _Topic & topic_name, const std::function< void(const boost::shared_ptr< __Message const > &)> & callback, _SubscriberAdapterStorage & storage )
 	{
 		const ros::NodeHandle topic_nh( nh, topic_name );
-		const std::string & message_name = QUICKDEV_GET_MESSAGE_NAME( __Message );
-		PRINT_INFO( ">>> Creating subscriber [ %s ] on topic [ %s ]", message_name.c_str(), topic_nh.getNamespace().c_str() );
+		PRINT_INFO( ">>> Creating subscriber [ %s ] on topic [ %s ]", QUICKDEV_GET_MESSAGE_NAME( __Message ).c_str(), topic_nh.getNamespace().c_str() );
 
-		subscribers_[topic_name] = SubscriberAdapter<__Subscriber>::createSubscriber( nh, topic_name, 10, callback, storage );
+		subscribers_[topic_name] = SubscriberAdapter<__Subscriber>::createSubscriber( nh, topic_name, callback, storage );
 
 		return *this;
 	}

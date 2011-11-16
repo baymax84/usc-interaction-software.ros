@@ -111,7 +111,7 @@ private:
 	ros::MultiPublisher<> multi_pub_;
 	ros::MultiSubscriber<> multi_sub_;
 
-	makePtr<_VelocityMsg>::_Shared velocity_msg_;
+	_VelocityMsg::Ptr velocity_msg_;
 
 	_JoystickMsg::ConstPtr last_joystick_message_;
 	ros::Time last_joystick_message_time_;
@@ -146,7 +146,6 @@ private:
 public:
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
 
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
@@ -192,8 +191,6 @@ public:
 		postInit();
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( joystickCB_0, _JoystickMsg )
@@ -239,7 +236,7 @@ public:
 	{
 		QUICKDEV_ASSERT_INITIALIZED();
 
-		velocity_msg_ = makePtr<geometry_msgs::Twist>::_Shared( new geometry_msgs::Twist );
+		velocity_msg_ = geometry_msgs::Twist::Ptr( new geometry_msgs::Twist );
 
 		const auto & enable_axis_it = axes_map_.find( "enable" );
 		enabled_ = enable_axis_it == axes_map_.end() || enable_axis_it->second.getValue( last_joystick_message_ ) > 0;

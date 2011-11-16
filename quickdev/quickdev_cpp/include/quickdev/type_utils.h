@@ -36,14 +36,16 @@
 #ifndef QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
 #define QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
 
+#include <quickdev/console.h>
+#include <quickdev/macros.h>
 #include <type_traits>
 #include <string>
 #include <sstream>
 #include <stdlib.h>
-#include <quickdev/console.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 #include <ros/message.h>
+//#include <ros/message_traits.h>
 
 namespace quickdev
 {
@@ -164,22 +166,50 @@ namespace quickdev
 	}
 
 	template<class __Type>
-	struct makePtr
+	struct ptr_types
 	{
 		typedef boost::shared_ptr<__Type> _Shared;
 		typedef boost::shared_ptr<__Type const> _Const;
 	};
 
+	/*template<class __MessagePtr>
+	typename std::enable_if<(boost::is_base_of<ros::Message, typename __MessagePtr::element_type>::value), typename __MessagePtr::element_type>::type
+	getMessageType( const __MessagePtr & message_ptr )
+	{
+		return typename __MessagePtr::element_type();
+	}*/
+
+	template<class __Message, template<typename> class __Ptr>
+	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
+	getMessageType( const __Ptr<__Message const> & message )
+	{
+		return __Message();
+	}
+
+	template<class __Message, template<typename> class __Ptr>
+	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
+	getMessageType( const __Ptr<__Message> & message )
+	{
+		return __Message();
+	}
+
+	template<class __Message>
+	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
+	getMessageType( const __Message & message )
+	{
+		return message;
+	}
+
 	template<class __Message>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::ConstPtr>::type
-	static make_const_shared( const __Message & message )
+	make_const_shared( const __Message & message )
 	{
 		return typename __Message::ConstPtr( new __Message( message ) );
 	}
 
 	template<class __Message>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::Ptr>::type
-	static make_shared( const __Message & message )
+	make_shared( const __Message & message )
 	{
 		return typename __Message::Ptr( new __Message( message ) );
 	}

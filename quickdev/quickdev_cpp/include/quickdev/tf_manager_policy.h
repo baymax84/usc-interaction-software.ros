@@ -92,8 +92,6 @@ public:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
 		cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", "cmd_vel", args... );
@@ -115,8 +113,6 @@ public:
 		postInit();
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( cmdVelCB, _VelocityMsg )
