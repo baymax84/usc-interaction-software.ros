@@ -43,6 +43,24 @@
 namespace quickdev
 {
 
+template<class __Policy>
+static void printPolicyAction( std::string action, __Policy * policy )
+{
+	PRINT_INFO( "[ %s ] on policy: [ %s ]", action.c_str(), __Policy::name().c_str() );
+}
+
+template<class __Policy>
+static void printPolicyActionStart( std::string action, __Policy * policy )
+{
+	printPolicyAction( ">>>>> Start: " + action, policy );
+}
+
+template<class __Policy>
+static void printPolicyActionDone( std::string action, __Policy * policy )
+{
+	printPolicyAction( "<<<<< Done: " + action, policy );
+}
+
 class Policy
 {
 public:
@@ -57,24 +75,6 @@ public:
 		PRINT_INFO( "########## Policy Group ##########" );
 		printPolicyActionStart( "create", this );
 		printPolicyActionDone( "create", this );
-	}
-
-	template<class __Policy>
-	static void printPolicyAction( std::string action, __Policy * policy )
-	{
-		PRINT_INFO( "[ %s ] on policy: [ %s ]", action.c_str(), __Policy::name().c_str() );
-	}
-
-	template<class __Policy>
-	static void printPolicyActionStart( std::string action, __Policy * policy )
-	{
-		printPolicyAction( ">>>>> Start: " + action, policy );
-	}
-
-	template<class __Policy>
-	static void printPolicyActionDone( std::string action, __Policy * policy )
-	{
-		printPolicyAction( "<<<<< Done: " + action, policy );
 	}
 };
 

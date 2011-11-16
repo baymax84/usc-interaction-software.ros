@@ -263,8 +263,12 @@ QUICKDEV_ENABLE_IF( __ReturnType, ( !std::is_same<__Type1, __Type2>::value ) )
 
 // ########## Threading Macros #########################################
 // ---------------------------------------------------------------------
+#define QUICKDEV_TRY_LOCK_OR_WARN( lock_name, args... ) \
+if( !lock_name ) PRINT_WARN( "Lock is busy. " args )
+
+// ---------------------------------------------------------------------
 #define QUICKDEV_TRY_LOCK_OR_RETURN( lock_name, args... ) \
-if( !lock_name ) PRINT_WARN( "Lock is busy. " args ); \
+QUICKDEV_TRY_LOCK_OR_WARN( lock_name, args ); \
 if( !lock_name ) return
 
 // ########## Internal Macros ##########################################
@@ -283,7 +287,10 @@ std::function
 // ---------------------------------------------------------------------
 #define QUICKDEV_GET_MESSAGE_NAME( __Message ) \
 std::string( ros::message_traits::DataType<__Message>::value() )
-//#__Message::__s_getDataType();
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_GET_MESSAGE_INST_NAME( msg ) \
+QUICKDEV_GET_MESSAGE_NAME( decltype( quickdev::getMessageType( msg ) ) )
 
 // ########## General Utility Macros ###################################
 // ---------------------------------------------------------------------

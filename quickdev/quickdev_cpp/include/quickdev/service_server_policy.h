@@ -69,8 +69,6 @@ protected:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
 		const std::string service_name_param( getMetaParamDef<std::string>( "service_name_param", "service_name", args... ) );
@@ -82,8 +80,6 @@ protected:
 		server_ = nh_rel.advertiseService( service_name, &_ServiceServerPolicy::serviceCB, this );
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 private:

@@ -89,11 +89,8 @@ private:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		postInit();
 		QUICKDEV_SET_INITIALIZED();
-		printPolicyActionDone( "initialize", this );
 	}
 
 	void doneCB( const _GoalState & state, const typename _Result::ConstPtr& result )

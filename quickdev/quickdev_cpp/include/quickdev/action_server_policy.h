@@ -85,11 +85,8 @@ private:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		postInit();
 		QUICKDEV_SET_INITIALIZED();
-		printPolicyActionDone( "initialize", this );
 	}
 
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( executeActionCB, typename _GoalMsg )

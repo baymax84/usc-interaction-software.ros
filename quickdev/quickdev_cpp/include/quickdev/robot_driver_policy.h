@@ -85,8 +85,6 @@ private:
 public:
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
 		const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
@@ -98,22 +96,18 @@ public:
 		postInit();
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 private:
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( motorValsCB, typename __MotorValsMsg )
 	{
+		TimedPolicy<>::update();
+
 		// locks until "lock" goes out of context
 		auto lock = motor_vals_msg_cache_.tryLockAndUpdate( msg );
-
-		const std::string & message_name = QUICKDEV_GET_MESSAGE_NAME( __MotorValsMsg );
-		QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", message_name.c_str() );
+		QUICKDEV_TRY_LOCK_OR_WARN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
 		_MessageCallbackPolicy::invokeCallback( msg );
-
-		TimedPolicy<>::update();
 	}
 };
 

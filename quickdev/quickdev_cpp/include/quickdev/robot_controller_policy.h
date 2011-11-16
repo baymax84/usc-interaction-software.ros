@@ -84,8 +84,6 @@ private:
 public:
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
 		const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
@@ -116,8 +114,6 @@ public:
 		postInit();
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 	void update( const __MotorValsMsg & msg )

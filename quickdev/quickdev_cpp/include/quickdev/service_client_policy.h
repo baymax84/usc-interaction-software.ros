@@ -76,8 +76,6 @@ private:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
 		// look up the meta-param remap of the service name param in args..., if it exists
@@ -90,8 +88,6 @@ private:
 		QUICKDEV_SET_INITIALIZED();
 
 		connectToService( true );
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 	/*! Attempt to connect to the service

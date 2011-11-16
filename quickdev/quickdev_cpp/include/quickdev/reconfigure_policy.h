@@ -73,7 +73,6 @@ public:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
 
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
@@ -87,8 +86,6 @@ public:
 		server_->setCallback( quickdev::auto_bind( &_ReconfigurePolicy::reconfigureCB_0, this ) );
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 	~ReconfigurePolicy()
