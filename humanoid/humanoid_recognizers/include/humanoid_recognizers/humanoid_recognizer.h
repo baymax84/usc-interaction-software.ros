@@ -54,6 +54,13 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRecognizer )
 {
 private:
 	std::deque<_HumanoidStateArrayMsg::ConstPtr> state_arrays_cache_;
+	quickdev::Mutex state_arrays_mutex_;
+
+	_MarkerMsg
+		marker_template_,
+		text_marker_template_,
+		lines_marker_template_,
+		points_marker_template_;
 
 	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidRecognizer )
 	{
@@ -69,6 +76,26 @@ private:
 
 		auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
 		multi_pub.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states_agg" } );
+
+		marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+		marker_template_.ns = "basic_skeleton";
+		marker_template_.action = visualization_msgs::Marker::ADD;
+		marker_template_.lifetime = ros::Duration( 0.0 );
+		marker_template_.pose.orientation.w = 1.0;
+
+		text_marker_template_ = marker_template_;
+		text_marker_template_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+		text_marker_template_.scale.z = 0.1;
+
+		lines_marker_template_ = marker_template_;
+		lines_marker_template_.type = visualization_msgs::Marker::LINE_LIST;
+		lines_marker_template_.scale.x = 0.02;
+
+		points_marker_template_ = marker_template_;
+		points_marker_template_.type = visualization_msgs::Marker::SPHERE_LIST;
+		points_marker_template_.scale.x = points_marker_template_.scale.y
+									    = points_marker_template_.scale.z
+									    = 0.05;
 	}
 
 	void appendLineMarker( _MarkerMsg & msg, const std::string & from, const std::string & to, const std::map<std::string, _PoseWithConfidenceMsg> & point_map )
@@ -84,37 +111,21 @@ private:
 
 	QUICKDEV_SPIN_ONCE
 	{
+		auto lock = state_arrays_mutex_.lock();
+		//QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", message_name.c_str() );
+
 		if( state_arrays_cache_.size() == 0 ) return;
 
 		_HumanoidStateArrayMsg combined_states_msg;
 		_MarkerArrayMsg markers;
-
-		_MarkerMsg marker_template;
-		marker_template.header.stamp = ros::Time::now();
-		marker_template.header.frame_id = "/primesensor/rgb";
-		marker_template.ns = "basic_skeleton";
-		marker_template.action = visualization_msgs::Marker::ADD;
-		marker_template.lifetime = ros::Duration( 1.0 );
-		marker_template.pose.orientation.w = 1.0;
-
-		_MarkerMsg text_marker_template( marker_template );
-		text_marker_template.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
-		text_marker_template.scale.z = 0.1;
-
-		_MarkerMsg lines_marker_template( marker_template );
-		lines_marker_template.type = visualization_msgs::Marker::LINE_LIST;
-		lines_marker_template.scale.x = 0.02;
-
-		_MarkerMsg points_marker_template( marker_template );
-		points_marker_template.type = visualization_msgs::Marker::SPHERE_LIST;
-		points_marker_template.scale.x = points_marker_template.scale.y
-									   = points_marker_template.scale.z
-									   = 0.05;
+		const auto now = ros::Time::now();
 
 		unsigned int current_id = 0;
 
 		for( auto state_array = state_arrays_cache_.begin(); state_array != state_arrays_cache_.end(); ++state_array )
 		{
+			if( !( *state_array ) ) continue;
+
 			for( auto state = (*state_array)->states.begin(); state != (*state_array)->states.end(); ++state )
 			{
 				combined_states_msg.states.push_back( *state );
@@ -127,7 +138,8 @@ private:
 				current_color.b = 1.0;
 				current_color.a = 1.0;
 
-				_MarkerMsg points_marker( points_marker_template );
+				_MarkerMsg points_marker( points_marker_template_ );
+				points_marker.header.stamp = now;
 				points_marker.id = current_id ++;
 				points_marker.color = current_color;
 
@@ -135,13 +147,15 @@ private:
 				{
 					// create point markers
 					points_marker.points.push_back( joint->pose.pose.position );
+//					points_marker.colors.push_back( current_color );
 
 					// map joint names to points for easy lookup later
 					point_map[joint->name] = joint->pose;
 				}
 
 				// connect points
-				_MarkerMsg lines_marker( lines_marker_template );
+				_MarkerMsg lines_marker( lines_marker_template_ );
+				lines_marker.header.stamp = now;
 				lines_marker.id = current_id ++;
 				lines_marker.color = current_color;
 
@@ -163,13 +177,14 @@ private:
 				appendLineMarker( lines_marker, "right_knee", "right_foot", point_map );
 
 				// set text position
-				_MarkerMsg text_marker( text_marker_template );
+				_MarkerMsg text_marker( text_marker_template_ );
+				text_marker.header.stamp = now;
 				text_marker.id = current_id ++;
 				text_marker.color = current_color;
 
 				text_marker.text = state->name;
 				text_marker.pose.position = point_map["torso"].pose.position;
-				text_marker.pose.position.y -= 0.7l;  // determined empirically...
+				text_marker.pose.position.y -= 0.7;  // determined empirically...
 
 				markers.markers.push_back( points_marker );
 				markers.markers.push_back( lines_marker );
@@ -187,6 +202,9 @@ private:
 
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
 	{
+		auto lock = state_arrays_mutex_.tryLock();
+		QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+
 		state_arrays_cache_.push_back( msg );
 	}
 };

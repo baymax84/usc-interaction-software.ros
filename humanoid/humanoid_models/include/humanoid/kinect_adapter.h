@@ -41,6 +41,7 @@
 #include <quickdev/timed_policy.h>
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
+#include <quickdev/threading.h>
 
 #include <humanoid/humanoid.h>
 #include <openni_multitracker/UserStateArray.h>
@@ -61,7 +62,7 @@ private:
 	ros::MultiPublisher<> multi_pub_;
 	ros::MultiSubscriber<> multi_sub_;
 
-	_UserStateArrayMsg::ConstPtr user_states_cache_;
+	quickdev::MessageCache<_UserStateArrayMsg> user_states_cache_;
 
 	std::string camera_frame_;
 	ros::Duration kinect_timeout_duration_;
@@ -85,11 +86,14 @@ private:
 	QUICKDEV_SPIN_ONCE
 	{
 		if( ros::Time::now() - _UserStatesCBTimer::now() > kinect_timeout_duration_ ) return;
-		if( !user_states_cache_ ) return;
+
+		auto lock = user_states_cache_.lock();
+		const auto & user_states_cache = user_states_cache_.cache_;
+		if( !user_states_cache ) return;
 
 		_HumanoidStateArrayMsg state_array_msg;
 
-		for( auto user_state = user_states_cache_->user_states.begin(); user_state != user_states_cache_->user_states.end(); ++user_state )
+		for( auto user_state = user_states_cache->user_states.begin(); user_state != user_states_cache->user_states.end(); ++user_state )
 		{
 			if( !user_state->is_tracked ) continue;
 
@@ -130,7 +134,9 @@ private:
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( userStatesCB, _UserStateArrayMsg )
 	{
 		_UserStatesCBTimer::update();
-		user_states_cache_ = msg;
+
+		auto lock = user_states_cache_.tryLockAndUpdate( msg );
+		QUICKDEV_TRY_LOCK_OR_WARN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 	}
 };
 
