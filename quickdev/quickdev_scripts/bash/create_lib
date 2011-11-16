@@ -38,7 +38,7 @@
 usage()
 {
         echo ""
-        echo "Usage: create_lib package [-u user] [-d dependency] [-p project] [-i include_dir] Class1 Class2 ..."
+        echo "Usage: create_lib package [-u user] [-d dependency] [-P project] [-i include_dir] Class1 Class2 ..."
         echo ""
 }
 
@@ -70,7 +70,7 @@ while [ "$1" != "" ]; do
 		--help )    usage
 					exit
 					;;
-		-p )        shift
+		-P )        shift
 					project_cmd="-p $1"
 					shift
 					;;
@@ -78,7 +78,7 @@ while [ "$1" != "" ]; do
 					include_dir_cmd="-i $1"
 					shift
 					;;
-		* )         if [ "$1" != "" ] && [ "$1" != "-d" ] && [ "$1" != "--help" ] && [ "$1" != "-u" ] && [ "$1" != "-p" ]; then
+		* )         if [ "$1" != "" ] && [ "$1" != "-d" ] && [ "$1" != "--help" ] && [ "$1" != "-u" ] && [ "$1" != "-P" ]; then
 						sources_cmd="$sources_cmd -s $1"
 						shift
 					fi
