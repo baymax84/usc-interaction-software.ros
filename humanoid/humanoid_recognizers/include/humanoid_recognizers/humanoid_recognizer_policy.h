@@ -40,6 +40,7 @@
 #include <quickdev/callback_policy.h>
 #include <quickdev/subscriber_policy.h>
 #include <quickdev/publisher_policy.h>
+#include <quickdev/threading.h>
 
 #include <humanoid/humanoid.h>
 
@@ -64,7 +65,8 @@ public:
 	typedef humanoid::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
 
 protected:
-	_HumanoidStateArrayMsg::ConstPtr states_cache_;
+
+	quickdev::MessageCache<_HumanoidStateArrayMsg> states_cache_;
 
 	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( HumanoidRecognizer ),
 		initialized_( false )
@@ -83,13 +85,9 @@ protected:
 
 	QUICKDEV_ENABLE_INIT
 	{
-		printPolicyActionStart( "initialize", this );
-
 		postInit();
 
 		QUICKDEV_SET_INITIALIZED();
-
-		printPolicyActionDone( "initialize", this );
 	}
 
 	void update( _MarkerArrayMsg markers )
@@ -101,7 +99,8 @@ protected:
 
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
 	{
-		states_cache_ = msg;
+		auto lock = states_cache_.tryLockAndUpdate( msg );
+		QUICKDEV_TRY_LOCK_OR_WARN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
 		QUICKDEV_GET_POLICY_NS( HumanoidRecognizer )::_HumanoidStateArrayMessageCallbackPolicy::invokeCallback( msg );
 	}
