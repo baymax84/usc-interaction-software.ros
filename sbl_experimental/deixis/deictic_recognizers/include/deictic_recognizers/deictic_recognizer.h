@@ -60,11 +60,13 @@ QUICKDEV_DECLARE_NODE_CLASS( DeicticRecognizer )
 
 	QUICKDEV_SPIN_ONCE
 	{
-		if( !states_cache_ ) return;
+		auto lock = states_cache_.lock();
+		const auto & states_cache = states_cache_.cache_;
+		if( !states_cache ) return;
 
 		_MarkerArrayMsg markers;
 
-		for( auto humanoid = states_cache_->states.begin(); humanoid != states_cache_->states.end(); ++humanoid )
+		for( auto humanoid = states_cache->states.begin(); humanoid != states_cache->states.end(); ++humanoid )
 		{
 			//
 		}
