@@ -172,6 +172,16 @@ public:
 		return __Publisher();
 	}
 
+	// indexing operator
+	__Publisher & operator[]( const _Topic & topic )
+	{
+		static __Publisher default_return = __Publisher();
+
+		auto publisher( publishers_.find( topic ) );
+		if( publisher != publishers_.end() ) return publisher->second;
+		return default_return;
+	}
+
 	// given a list of key-value pairs, recurse through the list to
 	// publish the messages
 	template<class __Message, class... __Args>
