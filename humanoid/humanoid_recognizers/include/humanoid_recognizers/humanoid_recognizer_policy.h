@@ -99,8 +99,8 @@ protected:
 
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
 	{
-		auto lock = states_cache_.tryLockAndUpdate( msg );
-		QUICKDEV_TRY_LOCK_OR_WARN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+		QUICKDEV_TRY_UPDATE_CACHE( states_cache_, msg );
+		QUICKDEV_TRY_LOCK_OR_WARN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
 		QUICKDEV_GET_POLICY_NS( HumanoidRecognizer )::_HumanoidStateArrayMessageCallbackPolicy::invokeCallback( msg );
 	}
