@@ -203,7 +203,7 @@ private:
 	QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
 	{
 		auto lock = state_arrays_mutex_.tryLock();
-		QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+		QUICKDEV_TRY_LOCK_OR_RETURN2( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
 		state_arrays_cache_.push_back( msg );
 	}

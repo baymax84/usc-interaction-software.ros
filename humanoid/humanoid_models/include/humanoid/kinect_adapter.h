@@ -87,13 +87,12 @@ private:
 	{
 		if( ros::Time::now() - _UserStatesCBTimer::now() > kinect_timeout_duration_ ) return;
 
-		auto lock = user_states_cache_.lock();
-		const auto & user_states_cache = user_states_cache_.cache_;
-		if( !user_states_cache ) return;
+		QUICKDEV_LOCK_CACHE_AND_GET( user_states_cache_, user_states_msg );
+		if( !user_states_msg ) return;
 
 		_HumanoidStateArrayMsg state_array_msg;
 
-		for( auto user_state = user_states_cache->user_states.begin(); user_state != user_states_cache->user_states.end(); ++user_state )
+		for( auto user_state = user_states_msg->user_states.begin(); user_state != user_states_msg->user_states.end(); ++user_state )
 		{
 			if( !user_state->is_tracked ) continue;
 
@@ -135,8 +134,8 @@ private:
 	{
 		_UserStatesCBTimer::update();
 
-		auto lock = user_states_cache_.tryLockAndUpdate( msg );
-		QUICKDEV_TRY_LOCK_OR_WARN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+		QUICKDEV_TRY_UPDATE_CACHE( user_states_cache_, msg );
+		QUICKDEV_TRY_LOCK_OR_WARN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 	}
 };
 
