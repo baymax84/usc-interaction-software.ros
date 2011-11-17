@@ -60,13 +60,12 @@ QUICKDEV_DECLARE_NODE_CLASS( MehrabianRecognizer )
 
 	QUICKDEV_SPIN_ONCE
 	{
-		auto lock = states_cache_.lock();
-		const auto & states_cache = states_cache_.cache_;
-		if( !states_cache ) return;
+		QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
+		if( !states_msg ) return;
 
 		_MarkerArrayMsg markers;
 
-		for( auto humanoid = states_cache->states.begin(); humanoid != states_cache->states.end(); ++humanoid )
+		for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
 		{
 			//
 		}
