@@ -119,9 +119,8 @@ public:
 	{
 		QUICKDEV_ASSERT_INITIALIZED();
 
-		auto lock = velocity_msg_cache_.tryLockAndUpdate( msg );
-		const std::string & message_name = QUICKDEV_GET_MESSAGE_NAME( _VelocityMsg );
-		QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", message_name.c_str() );
+		QUICKDEV_TRY_UPDATE_CACHE( velocity_msg_cache_, msg );
+		QUICKDEV_TRY_LOCK_OR_RETURN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
 		QUICKDEV_GET_POLICY_NAMESPACE( TfManager )::_CallbackTimer::update();
 
@@ -135,7 +134,7 @@ public:
 		update_timer.update();
 
 		const auto & transforms = tf_manager_.getTransforms();
-		PRINT_DEBUG( "Publishing %zu frames", transforms.size() );
+		STREAM_DEBUG( "Publishing " << transforms.size() << " frames"  );
 
 		for( auto transform = transforms.begin(); transform != transforms.end(); ++transform )
 		{

@@ -90,8 +90,8 @@ private:
 		connectToService( true );
 	}
 
-	/*! Attempt to connect to the service
-	 *  - Print warnings if the connection attempt failed
+	//! Attempt to connect to the service
+	/*! - Print warnings if the connection attempt failed
 	 *  - If \param show_status_on_success and the attempt to connect succeeded, show that info
 	 *
 	 *  \return is_valid_, the state of the service connection */
@@ -104,19 +104,19 @@ private:
 		is_valid_ = client_.exists() && client_.isValid();
 		if( !is_valid_ )
 		{
-			PRINT_INFO( "Attempting to connect to service [%s]...", service_topic_name_.c_str() );
+			PRINT_INFO( "Attempting to connect to service [ %s ] on topic [ %s ]...", QUICKDEV_GET_SERVICE_NAME( __Service ).c_str(), service_topic_name_.c_str() );
 			client_ = nh_rel.serviceClient<__Service>( service_name_, true );
 			is_valid_ = client_.exists() && client_.isValid();
 
-			if( is_valid_ ) PRINT_INFO( "Connected to service [%s].", service_topic_name_.c_str() );
-			else PRINT_WARN( "Could not connect to service [%s]!", service_topic_name_.c_str() );
+			if( is_valid_ ) PRINT_INFO( "Connected to service on topic [ %s ].", service_topic_name_.c_str() );
+			else PRINT_WARN( "Could not connect to service on topic [ %s ]!", service_topic_name_.c_str() );
 		}
 
 		return is_valid_;
 	}
 
-	/*! Attempt to call the service.
-	 *  - If the service is not available, attempt to connect \param attempts times before aborting, waiting \param wait_time seconds in between each attempt
+	//! Attempt to call the service.
+	/*! - If the service is not available, attempt to connect \param attempts times before aborting, waiting \param wait_time seconds in between each attempt
 	 *  - if \param attempts is 0, try indefinitely
 	 *
 	 *  \return false if aborted, otherwise return the result of the service call */
@@ -126,7 +126,9 @@ private:
 		return callService( service.request, service.response, wait_time, attempts );
 	}
 
-	/*! Expanded version of callService that takes \param service.request and \param service.response as arguments instead of just \param service */
+	//! Expanded version of callService
+	/*! Takes \param service.request and \param service.response as arguments instead of just \param service
+	    \return the result of the service call or false if the connection failed */
 	bool callService( _ServiceRequest & request, _ServiceResponse & response, const ros::Duration & wait_time = ros::Duration( _DEF_callService_wait_time ), unsigned int attempts = _DEF_callService_attempts )
 	{
 		if( !service_mutex_.try_lock() ) return false;

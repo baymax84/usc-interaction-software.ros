@@ -263,13 +263,40 @@ QUICKDEV_ENABLE_IF( __ReturnType, ( !std::is_same<__Type1, __Type2>::value ) )
 
 // ########## Threading Macros #########################################
 // ---------------------------------------------------------------------
-#define QUICKDEV_TRY_LOCK_OR_WARN( lock_name, args... ) \
+#define QUICKDEV_TRY_LOCK_OR_WARN2( lock_name, args... ) \
 if( !lock_name ) PRINT_WARN( "Lock is busy. " args )
 
+#define QUICKDEV_TRY_LOCK_OR_WARN( args... ) \
+QUICKDEV_TRY_LOCK_OR_WARN2( lock, args )
+
 // ---------------------------------------------------------------------
-#define QUICKDEV_TRY_LOCK_OR_RETURN( lock_name, args... ) \
-QUICKDEV_TRY_LOCK_OR_WARN( lock_name, args ); \
+#define QUICKDEV_TRY_LOCK_OR_RETURN2( lock_name, args... ) \
+QUICKDEV_TRY_LOCK_OR_WARN2( lock_name, args ); \
 if( !lock_name ) return
+
+#define QUICKDEV_TRY_LOCK_OR_RETURN( args... ) \
+QUICKDEV_TRY_LOCK_OR_RETURN2( lock, args )
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_LOCK_MUTEX2( lock_name, mutex ) \
+auto lock_name = mutex.lock()
+
+#define QUICKDEV_LOCK_MUTEX( mutex ) \
+QUICKDEV_LOCK_MUTEX2( lock, mutex )
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_LOCK_CACHE_AND_GET( cache, output ) \
+QUICKDEV_LOCK_MUTEX( cache ); \
+const auto & output = cache.get()
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_TRY_UPDATE_CACHE2( lock_name, cache, value ) \
+auto lock_name = cache.tryLockAndUpdate( value )
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_TRY_UPDATE_CACHE( cache, value ) \
+QUICKDEV_TRY_UPDATE_CACHE2( lock, cache, value )
+
 
 // ########## Internal Macros ##########################################
 // ---------------------------------------------------------------------
@@ -291,6 +318,11 @@ std::string( ros::message_traits::DataType<__Message>::value() )
 // ---------------------------------------------------------------------
 #define QUICKDEV_GET_MESSAGE_INST_NAME( msg ) \
 QUICKDEV_GET_MESSAGE_NAME( decltype( quickdev::getMessageType( msg ) ) )
+
+// ########## ROS Message Macros #######################################
+// ---------------------------------------------------------------------
+#define QUICKDEV_GET_SERVICE_NAME( __Service ) \
+std::string( ros::service_traits::DataType<__Service>::value() )
 
 // ########## General Utility Macros ###################################
 // ---------------------------------------------------------------------

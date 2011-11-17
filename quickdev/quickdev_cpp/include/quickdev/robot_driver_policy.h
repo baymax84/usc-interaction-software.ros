@@ -103,9 +103,8 @@ private:
 	{
 		TimedPolicy<>::update();
 
-		// locks until "lock" goes out of context
-		auto lock = motor_vals_msg_cache_.tryLockAndUpdate( msg );
-		QUICKDEV_TRY_LOCK_OR_WARN( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+		QUICKDEV_TRY_UPDATE_CACHE( motor_vals_msg_cache_, msg );
+		QUICKDEV_TRY_LOCK_OR_WARN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
 		_MessageCallbackPolicy::invokeCallback( msg );
 	}

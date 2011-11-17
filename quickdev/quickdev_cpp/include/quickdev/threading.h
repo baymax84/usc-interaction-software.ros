@@ -37,7 +37,6 @@
 #define QUICKDEVCPP_QUICKDEV_THREADING_H_
 
 #include <boost/thread/mutex.hpp>
-#include <quickdev/type_utils.h>
 
 namespace quickdev
 {
@@ -72,6 +71,11 @@ namespace quickdev
 		}
 
 		const __Storage & get() const
+		{
+			return cache_;
+		}
+
+		__Storage & get()
 		{
 			return cache_;
 		}
