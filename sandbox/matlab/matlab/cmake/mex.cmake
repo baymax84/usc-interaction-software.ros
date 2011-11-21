@@ -69,6 +69,15 @@ macro( include_mex )
 	message( STATUS "----" )
 endmacro( include_mex )
 
+macro( add_mex lib )
+  add_library( ${lib} SHARED ${ARGV} )
+  target_link_libraries( ${lib} ${MEX_LIBRARIES} )
+  add_custom_command(
+    TARGET ${lib}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${LIBRARY_OUTPUT_PATH}/lib${lib}.so ${PROJECT_SOURCE_DIR}/mex/${lib}.mex${MEX_EXT} )
+endmacro( add_mex )
+
 macro( rosbuild_add_mex lib )
   rosbuild_add_library( ${lib} ${ARGV} )
   target_link_libraries( ${lib} ${MATLAB_LIBS} )
