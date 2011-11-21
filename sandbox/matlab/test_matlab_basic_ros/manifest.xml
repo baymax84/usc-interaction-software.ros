@@ -1,14 +1,14 @@
 <package>
-  <description brief="test_matlab">
+  <description brief="test_matlab_basic_ros">
 
      A basic MEX test that uses a SharedMemorySubscriber and a system() call to connect to a fully-functional ROS node run in another process
-     and fetch a serialized message from that process. See test_matlab_ros for the implementation of the other ROS node
+     and fetch a serialized message from that process. See test_matlab_full_ros for the implementation of the other ROS node
 
   </description>
   <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/test_matlab</url>
+  <url>http://ros.org/wiki/test_matlab_basic_ros</url>
   <depend package="matlab"/>
   <depend package="roscpp_simple"/>
   <depend package="std_msgs"/>
