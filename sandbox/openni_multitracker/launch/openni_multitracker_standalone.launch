@@ -1,5 +1,6 @@
 <launch>
-	<include file="$(find openni_camera)/launch/openni_node.launch" />
+	<arg name="deps" default="true" />
+	<include if="$(arg deps)" file="$(find openni_camera)/launch/openni_node.launch" />
 	<include file="$(find openni_multitracker)/launch/frames_standalone.launch" />
 	<node
 		pkg="openni_multitracker"
