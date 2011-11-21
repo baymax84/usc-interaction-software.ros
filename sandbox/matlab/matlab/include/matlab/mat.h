@@ -204,8 +204,8 @@ protected:
 	_Dim dim_;
 
 public:
-	const _Dim::_Data & rows_;
-	const _Dim::_Data & cols_;
+	_Dim::_Data & rows_;
+	_Dim::_Data & cols_;
 
 	MatBase( const _Dim & dim )
 	:
