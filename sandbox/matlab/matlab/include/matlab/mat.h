@@ -383,9 +383,19 @@ public:
 		return getData()[index];
 	}
 
-	const __Data operator[]( const unsigned int & index ) const
+	const __Data & operator[]( const unsigned int & index ) const
 	{
 		return getData()[index];
+	}
+
+	__Data & at( const unsigned int & row, const unsigned int & col )
+	{
+		return getData()[col * rows_ + row];
+	}
+
+	const __Data & at( const unsigned int & row, const unsigned int & col ) const
+	{
+		return getData()[col * rows_ + row];
 	}
 
 	__Data & first()
@@ -517,9 +527,19 @@ public:
 		return *( getData() + index );
 	}
 
-	const __Data operator[]( const unsigned int & index ) const
+	const __Data & operator[]( const unsigned int & index ) const
 	{
 		return *( getData() + index );
+	}
+
+	__Data & at( const unsigned int & row, const unsigned int & col )
+	{
+		return *( getData() + ( col * rows_ + row ) );
+	}
+
+	const __Data & at( const unsigned int & row, const unsigned int & col ) const
+	{
+		return *( getData() + ( col * rows_ + row ) );
 	}
 
 	__Data & first()
