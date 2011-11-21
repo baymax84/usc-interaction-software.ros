@@ -10,7 +10,6 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/test_matlab</url>
   <depend package="matlab"/>
-  <depend package="cpp11"/>
   <depend package="roscpp_simple"/>
   <depend package="std_msgs"/>
   <!--depend package="geometry_msgs"/-->
