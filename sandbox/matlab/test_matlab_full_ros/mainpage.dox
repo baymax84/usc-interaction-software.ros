@@ -2,9 +2,9 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b test_matlab is ... 
+\b test_matlab_full_ros is ...
 
-<!-- 
+<!--
 Provide an overview of your package.
 -->
 

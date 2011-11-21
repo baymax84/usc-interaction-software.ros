@@ -1,5 +1,5 @@
 <package>
-  <description brief="test_matlab_ros">
+  <description brief="test_matlab_full_ros">
 
      This is an example of how to create a bridge between matlab and ROS (necessary due to incompatibilities between log4cxx/rosconsole and matlab).
 
@@ -10,7 +10,7 @@
   <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/test_matlab_ros</url>
+  <url>http://ros.org/wiki/test_matlab_full_ros</url>
   <depend package="roscpp"/>
   <depend package="geometry_msgs"/>
   <depend package="test_matlab"/>
