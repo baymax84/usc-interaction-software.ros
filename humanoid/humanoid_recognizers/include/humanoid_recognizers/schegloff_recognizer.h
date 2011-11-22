@@ -53,12 +53,12 @@ QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
 		//
 	}
 
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		initAll();
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
 		if( !states_msg ) return;
