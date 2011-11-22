@@ -67,7 +67,7 @@ private:
 		//
 	}
 
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		initAll();
 		_HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidRecognizerNode::humanoidStatesCB, this ) );
@@ -109,7 +109,7 @@ private:
 		msg.points.push_back( to_point->second.pose.position );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		auto lock = state_arrays_mutex_.lock();
 		//QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", message_name.c_str() );

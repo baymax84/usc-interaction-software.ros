@@ -83,7 +83,7 @@ protected:
 		getMultiSub().addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
 	}
 
-	QUICKDEV_ENABLE_INIT
+	QUICKDEV_ENABLE_INIT()
 	{
 		postInit();
 

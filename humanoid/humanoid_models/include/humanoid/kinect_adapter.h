@@ -74,7 +74,7 @@ private:
 		//
 	}
 
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		initAll();
 
@@ -83,7 +83,7 @@ private:
 		multi_sub_.addSubscriber( nh_rel, "user_states", &KinectAdapterNode::userStatesCB, this );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		if( ros::Time::now() - _UserStatesCBTimer::now() > kinect_timeout_duration_ ) return;
 
