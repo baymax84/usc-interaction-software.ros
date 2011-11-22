@@ -55,7 +55,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ReconfigurePolicy )
 		//
 	}
 
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		/*! call init() on all initable policies
 		 *  initAll(); */
@@ -89,7 +89,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ReconfigurePolicy )
 		 *  /node_name/reconfigure2 */
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		std::cout << "." << std::flush;
 	}

@@ -41,7 +41,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 
-QUICKDEV_DECLARE_INTERNAL_NAMESPACE
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( ActionClient, NodeHandlePolicy );
@@ -87,7 +87,7 @@ private:
 		action_client_( new _ActionClient( nh_rel, action_topic_name_ ) );
 	}
 
-	QUICKDEV_ENABLE_INIT
+	QUICKDEV_ENABLE_INIT()
 	{
 		postInit();
 		QUICKDEV_SET_INITIALIZED();

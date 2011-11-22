@@ -57,7 +57,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ImageProcPolicy )
 		publishImages( "output_image", image_ptr );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		//
 	}

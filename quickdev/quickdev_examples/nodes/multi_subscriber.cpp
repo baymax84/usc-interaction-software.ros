@@ -71,7 +71,7 @@ public:
 		printf( "Got point: [%f %f %f]\n", msg->x, msg->y, msg->z );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		//
 	}

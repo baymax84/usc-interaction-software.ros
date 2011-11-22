@@ -169,7 +169,7 @@ PLUGINLIB_DECLARE_CLASS( namespace_name, nodelet_name, namespace_name::ClassName
 
 // ########## Initable Policy Macros ###################################
 // ---------------------------------------------------------------------
-#define QUICKDEV_ENABLE_INIT \
+#define QUICKDEV_ENABLE_INIT() \
 public: const static bool HAS_INIT_ = true; \
 private: bool initialized_; \
 private: inline void setInitialized( const bool & value ){ initialized_ = value; } \
@@ -233,11 +233,11 @@ void processImage( cv_bridge::CvImageConstPtr & image_ptr_name )
 
 // ########## Runable Policy Macros ####################################
 // ---------------------------------------------------------------------
-#define QUICKDEV_SPIN_FIRST \
+#define QUICKDEV_SPIN_FIRST() \
 void spinFirst()
 
 // ---------------------------------------------------------------------
-#define QUICKDEV_SPIN_ONCE \
+#define QUICKDEV_SPIN_ONCE() \
 void spinOnce()
 
 // ########## Type Enable/Disable Macros ###############################
@@ -300,11 +300,11 @@ QUICKDEV_TRY_UPDATE_CACHE2( lock, cache, value )
 
 // ########## Internal Macros ##########################################
 // ---------------------------------------------------------------------
-#define QUICKDEV_GET_INTERNAL_NAMESPACE \
+#define QUICKDEV_GET_INTERNAL_NAMESPACE() \
 quickdev
 // ---------------------------------------------------------------------
-#define QUICKDEV_DECLARE_INTERNAL_NAMESPACE \
-namespace QUICKDEV_GET_INTERNAL_NAMESPACE
+#define QUICKDEV_DECLARE_INTERNAL_NAMESPACE() \
+namespace QUICKDEV_GET_INTERNAL_NAMESPACE()
 
 // ---------------------------------------------------------------------
 #define __QUICKDEV_FUNCTION_TYPE \
@@ -327,9 +327,9 @@ std::string( ros::service_traits::DataType<__Service>::value() )
 // ########## General Utility Macros ###################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_name ) \
-auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE::RunablePolicy::getNodeHandle()
+auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE()::RunablePolicy::getNodeHandle()
 // ---------------------------------------------------------------------
 #define QUICKDEV_GET_NODEHANDLE( nh_name ) \
-auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE::NodeHandlePolicy::getNodeHandle()
+auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE()::NodeHandlePolicy::getNodeHandle()
 
 #endif // QUICKDEVCPP_QUICKDEV_MACROS_H_

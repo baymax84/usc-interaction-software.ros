@@ -61,7 +61,7 @@ public:
 				{ "string2", "point2" } );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		std_msgs::String string_msg;
 		string_msg.data = "hello";

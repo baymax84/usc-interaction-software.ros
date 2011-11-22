@@ -90,7 +90,7 @@ public:
 		multi_sub_.addSubscriber( nh_rel, cmd_vel_topic_name_, &TfManagerPolicy::cmdVelCB, this );
 	}
 
-	QUICKDEV_ENABLE_INIT
+	QUICKDEV_ENABLE_INIT()
 	{
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
