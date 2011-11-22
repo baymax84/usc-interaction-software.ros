@@ -83,7 +83,7 @@ private:
 	}
 
 public:
-	QUICKDEV_ENABLE_INIT
+	QUICKDEV_ENABLE_INIT()
 	{
 		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 

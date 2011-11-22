@@ -38,7 +38,7 @@
 
 #include <quickdev/policy.h>
 
-QUICKDEV_DECLARE_INTERNAL_NAMESPACE
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 // ########## Generic callback policy for any kind of return type/arg types ####################################################################

@@ -100,7 +100,7 @@ public:
 		initRec<Container<__Policies...> >( args... );
 	}
 
-	QUICKDEV_ENABLE_INIT{}
+	QUICKDEV_ENABLE_INIT(){}
 };
 
 }

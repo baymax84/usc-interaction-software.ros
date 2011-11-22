@@ -53,7 +53,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ServiceServerPolicy )
 	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ServiceServerPolicy ){}
 
 public:
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		//initAll();
 

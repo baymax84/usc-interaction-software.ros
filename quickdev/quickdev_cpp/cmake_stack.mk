@@ -10,7 +10,7 @@ remake:
 
 #forward all other commands, calling 'any' first if necessary
 %:
-	for PACKAGE in $(shell rosstack contents $(STACK_NAME)); do if [ -r $$PACKAGE ]; then cd $$PACKAGE && make $@ && cd ..; fi; done
+	for PACKAGE in $(shell rosstack contents $(STACK_NAME)); do if [ -r $$PACKAGE ]; then cd $$PACKAGE; make $@; cd ..; fi; done
 
 STACK_NAME=$(shell basename $(PWD))
 

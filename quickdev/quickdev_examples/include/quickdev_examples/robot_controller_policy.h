@@ -48,12 +48,12 @@ QUICKDEV_DECLARE_NODE_CLASS( RobotControllerPolicy )
 	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( RobotControllerPolicy ){}
 
 public:
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		initAll();
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		_RobotControllerPolicy::update( std_msgs::Empty() );
 	}

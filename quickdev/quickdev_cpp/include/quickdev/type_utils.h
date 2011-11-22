@@ -49,12 +49,44 @@
 
 namespace quickdev
 {
+	//! Simple utility struct to determine if two statically-known data types contain the same value
+	/*! Specialization for two different values */
+	template<class __Data, __Data __Id1__, __Data __Id2__>
+	struct is_same_value
+	{
+		//! The false type for differing IDs
+		const static bool value = false;
+	};
+
+	//! Simple utility struct to determine if two statically-known data types contain the same value
+	/*! Specialization for two identical values */
+	template<class __Data, __Data __Id__>
+	struct is_same_value<__Data, __Id__, __Id__>
+	{
+		//! The true type for matching IDs
+		const static bool value = true;
+	};
+
+	//! Type designed to provide somewhat useful compiler output when using other type traits
+	/*! Specifically, when using getFristOfType, getMetaParam, or getMetaParamDef, this type will be returned when
+	 *  no statically-known matches are found.*/
 	struct TYPE_NOT_FOUND{};
 
+	//! Specialization of getFirstOfType enabled when no matching types were found
+	/*! This function is called after iterating through all types in the variadic template passed to getFirstOfType.
+	 *  The fact that any execution has arrived here signifies that the desired type does not exist in the given
+	 *  list of types. Therefore, we return the struct TYPE_NOT_FOUND to give some useful compiler output but
+	 *  still fail at compile time (unless the user was searching for a TYPE_NOT_FOUND in the list of types)
+	 *  \return TYPE_NOT_FOUND, a type designed to signif that no match was found but also clarify compiler output*/
 	template<class __Desired>
 	static __Desired getFirstOfType(){ return TYPE_NOT_FOUND(); }
 
-	// matching value found; return it
+	//! Specialization of getFirstOfType enabled when __Desired == __Current; returns the first item in a variadic template whose type matches __Desired
+	/*! This function is called at most once during recursion when __Desired == __Current, which signifies that
+	 *  the requested type has been located in the the given variadic template and should be returned.
+	 *  \param current, the item at the front of the variadic template
+	 *  \param rest, the remaining items, if any, in the variadic template
+	 *  \return current, the value of the current item in the list */
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<std::is_same<__Desired, __Current>::value, __Desired>::type
 	getFirstOfType( __Current & current, __Rest&&... rest )
@@ -62,8 +94,14 @@ namespace quickdev
 		return current;
 	}
 
-	// iterate through types in __Rest until a matching type is found
-	// this will fail at compile time if no matching type exists
+	//! Specialization of getFirstOfType enabled when __Desired != __Current
+	/*! This function is called any time during recursion when __Desired != __Current, which signifies that
+	 *  a matching type has not yet been located in the given variadic template. This function will recursively
+	 *  check all types in __Rest until a better specialization is found (ie if a match is found or all types
+	 *  have been checked). Note that this function will fail to compile if __Desired != __Current for all __Rest.
+	 *  \param current, the item at the front of the variadic template
+	 *  \param rest, the remaining items, if any, in the variadic template
+	 *  \return getFirstOfType<__Desired>( rest... ), the best specialization of getFirstOfType for rest */
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<!std::is_same<__Desired, __Current>::value, __Desired>::type
 	getFirstOfType( __Current & current, __Rest&&... rest )
@@ -71,6 +109,12 @@ namespace quickdev
 		return getFirstOfType<__Desired>( rest... );
 	}
 
+	//! Specialization of getMetaParamRec when a value of type __Desired was in the list but its key did not match the given key
+	/*! This function is called after recursing through all key-value pairs in a variadic template containing at least
+	 *  one value of type __Desired without finding a matching key. This signifies that the requested key-value pair
+	 *  does not exist in the given list.
+	 *  \param name, the name of the desired key
+	 *  \return __Desired(), the default constructor value of the requested type */
 	template<class __Desired>
 	__Desired getMetaParamRec( const std::string & name )
 	{
@@ -78,6 +122,13 @@ namespace quickdev
 		return __Desired();
 	}
 
+	//! Specialization of getMetaParamDefRec when a value of type __Desired was in the list but its key did not match the given key
+	/*! This function is called after recursing through all key-value pairs in a variadic template containing at least
+	 *  one value of type __Desired without finding a matching key. This signifies that the requested key-value pair
+	 *  does not exist in the given list.
+	 *  \param name, the name of the desired key
+	 *  \param default_value, the value to return if no matching key-value pairs were found
+	 *  \return default_value */
 	template<class __Desired>
 	__Desired getMetaParamDefRec( const std::string & name, const __Desired & default_value )
 	{
@@ -87,8 +138,8 @@ namespace quickdev
 		return default_value;
 	}
 
-	// ####
-
+	// #### Forward declarations of all recursive variants of getMetaParamRec and getMetaParamDefRec
+	
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), __Desired>::type
 	getMetaParamRec( const std::string & name, const std::string & current_name, __Current & current, __Rest&&... rest );
@@ -105,8 +156,18 @@ namespace quickdev
 	static typename std::enable_if<(std::is_same<__Desired, __Current>::value), __Desired>::type
 	getMetaParamDefRec( const std::string & name, const __Desired & default_value, const std::string & current_name, __Current & current, __Rest&&... rest );
 
-	// ####
+	// #### Declarations of all recursive variants of getMetaParamRec and getMetaParamDefRec
 
+	//! Specialization of getMetaParamRec enabled if __Desired != __Current
+	/*! This function is called any time during recursion when __Desired != __Current, which signifies that
+	 *  a matching type has not yet been located in the given variadic template. This function will recursively
+	 *  check all types in __Rest until a better specialization is found (ie if a match is found or all types
+	 *  have been checked). Note that this function will fail to compile if __Desired != __Current for all __Rest.
+	 *  \param name, the value of the desired key
+	 *  \param current_name, the value of the current key
+	 *  \param current, the item at the front of the variadic template
+	 *  \param rest, the remaining items, if any, in the variadic template
+	 *  \return getMetaParamRec<__Desired>( name, rest... ), the next best specialization of getMetaParamRec for the given arguments */
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), __Desired>::type
 	getMetaParamRec( const std::string & name, const std::string & current_name, __Current & current, __Rest&&... rest )
@@ -114,6 +175,17 @@ namespace quickdev
 		return getMetaParamRec<__Desired>( name, rest... );
 	}
 
+	//! Specialization of getMetaParamDefRec enabled if __Desired != __Current
+	/*! This function is called any time during recursion when __Desired != __Current, which signifies that
+	 *  a matching type has not yet been located in the given variadic template. This function will recursively
+	 *  check all types in __Rest until a better specialization is found (ie if a match is found or all types
+	 *  have been checked). Note that this function will fail to compile if __Desired != __Current for all __Rest.
+	 *  \param name, the value of the desired key
+	 *  \param default_value, the value to return if no matching key-value pairs were found
+	 *  \param current_name, the value of the current key
+	 *  \param current, the item at the front of the variadic template
+	 *  \param rest, the remaining items, if any, in the variadic template
+	 *  \return getMetaParamDefRec<__Desired>( name, default_value, rest... ), the next best specialization of getMetaParamDefRec for the given arguments */
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), __Desired>::type
 	getMetaParamDefRec( const std::string & name, const __Desired & default_value, const std::string & current_name, __Current & current, __Rest&&... rest )
@@ -121,6 +193,15 @@ namespace quickdev
 		return getMetaParamDefRec<__Desired>( name, default_value, rest... );
 	}
 
+	//! Specialization of getMetaParamRec enabled when __Desired == __Current
+	/*! This function is called any time during recursion when __Desired == __Current, which signifies that
+	 *  the requested type has been located in the the given variadic template and the corresponding key should be checked.
+	 *  If the keys do not match, the next matching type is recursively selected.
+	 *  \param name, the value of the desired key
+	 *  \param current_name, the value of the current key
+	 *  \param current, the item at the front of the variadic template
+	 *  \param rest, the remaining items, if any, in the variadic template
+	 *  \return current if the given keys match or getMetaParamRec<__Desired>( name, rest... ), the next best specialization of getMetaParamRec for the given arguments */
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<(std::is_same<__Desired, __Current>::value), __Desired>::type
 	getMetaParamRec( const std::string & name, const std::string & current_name, __Current & current, __Rest&&... rest )
@@ -135,6 +216,16 @@ namespace quickdev
 		return getMetaParamRec<__Desired>( name, rest... );
 	}
 
+	//! Specialization of getMetaParamDefRec enabled when __Desired == __Current
+	/*! This function is called any time during recursion when __Desired == __Current, which signifies that
+	 *  the requested type has been located in the the given variadic template and the corresponding key should be checked.
+	 *  If the keys do not match, the next matching type is recursively selected.
+	 *  \param name, the value of the desired key
+	 *  \param default_value, the value to return if no matching key-value pairs were found
+	 *  \param current_name, the value of the current key
+	 *  \param current, the item at the front of the variadic template
+	 *  \param rest, the remaining items, if any, in the variadic template
+	 *  \return current if the given keys match or getMetaParamDefRec<__Desired>( name, rest... ), the next best specialization of getMetaParamDefRec for the given arguments */
 	template<class __Desired, class __Current, class... __Rest>
 	static typename std::enable_if<(std::is_same<__Desired, __Current>::value), __Desired>::type
 	getMetaParamDefRec( const std::string & name, const __Desired & default_value, const std::string & current_name, __Current & current, __Rest&&... rest )
@@ -149,8 +240,19 @@ namespace quickdev
 		return getMetaParamDefRec<__Desired>( name, default_value, rest... );
 	}
 
-	// ####
+	// #### Entry points for getMetaParam and getMetaParamDef
 
+	//! A function that, given a variadic list of key-value pairs, and a desired type, will return the first item of the given type with a matching key
+	/*! Entry point. Given a list of key-value pairs ( key, value, key, value, ... ), this function will recursively
+	 *  locate the first key-value pair whose value component matches the desired type, then try to match the key-component
+	 *  to the given key. If the keys do not match, the next type is located until there are no more types to check.
+	 *
+	 *  Usage: getMetaParam<DesiredType>( "<desired_key>", "some_key", some_value, "some_other_key", some_other_value, ... );
+	 *         getMetaParam<DesiredType>( "<desired_key>" ); // evaluates to DesiredType()
+	 * 
+	 *  \param name, the value of the desired key
+	 *  \param rest, the list of key-value pairs
+	 *  \return getMetaParamRec<__Desired>( name, rest... ), the next best specialization of getMetaParamRec for the given arguments */
 	template<class __Desired, class... __Rest>
 	static __Desired getMetaParam( const std::string & name, __Rest&&... rest )
 	{
@@ -159,16 +261,32 @@ namespace quickdev
 		return getMetaParamRec<__Desired>( name, rest... );
 	}
 
+	//! A function that, given a variadic list of key-value pairs, and a desired type, will return the first item of the given type with a matching key or a default value if no match was found
+	/*! Entry point. Given a list of key-value pairs ( key, value, key, value, ... ), this function will recursively
+	 *  locate the first key-value pair whose value component matches the desired type, then try to match the key-component
+	 *  to the given key. If the keys do not match, the next type is located until there are no more types to check. If a
+	 *  matching key-value pair is not found, the function will return a given default value.
+	 *
+	 *  Usage: getMetaParamDef<DesiredType>( "<desired_key>", default_value, "some_key", some_value, "some_other_key", some_other_value, ... );
+	 *         getMetaParamDef<DesiredType>( "<desired_key>", default_value ); // evaluates to default_value
+	 * 
+	 *  \param name, the value of the desired key
+	 *  \param default_value, the value to return if no matching key-value pairs were found
+	 *  \param rest, the list of key-value pairs
+	 *  \return getMetaParamDefRec<__Desired>( name, default_value, rest... ), the best specialization of getMetaParamDefRec for the given arguments */
 	template<class __Desired, class... __Rest>
 	static __Desired getMetaParamDef( const std::string & name, const __Desired & default_value, __Rest&&... rest )
 	{
 		return getMetaParamDefRec<__Desired>( name, default_value, rest... );
 	}
 
+	//! Simple struct to hold useful pointer types
 	template<class __Type>
 	struct ptr_types
 	{
+		//! A shared pointer for __Type
 		typedef boost::shared_ptr<__Type> _Shared;
+		//! A const shared pointer for __Type
 		typedef boost::shared_ptr<__Type const> _Const;
 	};
 
@@ -179,6 +297,11 @@ namespace quickdev
 		return typename __MessagePtr::element_type();
 	}*/
 
+	//! Specialization of getMessageType for any class instance typed on a non-const __Message derived from ros::Message
+	/*! Returns the type of the ROS message on which the given class is typed. As an example, if we have an instance
+	 *  of some_pkg::SomeMessage::Ptr called some_msg_ptr, getMessageType( some_msg_ptr ) will resolve to some_pkg::SomeMessage().
+	 *  \param message, an instance of the class
+	 *  \return __Message(), the default constructor for __Message */
 	template<class __Message, template<typename> class __Ptr>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
 	getMessageType( const __Ptr<__Message const> & message )
@@ -186,6 +309,11 @@ namespace quickdev
 		return __Message();
 	}
 
+	//! Specialization of getMessageType for any class instance typed on a const __Message derived from ros::Message
+	/*! Returns the type of the ROS message on which the given class is typed. As an example, if we have an instance
+	 *  of some_pkg::SomeMessage::ConstPtr called some_msg_ptr, getMessageType( some_msg_ptr ) will resolve to some_pkg::SomeMessage().
+	 *  \param message, an instance of the class
+	 *  \return __Message(), the default constructor for __Message */
 	template<class __Message, template<typename> class __Ptr>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
 	getMessageType( const __Ptr<__Message> & message )
@@ -193,6 +321,11 @@ namespace quickdev
 		return __Message();
 	}
 
+	//! Specialization of getMessageType for any __Message derived from ros::Message
+	/*! Returns the given message instance. As an example, if we have an instance of some_pkg::SomeMessage
+	 *  called some_msg, getMessageType( some_msg ) will resolve to some_msg.
+	 *  \param message, an instance of __Message
+	 *  \return message */
 	template<class __Message>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
 	getMessageType( const __Message & message )
@@ -200,6 +333,10 @@ namespace quickdev
 		return message;
 	}
 
+	//! Converts a ROS message into a ::ConstPtr
+	/*! Given an instance of __Message derived from ros::Message, copies the message to a new __Message::ConstPtr
+	 *  \param message, the message instance to use
+	 *  \return a __Message::ConstPtr with a copy of the data in message */
 	template<class __Message>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::ConstPtr>::type
 	make_const_shared( const __Message & message )
@@ -207,6 +344,10 @@ namespace quickdev
 		return typename __Message::ConstPtr( new __Message( message ) );
 	}
 
+	//! Converts a ROS message into a ::Ptr
+	/*! Given an instance of __Message derived from ros::Message, copies the message to a new __Message::Ptr
+	 *  \param message, the message instance to use
+	 *  \return a __Message::Ptr with a copy of the data in message */
 	template<class __Message>
 	typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::Ptr>::type
 	make_shared( const __Message & message )

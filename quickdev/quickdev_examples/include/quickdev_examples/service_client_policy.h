@@ -58,7 +58,7 @@ private:
 	{}
 
 public:
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		//initAll();
 
@@ -66,7 +66,7 @@ public:
 		_ServiceClientPolicy2::init( "service_name_param", std::string( "service2_name" ) );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		PRINT_INFO( "Spinning..." );
 

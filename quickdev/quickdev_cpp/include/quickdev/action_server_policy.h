@@ -40,7 +40,7 @@
 #include <quickdev/callback_policy.h>
 #include <actionlib/server/simple_action_server.h>
 
-QUICKDEV_DECLARE_INTERNAL_NAMESPACE
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 template<class __Action>
@@ -83,7 +83,7 @@ private:
 		action_server_( nh_rel, action_topic_name_, simple_bind( &ActionServerPolicy::executeActionCB, this ), false );
 	}
 
-	QUICKDEV_ENABLE_INIT
+	QUICKDEV_ENABLE_INIT()
 	{
 		postInit();
 		QUICKDEV_SET_INITIALIZED();

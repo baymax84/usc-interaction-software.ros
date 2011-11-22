@@ -53,7 +53,7 @@ public:
 		//
 	}
 
-	QUICKDEV_SPIN_FIRST
+	QUICKDEV_SPIN_FIRST()
 	{
 		tf::Transform transform( tf::Quaternion( 0, 0, 0, 1 ), tf::Vector3( 0, 0, 0 ) );
 		publishTransform( transform, "/world", "/frame1", now_ );
@@ -66,7 +66,7 @@ public:
 		lookupTransform( "/world", "/frame2", now_ - ros::Duration( 5 ) );
 	}
 
-	QUICKDEV_SPIN_ONCE
+	QUICKDEV_SPIN_ONCE()
 	{
 		now_ = ros::Time::now();
 
