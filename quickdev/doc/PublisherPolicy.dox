@@ -1,0 +1,6 @@
+/*!
+    \page PublisherPolicy PublisherPolicy
+
+	This example shows how to use the basic functions of a quickdev::PublisherPolicy
+    \include include/quickdev_examples/publisher_policy.h
+*/

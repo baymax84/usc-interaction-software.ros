@@ -1,0 +1,6 @@
+/*!
+    \page ServiceClientPolicy ServiceClientPolicy
+
+	This example shows how to use the basic functions of a quickdev::ServiceClientPolicy
+    \include include/quickdev_examples/service_client_policy.h
+*/

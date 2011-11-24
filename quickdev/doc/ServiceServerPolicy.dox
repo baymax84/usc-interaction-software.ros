@@ -1,0 +1,6 @@
+/*!
+    \page ServiceServerPolicy ServiceServerPolicy
+
+	This example shows how to use the basic functions of a quickdev::ServiceServerPolicy
+    \include include/quickdev_examples/service_server_policy.h
+*/

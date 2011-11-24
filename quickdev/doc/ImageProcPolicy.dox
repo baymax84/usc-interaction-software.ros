@@ -1,0 +1,8 @@
+/*!
+
+\page ImageProcPolicy ImageProcPolicy
+
+This example shows how to use the basic functions of a quickdev::ImageProcPolicy
+\include include/quickdev_examples/image_proc_policy.h
+
+*/

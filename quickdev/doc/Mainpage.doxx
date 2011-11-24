@@ -1,0 +1,26 @@
+/*!
+
+	\mainpage quickdev
+
+	Welcome to the documentation site for quickdev
+
+	\author <a href="http://robotics.usc.edu/~ekaszubski" target="_top">Edward T. Kaszubski</a> (ekaszubski@gmail.com)
+
+	<b>Examples</b>
+	- <b>Policies</b>
+		- \ref ImageProcPolicy
+		- \ref JoystickPolicy
+		- \ref PublisherPolicy
+		- \ref ReconfigurePolicy
+		- \ref RobotControllerPolicy
+		- \ref RobotDriverPolicy
+		- \ref ServiceClientPolicy
+		- \ref ServiceServerPolicy
+		- \ref TfTranceiverPolicy
+	- <b>Components</b>
+		- \ref MultiPublisher
+		- \ref MultiSubscriber
+		- \ref Node
+		- \ref TypeUtils
+
+*/

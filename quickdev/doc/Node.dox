@@ -1,0 +1,6 @@
+/*!
+    \page Node Node
+
+	This example shows how to use the basic functions of a quickdev::Node
+    \include include/quickdev_examples/node.h
+*/
