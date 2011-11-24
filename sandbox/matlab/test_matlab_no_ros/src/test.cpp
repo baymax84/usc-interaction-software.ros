@@ -58,9 +58,16 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] )
 	// make sure the dimensions of the mat are at least 1x1
 	if( input_mat.rows_ * input_mat.cols_ == 0 ) return printUsage();
 
+//	std::cout << input_mat << std::endl;
+
 	// construct a new matlab::Mat with the same dimensions as input_mat; this allocates a new mxArray
 	// specifically, since we want to use doubles, it calls: mxCreateNumericArray( rows_, cols_, mxDOUBLE_CLASS, mxREAL )
 	matlab::Mat<double> output_mat( input_mat.getDim() );
+
+//	example of resizing the mat:
+//	std::cout << output_mat << std::endl;
+//	output_mat.resize( input_mat.rows_ + 1, input_mat.cols_ + 1 );
+//	std::cout << output_mat << std::endl;
 
 	// simple operation to show that everything is working; set every output value to be the corresponding input value scaled by the given scale
 	for( unsigned int row = 0; row < input_mat.rows_; ++row )
