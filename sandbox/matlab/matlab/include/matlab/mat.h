@@ -314,14 +314,14 @@ public:
 	}
 
 	//! Change the dimensions of the matrix
-	/*! Note: experimental; reallocates storage for this mat; destroys existing data */
+	/*! \attention Experimental; reallocates storage for this mat; destroys existing data */
 	void resize( const MatBase::_Dim & dim )
 	{
 		resize( dim.rows_, dim.cols_ );
 	}
 
 	//! Change the dimensions of the matrix
-	/*! Note: experimental; reallocates storage for this mat; destroys existing data */
+	/*! \attention Experimental; reallocates storage for this mat; destroys existing data */
 	void resize( const MatBase::_Dim::_Data & rows, const MatBase::_Dim::_Data & cols )
 	{
 		//if( mat_ ) mxFree( mat_ );
