@@ -1,0 +1,13 @@
+<package>
+  <description brief="test_matlab_no_ros">
+
+     A set of basic MEX tests that use only mex.cmake and matlab/mat.h ( no ROS components )
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/test_matlab_no_ros</url>
+</package>
+
+

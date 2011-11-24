@@ -1,0 +1,14 @@
+/*!
+
+	\mainpage MATLAB/MEX Toolkit for C++/ROS
+
+	Welcome to the documentation site for the MATLAB/MEX Toolkit for C++/ROS
+
+	\author <a href="http://robotics.usc.edu/~ekaszubski" target="_top">Edward T. Kaszubski</a> (ekaszubski@gmail.com)
+
+	<b>Examples</b>
+	- \ref NoROS
+	- \ref BasicROS
+	- \ref FullROS
+
+*/

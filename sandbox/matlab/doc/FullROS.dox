@@ -1,0 +1,17 @@
+/*!
+
+	\page FullROS ROS/MATLAB Bridge (ROS side)
+
+	This example set consists of the following examples:
+
+	- \ref FullROS-test_ros
+
+	\section FullROS-test_ros test_ros.cpp
+
+		This example shows how to create a fully-functioning ROS node connected to MATLAB via a SharedMemory bridge
+
+		\sa \ref BasicROS
+
+		\include test_matlab_full_ros/nodes/test_ros.cpp
+
+*/

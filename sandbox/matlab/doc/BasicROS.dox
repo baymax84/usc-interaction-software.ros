@@ -1,0 +1,16 @@
+/*!
+
+	\page BasicROS ROS/MATLAB Bridge (MATLAB side)
+
+	This example set consists of the following examples:
+
+	- \ref BasicROS-test_ros
+
+	\section BasicROS-test_ros test_ros.cpp
+
+		This example shows how to use the ros::SharedMemoryPublisher / ros::SharedMemorySubscriber to create a bridge between MATLAB and a fully-functional ROS node (MATLAB side)
+		\sa \ref FullROS
+
+		\include test_matlab_basic_ros/src/test_ros.cpp
+
+*/

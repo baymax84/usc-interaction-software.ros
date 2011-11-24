@@ -1,0 +1,29 @@
+/*!
+
+	\page NoROS CMake Only
+
+	This example set consists of the following examples:
+
+	- \ref NoROS-test
+	- \ref NoROS-yprime
+	- \ref NoROS-yprime_with_mat
+
+	\section NoROS-test test.cpp
+
+		This example shows how to use the matlab::Mat wrapper to read/write data to/from MATLAB
+
+		\include test_matlab_no_ros/src/test.cpp
+
+	\section NoROS-yprime yprime.cpp
+
+		This example is copied verbatim from MATLAB/extern/examples/mex/yprime.c (note: it has been renamed to yprime.cpp to allow for correct compilation)
+
+		\include test_matlab_no_ros/src/yprime.cpp
+
+	\section NoROS-yprime_with_mat yprime_with_mat.cpp
+
+		This example shows how to use the matlab::Mat wrapper to perform the same task as \ref yprime
+
+		\include test_matlab_no_ros/src/yprime_with_mat.cpp
+
+*/
