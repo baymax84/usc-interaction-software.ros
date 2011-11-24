@@ -39,6 +39,7 @@
 #include <inttypes.h>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 namespace matlab
 {
@@ -310,6 +311,21 @@ public:
 		_Parent( parent_args... ), mat_( mxCreateNumericMatrix( rows_, cols_, MatDataTypes<__Data>::matlab_class_, complexity ) )
 	{
 		//
+	}
+
+	//! Change the dimensions of the matrix
+	/*! Note: experimental; reallocates storage for this mat; destroys existing data */
+	void resize( const MatBase::_Dim & dim )
+	{
+		resize( dim.rows_, dim.cols_ );
+	}
+
+	//! Change the dimensions of the matrix
+	/*! Note: experimental; reallocates storage for this mat; destroys existing data */
+	void resize( const MatBase::_Dim::_Data & rows, const MatBase::_Dim::_Data & cols )
+	{
+		//if( mat_ ) mxFree( mat_ );
+		*this = MatlabMat( rows, cols );
 	}
 
 	//! Convert our data to a formatted string; specialization enabled if __ClassId__ != mxCHAR_CLASS
