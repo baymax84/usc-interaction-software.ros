@@ -1,0 +1,6 @@
+/*!
+    \page MultiPublisher MultiPublisher
+
+	This example shows how to use the basic functions of a ros::MultiPublisher
+    \include nodes/multi_publisher.cpp
+*/

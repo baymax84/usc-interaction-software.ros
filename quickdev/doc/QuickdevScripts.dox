@@ -1,0 +1,16 @@
+/*!
+
+\page QuickdevScripts Scripts
+
+\section QuickdevScripts-Contents Contents
+- \ref QuickdevScripts-add_license
+- \ref QuickdevScripts-create_pkg
+
+\section QuickdevScripts-add_license add_license
+Adds a BSD license to the top of a set of files along with the relative path to the file from the location the script was run.
+
+\section QuickdevScripts-create_pkg create_pkg
+Creates ready-to-compile packages and libraries. Support for creating source files, nodes, nodelets (with pluginlib exports), and launch files.
+Automatic licensing of all .h / .cpp files.
+
+*/
