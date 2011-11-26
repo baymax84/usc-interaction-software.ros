@@ -218,7 +218,7 @@ public:
 	{
 		auto transform = tf_manager_[frame_id];
 
-		btTransform velocity_tf( convert( *msg ) );
+		btTransform velocity_tf( unit::convert<btTransform>( *msg ) );
 		velocity_tf *= dt;
 
 		transform.setData( transform * velocity_tf );
