@@ -57,7 +57,7 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, geometry_msgs::Twist 
 
 DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); const _Vector3 vec( unit::convert<_Vector3>( twist.linear ) ); return _Transform( quat, vec ); )
 
-static void operator*=( btTransform & transform, const double & scale )
+static void operator*=( _Transform & transform, const double & scale )
 {
 	_Vector3 angle_ypr = unit::convert<_Vector3>( unit::convert<_Vector3Msg>( transform.getRotation() ) );
 	angle_ypr *= scale;
