@@ -1,3 +1,4 @@
+//#include <quickdev/container.h>
 #include <math.h>
 #include <type_traits>
 #include <stdint.h>
@@ -15,7 +16,16 @@ namespace GET_UNIT_NAMESPACE()
 #define DECLARE_UNIT_NS() \
 DECLARE_UNIT_NAMESPACE()
 
+#define DECLARE_UNIT_CONVERSION( __FromUnit, __ToUnit ) \
+DECLARE_UNIT_NS(){ \
+template<> \
+struct can_convert<__FromUnit, __ToUnit>{ const static bool value = true; }; \
+}
+
+//namespace __FromUnit#_conversion{ typedef decltype( container_push( type_map, __ToUnit ) ) type_map; }
+
 #define DECLARE_UNIT_CONVERSION_LAMBDA( __FromData, __ToData, var_name, conversion... ) \
+DECLARE_UNIT_CONVERSION( __FromData, __ToData ) \
 DECLARE_UNIT_NS() \
 { \
 	template<> \
@@ -31,6 +41,7 @@ DECLARE_UNIT_NS() \
 }
 
 #define DECLARE_NUMERIC_UNIT_STORAGE_CONVERSION( __FromData, __ToData, __FromStorage, __ToStorage, var_name, conversion ) \
+DECLARE_UNIT_CONVERSION( __FromData, __ToData ) \
 DECLARE_UNIT_NS() \
 { \
 	template<> \
@@ -46,6 +57,7 @@ DECLARE_UNIT_NS() \
 }
 
 #define DECLARE_NUMERIC_UNIT_CONVERSION( __FromData, __ToData, var_name, conversion ) \
+DECLARE_UNIT_CONVERSION( __FromData, __ToData ) \
 DECLARE_UNIT_NS() \
 { \
 	template<class __ToStorage> \
@@ -63,6 +75,7 @@ DECLARE_UNIT_NS() \
 DECLARE_NUMERIC_UNIT_CONVERSION( __FromData, __ToData, value, value * scalar ); \
 DECLARE_NUMERIC_UNIT_CONVERSION( __ToData, __FromData, value, value / ( scalar ) )
 
+// macro to declare some unit with simple numeric storage
 #define DECLARE_NUMERIC_UNIT( __Unit, __Storage... ) \
 class __Unit : public GET_UNIT_NS()::NumericUnit<__Unit, ## __Storage> \
 { \
@@ -81,6 +94,9 @@ DECLARE_UNIT_NS()
 
 template<class __FromData, class __ToData, class __ToStorage>
 struct UnitConverter{};
+
+template<class __FromUnit, class __ToUnit>
+struct can_convert{};
 
 template<class __Unit>
 struct is_numeric_helper{ const static bool value = false; };
@@ -172,6 +188,7 @@ public:
 template<class __Data, class __Storage = double>
 class NumericUnit : public UnitBase<__Data, __Storage>
 {
+	static_assert( std::is_arithmetic<__Storage>::value, "NumericUnit can only store simple numeric types." );
 public:
 	typedef UnitBase<__Data, __Storage> _Parent;
 
@@ -214,25 +231,39 @@ public:
 		return *this;
 	}
 
-	/*template<class __ToData>
+	template<class __ToData>
 	typename std::enable_if<(!boost::is_base_of<UnitBaseType, __ToData>::value), __ToData>::type
-	operatorCastHelper( const __ToData & value )
+	static get_first_basic_type()
 	{
-		return UnitConverter<__Data, __ToData, __ToData>::convert( value );
+		return __ToData();
+	}
+
+	template<class __ToData>
+	typename std::enable_if<(boost::is_base_of<UnitBaseType, __ToData>::value), decltype( get_first_basic_type<typename __ToData::_Storage>() )>::type
+	static get_first_basic_type()
+	{
+		return get_first_basic_type<typename __ToData::_Storage>();
+	}
+
+	template<class __ToData, class __FromData>
+	typename std::enable_if<(!boost::is_base_of<UnitBaseType, __FromData>::value), __ToData>::type
+	operatorCastHelper( const __FromData & value )
+	{
+		return UnitConverter<__FromData, __ToData, __ToData>::convert( value );
 	}
 
 	// unroll any Unit<Unit<Type> > instances
-	template<class __ToData>
-	typename std::enable_if<(boost::is_base_of<UnitBaseType, __ToData>::value), typename __ToData::_Storage>::type
-	operatorCastHelper( const __ToData & value )
+	template<class __ToData, class __FromData>
+	typename std::enable_if<(boost::is_base_of<UnitBaseType, __FromData>::value), __ToData>::type
+	operatorCastHelper( const __FromData & value )
 	{
-		return operatorCastHelper( value.getValue() );
-	}*/
+		return operatorCastHelper<__ToData>( value.getValue() );
+	}
 
 	template<class __ToData>//, typename std::enable_if<(!boost::is_base_of<UnitBaseType, __ToData>::value), int>::type = 0>
 	operator __ToData()
 	{
-		return operatorCastHelper( this->value_ );
+		return operatorCastHelper<__ToData>( this->value_ );
 	}
 };
 
@@ -282,10 +313,23 @@ make_unit( const __Storage & value )
 
 template<class __ToData, class __FromData>
 typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
+convert_unit( const Unit<__FromData> & unit )
+{
+	return Unit<__ToData>( unit );
+}
+
+template<class __ToData, class __FromData>
+typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
+convert( const Unit<__FromData> & unit )
+{
+	return Unit<__ToData>( unit ).getValue();
+}
+
+template<class __ToData, class __FromData>
+typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
 convert( const __FromData & data )
 {
-	Unit<__ToData> result( make_unit( data ) );
-	return result.getValue();
+	return Unit<__ToData>( make_unit( data ) ).getValue();
 }
 
 } // DECLARE_UNIT_NS()
