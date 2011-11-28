@@ -41,79 +41,78 @@
 #include <map>
 #include <tf/transform_datatypes.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
-/*! Utility class to store and update (but not publish) a list of transforms */
-
+//! Utility class to store and update (but not publish) a list of transforms
 class TfManager
 {
 public:
-	typedef std::string _TfFrameId;
-	typedef tf::StampedTransform _Transform;
-	typedef std::map<_TfFrameId, _Transform> _TransformMap;
+    typedef std::string _TfFrameId;
+    typedef tf::StampedTransform _Transform;
+    typedef std::map<_TfFrameId, _Transform> _TransformMap;
 
 private:
-	_TransformMap transforms_;
+    _TransformMap transforms_;
 
 public:
-	TfManager()
-	{
-		//
-	}
+    TfManager()
+    {
+        //
+    }
 
-	template<class... __Rest>
-	void updateTransforms( const _Transform & transform, __Rest&&... rest )
-	{
-		if( transform.child_frame_id_.size() == 0 || transform.frame_id_.size() == 0 )
-			PRINT_WARN( "Cannot update transform with empty source frame or target frame id:\n[ %s -> %s ] : %f", transform.frame_id_.c_str(), transform.child_frame_id_.c_str(), transform.stamp_.toSec() );
-		else
-			transforms_[transform.child_frame_id_] = transform;
+    template<class... __Rest>
+    void updateTransforms( const _Transform & transform, __Rest&&... rest )
+    {
+        if( transform.child_frame_id_.size() == 0 || transform.frame_id_.size() == 0 )
+            PRINT_WARN( "Cannot update transform with empty source frame or target frame id:\n[ %s -> %s ] : %f", transform.frame_id_.c_str(), transform.child_frame_id_.c_str(), transform.stamp_.toSec() );
+        else
+            transforms_[transform.child_frame_id_] = transform;
 
-		updateTransforms( rest... );
-	}
-	void updateTransforms(){}
+        updateTransforms( rest... );
+    }
+    void updateTransforms(){}
 
-	template<class... __Rest>
-	void removeTransforms( const _TfFrameId & frame_id, __Rest&&... rest )
-	{
-		warnIfFrameDNE( frame_id );
+    template<class... __Rest>
+    void removeTransforms( const _TfFrameId & frame_id, __Rest&&... rest )
+    {
+        warnIfFrameDNE( frame_id );
 
-		transforms_.erase( frame_id );
+        transforms_.erase( frame_id );
 
-		removeTransforms( rest... );
-	}
-	void removeTransforms(){}
+        removeTransforms( rest... );
+    }
+    void removeTransforms(){}
 
-	const _TransformMap & getTransforms() const
-	{
-		return transforms_;
-	}
+    const _TransformMap & getTransforms() const
+    {
+        return transforms_;
+    }
 
-	bool exists( const _TfFrameId & frame_id ) const
-	{
-		return transforms_.count( frame_id );
-	}
+    bool exists( const _TfFrameId & frame_id ) const
+    {
+        return transforms_.count( frame_id );
+    }
 
-	const _Transform & operator[]( const _TfFrameId & frame_id ) const
-	{
-		if( !warnIfFrameDNE( frame_id ) ) return getEmptyTransform();
-		return transforms_.find( frame_id )->second;
-	}
+    const _Transform & operator[]( const _TfFrameId & frame_id ) const
+    {
+        if( !warnIfFrameDNE( frame_id ) ) return getEmptyTransform();
+        return transforms_.find( frame_id )->second;
+    }
 
-	bool warnIfFrameDNE( const _TfFrameId & frame_id ) const
-	{
-		if( exists( frame_id ) ) return true;
+    bool warnIfFrameDNE( const _TfFrameId & frame_id ) const
+    {
+        if( exists( frame_id ) ) return true;
 
-		PRINT_WARN( "Cannot get frame [ %s ]; it is not managed by this TfManager", frame_id.c_str() );
-		return false;
-	}
+        PRINT_WARN( "Cannot get frame [ %s ]; it is not managed by this TfManager", frame_id.c_str() );
+        return false;
+    }
 
-	const _Transform & getEmptyTransform() const
-	{
-		const static _Transform empty_transform = _Transform();
-		return empty_transform;
-	}
+    const _Transform & getEmptyTransform() const
+    {
+        const static _Transform empty_transform = _Transform();
+        return empty_transform;
+    }
 };
 
 }

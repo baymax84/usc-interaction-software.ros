@@ -44,63 +44,69 @@
 namespace quickdev
 {
 
+//! \brief Construct a policy adapter that inherits each of a variable set of policies
+/*! \note All policies in the inheritance group take the same set of arguments during construction \see GenericPolicyAdapter(). */
+/*! \tparam __Policies the variadic template of policy types to inherit from */
 template<class... __Policies>
 class GenericPolicyAdapter : public __Policies...
 {
 public:
-	// Construct a policy adapter that inherits from all specified
-	// policies. Note that all policies in the inheritance group take
-	// the same set of args during construction.
 
-	// gcc can't compile this; "invalid use of pack expansion expression"
-	// see http://stackoverflow.com/questions/7694201/unpacking-parameter-pack-of-args-into-the-constructor-of-each-class-defined-in-a
-	//template<class... __Args>
-	//GenericPolicyAdapter( __Args... args ) : __Policies( args... )
+    //! \brief Construct a set of policies from a single variable argument
+    /*! \note Ideally, we'd be able to pass in a variadic template of types, but gcc can't compile this; "invalid use of pack expansion expression"
+     *  \code
+     *  template<class... __Args>
+     *  GenericPolicyAdapter( __Args... args ) : __Policies( args... )
+     *  \endcode
+     *  Instead, we pass only one argument.
+     *  \see http://stackoverflow.com/questions/7694201/unpacking-parameter-pack-of-args-into-the-constructor-of-each-class-defined-in-a
+     *  \tparam __Arg the type of the argument to be passed to all parent policies
+     *  \param arg the argument to pass to all parent policies
+     *  \note Given the above, arg is almost always a ros::NodeHandle */
+    template<class __Arg>
+    GenericPolicyAdapter( __Arg & arg ) : __Policies( arg )...
+    {
 
-	template<class __Arg>
-	GenericPolicyAdapter( __Arg & arg ) : __Policies( arg )...
-	{
+    }
 
-	}
+    // for all non-initable policies
+    template<class __Policy, class... __Args>
+    typename std::enable_if<( !__Policy::HAS_INIT_ ), void>::type
+    tryInit( __Args&&... args ) {}
 
-	// for all non-initable policies
-	template<class __Policy, class... __Args>
-	typename std::enable_if<( !__Policy::HAS_INIT_ ), void>::type
-	tryInit( __Args&&... args ) {}
+    // for all initable policies
+    template<class __Policy, class... __Args>
+    typename std::enable_if<( __Policy::HAS_INIT_ ), void>::type
+    tryInit( __Args&&... args )
+    {
+        printPolicyActionStart( "initialize", &__Policy::getInstance() );
+        __Policy::init( args... );
+        printPolicyActionDone( "initialize", &__Policy::getInstance() );
+    }
 
-	// for all initable policies
-	template<class __Policy, class... __Args>
-	typename std::enable_if<( __Policy::HAS_INIT_ ), void>::type
-	tryInit( __Args&&... args )
-	{
-		printPolicyActionStart( "initialize", &__Policy::getInstance() );
-		__Policy::init( args... );
-		printPolicyActionDone( "initialize", &__Policy::getInstance() );
-	}
+    // initialize the first policy in the subset
+    // recurse through the remaining policies in the subset
+    template<class __PoliciesSubset, class... __Args>
+    typename std::enable_if<(__PoliciesSubset::num_types_ > 0), void>::type
+    initRec( __Args&&... args )
+    {
+        tryInit<typename ContainerTypes<__PoliciesSubset>::_Front>( args... );
+        initRec<typename ContainerTypes<__PoliciesSubset>::_Rest>( args... );
+    }
 
-	// initialize the first policy in the subset
-	// recurse through the remaining policies in the subset
-	template<class __PoliciesSubset, class... __Args>
-	typename std::enable_if<(__PoliciesSubset::num_types_ > 0), void>::type
-	initRec( __Args&&... args )
-	{
-		tryInit<typename ContainerTypes<__PoliciesSubset>::_Front>( args... );
-		initRec<typename ContainerTypes<__PoliciesSubset>::_Rest>( args... );
-	}
+    template<class __PoliciesSubset, class... __Args>
+    typename std::enable_if<(__PoliciesSubset::num_types_ == 0), void>::type
+    initRec( __Args&&... args ) {}
 
-	template<class __PoliciesSubset, class... __Args>
-	typename std::enable_if<(__PoliciesSubset::num_types_ == 0), void>::type
-	initRec( __Args&&... args ) {}
+    // Do any post-construction initialization. Note that all policies
+    // receive the same set of args.
+    template<class... __Args>
+    void initAll( __Args&&... args )
+    {
+        initRec<Container<__Policies...> >( args... );
+    }
 
-	// Do any post-construction initialization. Note that all policies
-	// receive the same set of args.
-	template<class... __Args>
-	void initAll( __Args&&... args )
-	{
-		initRec<Container<__Policies...> >( args... );
-	}
-
-	QUICKDEV_ENABLE_INIT(){}
+    QUICKDEV_ENABLE_INIT(){}
 };
 
 }

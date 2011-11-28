@@ -44,47 +44,47 @@ usage()
 
 addDep()
 {
-	if [ "$deps" == "" ]; then
-		deps=$1
-	else
-		deps="$deps $1"
-	fi
+    if [ "$deps" == "" ]; then
+        deps=$1
+    else
+        deps="$deps $1"
+    fi
 }
 
 addSource()
 {
-	if [ "$sources" == "" ]; then
-		sources=$1
-	else
-		sources="$sources $1"
-	fi
+    if [ "$sources" == "" ]; then
+        sources=$1
+    else
+        sources="$sources $1"
+    fi
 }
 
 addPolicy()
 {
-	if [ "$policies" == "" ]; then
-		policies=$1;
-	else
-		policies="$policies $1"
-	fi
+    if [ "$policies" == "" ]; then
+        policies=$1;
+    else
+        policies="$policies $1"
+    fi
 }
 
 addNode()
 {
-	if [ "$nodes" == "" ]; then
-		nodes=$1
-	else
-		nodes="$nodes $1"
-	fi
+    if [ "$nodes" == "" ]; then
+        nodes=$1
+    else
+        nodes="$nodes $1"
+    fi
 }
 
 addNodelet()
 {
-	if [ "$nodelets" == "" ]; then
-		nodelets=$1
-	else
-		nodelets="$nodelets $1"
-	fi
+    if [ "$nodelets" == "" ]; then
+        nodelets=$1
+    else
+        nodelets="$nodelets $1"
+    fi
 }
 
 if [ $# -le 0 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
@@ -105,54 +105,54 @@ if [ "$default_user" == "" ]; then default_user=`whoami`; fi
 package=$1; shift
 
 while [ "$1" != "" ]; do
-	case $1 in
-		-u )    	shift
-					if [ "$users" == "" ]; then
-						users="$1"
-						users_cmd="-u $1"
-					else
-						users="$users $1"
-						users_cmd="$users -u $1"
-					fi
-					shift
-					;;
-		-d )     	shift
-					addDep "$1"
-					shift
-					;;
-		-s )    	shift
-					addSource "$1"
-					shift
-					;;
-		-p )		shift
-					addPolicy "$1""Policy"
-					shift
-					;;
-		-n )    	shift
-					addNode "$1"
-					shift
-					;;
-		-l )    	shift
-					addNodelet "$1"
-					shift
-					;;
-		-nl )       shift
-					addNode "$1"
-					addNodelet "$1"
-					shift
-					;;
-		-i )		shift
-					include_dir=$1
-					shift
-					;;
-		--help )    usage
-					exit
-					;;
-		-P )        shift
-					project=$1
-					shift
-					;;
-	esac
+    case $1 in
+        -u )        shift
+                    if [ "$users" == "" ]; then
+                        users="$1"
+                        users_cmd="-u $1"
+                    else
+                        users="$users $1"
+                        users_cmd="$users -u $1"
+                    fi
+                    shift
+                    ;;
+        -d )        shift
+                    addDep "$1"
+                    shift
+                    ;;
+        -s )        shift
+                    addSource "$1"
+                    shift
+                    ;;
+        -p )        shift
+                    addPolicy "$1"
+                    shift
+                    ;;
+        -n )        shift
+                    addNode "$1"
+                    shift
+                    ;;
+        -l )        shift
+                    addNodelet "$1"
+                    shift
+                    ;;
+        -nl )       shift
+                    addNode "$1"
+                    addNodelet "$1"
+                    shift
+                    ;;
+        -i )        shift
+                    include_dir=$1
+                    shift
+                    ;;
+        --help )    usage
+                    exit
+                    ;;
+        -P )        shift
+                    project=$1
+                    shift
+                    ;;
+    esac
 done
 
 if [ "$package" == "" ]; then usage; exit; fi
@@ -204,9 +204,9 @@ fi
 echo "</package>" >> $manifest_file
 
 #if [ "$deps[0]" == "quickdev_cpp" ]; then
-	echo 'include $(shell rospack find quickdev_cpp)/cmake.mk' >> $makefile_file
+    echo 'include $(shell rospack find quickdev_cpp)/cmake.mk' >> $makefile_file
 #else
-#	echo 'include $(shell rospack find mk)/cmake.mk' >> $makefile_file
+#   echo 'include $(shell rospack find mk)/cmake.mk' >> $makefile_file
 #fi
 
 echo 'cmake_minimum_required(VERSION 2.4.6)
@@ -287,17 +287,17 @@ echo "# gather all sources in current dir using relative filenames
 file( GLOB ALL_SOURCES RELATIVE \${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc *.c )
 
 foreach( source \${ALL_SOURCES} )
-	# ALL_SOURCES = foo.cpp;bar.cpp
-	# source = foo.cpp
-	# source_name_base = foo
-	# source_src = foo.cpp
-	# source_name = foo
-	get_filename_component( source_name_base \${source} NAME_WE )
-	set( source_name \${source_name_base} )
-	set( source_src \${source} )
+    # ALL_SOURCES = foo.cpp;bar.cpp
+    # source = foo.cpp
+    # source_name_base = foo
+    # source_src = foo.cpp
+    # source_name = foo
+    get_filename_component( source_name_base \${source} NAME_WE )
+    set( source_name \${source_name_base} )
+    set( source_src \${source} )
 
-	# rosbuild_add_executable( foo foo.cpp )
-	rosbuild_add_executable( \${source_name} \${source_src} )
+    # rosbuild_add_executable( foo foo.cpp )
+    rosbuild_add_executable( \${source_name} \${source_src} )
 endforeach( source )" >> nodes/$cmakelists_file
 
 mkdir launch
@@ -339,7 +339,7 @@ echo "#ifndef $ifdef_string
 
 class $source
 {
-	//
+    //
 };
 
 #endif // $ifdef_string" >> $source_h_relpath
@@ -350,8 +350,8 @@ done
 
 for policy in $policies; do
   policy_file=`echo "$policy" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
-  policy_h_relpath="include/$include_dir/$policy_file.h"
-  policy_cpp_relpath="src/$policy_file.cpp"
+  policy_h_relpath="include/$include_dir/$policy_file""_policy.h"
+  policy_cpp_relpath="src/$policy_file""_policy.cpp"
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
 ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"
@@ -367,28 +367,28 @@ ifdef_string="$ifdef_string"`echo $policy_file | tr a-z A-Z | tr -d _`"_H_"
 //
 QUICKDEV_DECLARE_POLICY_NS( $policy )
 {
-	// typedefs for parent policies should be declared here
-	// say we had:
-	//
-	// typedef SomePolicy<SomeType> _SomePolicy;
-	//
-	// when we declare our policy, we can simply specify _SomePolicy as one of the policies we want to use
-	// when we want to get _SomePolicy anywhere else in the code:
-	//
-	// QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy
-	//
-	// in the event that we need to make lots of calls to _SomePolicy, we can store a reference to it using:
-	//
-	// auto & some_policy = QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::getInstance();
-	// some_policy.someFunction();
-	// some_policy.someFunction2();
-	//
-	// otherwise we'd have to do:
-	//
-	// QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction();
-	// QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction2();
-	//
-	typedef quickdev::Policy _Policy;
+    // typedefs for parent policies should be declared here
+    // say we had:
+    //
+    // typedef SomePolicy<SomeType> _SomePolicy;
+    //
+    // when we declare our policy, we can simply specify _SomePolicy as one of the policies we want to use
+    // when we want to get _SomePolicy anywhere else in the code:
+    //
+    // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy
+    //
+    // in the event that we need to make lots of calls to _SomePolicy, we can store a reference to it using:
+    //
+    // auto & some_policy = QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::getInstance();
+    // some_policy.someFunction();
+    // some_policy.someFunction2();
+    //
+    // otherwise we'd have to do:
+    //
+    // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction();
+    // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction2();
+    //
+    typedef quickdev::Policy _Policy;
 }
 
 // Declare a policy called $policy""Policy; it will inherit the functionalify of all the policies that follow in the list of arguments
@@ -404,74 +404,82 @@ QUICKDEV_DECLARE_POLICY( $policy, _Policy )
 //
 QUICKDEV_DECLARE_POLICY_CLASS( $policy )
 {
-	// create utility functions for this policy
-	//
-	QUICKDEV_MAKE_POLICY_FUNCS( $policy )
+    // create utility functions for this policy
+    //
+    QUICKDEV_MAKE_POLICY_FUNCS( $policy )
 
-	// variable initializations can be appended to this constructor as a comma-separated list:
-	//
-	// QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy ), member1_( some_value ), member2_( some_other_value ){}
-	//
-	// Most initialization will need to be done in init() ( QUICKDEV_ENABLE_INIT ) since a variadic template can't easily be passed through this
-	// constructor ( yet-unimplemented feature of g++ )
-	//
-	// Note that if QUICKDEV_ENABLE_INIT is used, a member, \"initialized_\", should be set to false during construction
-	//
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy )
-	{
-		//
-	}
+    // variable initializations can be appended to this constructor as a comma-separated list:
+    //
+    // QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy ), member1_( some_value ), member2_( some_other_value ){}
+    //
+    // Most initialization will need to be done in init() ( QUICKDEV_ENABLE_INIT ) since a variadic template can't easily be passed through this
+    // constructor ( yet-unimplemented feature of g++ )
+    //
+    // Note that if QUICKDEV_ENABLE_INIT is used, a member, \"initialized_\", should be set to false during construction
+    //
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy )
+    {
+        //
+    }
 
-	/* Un-comment to enable initialization of this policy; this is the client's main means of passing compile-time args to a policy
+    /* Un-comment to enable initialization of this policy; this is the client's main means of passing compile-time args to a policy
 
-	QUICKDEV_ENABLE_INIT
-	{
-		// a variadic template called \"args\" is available in this function
-		// use getFirstOfType<Type>( args... ) to parse unnamed args
-		// use getMetaParam<Type>( \"param_name\", args... ) or getMetaParamDef<Type>( \"param_name\", default, args... ) to parse named args
-		//
-		// say we want to get a parameter of type \"__SomeType\" with the key \"some_value_param\"; if the key is not found, \"default_value\"
-		// will be returned
-		// note that this will fail at compile time if \"__SomeType\" does not exist in the list of arguments passed to this function:
-		//
-		// const auto some_value_param = quickdev::getMetaParamDef<__SomeType>( \"some_value_param\", default_value, args... );
-		//
-		// after we've read all our parameters, we should be sure to set our policy's initialized state to true so that we can respond
-		// accordingly if the user fails to call init() for our policy
-		//
-		QUICKDEV_SET_INITIALIZED();
-	}*/
+    QUICKDEV_ENABLE_INIT()
+    {
+        // a variadic template called \"args\" is available in this function
+        // use getFirstOfType<Type>( args... ) to parse unnamed args
+        // use getMetaParam<Type>( \"param_name\", args... ) or getMetaParamDef<Type>( \"param_name\", default, args... ) to parse named args
+        //
+        // say we want to get a parameter of type \"__SomeType\" with the key \"some_value_param\"; if the key is not found, \"default_value\"
+        // will be returned
+        // note that this will fail at compile time if \"__SomeType\" does not exist in the list of arguments passed to this function:
+        //
+        // const auto some_value_param = quickdev::getMetaParamDef<__SomeType>( \"some_value_param\", default_value, args... );
+        //
+        // after we've read all our parameters, we should be sure to set our policy's initialized state to true so that we can respond
+        // accordingly if the user fails to call init() for our policy
+        //
+        QUICKDEV_SET_INITIALIZED();
+    }*/
 
-	/* This is the client's main means of accessing and updating a policy; un-comment and change args as appropriate
+    /* This is the client's main means of accessing and updating a policy; un-comment and change args as appropriate
 
-	void update( args... )
-	{
-		// when using init(), it's useful to be able to detect whether our init() function as been called
-		// one option is to simply read the member \"initialized_\"
-		// alternatively, there are some simple macros for notifying/responding to situations where init() has not been called
-		// these macros can be used anywhere within our policy as long as our init() function has been declared with QUICKDEV_ENABLE_INIT{}
-		//
-		// if we're not initialized yet, warn and continue
-		// QUICKDEV_CHECK_INITIALIZED();
-		//
-		// if we're not initialized yet, warn and return immediately
-		// QUICKDEV_ASSERT_INITIALIZED();
-		//
-	}*/
+    void update( args... )
+    {
+        // when using init(), it's useful to be able to detect whether our init() function as been called
+        // one option is to simply read the member \"initialized_\"
+        // alternatively, there are some simple macros for notifying/responding to situations where init() has not been called
+        // these macros can be used anywhere within our policy as long as our init() function has been declared with QUICKDEV_ENABLE_INIT{}
+        //
+        // if we're not initialized yet, warn and continue
+        // QUICKDEV_CHECK_INITIALIZED();
+        //
+        // if we're not initialized yet, warn and return immediately
+        // QUICKDEV_ASSERT_INITIALIZED();
+        //
+    }*/
 };
 
 #endif // $ifdef_string" >> $policy_h_relpath
 
-  echo "#include <$include_dir/$policy_file.h>" >> $policy_cpp_relpath
+  echo "#include <$include_dir/$policy_file""_policy.h>" >> $policy_cpp_relpath
 
   license_files="$license_files $policy_h_relpath $policy_cpp_relpath"
 done
 
 for node in $nodes; do
   node_file=`echo "$node" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
-  node_h_relpath="include/$include_dir/$node_file.h"
-  node_cpp_relpath="nodes/$node_file.cpp"
+  node_h_relpath="include/$include_dir/$node_file""_node.h"
+  node_cpp_relpath="nodes/$node_file""_node.cpp"
   node_launch_relpath="launch/$node_file.launch"
+
+  has_nodelet=false
+  for nodelet in $nodelets; do
+    if [ "$node" == "$nodelet" ]; then
+      has_nodelet=true
+      break
+    fi
+  done
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
 ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"
@@ -494,81 +502,88 @@ QUICKDEV_DECLARE_NODE( $node )
 //
 QUICKDEV_DECLARE_NODE_CLASS( $node )
 {
-	// variable initializations can be appended to this constructor as a comma-separated list:
-	//
-	// QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node ), member1_( some_value ), member2_( some_other_value ){}
-	//
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node )
-	{
-		//
-	}
+    // variable initializations can be appended to this constructor as a comma-separated list:
+    //
+    // QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node ), member1_( some_value ), member2_( some_other_value ){}
+    //
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node )
+    {
+        //
+    }
 
-	// this function is called by quickdev::RunablePolicy after all policies are constructed but just before the main loop is started
-	// all policy initialization should be done here
-	//
-	QUICKDEV_SPIN_FIRST
-	{
-		// say we had a policy called _SomePolicy that looked for the meta-parameter \"some_value1_param\" of type SomeType and
-		// \"some_value2_param\" of type SomeOtherType in its init function
-		// we can create those meta-params here and then pass them to all policies using initAll():
-		//
-		// initAll( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
-		//
-		// or we can pass those meta-params only to _SomePolicy using its init() function:
-		//
-		// _SomePolicy::init( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
-		//
-		// if we don't want to initialize all policies and use their default values, we can simply call initAll() with no arguments
-		// note that most initable policies won't function properly unless their init() functions are called
-		// therefore, to get the default behavior from all policies, be sure to call initAll()
-		//
-		initAll();
-	}
+    // this function is called by quickdev::RunablePolicy after all policies are constructed but just before the main loop is started
+    // all policy initialization should be done here
+    //
+    QUICKDEV_SPIN_FIRST()
+    {
+        // say we had a policy called _SomePolicy that looked for the meta-parameter \"some_value1_param\" of type SomeType and
+        // \"some_value2_param\" of type SomeOtherType in its init function
+        // we can create those meta-params here and then pass them to all policies using initAll():
+        //
+        // initAll( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
+        //
+        // or we can pass those meta-params only to _SomePolicy using its init() function:
+        //
+        // _SomePolicy::init( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
+        //
+        // if we don't want to initialize all policies and use their default values, we can simply call initAll() with no arguments
+        // note that most initable policies won't function properly unless their init() functions are called
+        // therefore, to get the default behavior from all policies, be sure to call initAll()
+        //
+        initAll();
+    }
 
-	// this opitonal function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate)
-	// most updateable policies should have their update( ... ) functions called within this context
-	//
-	QUICKDEV_SPIN_ONCE
-	{
-		//
-	}
+    // this opitonal function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate)
+    // most updateable policies should have their update( ... ) functions called within this context
+    //
+    QUICKDEV_SPIN_ONCE()
+    {
+        //
+    }
 };
 
 #endif // $ifdef_string" >> $node_h_relpath
 
-  echo "#include <$include_dir/$node_file.h>
+  echo "#include <$include_dir/$node_file""_node.h>
 
 // These are not the codes you're looking for...probably
-// This file was auto-generated; you probably want to modify ../include/$include_dir/$node_file.h
+// This file was auto-generated; you probably want to modify ../$node_h_relpath
 
 // instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
 //
 QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
 
-  echo "<launch>
-	<arg name=\"pkg\" value=\"$package\" />
-	<arg name=\"type\" value=\"$node_file\" />
-	<arg name=\"name\" default=\"\$(arg type)\" />
-	<arg name=\"rate\" default=\"30\" />
-	<arg name=\"args\" value=\"_loop_rate:=\$(arg rate)\" />
-	<arg name=\"manager\" default=\"manager\" />
-	<arg name=\"nodelet\" default=\"false\" />
+  echo -n "<launch>
+    <arg name=\"pkg\" value=\"$package\" />
+    <arg name=\"type\" value=\"$node_file\" />
+    <arg name=\"name\" default=\"\$(arg type)\" />
+    <arg name=\"rate\" default=\"30\" />
+    <arg name=\"args\" value=\"_loop_rate:=\$(arg rate)\" />" >> $node_launch_relpath
+  if [ $has_nodelet == true ]; then
+  echo -n "
+    <arg name=\"manager\" default=\"manager\" />
+    <arg name=\"nodelet\" default=\"false\" />
+    <node
+        if=\"\$(arg nodelet)\"
+        pkg=\"nodelet\"
+        type=\"nodelet\"
+        name=\"\$(arg name)\"
+        args=\"load \$(arg pkg)/\$(arg type) \$(arg manager) \$(arg args)\"
+        output=\"screen\" />" >> $node_launch_relpath
+  fi
+  echo -n "
+    <node" >> $node_launch_relpath
 
-	<node
-		if=\"\$(arg nodelet)\"
-		pkg=\"nodelet\"
-		type=\"nodelet\"
-		name=\"\$(arg name)\"
-		args=\"load \$(arg pkg)/\$(arg type) \$(arg manager) \$(arg args)\"
-		output=\"screen\" />
-
-	<node
-		unless=\"\$(arg nodelet)\"
-		pkg=\"\$(arg pkg)\"
-		type=\"\$(arg type)\"
-		name=\"\$(arg name)\"
-		args=\"\$(arg args)\"
-		output=\"screen\" />
+  if [ $has_nodelet == true ]; then
+  echo -n "
+        unless=\"\$(arg nodelet)\"" >> $node_launch_relpath
+  fi;
+  echo "
+        pkg=\"\$(arg pkg)\"
+        type=\"\$(arg type)\"
+        name=\"\$(arg name)\"
+        args=\"\$(arg args)\"
+        output=\"screen\" />
 </launch>" >> $node_launch_relpath
 
   license_files="$license_files $node_h_relpath $node_cpp_relpath"
@@ -576,13 +591,13 @@ done
 
 for nodelet in $nodelets; do
   nodelet_file=`echo "$nodelet" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
-  nodelet_cpp_relpath="nodelets/$nodelet_file.cpp"
+  nodelet_cpp_relpath="nodelets/$nodelet_file""_nodelet.cpp"
 
-  echo "#include <quickdev/nodelet.h>
-#include <$include_dir/$nodelet_file.h>
+  echo -n "#include <quickdev/nodelet.h>
+#include <$include_dir/$nodelet_file""_node.h>
 
 // These are not the codes you're looking for...probably
-// This file was auto-generated; you probably want to modify ../include/$include_dir/$nodelet_file.h
+// This file was auto-generated; you probably want to modify ../include/$include_dir/$nodelet_file""_node.h
 
 // declare $nodelet in namespace $package
 //
@@ -593,7 +608,8 @@ QUICKDEV_DECLARE_NODELET( $package, $nodelet )
 //
 QUICKDEV_INST_NODELET( $package, $nodelet, $nodelet_file )" >> $nodelet_cpp_relpath
 
-echo "  <class name=\"$package/$nodelet_file\" type=\"$package::$nodelet""Nodelet\" base_class_type=\"nodelet::Nodelet\">
+echo "
+  <class name=\"$package/$nodelet_file\" type=\"$package::$nodelet""Nodelet\" base_class_type=\"nodelet::Nodelet\">
     <description>
       todo: fill this in
     </description>
