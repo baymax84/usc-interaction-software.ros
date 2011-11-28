@@ -331,7 +331,7 @@ for source in $sources; do
   source_cpp_relpath="src/$source_file.cpp"
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
-ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"
+if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
 ifdef_string="$ifdef_string"`echo $source_file | tr a-z A-Z | tr -d _`"_H_"
 
 echo "#ifndef $ifdef_string
@@ -354,7 +354,7 @@ for policy in $policies; do
   policy_cpp_relpath="src/$policy_file""_policy.cpp"
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
-ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"
+if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
 ifdef_string="$ifdef_string"`echo $policy_file | tr a-z A-Z | tr -d _`"_H_"
 
   echo "#ifndef $ifdef_string
@@ -482,7 +482,7 @@ for node in $nodes; do
   done
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
-ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"
+if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
 ifdef_string="$ifdef_string"`echo $node_file | tr a-z A-Z | tr -d _`"_H_"
 
   echo "#ifndef $ifdef_string
