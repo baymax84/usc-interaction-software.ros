@@ -254,6 +254,9 @@ void update( __Args&&... args )
 // ########## Generic Callback Macros ##################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MESSAGE_CALLBACK2( callbackName, __MessageType, message_name ) \
+/*! \brief Callback for a __MessageType message */ \
+/*! \param message_name a pointer to the incoming message */ \
+/*! \return nothing */ \
 void callbackName( const __MessageType::ConstPtr & message_name )
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MESSAGE_CALLBACK( callbackName, __MessageType ) \
@@ -261,6 +264,9 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK2( callbackName, __MessageType, msg )
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_CONDITIONAL_MESSAGE_CALLBACK2( callbackName, __MessageType, message_name, condition ) \
+/*! \brief Callback for a __MessageType message, enabled if condition */ \
+/*! \param message_name a pointer to the incoming message */ \
+/*! \return nothing */ \
 typename std::enable_if<condition, void>::type \
 callbackName( const __MessageType::ConstPtr & message_name )
 // ---------------------------------------------------------------------
@@ -269,6 +275,10 @@ QUICKDEV_DECLARE_CONDITIONAL_MESSAGE_CALLBACK2( callbackName, __MessageType, msg
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_SERVICE_CALLBACK2( callbackName, __ServiceType, request_name, response_name ) \
+/*! \brief Callback for a __ServiceType service */ \
+/*! \param request_name a pointer to the incoming request */ \
+/*! \param response_name a pointer to the outgoing response */ \
+/*! \return true if the request could be completed and false otherwise */ \
 bool callbackName( __ServiceType::Request & request_name, __ServiceType::Response & response_name )
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_SERVICE_CALLBACK( callbackName, __ServiceType ) \
@@ -276,6 +286,10 @@ QUICKDEV_DECLARE_SERVICE_CALLBACK2( callbackName, __ServiceType, request, respon
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_RECONFIGURE_CALLBACK2( callbackName, __ReconfigureType, config_name, level_name ) \
+/*! \brief Callback for a __ReconfigureType dynamic reconfigure parameter message */ \
+/*! \param config_name a reference to the incoming reconfigure parameters */ \
+/*! \param level_name the incoming level */ \
+/*! \return nothing */ \
 void callbackName( __ReconfigureType & config_name, uint32_t level_name )
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( callbackName, __ReconfigureType ) \
@@ -284,6 +298,8 @@ QUICKDEV_DECLARE_RECONFIGURE_CALLBACK2( callbackName, __ReconfigureType, config,
 // ########## ImageProc Policy Macros ##################################
 // ---------------------------------------------------------------------
 #define IMAGE_PROC_PROCESS_IMAGE( image_ptr_name ) \
+/*! \brief Callback for an image processing node */ \
+/*! \details All the actual processing work is triggered from within this callback */ \
 void processImage( cv_bridge::CvImageConstPtr & image_ptr_name )
 
 // ########## Runable Policy Macros ####################################
