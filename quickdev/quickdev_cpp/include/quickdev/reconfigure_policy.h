@@ -40,7 +40,7 @@
 #include <quickdev/auto_bind.h>
 #include <dynamic_reconfigure/server.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( Reconfigure, NodeHandlePolicy )
@@ -48,64 +48,64 @@ QUICKDEV_DECLARE_POLICY( Reconfigure, NodeHandlePolicy )
 template<class __ReconfigureType>
 QUICKDEV_DECLARE_POLICY_CLASS( Reconfigure )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Reconfigure )
+    QUICKDEV_MAKE_POLICY_FUNCS( Reconfigure )
 
 public:
-	typedef __ReconfigureType _ReconfigureType;
-	typedef dynamic_reconfigure::Server<__ReconfigureType> _ReconfigureServer;
-	typedef ReconfigurePolicy<__ReconfigureType> _ReconfigurePolicy;
+    typedef __ReconfigureType _ReconfigureType;
+    typedef dynamic_reconfigure::Server<__ReconfigureType> _ReconfigureServer;
+    typedef ReconfigurePolicy<__ReconfigureType> _ReconfigurePolicy;
 
 protected:
-	__ReconfigureType config_;
+    __ReconfigureType config_;
 
 private:
-	_ReconfigureServer * server_;
-	typename _ReconfigureServer::CallbackType external_callback_;
+    _ReconfigureServer * server_;
+    typename _ReconfigureServer::CallbackType external_callback_;
 
 public:
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Reconfigure ),
-		server_( NULL ),
-		initialized_( false )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Reconfigure ),
+        server_( NULL ),
+        initialized_( false )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	QUICKDEV_ENABLE_INIT()
-	{
+    QUICKDEV_ENABLE_INIT()
+    {
 
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		const std::string reconfigure_namespace_name( getMetaParamDef<std::string>( "reconfigure_namespace_param", "reconfigure_namespace", args... ) );
-		const std::string reconfigure_namespace( ros::ParamReader<std::string, 1>::readParam( nh_rel, reconfigure_namespace_name, "reconfigure" ) );
-		ros::NodeHandle reconfigure_nh( nh_rel, reconfigure_namespace );
+        const std::string reconfigure_namespace_name( getMetaParamDef<std::string>( "reconfigure_namespace_param", "reconfigure_namespace", args... ) );
+        const std::string reconfigure_namespace( ros::ParamReader<std::string, 1>::readParam( nh_rel, reconfigure_namespace_name, "reconfigure" ) );
+        ros::NodeHandle reconfigure_nh( nh_rel, reconfigure_namespace );
 
-		PRINT_INFO( "Creating dynamic reconfigure server on topic [%s]", reconfigure_nh.getNamespace().c_str() );
-		server_ = new _ReconfigureServer( reconfigure_nh );
+        PRINT_INFO( "Creating dynamic reconfigure server on topic [%s]", reconfigure_nh.getNamespace().c_str() );
+        server_ = new _ReconfigureServer( reconfigure_nh );
 
-		server_->setCallback( quickdev::auto_bind( &_ReconfigurePolicy::reconfigureCB_0, this ) );
+        server_->setCallback( quickdev::auto_bind( &_ReconfigurePolicy::reconfigureCB_0, this ) );
 
-		QUICKDEV_SET_INITIALIZED();
-	}
+        QUICKDEV_SET_INITIALIZED();
+    }
 
-	~ReconfigurePolicy()
-	{
-		if( server_ ) delete server_;
-	}
+    ~ReconfigurePolicy()
+    {
+        if( server_ ) delete server_;
+    }
 
-	void registerCallback( const typename _ReconfigureServer::CallbackType & external_callback )
-	{
-		QUICKDEV_CHECK_INITIALIZED();
+    void registerCallback( const typename _ReconfigureServer::CallbackType & external_callback )
+    {
+        QUICKDEV_CHECK_INITIALIZED();
 
-		external_callback_ = external_callback;
-	}
+        external_callback_ = external_callback;
+    }
 
 private:
-	QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( reconfigureCB_0, __ReconfigureType )
-	{
-		config_ = config;
-		if( external_callback_ ) external_callback_( config, level );
-	}
+    QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( reconfigureCB_0, __ReconfigureType )
+    {
+        config_ = config;
+        if( external_callback_ ) external_callback_( config, level );
+    }
 };
 
 }

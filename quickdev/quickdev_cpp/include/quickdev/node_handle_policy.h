@@ -40,29 +40,29 @@
 #include <quickdev/policy.h>
 #include <ros/node_handle.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( NodeHandle, Policy )
 
 QUICKDEV_DECLARE_POLICY_CLASS( NodeHandle )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( NodeHandle )
+    QUICKDEV_MAKE_POLICY_FUNCS( NodeHandle )
 
 private:
-	ros::NodeHandle nh_rel_;
+    ros::NodeHandle nh_rel_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( NodeHandle ),
-		nh_rel_( getFirstOfType<ros::NodeHandle>( args... ) )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( NodeHandle ),
+        nh_rel_( getFirstOfType<ros::NodeHandle>( args... ) )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	ros::NodeHandle & getNodeHandle()
-	{
-		return nh_rel_;
-	}
+    ros::NodeHandle & getNodeHandle()
+    {
+        return nh_rel_;
+    }
 };
 
 }

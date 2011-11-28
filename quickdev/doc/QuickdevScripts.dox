@@ -5,12 +5,41 @@
 \section QuickdevScripts-Contents Contents
 - \ref QuickdevScripts-add_license
 - \ref QuickdevScripts-create_pkg
+  - \ref QuickdevScripts-create_pkg-usage
+  - \ref QuickdevScripts-create_pkg-example
 
 \section QuickdevScripts-add_license add_license
 Adds a BSD license to the top of a set of files along with the relative path to the file from the location the script was run.
 
 \section QuickdevScripts-create_pkg create_pkg
-Creates ready-to-compile packages and libraries. Support for creating source files, nodes, nodelets (with pluginlib exports), and launch files.
-Automatic licensing of all .h / .cpp files.
+Creates ready-to-compile packages and libraries. Supports creating source files, nodes, nodelets (with pluginlib exports), and launch files along with automatic licensing of all .h / .cpp files.
+
+\subsection QuickdevScripts-create_pkg-usage Usage
+
+\verbatim
+create_pkg package
+    [-u user1 -u user2 ...] : Specify the authors to be used for licensing by \ref QuickdevScripts-add_license.
+                            : If none are listed, the environment variable "$ROS_USER" will be used.
+                            : If "$ROS_USER" is not set, the name of the current user will be used.
+    [-d dependency1 -d dependency2 ...] : Specify dependent packages (automatically added to manifest.xml).
+    [-P project] : Specify the project name to be used for licensing by \ref QuickdevScripts-add_license.
+    [-i include_dir] : Specify the include path for the package ( <package>/include/<include_dir>/*.h ).
+    [-n Node1Class -n Node2Class ...] : Specify any nodes that the package should contain.
+                                      : Ready-to-compile skeleton code will be created for each.
+                                      : Launch files will be created for each.
+                                      : Note that you must specify the CamelCase ClassName for each node and not the filename.
+                                      : Example: "-n Example1" is expanded to "Example1Node" and saved as "example1_node.h/cpp"
+    [-l Nodelet1Class -l Nodelet2Class ...] : Specify which nodes should be wrapped in a quickdev::Nodelet and registered with pluginlib.
+                                            : Note that "-n Node1Class -l Node1Class" is identical to "-nl Node1Class".
+    [-p Policy1Class -p Policy2Class ...] : Specify any policies that the package should contain.
+                                          : Ready-to-compile skeleton code will be created for each.
+    [-s Source1Class -s Source2Class ...] : Specify any general source files that should be created.
+                                          : Ready-to-compile skeleton code will be created for each.
+                                          : The files will be compiled into lib<package>.so.
+\endverbatim
+
+\subsection QuickdevScripts-create_pkg-example Example
+
+\see \ref BashCreatePkg
 
 */

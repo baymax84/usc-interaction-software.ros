@@ -41,7 +41,7 @@
 #include <quickdev/auto_bind.h>
 #include <ros/service_server.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 template<class __Service>
@@ -50,45 +50,45 @@ QUICKDEV_DECLARE_POLICY2( ServiceServer, NodeHandlePolicy, ServiceCallbackPolicy
 template<class __Service, unsigned int __Id__ = 0>
 QUICKDEV_DECLARE_POLICY_CLASS2( ServiceServer, __Service )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( ServiceServer )
+    QUICKDEV_MAKE_POLICY_FUNCS( ServiceServer )
 
 protected:
-	typedef typename __Service::Request _ServiceRequest;
-	typedef typename __Service::Response _ServiceResponse;
-	typedef ServiceServerPolicy<__Service, __Id__> _ServiceServerPolicy;
-	typedef ServiceCallbackPolicy<__Service> _ServiceCallbackPolicy;
+    typedef typename __Service::Request _ServiceRequest;
+    typedef typename __Service::Response _ServiceResponse;
+    typedef ServiceServerPolicy<__Service, __Id__> _ServiceServerPolicy;
+    typedef ServiceCallbackPolicy<__Service> _ServiceCallbackPolicy;
 
-	ros::ServiceServer server_;
+    ros::ServiceServer server_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR2( ServiceServer, __Service ),
-		initialized_( false )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR2( ServiceServer, __Service ),
+        initialized_( false )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	QUICKDEV_ENABLE_INIT()
-	{
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+    QUICKDEV_ENABLE_INIT()
+    {
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		const std::string service_name_param( getMetaParamDef<std::string>( "service_name_param", "service_name", args... ) );
-		const std::string service_name( ros::ParamReader<std::string, 1>::readParam( nh_rel, service_name_param, "service" ) );
+        const std::string service_name_param( getMetaParamDef<std::string>( "service_name_param", "service_name", args... ) );
+        const std::string service_name( ros::ParamReader<std::string, 1>::readParam( nh_rel, service_name_param, "service" ) );
 
-		ros::NodeHandle service_nh( nh_rel, service_name );
-		PRINT_INFO( "Creating service server [%s] on topic [%s]", ros::service_traits::DataType<__Service>::value(), service_nh.getNamespace().c_str() );
+        ros::NodeHandle service_nh( nh_rel, service_name );
+        PRINT_INFO( "Creating service server [%s] on topic [%s]", ros::service_traits::DataType<__Service>::value(), service_nh.getNamespace().c_str() );
 
-		server_ = nh_rel.advertiseService( service_name, &_ServiceServerPolicy::serviceCB, this );
+        server_ = nh_rel.advertiseService( service_name, &_ServiceServerPolicy::serviceCB, this );
 
-		QUICKDEV_SET_INITIALIZED();
-	}
+        QUICKDEV_SET_INITIALIZED();
+    }
 
 private:
-	QUICKDEV_DECLARE_SERVICE_CALLBACK( serviceCB, typename __Service )
-	{
-		QUICKDEV_ASSERT_INITIALIZED( false );
+    QUICKDEV_DECLARE_SERVICE_CALLBACK( serviceCB, typename __Service )
+    {
+        QUICKDEV_ASSERT_INITIALIZED( false );
 
-		return _ServiceCallbackPolicy::invokeCallback( request, response );
-	}
+        return _ServiceCallbackPolicy::invokeCallback( request, response );
+    }
 };
 
 }

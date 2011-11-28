@@ -45,7 +45,7 @@
 #include <quickdev/threading.h>
 #include <geometry_msgs/Twist.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY_NAMESPACE( TfManager )

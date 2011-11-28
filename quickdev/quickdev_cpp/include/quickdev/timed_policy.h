@@ -39,7 +39,7 @@
 #include <quickdev/policy.h>
 #include <ros/time.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( Timed, Policy )
@@ -47,43 +47,43 @@ QUICKDEV_DECLARE_POLICY( Timed, Policy )
 template<unsigned int __Id__ = 0>
 QUICKDEV_DECLARE_POLICY_CLASS( Timed )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Timed )
+    QUICKDEV_MAKE_POLICY_FUNCS( Timed )
 
 public:
-	typedef ros::Time _Time;
-	typedef double _Duration;
+    typedef ros::Time _Time;
+    typedef double _Duration;
 
 protected:
-	_Time last_time_;
-	_Time now_;
-	_Duration dt_;
+    _Time last_time_;
+    _Time now_;
+    _Duration dt_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Timed ),
-		last_time_( 0 ),
-		now_( 0 ),
-		dt_( 0 )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Timed ),
+        last_time_( 0 ),
+        now_( 0 ),
+        dt_( 0 )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	QUICKDEV_ENABLE_UPDATE
-	{
-		if( now_.toSec() == 0 )
-		{
-			now_ = ros::Time::now();
-			last_time_ = now_;
-			return;
-		}
+    QUICKDEV_ENABLE_UPDATE
+    {
+        if( now_.toSec() == 0 )
+        {
+            now_ = ros::Time::now();
+            last_time_ = now_;
+            return;
+        }
 
-		last_time_ = now_;
-		now_ = ros::Time::now();
-		dt_ = ( now_ - last_time_ ).toSec();
-	}
+        last_time_ = now_;
+        now_ = ros::Time::now();
+        dt_ = ( now_ - last_time_ ).toSec();
+    }
 
-	inline const _Time & now(){ return now_; }
-	inline const _Time & last(){ return last_time_; }
-	inline const _Duration & dt(){ return dt_; }
+    inline const _Time & now(){ return now_; }
+    inline const _Time & last(){ return last_time_; }
+    inline const _Duration & dt(){ return dt_; }
 };
 
 }

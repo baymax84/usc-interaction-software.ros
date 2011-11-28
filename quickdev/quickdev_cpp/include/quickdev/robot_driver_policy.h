@@ -43,71 +43,71 @@
 #include <quickdev/multi_publisher.h>
 #include <quickdev/threading.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 template<class __MotorValsMsg>
 class RobotDriverPolicy : public GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, MessageCallbackPolicy<__MotorValsMsg> >
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( RobotDriver )
+    QUICKDEV_MAKE_POLICY_FUNCS( RobotDriver )
 
 protected:
-	typedef MessageCallbackPolicy<__MotorValsMsg> _MessageCallbackPolicy;
-	typedef GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, _MessageCallbackPolicy > _PolicyAdapter;
-	typedef void _EmptyMsg;
+    typedef MessageCallbackPolicy<__MotorValsMsg> _MessageCallbackPolicy;
+    typedef GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, _MessageCallbackPolicy > _PolicyAdapter;
+    typedef void _EmptyMsg;
 
-	MessageCache<__MotorValsMsg> motor_vals_msg_cache_;
+    MessageCache<__MotorValsMsg> motor_vals_msg_cache_;
 
-	ros::MultiSubscriber<> multi_sub_;
-	// publisher for sensor data, etc
-	ros::MultiPublisher<> multi_pub_;
+    ros::MultiSubscriber<> multi_sub_;
+    // publisher for sensor data, etc
+    ros::MultiPublisher<> multi_pub_;
 
-	std::string
-		robot_name_,
-		motor_vals_topic_name_;
+    std::string
+        robot_name_,
+        motor_vals_topic_name_;
 
-	template<class... __Args>
-	RobotDriverPolicy( __Args&&... args ) : _PolicyAdapter( args... ),
-		initialized_( false )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    template<class... __Args>
+    RobotDriverPolicy( __Args&&... args ) : _PolicyAdapter( args... ),
+        initialized_( false )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
 private:
-	void postInit()
-	{
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+    void postInit()
+    {
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		multi_sub_.addSubscriber( nh_rel, motor_vals_topic_name_, &RobotDriverPolicy::motorValsCB, this );
-	}
+        multi_sub_.addSubscriber( nh_rel, motor_vals_topic_name_, &RobotDriverPolicy::motorValsCB, this );
+    }
 
 public:
-	QUICKDEV_ENABLE_INIT()
-	{
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+    QUICKDEV_ENABLE_INIT()
+    {
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
-		robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
-		if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
+        const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
+        robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
+        if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
 
-		motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals" , args... );
+        motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals" , args... );
 
-		postInit();
+        postInit();
 
-		QUICKDEV_SET_INITIALIZED();
-	}
+        QUICKDEV_SET_INITIALIZED();
+    }
 
 private:
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( motorValsCB, typename __MotorValsMsg )
-	{
-		TimedPolicy<>::update();
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( motorValsCB, typename __MotorValsMsg )
+    {
+        TimedPolicy<>::update();
 
-		QUICKDEV_TRY_UPDATE_CACHE( motor_vals_msg_cache_, msg );
-		QUICKDEV_TRY_LOCK_OR_WARN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+        QUICKDEV_TRY_UPDATE_CACHE( motor_vals_msg_cache_, msg );
+        QUICKDEV_TRY_LOCK_OR_WARN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
-		_MessageCallbackPolicy::invokeCallback( msg );
-	}
+        _MessageCallbackPolicy::invokeCallback( msg );
+    }
 };
 
 }

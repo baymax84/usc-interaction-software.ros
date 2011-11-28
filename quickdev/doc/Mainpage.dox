@@ -6,7 +6,7 @@ Welcome to the documentation site for quickdev
 
 \author <a href="http://robotics.usc.edu/~ekaszubski" target="_top">Edward T. Kaszubski</a> (ekaszubski@gmail.com)
 
-\section Index-About About
+\section Index-About About Quickdev
 - \ref QuickdevOverview
 - \ref QuickdevPolicies
 - \ref QuickdevScripts
@@ -14,20 +14,20 @@ Welcome to the documentation site for quickdev
 
 \section Index-Examples Examples
 - <b>Policies</b>
-	- \ref ImageProcPolicy
-	- \ref JoystickPolicy
-	- \ref PublisherPolicy
-	- \ref ReconfigurePolicy
-	- \ref RobotControllerPolicy
-	- \ref RobotDriverPolicy
-	- \ref ServiceClientPolicy
-	- \ref ServiceServerPolicy
-	- \ref TfTranceiverPolicy
+    - \ref ImageProcPolicy
+    - \ref JoystickPolicy
+    - \ref PublisherPolicy
+    - \ref ReconfigurePolicy
+    - \ref RobotControllerPolicy
+    - \ref RobotDriverPolicy
+    - \ref ServiceClientPolicy
+    - \ref ServiceServerPolicy
+    - \ref TfTranceiverPolicy
 - <b>Components</b>
-	- \ref MultiPublisher
-	- \ref MultiSubscriber
-	- \ref Node
-	- \ref TypeUtils
+    - \ref MultiPublisher
+    - \ref MultiSubscriber
+    - \ref Node
+    - \ref TypeUtils
 
 \section Index-Tutorials Tutorials
 - \ref BashCreatePkg

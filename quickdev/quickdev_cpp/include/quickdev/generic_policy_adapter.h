@@ -41,7 +41,7 @@
 #include <quickdev/policy.h>
 #include <utility>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 //! \brief Construct a policy adapter that inherits each of a variable set of policies

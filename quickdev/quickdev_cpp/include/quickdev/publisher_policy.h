@@ -39,7 +39,7 @@
 #include <quickdev/policy.h>
 #include <quickdev/multi_publisher.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( Publisher, Policy )
@@ -47,21 +47,21 @@ QUICKDEV_DECLARE_POLICY( Publisher, Policy )
 template<class __Publisher = ros::Publisher>
 QUICKDEV_DECLARE_POLICY_CLASS( Publisher )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Publisher )
+    QUICKDEV_MAKE_POLICY_FUNCS( Publisher )
 
 private:
-	ros::MultiPublisher<__Publisher> multi_pub_;
+    ros::MultiPublisher<__Publisher> multi_pub_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Publisher )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Publisher )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	ros::MultiPublisher<__Publisher> & getMultiPub()
-	{
-		return multi_pub_;
-	}
+    ros::MultiPublisher<__Publisher> & getMultiPub()
+    {
+        return multi_pub_;
+    }
 };
 
 }
