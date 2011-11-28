@@ -38,7 +38,7 @@
 
 #include <quickdev/runable_policy.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 // wrap GenericPolicyAdapter and add RunablePolicy to the front of __Policies...
@@ -46,48 +46,48 @@ template<class... __Policies>
 class Node : public GenericPolicyAdapter<RunablePolicy, __Policies...>
 {
 public:
-	template<class... __Args>
-	Node( __Args&&... args ) : GenericPolicyAdapter<RunablePolicy, __Policies...>( args... )
-	{
+    template<class... __Args>
+    Node( __Args&&... args ) : GenericPolicyAdapter<RunablePolicy, __Policies...>( args... )
+    {
 
-	}
+    }
 
-	// for all non-initable policies
-	template<class __Policy, class... __Args>
-	typename std::enable_if<( !__Policy::HAS_UPDATE_ ), void>::type
-	tryUpdate( __Args&&... args ) {}
+    // for all non-initable policies
+    template<class __Policy, class... __Args>
+    typename std::enable_if<( !__Policy::HAS_UPDATE_ ), void>::type
+    tryUpdate( __Args&&... args ) {}
 
-	// for all initable policies
-	template<class __Policy, class... __Args>
-	typename std::enable_if<( __Policy::HAS_UPDATE_ ), void>::type
-	tryUpdate( __Args&&... args )
-	{
-		__Policy::update( args... );
-	}
+    // for all initable policies
+    template<class __Policy, class... __Args>
+    typename std::enable_if<( __Policy::HAS_UPDATE_ ), void>::type
+    tryUpdate( __Args&&... args )
+    {
+        __Policy::update( args... );
+    }
 
-	// initialize the first policy in the subset
-	// recurse through the remaining policies in the subset
-	template<class __PoliciesSubset, class... __Args>
-	typename std::enable_if<(__PoliciesSubset::num_types_ > 0), void>::type
-	updateRec( __Args&&... args )
-	{
-		tryUpdate<typename ContainerTypes<__PoliciesSubset>::_Front>( args... );
-		updateRec<typename ContainerTypes<__PoliciesSubset>::_Rest>( args... );
-	}
+    // initialize the first policy in the subset
+    // recurse through the remaining policies in the subset
+    template<class __PoliciesSubset, class... __Args>
+    typename std::enable_if<(__PoliciesSubset::num_types_ > 0), void>::type
+    updateRec( __Args&&... args )
+    {
+        tryUpdate<typename ContainerTypes<__PoliciesSubset>::_Front>( args... );
+        updateRec<typename ContainerTypes<__PoliciesSubset>::_Rest>( args... );
+    }
 
-	template<class __PoliciesSubset, class... __Args>
-	typename std::enable_if<(__PoliciesSubset::num_types_ == 0), void>::type
-	updateRec( __Args&&... args ) {}
+    template<class __PoliciesSubset, class... __Args>
+    typename std::enable_if<(__PoliciesSubset::num_types_ == 0), void>::type
+    updateRec( __Args&&... args ) {}
 
-	// Do any post-construction initialization. Note that all policies
-	// receive the same set of args.
-	template<class... __Args>
-	void updateAll( __Args&&... args )
-	{
-		updateRec<Container<__Policies...> >( args... );
-	}
+    // Do any post-construction initialization. Note that all policies
+    // receive the same set of args.
+    template<class... __Args>
+    void updateAll( __Args&&... args )
+    {
+        updateRec<Container<__Policies...> >( args... );
+    }
 
-	QUICKDEV_ENABLE_UPDATE{}
+    QUICKDEV_ENABLE_UPDATE{}
 };
 
 }

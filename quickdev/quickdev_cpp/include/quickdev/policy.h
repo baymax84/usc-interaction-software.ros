@@ -40,42 +40,42 @@
 #include <quickdev/generic_policy_adapter.h>
 #include <quickdev/type_utils.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 template<class __Policy>
 static void printPolicyAction( std::string action, __Policy * policy )
 {
-	PRINT_INFO( "[ %s ] on policy: [ %s ]", action.c_str(), __Policy::name().c_str() );
+    PRINT_INFO( "[ %s ] on policy: [ %s ]", action.c_str(), __Policy::name().c_str() );
 }
 
 template<class __Policy>
 static void printPolicyActionStart( std::string action, __Policy * policy )
 {
-	printPolicyAction( ">>>>> Start: " + action, policy );
+    printPolicyAction( ">>>>> Start: " + action, policy );
 }
 
 template<class __Policy>
 static void printPolicyActionDone( std::string action, __Policy * policy )
 {
-	printPolicyAction( "<<<<< Done: " + action, policy );
+    printPolicyAction( "<<<<< Done: " + action, policy );
 }
 
 class Policy
 {
 public:
-	const static inline std::string name(){ return "Base"; }
+    const static inline std::string name(){ return "Base"; }
 
-	inline Policy & getInstance() { return *this; }
+    inline Policy & getInstance() { return *this; }
 
-	template<class... __Args>
-	Policy( __Args&&... args )
-	{
-		// discard args... but don't fail to compile if anything is passed in
-		PRINT_INFO( "########## Policy Group ##########" );
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    template<class... __Args>
+    Policy( __Args&&... args )
+    {
+        // discard args... but don't fail to compile if anything is passed in
+        PRINT_INFO( "########## Policy Group ##########" );
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 };
 
 }

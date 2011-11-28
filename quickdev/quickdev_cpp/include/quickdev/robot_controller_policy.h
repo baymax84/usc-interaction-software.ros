@@ -40,7 +40,7 @@
 //#include <quickdev/multi_subscriber.h>
 #include <quickdev/multi_publisher.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( RobotController, TfManagerPolicy )
@@ -48,93 +48,93 @@ QUICKDEV_DECLARE_POLICY( RobotController, TfManagerPolicy )
 template<class __MotorValsMsg>
 QUICKDEV_DECLARE_POLICY_CLASS( RobotController )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( RobotController )
+    QUICKDEV_MAKE_POLICY_FUNCS( RobotController )
 
 public:
-	typedef void _EmptyMsg;
-	typedef TfManagerPolicy::_VelocityMsg _VelocityMsg;
+    typedef void _EmptyMsg;
+    typedef TfManagerPolicy::_VelocityMsg _VelocityMsg;
 
 protected:
-	ros::MultiPublisher<> multi_pub_;
-	//ros::MultiSubscriber<> multi_sub_;
+    ros::MultiPublisher<> multi_pub_;
+    //ros::MultiSubscriber<> multi_sub_;
 
-	std::string
-		robot_name_,
-		world_frame_name_,
-		robot_frame_name_,
-		target_frame_name_,
-		cmd_vel_topic_name_,
-		motor_vals_topic_name_;
+    std::string
+        robot_name_,
+        world_frame_name_,
+        robot_frame_name_,
+        target_frame_name_,
+        cmd_vel_topic_name_,
+        motor_vals_topic_name_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( RobotController ),
-		initialized_( false )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( RobotController ),
+        initialized_( false )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
 private:
-	void postInit()
-	{
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+    void postInit()
+    {
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		multi_pub_.addPublishers<__MotorValsMsg>( nh_rel, { motor_vals_topic_name_ } );
-	}
+        multi_pub_.addPublishers<__MotorValsMsg>( nh_rel, { motor_vals_topic_name_ } );
+    }
 
 public:
-	QUICKDEV_ENABLE_INIT()
-	{
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+    QUICKDEV_ENABLE_INIT()
+    {
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
-		robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
-		if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
+        const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
+        robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
+        if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
 
-		const auto world_frame_name_param = getMetaParamDef<std::string>( "world_frame_name_param", "world_frame_name", args... );
-		world_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, world_frame_name_param, "/world" );
+        const auto world_frame_name_param = getMetaParamDef<std::string>( "world_frame_name_param", "world_frame_name", args... );
+        world_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, world_frame_name_param, "/world" );
 
-		const auto robot_frame_name_param = getMetaParamDef<std::string>( "robot_frame_name_param", "robot_frame_name", args... );
-		robot_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_frame_name_param, "base_link" );
+        const auto robot_frame_name_param = getMetaParamDef<std::string>( "robot_frame_name_param", "robot_frame_name", args... );
+        robot_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_frame_name_param, "base_link" );
 
-		const auto target_frame_name_param = getMetaParamDef<std::string>( "target_frame_name_param", "target_frame_name", args... );
-		target_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, target_frame_name_param, "desired_pose" );
+        const auto target_frame_name_param = getMetaParamDef<std::string>( "target_frame_name_param", "target_frame_name", args... );
+        target_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, target_frame_name_param, "desired_pose" );
 
-		target_frame_name_ = robot_name_ + "/" + target_frame_name_;
-		robot_frame_name_ = robot_name_ + "/" + robot_frame_name_;
+        target_frame_name_ = robot_name_ + "/" + target_frame_name_;
+        robot_frame_name_ = robot_name_ + "/" + robot_frame_name_;
 
-		cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/cmd_vel" : "cmd_vel", args... );
-		motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals", args... );
+        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/cmd_vel" : "cmd_vel", args... );
+        motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals", args... );
 
-		// make sure our frames are initialized in the manager (if any frame is already initialized it will not be modified here)
-		nh_rel.setParam( "frame_pair0", world_frame_name_ + "," + target_frame_name_ );
-		//TfManagerPolicy::registerFrames( world_frame_name_, target_frame_name_ );
+        // make sure our frames are initialized in the manager (if any frame is already initialized it will not be modified here)
+        nh_rel.setParam( "frame_pair0", world_frame_name_ + "," + target_frame_name_ );
+        //TfManagerPolicy::registerFrames( world_frame_name_, target_frame_name_ );
 
-		TfManagerPolicy::init( "cmd_vel_topic_name_param", cmd_vel_topic_name_, args... );
+        TfManagerPolicy::init( "cmd_vel_topic_name_param", cmd_vel_topic_name_, args... );
 
-		postInit();
+        postInit();
 
-		QUICKDEV_SET_INITIALIZED();
-	}
+        QUICKDEV_SET_INITIALIZED();
+    }
 
-	void update( const __MotorValsMsg & msg )
-	{
-		update( typename __MotorValsMsg::ConstPtr( new __MotorValsMsg( msg ) ) );
-	}
+    void update( const __MotorValsMsg & msg )
+    {
+        update( typename __MotorValsMsg::ConstPtr( new __MotorValsMsg( msg ) ) );
+    }
 
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( update, typename __MotorValsMsg )
-	{
-		// publish all known transforms
-		TfManagerPolicy::update();
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( update, typename __MotorValsMsg )
+    {
+        // publish all known transforms
+        TfManagerPolicy::update();
 
-		multi_pub_.publish( motor_vals_topic_name_, msg );
-	}
+        multi_pub_.publish( motor_vals_topic_name_, msg );
+    }
 
-	tf::StampedTransform getTransformToTarget() const
-	{
-		QUICKDEV_CHECK_INITIALIZED();
+    tf::StampedTransform getTransformToTarget() const
+    {
+        QUICKDEV_CHECK_INITIALIZED();
 
-		return lookupTransform( robot_frame_name_, target_frame_name_, ros::Time::now() );
-	}
+        return lookupTransform( robot_frame_name_, target_frame_name_, ros::Time::now() );
+    }
 };
 
 }

@@ -38,22 +38,22 @@
 
 #include <quickdev/policy.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( Updateable, Policy )
 
 QUICKDEV_DECLARE_POLICY_CLASS( Updateable )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Updateable )
+    QUICKDEV_MAKE_POLICY_FUNCS( Updateable )
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Updateable )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Updateable )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	QUICKDEV_ENABLE_UPDATE{}
+    QUICKDEV_ENABLE_UPDATE{}
 };
 
 }

@@ -38,54 +38,54 @@
 
 #include <boost/thread/mutex.hpp>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
-	class Mutex
-	{
-	public:
-		boost::mutex mutex_;
-		typedef boost::unique_lock<boost::mutex> _UniqueLock;
+    class Mutex
+    {
+    public:
+        boost::mutex mutex_;
+        typedef boost::unique_lock<boost::mutex> _UniqueLock;
 
-		_UniqueLock tryLock()
-		{
-			return _UniqueLock( mutex_, boost::try_to_lock_t() );
-		}
+        _UniqueLock tryLock()
+        {
+            return _UniqueLock( mutex_, boost::try_to_lock_t() );
+        }
 
-		_UniqueLock lock()
-		{
-			return _UniqueLock( mutex_ );
-		}
-	};
+        _UniqueLock lock()
+        {
+            return _UniqueLock( mutex_ );
+        }
+    };
 
-	template<class __Storage>
-	class MutexedCache : public Mutex
-	{
-	public:
-		__Storage cache_;
+    template<class __Storage>
+    class MutexedCache : public Mutex
+    {
+    public:
+        __Storage cache_;
 
-		_UniqueLock tryLockAndUpdate( const __Storage & cache )
-		{
-			auto lock = tryLock();
-			if( lock ) cache_ = cache;
-			return lock;
-		}
+        _UniqueLock tryLockAndUpdate( const __Storage & cache )
+        {
+            auto lock = tryLock();
+            if( lock ) cache_ = cache;
+            return lock;
+        }
 
-		const __Storage & get() const
-		{
-			return cache_;
-		}
+        const __Storage & get() const
+        {
+            return cache_;
+        }
 
-		__Storage & get()
-		{
-			return cache_;
-		}
-	};
+        __Storage & get()
+        {
+            return cache_;
+        }
+    };
 
-	template<class __Message>
-	class MessageCache : public MutexedCache<typename __Message::ConstPtr>{};
+    template<class __Message>
+    class MessageCache : public MutexedCache<typename __Message::ConstPtr>{};
 
-	template<>
-	class MessageCache<void>{};
+    template<>
+    class MessageCache<void>{};
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_THREADING_H_

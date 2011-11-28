@@ -39,7 +39,7 @@
 #include <quickdev/policy.h>
 #include <quickdev/multi_subscriber.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 QUICKDEV_DECLARE_POLICY( Subscriber, Policy )
@@ -47,21 +47,21 @@ QUICKDEV_DECLARE_POLICY( Subscriber, Policy )
 template<class __Subscriber = ros::Subscriber>
 QUICKDEV_DECLARE_POLICY_CLASS( Subscriber )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Subscriber )
+    QUICKDEV_MAKE_POLICY_FUNCS( Subscriber )
 
 private:
-	ros::MultiSubscriber<__Subscriber> multi_sub_;
+    ros::MultiSubscriber<__Subscriber> multi_sub_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Subscriber )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Subscriber )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	ros::MultiSubscriber<__Subscriber> & getMultiSub()
-	{
-		return multi_sub_;
-	}
+    ros::MultiSubscriber<__Subscriber> & getMultiSub()
+    {
+        return multi_sub_;
+    }
 };
 
 }

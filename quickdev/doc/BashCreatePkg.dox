@@ -1,3 +1,154 @@
 /*!
-    \page BashCreatePkg Creating a Package
+\page BashCreatePkg Creating a Package
+
+This tutorial covers creating a package and understandnig its contents.
+
+\section BashCreatePkg-Contents Contents
+- \ref BashCreatePkg-create
+- \ref BashCreatePkg-package
+- \ref BashCreatePkg-launch
+- \ref BashCreatePkg-nodes
+- \ref BashCreatePkg-nodelets
+- \ref BashCreatePkg-src
+- \ref BashCreatePkg-include
+
+\subsection BashCreatePkg-create Using the create_pkg tool
+
+The actual package creation takes only a few seconds. Here, we'll create a package called "quickdev_demo" using a tool
+called \ref QuickdevScripts-create_pkg with the following settings:
+- author: the default author ( see \ref QuickdevScripts-create_pkg for more info )
+- dependencies:
+  - geometry_msgs
+  - visualization_msgs
+- the project set to "quickdev-doc"
+- include dir set to "qd_demo"
+- nodes:
+  - SomeDemo
+  - SomeOtherDemo
+  - AnotherDemo
+- nodelets:
+  - SomeDemo
+  - AnotherDemo
+- policies:
+  - SomeExample
+  - SomeOtherExample
+- sources:
+  - SomeClass
+
+To specify the above options, simply run the following command in a terminal:
+
+\verbatim
+rosrun quickdev_scripts create_pkg quickdev_demo -d some_package -d some_other_package -d another_package -P quickdev-doc -i qd_demo -nl SomePackageDemo -n SomeOtherPackageDemo -nl AnotherPackageDemo -p SomePackageExample -p SomeOtherPackageExample -s SomeClass
+\endverbatim
+
+Output:
+
+\verbatim
+Creating package "quickdev_demo" with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) }, dependencies { some_package some_other_package another_package }, sources { SomeClass }, policies { SomePackageExample SomeOtherPackageExample }, nodes { SomePackageDemo SomeOtherPackageDemo AnotherPackageDemo }, and nodelets { SomePackageDemo AnotherPackageDemo }.
+
+
+Using /usr/bin/quickdevadd_license
+
+
+Adding license with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) } and project "quickdev-doc" to files {  include/qd_demo/some_class.h src/some_class.cpp include/qd_demo/some_package_example_policy.h src/some_package_example_policy.cpp include/qd_demo/some_other_package_example_policy.h src/some_other_package_example_policy.cpp include/qd_demo/some_package_demo_node.h nodes/some_package_demo_node.cpp include/qd_demo/some_other_package_demo_node.h nodes/some_other_package_demo_node.cpp include/qd_demo/another_package_demo_node.h nodes/another_package_demo_node.cpp nodelets/some_package_demo_nodelet.cpp nodelets/another_package_demo_nodelet.cpp }
+
+done
+done
+\endverbatim
+
+This creates "quickdev_demo" in the current directory containing the following:
+\verbatim
+quickdev_demo/:
+CMakeLists.txt  launch        Makefile      nodelets  src
+include         mainpage.dox  manifest.xml  nodes
+
+quickdev_demo/include:
+qd_demo
+
+quickdev_demo/include/qd_demo:
+another_package_demo_node.h     some_other_package_example_policy.h
+some_class.h                    some_package_demo_node.h
+some_other_package_demo_node.h  some_package_example_policy.h
+
+quickdev_demo/launch:
+another_package_demo.launch     some_package_demo.launch
+some_other_package_demo.launch
+
+quickdev_demo/nodelets:
+another_package_demo_nodelet.cpp  nodelet_plugins.xml
+CMakeLists.txt                    some_package_demo_nodelet.cpp
+
+quickdev_demo/nodes:
+another_package_demo_node.cpp  some_other_package_demo_node.cpp
+CMakeLists.txt                 some_package_demo_node.cpp
+
+quickdev_demo/src:
+CMakeLists.txt  some_other_package_example_policy.cpp
+some_class.cpp  some_package_example_policy.cpp
+\endverbatim
+
+\subsection BashCreatePkg-package Closer look - package
+
+Let's take a closer look at what was generated.
+
+First, notice that several folders have been created based on the options we chose:
+\verbatim
+include  launch  nodelets  nodes  src
+\endverbatim
+
+In this case, since we specified at least one node, we have both a "nodes" and "launch" folder.
+Since we specified that at least one node should be wrapped as a nodelet, we have a "nodelets" folder.
+We have an "src" folder since we specified at least one general source.
+And since we specified at least one node or general source, we have an "include" folder.
+
+Notice also that the usual four package files have been created:
+\verbatim
+CMakeLists.txt  mainpage.dox  Makefile  manifest.xml
+\endverbatim
+
+Let's have a look at some of the auto-generated content in the main folder
+
+CMakeLists.txt contains our build instructions; notice that further build instructions are defined in the src, nodes, and nodelets folders:
+\verbinclude quickdev_demo/CMakeLists.txt
+
+mainpage.dox is a skeleton homepage for doxygen.
+
+Makefile references quickdev_cpp/cmake.mk, which defines common build commands:
+\verbinclude quickdev_demo/Makefile
+
+manifest.xml contains our ROS-related flags, namely our dependencies, cpp flags, and, in this case, nodelet exports:
+\verbinclude quickdev_demo/manifest.xml
+
+\subsection BashCreatePkg-launch Closer look - launch files
+
+Notice that, since we specified one or more nodes, launch files were automatically created for those nodes:
+
+\verbatim
+some_demo.launch  some_other_demo.launch  another_demo.launch
+\endverbatim
+
+Furthermore, since some of those nodes were wrapped as nodelets, the corresponding launch files also have a "nodelet" option to control
+whether they are started as nodes or nodelets.
+
+some_demo.launch ( has nodelet options )
+\verbinclude quickdev_demo/launch/some_demo.launch
+
+some_other_demo.launch ( does not have nodelet options )
+\verbinclude quickdev_demo/launch/some_other_demo.launch
+
+another_demo.launch ( has nodelet options )
+\verbinclude quickdev_demo/launch/another_demo.launch
+
+For convenience, a "nodelet manager" launch file has been created in quickdev_cpp to simplify starting a nodelet manager (required to run nodelets):
+
+\verbatim
+roslaunch quickdev_cpp nodelet_manager.launch
+\endverbatim
+
+\subsection BashCreatePkg-nodes Closer look - nodes
+
+
+\subsection BashCreatePkg-nodelets Closer look - nodelets
+\subsection BashCreatePkg-src Closer look - src
+\subsection BashCreatePkg-include Closer look - include
 */

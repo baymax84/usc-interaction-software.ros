@@ -39,76 +39,75 @@
 #include <quickdev/node_handle_policy.h>
 #include <ros/rate.h>
 
-namespace quickdev
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
-
 
 QUICKDEV_DECLARE_POLICY( Runable, NodeHandlePolicy )
 
 QUICKDEV_DECLARE_POLICY_CLASS( Runable )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Runable )
+    QUICKDEV_MAKE_POLICY_FUNCS( Runable )
 
 protected:
-	ros::Rate * loop_rate_;
-	bool run_;
+    ros::Rate * loop_rate_;
+    bool run_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Runable ),
-		run_( false )
-	{
-		printPolicyActionStart( "create", this );
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Runable ),
+        run_( false )
+    {
+        printPolicyActionStart( "create", this );
 
-		preInit();
+        preInit();
 
-		printPolicyActionDone( "create", this );
-	}
+        printPolicyActionDone( "create", this );
+    }
 
-	void preInit()
-	{
-		auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+    void preInit()
+    {
+        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-		loop_rate_ = new ros::Rate( ros::ParamReader<double, 1>::readParam( nh_rel, "loop_rate", 10 ) );
-	}
+        loop_rate_ = new ros::Rate( ros::ParamReader<double, 1>::readParam( nh_rel, "loop_rate", 10 ) );
+    }
 
-	~RunablePolicy()
-	{
-		if( loop_rate_ ) delete loop_rate_;
-	}
+    ~RunablePolicy()
+    {
+        if( loop_rate_ ) delete loop_rate_;
+    }
 
-	virtual void spinFirst(){}
+    virtual void spinFirst(){}
 
-	virtual void spinOnce(){}
+    virtual void spinOnce(){}
 
-	virtual void spin()
-	{
-		run_ = true;
+    virtual void spin()
+    {
+        run_ = true;
 
-		PRINT_INFO( "--------------------" );
-		PRINT_INFO( ">>>>> Starting pre-spin..." );
+        PRINT_INFO( "--------------------" );
+        PRINT_INFO( ">>>>> Starting pre-spin..." );
 
-		spinFirst();
+        spinFirst();
 
-		PRINT_INFO( "--------------------" );
-		PRINT_INFO( "<<<<< Done pre-spin" );
+        PRINT_INFO( "--------------------" );
+        PRINT_INFO( "<<<<< Done pre-spin" );
 
-		PRINT_INFO( "--------------------" );
-		PRINT_INFO( ">>>>> Spinning at %f Hz...", 1.0 / loop_rate_->expectedCycleTime().toSec() );
+        PRINT_INFO( "--------------------" );
+        PRINT_INFO( ">>>>> Spinning at %f Hz...", 1.0 / loop_rate_->expectedCycleTime().toSec() );
 
-		while( run_ && ros::ok() )
-		{
-			spinOnce();
-			ros::spinOnce();
-			if( loop_rate_ ) loop_rate_->sleep();
-		}
+        while( run_ && ros::ok() )
+        {
+            spinOnce();
+            ros::spinOnce();
+            if( loop_rate_ ) loop_rate_->sleep();
+        }
 
-		PRINT_INFO( "<<<<< Main loop finished" );
-	}
+        PRINT_INFO( "<<<<< Main loop finished" );
+    }
 
-	virtual void interrupt()
-	{
-		PRINT_INFO( ">>>>> Interrupting main loop..." );
-		run_ = false;
-	}
+    virtual void interrupt()
+    {
+        PRINT_INFO( ">>>>> Interrupting main loop..." );
+        run_ = false;
+    }
 };
 
 }

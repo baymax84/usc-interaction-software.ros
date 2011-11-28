@@ -1,12 +1,12 @@
 /*!
-    \page QuickdevMacros Macros
+\page QuickdevMacros Macros
 
-    \section QuickdevMacros-Contents Contents
+\section QuickdevMacros-Contents Contents
 - <b>Policy Macros</b>
-	- \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY
-	- \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY_CLASS
-	- \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY_CONSTRUCTOR
-	- \ref QuickdevMacros-QUICKDEV_MAKE_POLICY_FUNCS
+    - \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY
+    - \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY_CLASS
+    - \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY_CONSTRUCTOR
+    - \ref QuickdevMacros-QUICKDEV_MAKE_POLICY_FUNCS
 - <b>Node Macros</b>
 - <b>Node Instantiation Macros</b>
 - <b>Nodelet Macros</b>
@@ -20,36 +20,36 @@
 - <b>ROS Service Macros</b>
 \sa macros.h
 
-    \section QuickdevMacros-QUICKDEV_DECLARE_POLICY QUICKDEV_DECLARE_POLICY( PolicyNameBase, __Policies... )
+\section QuickdevMacros-QUICKDEV_DECLARE_POLICY QUICKDEV_DECLARE_POLICY( PolicyNameBase, __Policies... )
 
-    Definition:
-    \code
+Definition:
+\code
 QUICKDEV_DECLARE_POLICY_NS( PolicyNameBase ) \
 { \
 typedef quickdev::GenericPolicyAdapter< __Policies > QUICKDEV_GET_POLICY_ADAPTER( PolicyNameBase ); \
 }
-    \endcode
+\endcode
 
-    Expansion:
-    \code
+Expansion:
+\code
 QUICKDEV_DECLARE_POLICY( Example, ParentPolicy1, ParentPolicy2, ParentPolicy3 )
 
 // ---------- Direct expansion:
 namespace ExamplePolicy_types
 {
-	typedef quickdev::GenericPolicyAdapter< ParentPolicy1, ParentPolicy2, ParentPolicy3 > ExamplePolicyAdapter;
+    typedef quickdev::GenericPolicyAdapter< ParentPolicy1, ParentPolicy2, ParentPolicy3 > ExamplePolicyAdapter;
 }
-    \endcode
+\endcode
 
-	\section QuickdevMacros-QUICKDEV_DECLARE_POLICY_CLASS QUICKDEV_DECLARE_POLICY_CLASS( PolicyNameBase )\
+\section QuickdevMacros-QUICKDEV_DECLARE_POLICY_CLASS QUICKDEV_DECLARE_POLICY_CLASS( PolicyNameBase )\
 
-	Definition:
-	\code
+Definition:
+\code
 class PolicyNameBase##Policy : public QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )
-	\endcode
+\endcode
 
-	Expansion:
-	\code
+Expansion:
+\code
 QUICKDEV_DECLARE_POLICY_CLASS( Example )
 
 // ---------- Direct expansion:
@@ -57,48 +57,48 @@ class ExamplePolicy : public ExamplePolicy_types::ExamplePolicyAdapter
 
 // ---------- Expansion given: QUICKDEV_DECLARE_POLICY( Example, ParentPolicy1, ParentPolicy2, ParentPolicy3 )
 class ExamplePolicy : public quickdev::GenericPolicyAdapter< ParentPolicy1, ParentPolicy2, ParentPolicy3 >
-	\endcode
+\endcode
 
-	\section QuickdevMacros-QUICKDEV_DECLARE_POLICY_CONSTRUCTOR QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( PolicyNameBase )
+\section QuickdevMacros-QUICKDEV_DECLARE_POLICY_CONSTRUCTOR QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( PolicyNameBase )
 
-	Definition:
-	\code
+Definition:
+\code
 public: \
-	template<class... __Args> \
-	PolicyNameBase##Policy( __Args&&... args ) \
-	: \
-		QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )( args... )
-	\endcode
+    template<class... __Args> \
+    PolicyNameBase##Policy( __Args&&... args ) \
+    : \
+        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )( args... )
+\endcode
 
-	Expansion:
-	\code
+Expansion:
+\code
 QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Example )
 
 // ---------- Direct expansion:
 public:
-	template<class... __Args>
-	ExamplePolicy( __Args&&... args )
-	:
-		ExamplePolicy_types::ExamplePolicyAdapter( args... )
+    template<class... __Args>
+    ExamplePolicy( __Args&&... args )
+    :
+        ExamplePolicy_types::ExamplePolicyAdapter( args... )
 
 // ---------- Expansion given: QUICKDEV_DECLARE_POLICY( Example, ParentPolicy1, ParentPolicy2, ParentPolicy3 )
 public:
-	template<class... __Args>
-	ExamplePolicy( __Args&&... args )
-	:
-		quickdev::GenericPolicyAdapter< ParentPolicy1, ParentPolicy2, ParentPolicy3 >( args... )
-	\endcode
+    template<class... __Args>
+    ExamplePolicy( __Args&&... args )
+    :
+        quickdev::GenericPolicyAdapter< ParentPolicy1, ParentPolicy2, ParentPolicy3 >( args... )
+\endcode
 
-	\section QuickdevMacros-QUICKDEV_MAKE_POLICY_FUNCS QUICKDEV_MAKE_POLICY_FUNCS( PolicyNameBase )
+\section QuickdevMacros-QUICKDEV_MAKE_POLICY_FUNCS QUICKDEV_MAKE_POLICY_FUNCS( PolicyNameBase )
 
-	Definition:
-	\code
+Definition:
+\code
 QUICKDEV_MAKE_POLICY_NAME( PolicyNameBase ) \
 QUICKDEV_MAKE_POLICY_REFERENCE( PolicyNameBase )
-	\endcode
+\endcode
 
-	Expansion:
-	\code
+Expansion:
+\code
 QUICKDEV_MAKE_POLICY_FUNCS( PolicyNameBase )
 
 // ---------- Direct expansion:
@@ -108,6 +108,6 @@ QUICKDEV_MAKE_POLICY_REFERENCE( Example )
 // ---------- Direct expansion:
 public: const static inline std::string name() { return "Example"; }
 public: inline PolicyNameBase##Policy & getInstance() { return *this; }
-	\endcode
+\endcode
 
 */
