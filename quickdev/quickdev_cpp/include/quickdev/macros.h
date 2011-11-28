@@ -40,6 +40,8 @@
 // ########## Generic Policy Macros ####################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_MAKE_POLICY_NAME( PolicyNameBase ) \
+/*! \brief Auto-generated function to return the name of this policy */ \
+/*! \return \code "PolicyNameBase" \endcode */ \
 public: const static inline std::string name() { return #PolicyNameBase; }
 
 // ---------------------------------------------------------------------
@@ -48,6 +50,9 @@ public: const static inline std::string name() { return #PolicyNameBase; }
 // And: class SomeOtherPolicy : public SomePolicy{};
 // Within SomeOtherPolicy, you can say: auto & instance = SomePolicy::getInstance();
 #define QUICKDEV_MAKE_POLICY_REFERENCE( PolicyNameBase ) \
+/*! \brief Auto-generated function to return a reference to this policy */ \
+/*! \details Used by child policies to get a reference to their parent PolicyNameBase##Policy */ \
+/*! \return a reference to PolicyNameBase##Policy */ \
 public: inline PolicyNameBase##Policy & getInstance() { return *this; }
 
 // ---------------------------------------------------------------------
@@ -64,6 +69,7 @@ QUICKDEV_GET_POLICY_NAMESPACE( PolicyNameBase )
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY_NAMESPACE( PolicyNameBase ) \
+/*! \brief The "private" namespace for PolicyNameBase##Policy */ \
 namespace QUICKDEV_GET_POLICY_NAMESPACE( PolicyNameBase )
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY_NS( PolicyNameBase ) \
@@ -82,20 +88,30 @@ QUICKDEV_GET_POLICY_NS( PolicyNameBase )::QUICKDEV_GET_POLICY_ADAPTER( PolicyNam
 #define QUICKDEV_DECLARE_POLICY( PolicyNameBase, __Policies... ) \
 QUICKDEV_DECLARE_POLICY_NS( PolicyNameBase ) \
 { \
-typedef quickdev::GenericPolicyAdapter< __Policies > QUICKDEV_GET_POLICY_ADAPTER( PolicyNameBase ); \
+    /*! \brief The type of GenericPolicyAdapter used by PolicyNameBase##Policy */ \
+    /*! \details Specifically, PolicyNameBase##Policy utilizes: __Policies */ \
+    typedef quickdev::GenericPolicyAdapter< __Policies > QUICKDEV_GET_POLICY_ADAPTER( PolicyNameBase ); \
 }
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY_CLASS( PolicyNameBase ) \
+/*! \brief Class declaration for PolicyNameBase##Policy */ \
+/*! \details Specifically, we utilize the "private" policy namespace QUICKDEV_GET_POLICY_NS( PolicyNameBase ) and inherit from the policy adapter it references: QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase ) */ \
 class PolicyNameBase##Policy : public QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( PolicyNameBase ) \
+/*! \brief Constructor declaration for PolicyNameBase##Policy */ \
+/*! \details Specifically, we utilize the "private" policy namespace QUICKDEV_GET_POLICY_NS( PolicyNameBase ) and call the constructor for the policy adapter it references: QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase ) */ \
+/*! \tparam __Args the variadic template of argument types to pass on to the parent policies. */ \
+/*! \param args the variadic template of arguments to pass on to the parent policies. */ \
+/*! \note in reality, the only argument passed through the constructor via __Args is a ros::NodeHandle due to unsupported features in GCC \see GenericPolicyAdapter() */ \
+/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( args... ) \endcode */ \
 public: \
-	template<class... __Args> \
-	PolicyNameBase##Policy( __Args&&... args ) \
-	: \
-		QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )( args... )
+    template<class... __Args> \
+    PolicyNameBase##Policy( __Args&&... args ) \
+    : \
+        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )( args... )
 
 // ########## Pipeline for Policy with dependent types #################
 // ---------------------------------------------------------------------
@@ -108,71 +124,110 @@ QUICKDEV_GET_POLICY_ADAPTER2( PolicyNameBase, __Types )
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY2( PolicyNameBase, __Policies... ) \
+/*! \brief The "private" namespace for PolicyNameBase##Policy */ \
+/*! \details A special alternative means of declaring a "private namespace"  used when a typed policy has parent policies which depend on one or more of its types. Specifically, we create this struct instead of creating \code QUICKDEV_GET_POLICY_NS( PolicyNameBase ) \endcode */ \
 struct QUICKDEV_GET_POLICY_ADAPTER( PolicyNameBase ) \
 { \
-	typedef quickdev::GenericPolicyAdapter< __Policies > type; \
+    /*! \brief The type of GenericPolicyAdapter used by PolicyNameBase##Policy */ \
+    /*! \details Specifically, PolicyNameBase##Policy utilizes: __Policies */ \
+    typedef quickdev::GenericPolicyAdapter< __Policies > type; \
 };
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY_CLASS2( PolicyNameBase, __Types... ) \
+/*! \brief Class declaration for PolicyNameBase##Policy */ \
+/*! \details Specifically, we utilize the "private namespace" QUICKDEV_GET_POLICY_ADAPTER2( PolicyNameBase, __Types ) and inherit from the policy adapter it references: QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type */ \
 class PolicyNameBase##Policy : public QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_POLICY_CONSTRUCTOR2( PolicyNameBase, __Types... ) \
+/*! \brief Constructor declaration for PolicyNameBase##Policy */ \
+/*! \details Specifically, we utilize the "private namespace" QUICKDEV_GET_POLICY_ADAPTER2( PolicyNameBase, __Types ) and call the constructor for the policy adapter it references: QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type */ \
+/*! \tparam __Args the variadic template of argument types to pass on to the parent policies. */ \
+/*! \param args the variadic template of arguments to pass on to the parent policies. */ \
+/*! \note in reality, the only argument passed through the constructor via __Args is a ros::NodeHandle due to unsupported features in GCC \see GenericPolicyAdapter() */ \
+/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( args... ) \endcode */ \
 public: \
-	template<class... __Args> \
-	PolicyNameBase##Policy( __Args&&... args ) \
-	: \
-		QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type( args... )
+    template<class... __Args> \
+    PolicyNameBase##Policy( __Args&&... args ) \
+    : \
+        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type( args... )
 
 // ########## Generic Node Macros ######################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_NODE( NodeNameBase, __Policies... ) \
+/*! \brief The type of Node used by NodeNameBase##Node */ \
+/*! \details Specifically, NodeNameBase##Node utilizes: __Policies */ \
 typedef quickdev::Node< __Policies > _##NodeNameBase##NodeAdapterType;
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_NODE_CLASS( NodeNameBase ) \
+/*! \brief Class declaration for NodeNameBase##Node */ \
+/*! \details Specifically, we utilize the type _##NodeNameBase##NodeAdapterType, declared earlier and  inherit the node adapter it aliases. */ \
 class NodeNameBase##Node : public _##NodeNameBase##NodeAdapterType
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_NODE_CONSTRUCTOR( NodeNameBase ) \
+/*! \brief Constructor declaration for NodeNameBase##Node */ \
+/*! \details Specifically, we utilize the type _##NodeNameBase##NodeAdapterType, declared earlier and call the constructor for the node adapter it aliases. */ \
+/*! \tparam __Args the variadic template of argument types to pass on to the parent policies. */ \
+/*! \param args the variadic template of arguments to pass on to the parent policies. */ \
+/*! \note in reality, the only argument passed through the constructor via __Args is a ros::NodeHandle due to unsupported features in GCC \see GenericPolicyAdapter() */ \
+/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( args... ) \endcode */ \
 public: \
-	template<class... __Args> \
-	NodeNameBase##Node( __Args&&... args ) \
-	: \
-		_##NodeNameBase##NodeAdapterType( args... )
+    template<class... __Args> \
+    NodeNameBase##Node( __Args&&... args ) \
+    : \
+        _##NodeNameBase##NodeAdapterType( args... )
 
 // ########## Node Instantiation Macros ################################
 // ---------------------------------------------------------------------
-/// use: QUICKDEV_INST_NODE( SomeNode, "some_node" )
+// use: QUICKDEV_INST_NODE( SomeNode, "some_node" )
 #define QUICKDEV_INST_NODE( NodeClassname, node_name_string ) \
+/*! \brief Instantiate NodeClassname */ \
+/*! \details Initialize ROS (calling this node node_name_string), make a new relative (or "private") nodehandle, then create a new instance of NodeClassname and start it up. */ \
 int main( int argc, char ** argv ) \
 { \
-	ros::init( argc, argv, node_name_string ); \
-	ros::NodeHandle nh( "~" ); \
-	\
-	NodeClassname node_inst( nh ); \
-	node_inst.spin(); \
-	return 0; \
+    ros::init( argc, argv, node_name_string ); \
+    ros::NodeHandle nh( "~" ); \
+    \
+    NodeClassname node_inst( nh ); \
+    node_inst.spin(); \
+    return 0; \
 }
 
 // ########## Generic Nodelet Macros ###################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_NODELET( namespace_name, ClassName ) \
+/*! \brief The nodelet namespace for the package namespace_name */ \
 namespace namespace_name { \
+/*! \brief Class declaration for ClassName##Nodelet */ \
+/*! \details Specifically, ClassName##Nodelet is simply a Nodelet wrapper around ClassName##Node */ \
 class ClassName##Nodelet : public quickdev::Nodelet<ClassName##Node>{}; }
 
 // ########## Nodelet Instantiation Macros #############################
 // ---------------------------------------------------------------------
 #define QUICKDEV_INST_NODELET( namespace_name, ClassName, nodelet_name ) \
+/*! \brief "Instantiate" namespace_name::ClassName */ \
+/*! \details Register namespace_name::ClassName with pluginlib as nodelet_name */ \
 PLUGINLIB_DECLARE_CLASS( namespace_name, nodelet_name, namespace_name::ClassName##Nodelet, nodelet::Nodelet )
 
 // ########## Initable Policy Macros ###################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_ENABLE_INIT() \
+/*! \brief Used to determine whether a policy is initializable */ \
 public: const static bool HAS_INIT_ = true; \
+/*! \brief Used to determine whether a policy has been initialized */ \
+/*! \note This variable needs to be manually set to "false" at construction */ \
 private: bool initialized_; \
+/*! \brief Used to set the initialization state of an initializable policy */ \
+/*! \details Usually called as the last line in init() */ \
+/*! \param value the new initialization state of this policy */ \
 private: inline void setInitialized( const bool & value ){ initialized_ = value; } \
+/*! \brief Used to pass any post-construction values, usually meta-params, to this policy */ \
+/*! \details Meta-params passed through this function can be extracted with getFirstOfType(), getMetaParam(), or getMetaParamDef() */ \
+/*! \tparam __Args the variadic template of types associated with args */ \
+/*! \param args the variadic template of values given to this policy to parse, if applicable */ \
 public: template<class... __Args> \
 void init( __Args&&... args )
 
@@ -234,10 +289,16 @@ void processImage( cv_bridge::CvImageConstPtr & image_ptr_name )
 // ########## Runable Policy Macros ####################################
 // ---------------------------------------------------------------------
 #define QUICKDEV_SPIN_FIRST() \
+/*! \brief Function usually used for node / policy initialization */ \
+/*! \details Called a single time post-construction but prior to the main loop by RunablePolicy::spin() */ \
+/*! \sa RunablePolicy */ \
 void spinFirst()
 
 // ---------------------------------------------------------------------
 #define QUICKDEV_SPIN_ONCE() \
+/*! \brief Function usually used as a node's main loop */ \
+/*! \details Called every cycle at an (ideally) fixed frequency by RunablePolicy */ \
+/*! \sa RunablePolicy */ \
 void spinOnce()
 
 // ########## Type Enable/Disable Macros ###############################
@@ -304,6 +365,7 @@ QUICKDEV_TRY_UPDATE_CACHE2( lock, cache, value )
 quickdev
 // ---------------------------------------------------------------------
 #define QUICKDEV_DECLARE_INTERNAL_NAMESPACE() \
+/*! \brief internal library namespace for quickdev */ \
 namespace QUICKDEV_GET_INTERNAL_NAMESPACE()
 
 // ---------------------------------------------------------------------
