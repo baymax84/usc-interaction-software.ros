@@ -50,7 +50,7 @@ Creating package "quickdev_demo" with authors { Edward T. Kaszubski ( ekaszubski
 Using /usr/bin/quickdevadd_license
 
 
-Adding license with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) } and project "quickdev-doc" to files {  include/qd_demo/some_class.h src/some_class.cpp include/qd_demo/some_example_policy.h src/some_example_policy.cpp include/qd_demo/some_other_example_policy.h src/some_other_example_policy.cpp include/qd_demo/some_demo_node.h nodes/some_demo_node.cpp include/qd_demo/some_other_demo_node.h nodes/some_other_demo_node.cpp include/qd_demo/another_demo_node.h nodes/another_demo_node.cpp nodelets/some_demo_nodelet.cpp nodelets/another_demo_nodelet.cpp }
+Adding license with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) } and project "quickdev-doc" to files {  include/qd_demo/some_class.h src/some_class.cpp include/qd_demo/some_example_policy.h src/some_example_policy.cpp include/qd_demo/some_other_example_policy.h src/some_other_example_policy.cpp include/qd_demo/some_demo_node.h nodes/some_demo.cpp include/qd_demo/some_other_demo_node.h nodes/some_other_demo.cpp include/qd_demo/another_demo_node.h nodes/another_demo.cpp nodelets/some_demo.cpp nodelets/another_demo.cpp }
 
 done
 done
@@ -58,7 +58,7 @@ done
 
 This creates "quickdev_demo" in the current directory containing the following:
 \verbatim
-quickdev_demo:
+quickdev_demo/:
 CMakeLists.txt  launch        Makefile      nodelets  src
 include         mainpage.dox  manifest.xml  nodes
 
@@ -73,12 +73,10 @@ quickdev_demo/launch:
 another_demo.launch  some_demo.launch  some_other_demo.launch
 
 quickdev_demo/nodelets:
-another_demo_nodelet.cpp  nodelet_plugins.xml
-CMakeLists.txt            some_demo_nodelet.cpp
+another_demo.cpp  CMakeLists.txt  nodelet_plugins.xml  some_demo.cpp
 
 quickdev_demo/nodes:
-another_demo_node.cpp  some_demo_node.cpp
-CMakeLists.txt         some_other_demo_node.cpp
+another_demo.cpp  CMakeLists.txt  some_demo.cpp  some_other_demo.cpp
 
 quickdev_demo/src:
 CMakeLists.txt  some_example_policy.cpp
