@@ -340,39 +340,47 @@ QUICKDEV_ENABLE_IF( __ReturnType, ( !std::is_same<__Type1, __Type2>::value ) )
 
 // ########## Threading Macros #########################################
 // ---------------------------------------------------------------------
-#define QUICKDEV_TRY_LOCK_OR_WARN2( lock_name, args... ) \
-if( !lock_name ) PRINT_WARN( "Lock is busy. " args )
+#define QUICKDEV_TRY_LOCK_OR_WARN2( lock_var, args... ) \
+if( !lock_var ) PRINT_WARN( "Lock " #lock_var " is busy. " args )
 
-#define QUICKDEV_TRY_LOCK_OR_WARN( args... ) \
-QUICKDEV_TRY_LOCK_OR_WARN2( lock, args )
-
-// ---------------------------------------------------------------------
-#define QUICKDEV_TRY_LOCK_OR_RETURN2( lock_name, args... ) \
-QUICKDEV_TRY_LOCK_OR_WARN2( lock_name, args ); \
-if( !lock_name ) return
-
-#define QUICKDEV_TRY_LOCK_OR_RETURN( args... ) \
-QUICKDEV_TRY_LOCK_OR_RETURN2( lock, args )
+#define QUICKDEV_TRY_LOCK_OR_WARN( cache_var, args... ) \
+QUICKDEV_TRY_LOCK_OR_WARN2( cache_var##_lock, args )
 
 // ---------------------------------------------------------------------
-#define QUICKDEV_LOCK_MUTEX2( lock_name, mutex ) \
-auto lock_name = mutex.lock()
+#define QUICKDEV_TRY_LOCK_OR_RETURN2( lock_var, args... ) \
+if( !lock_var ) PRINT_DEBUG( "Lock " #lock_var " is busy. " args ); \
+if( !lock_var ) return
 
-#define QUICKDEV_LOCK_MUTEX( mutex ) \
-QUICKDEV_LOCK_MUTEX2( lock, mutex )
-
-// ---------------------------------------------------------------------
-#define QUICKDEV_LOCK_CACHE_AND_GET( cache, output ) \
-QUICKDEV_LOCK_MUTEX( cache ); \
-const auto & output = cache.get()
+#define QUICKDEV_TRY_LOCK_OR_RETURN( cache_var, args... ) \
+QUICKDEV_TRY_LOCK_OR_RETURN2( cache_var##_lock, args )
 
 // ---------------------------------------------------------------------
-#define QUICKDEV_TRY_UPDATE_CACHE2( lock_name, cache, value ) \
-auto lock_name = cache.tryLockAndUpdate( value )
+#define QUICKDEV_LOCK_MUTEX2( lock_var, mutex_var ) \
+const auto & lock_var = mutex_var.lock()
+
+#define QUICKDEV_LOCK_MUTEX( mutex_var ) \
+QUICKDEV_LOCK_MUTEX2( mutex_var##_lock, mutex_var )
 
 // ---------------------------------------------------------------------
-#define QUICKDEV_TRY_UPDATE_CACHE( cache, value ) \
-QUICKDEV_TRY_UPDATE_CACHE2( lock, cache, value )
+#define QUICKDEV_TRY_LOCK_MUTEX2( lock_var, mutex_var ) \
+const auto & lock_var = mutex_var.tryLock()
+
+#define QUICKDEV_TRY_LOCK_MUTEX( mutex_var ) \
+QUICKDEV_LOCK_MUTEX2( mutex_var##_lock, mutex_var )
+
+// ---------------------------------------------------------------------
+// locks the cache's mutex and returns a modifiable reference to its contents
+#define QUICKDEV_LOCK_CACHE_AND_GET( cache_var, output_var ) \
+QUICKDEV_LOCK_MUTEX( cache_var ); \
+auto & output_var = cache_var.get()
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_TRY_UPDATE_CACHE2( lock_var, cache_var, value_var ) \
+const auto & lock_var = cache_var.tryLockAndUpdate( value_var )
+
+// ---------------------------------------------------------------------
+#define QUICKDEV_TRY_UPDATE_CACHE( cache_var, value_var ) \
+QUICKDEV_TRY_UPDATE_CACHE2( cache_var##_lock, cache_var, value_var )
 
 
 // ########## Internal Macros ##########################################

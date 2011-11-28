@@ -57,86 +57,86 @@ using humanoid::_HumanoidJointMsg;
 QUICKDEV_DECLARE_NODE_CLASS( KinectAdapter )
 {
 private:
-	typedef openni_multitracker::UserStateArray _UserStateArrayMsg;
+    typedef openni_multitracker::UserStateArray _UserStateArrayMsg;
 
-	ros::MultiPublisher<> multi_pub_;
-	ros::MultiSubscriber<> multi_sub_;
+    ros::MultiPublisher<> multi_pub_;
+    ros::MultiSubscriber<> multi_sub_;
 
-	quickdev::MessageCache<_UserStateArrayMsg> user_states_cache_;
+    quickdev::MessageCache<_UserStateArrayMsg> user_states_cache_;
 
-	std::string camera_frame_;
-	ros::Duration kinect_timeout_duration_;
+    std::string camera_frame_;
+    ros::Duration kinect_timeout_duration_;
 
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( KinectAdapter ),
-		camera_frame_( "/openni_depth_tracking_frame" ),
-		kinect_timeout_duration_( 1.0 )
-	{
-		//
-	}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( KinectAdapter ),
+        camera_frame_( "/openni_depth_tracking_frame" ),
+        kinect_timeout_duration_( 1.0 )
+    {
+        //
+    }
 
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
+    QUICKDEV_SPIN_FIRST()
+    {
+        initAll();
 
-		QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
-		multi_pub_.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states" } );
-		multi_sub_.addSubscriber( nh_rel, "user_states", &KinectAdapterNode::userStatesCB, this );
-	}
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+        multi_pub_.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states" } );
+        multi_sub_.addSubscriber( nh_rel, "user_states", &KinectAdapterNode::userStatesCB, this );
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		if( ros::Time::now() - _UserStatesCBTimer::now() > kinect_timeout_duration_ ) return;
+    QUICKDEV_SPIN_ONCE()
+    {
+        if( ros::Time::now() - _UserStatesCBTimer::now() > kinect_timeout_duration_ ) return;
 
-		QUICKDEV_LOCK_CACHE_AND_GET( user_states_cache_, user_states_msg );
-		if( !user_states_msg ) return;
+        QUICKDEV_LOCK_CACHE_AND_GET( user_states_cache_, user_states_msg );
+        if( !user_states_msg ) return;
 
-		_HumanoidStateArrayMsg state_array_msg;
+        _HumanoidStateArrayMsg state_array_msg;
 
-		for( auto user_state = user_states_msg->user_states.begin(); user_state != user_states_msg->user_states.end(); ++user_state )
-		{
-			if( !user_state->is_tracked ) continue;
+        for( auto user_state = user_states_msg->user_states.begin(); user_state != user_states_msg->user_states.end(); ++user_state )
+        {
+            if( !user_state->is_tracked ) continue;
 
-			_HumanoidStateMsg state_msg;
-			state_msg.name = user_state->name;
+            _HumanoidStateMsg state_msg;
+            state_msg.name = user_state->name;
 
-			for( auto joint = humanoid::JOINT_NAMES_.begin(); joint != humanoid::JOINT_NAMES_.end(); ++joint )
-			{
-				const auto current_joint_frame( "/" + user_state->name + "/" + *joint );
-				if( transformExists( camera_frame_, current_joint_frame ) )
-				{
-					const auto transform( lookupTransform( camera_frame_, current_joint_frame ) );
-					_HumanoidJointMsg joint_msg;
+            for( auto joint = humanoid::JOINT_NAMES_.begin(); joint != humanoid::JOINT_NAMES_.end(); ++joint )
+            {
+                const auto current_joint_frame( "/" + user_state->name + "/" + *joint );
+                if( transformExists( camera_frame_, current_joint_frame ) )
+                {
+                    const auto transform( lookupTransform( camera_frame_, current_joint_frame ) );
+                    _HumanoidJointMsg joint_msg;
 
-					joint_msg.name = *joint;
+                    joint_msg.name = *joint;
 
-					joint_msg.pose.pose.position.x = transform.getOrigin().getX();
-					joint_msg.pose.pose.position.y = transform.getOrigin().getY();
-					joint_msg.pose.pose.position.z = transform.getOrigin().getZ();
+                    joint_msg.pose.pose.position.x = transform.getOrigin().getX();
+                    joint_msg.pose.pose.position.y = transform.getOrigin().getY();
+                    joint_msg.pose.pose.position.z = transform.getOrigin().getZ();
 
-					joint_msg.pose.pose.orientation.x = transform.getRotation().getX();
-					joint_msg.pose.pose.orientation.y = transform.getRotation().getY();
-					joint_msg.pose.pose.orientation.z = transform.getRotation().getZ();
-					joint_msg.pose.pose.orientation.w = transform.getRotation().getW();
+                    joint_msg.pose.pose.orientation.x = transform.getRotation().getX();
+                    joint_msg.pose.pose.orientation.y = transform.getRotation().getY();
+                    joint_msg.pose.pose.orientation.z = transform.getRotation().getZ();
+                    joint_msg.pose.pose.orientation.w = transform.getRotation().getW();
 
-					joint_msg.pose.confidence = 1.0;
+                    joint_msg.pose.confidence = 1.0;
 
-					state_msg.joints.push_back( joint_msg );
-				}
-			}
+                    state_msg.joints.push_back( joint_msg );
+                }
+            }
 
-			state_array_msg.states.push_back( state_msg );
-		}
+            state_array_msg.states.push_back( state_msg );
+        }
 
-		multi_pub_.publish( "humanoid_states", quickdev::make_const_shared( state_array_msg ) );
-	}
+        multi_pub_.publish( "humanoid_states", quickdev::make_const_shared( state_array_msg ) );
+    }
 
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( userStatesCB, _UserStateArrayMsg )
-	{
-		_UserStatesCBTimer::update();
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( userStatesCB, _UserStateArrayMsg )
+    {
+        _UserStatesCBTimer::update();
 
-		QUICKDEV_TRY_UPDATE_CACHE( user_states_cache_, msg );
-		QUICKDEV_TRY_LOCK_OR_WARN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
-	}
+        QUICKDEV_TRY_UPDATE_CACHE( user_states_cache_, msg );
+        QUICKDEV_TRY_LOCK_OR_WARN( user_states_cache_, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+    }
 };
 
 #endif // HUMANOIDMODELS_HUMANOID_KINECTADAPTER_H_

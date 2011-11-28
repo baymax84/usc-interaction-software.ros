@@ -53,160 +53,166 @@ typedef _HumanoidRecognizerPolicy::_MarkerMsg _MarkerMsg;
 QUICKDEV_DECLARE_NODE_CLASS( HumanoidRecognizer )
 {
 private:
-	std::deque<_HumanoidStateArrayMsg::ConstPtr> state_arrays_cache_;
-	quickdev::Mutex state_arrays_mutex_;
+    quickdev::MutexedCache<std::deque<_HumanoidStateArrayMsg::ConstPtr> > state_arrays_cache_;
 
-	_MarkerMsg
-		marker_template_,
-		text_marker_template_,
-		lines_marker_template_,
-		points_marker_template_;
+    _MarkerMsg
+        marker_template_,
+        text_marker_template_,
+        lines_marker_template_,
+        points_marker_template_;
 
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidRecognizer )
-	{
-		//
-	}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidRecognizer )
+    {
+        //
+    }
 
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-		_HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidRecognizerNode::humanoidStatesCB, this ) );
+    QUICKDEV_SPIN_FIRST()
+    {
+        initAll();
+        _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidRecognizerNode::humanoidStatesCB, this ) );
 
-		QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
-		auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
-		multi_pub.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states_agg" } );
+        auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
+        multi_pub.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states_agg" } );
 
-		marker_template_.header.frame_id = "/openni_depth_tracking_frame";
-		marker_template_.ns = "basic_skeleton";
-		marker_template_.action = visualization_msgs::Marker::ADD;
-		marker_template_.lifetime = ros::Duration( 0.0 );
-		marker_template_.pose.orientation.w = 1.0;
+        marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+        marker_template_.ns = "basic_skeleton";
+        marker_template_.action = visualization_msgs::Marker::ADD;
+        marker_template_.lifetime = ros::Duration( 0.001 );
+        marker_template_.pose.orientation.w = 1.0;
 
-		text_marker_template_ = marker_template_;
-		text_marker_template_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
-		text_marker_template_.scale.z = 0.1;
+        text_marker_template_ = marker_template_;
+        text_marker_template_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+        text_marker_template_.scale.z = 0.1;
 
-		lines_marker_template_ = marker_template_;
-		lines_marker_template_.type = visualization_msgs::Marker::LINE_LIST;
-		lines_marker_template_.scale.x = 0.02;
+        lines_marker_template_ = marker_template_;
+        lines_marker_template_.type = visualization_msgs::Marker::LINE_LIST;
+        lines_marker_template_.scale.x = 0.02;
 
-		points_marker_template_ = marker_template_;
-		points_marker_template_.type = visualization_msgs::Marker::SPHERE_LIST;
-		points_marker_template_.scale.x = points_marker_template_.scale.y
-									    = points_marker_template_.scale.z
-									    = 0.05;
-	}
+        points_marker_template_ = marker_template_;
+        points_marker_template_.type = visualization_msgs::Marker::SPHERE_LIST;
+        points_marker_template_.scale.x = points_marker_template_.scale.y
+                                        = points_marker_template_.scale.z
+                                        = 0.05;
+    }
 
-	void appendLineMarker( _MarkerMsg & msg, const std::string & from, const std::string & to, const std::map<std::string, _PoseWithConfidenceMsg> & point_map )
-	{
-		const auto & from_point = point_map.find( from );
-		const auto & to_point = point_map.find( to );
+    void appendLineMarker( _MarkerMsg & msg, const std::string & from, const std::string & to, const std::map<std::string, _PoseWithConfidenceMsg> & point_map )
+    {
+        const auto & from_point = point_map.find( from );
+        const auto & to_point = point_map.find( to );
 
-		if( from_point == point_map.end() || to_point == point_map.end() ) return;
+        if( from_point == point_map.end() || to_point == point_map.end() ) return;
 
-		msg.points.push_back( from_point->second.pose.position );
-		msg.points.push_back( to_point->second.pose.position );
-	}
+        msg.points.push_back( from_point->second.pose.position );
+        msg.points.push_back( to_point->second.pose.position );
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		auto lock = state_arrays_mutex_.lock();
-		//QUICKDEV_TRY_LOCK_OR_RETURN( lock, "Dropping message [ %s ]", message_name.c_str() );
+    QUICKDEV_SPIN_ONCE()
+    {
+        // get a read/write reference to the cache's data (called state_arrays_cache)
+        QUICKDEV_LOCK_CACHE_AND_GET( state_arrays_cache_, state_arrays_cache );
 
-		if( state_arrays_cache_.size() == 0 ) return;
+        // if there are no items in the cache then we have no work to do
+        if( state_arrays_cache.size() == 0 ) return;
 
-		_HumanoidStateArrayMsg combined_states_msg;
-		_MarkerArrayMsg markers;
-		const auto now = ros::Time::now();
+        _HumanoidStateArrayMsg combined_states_msg;
+        _MarkerArrayMsg markers;
+        const auto now = ros::Time::now();
 
-		unsigned int current_id = 0;
+        unsigned int current_id = 0;
 
-		for( auto state_array = state_arrays_cache_.begin(); state_array != state_arrays_cache_.end(); ++state_array )
-		{
-			if( !( *state_array ) ) continue;
+        for( auto state_array = state_arrays_cache.begin(); state_array != state_arrays_cache.end(); ++state_array )
+        {
+            // if the current state array is null, discard it and move on
+            if( !( *state_array ) ) continue;
 
-			for( auto state = (*state_array)->states.begin(); state != (*state_array)->states.end(); ++state )
-			{
-				combined_states_msg.states.push_back( *state );
+            for( auto state = (*state_array)->states.begin(); state != (*state_array)->states.end(); ++state )
+            {
+                combined_states_msg.states.push_back( *state );
 
-				std::map<std::string, _PoseWithConfidenceMsg> point_map;
+                std::map<std::string, _PoseWithConfidenceMsg> point_map;
 
-				std_msgs::ColorRGBA current_color;
-				current_color.r = 0.0;
-				current_color.g = 0.0;
-				current_color.b = 1.0;
-				current_color.a = 1.0;
+                std_msgs::ColorRGBA current_color;
+                current_color.r = 0.0;
+                current_color.g = 0.0;
+                current_color.b = 1.0;
+                current_color.a = 1.0;
 
-				_MarkerMsg points_marker( points_marker_template_ );
-				points_marker.header.stamp = now;
-				points_marker.id = current_id ++;
-				points_marker.color = current_color;
+                _MarkerMsg points_marker( points_marker_template_ );
+                points_marker.header.stamp = now;
+                points_marker.id = current_id ++;
+                points_marker.color = current_color;
 
-				for( auto joint = state->joints.begin(); joint != state->joints.end(); ++joint )
-				{
-					// create point markers
-					points_marker.points.push_back( joint->pose.pose.position );
-//					points_marker.colors.push_back( current_color );
+                for( auto joint = state->joints.begin(); joint != state->joints.end(); ++joint )
+                {
+                    // create point markers
+                    points_marker.points.push_back( joint->pose.pose.position );
+//                  points_marker.colors.push_back( current_color );
 
-					// map joint names to points for easy lookup later
-					point_map[joint->name] = joint->pose;
-				}
+                    // map joint names to points for easy lookup later
+                    point_map[joint->name] = joint->pose;
+                }
 
-				// connect points
-				_MarkerMsg lines_marker( lines_marker_template_ );
-				lines_marker.header.stamp = now;
-				lines_marker.id = current_id ++;
-				lines_marker.color = current_color;
+                // connect points
+                _MarkerMsg lines_marker( lines_marker_template_ );
+                lines_marker.header.stamp = now;
+                lines_marker.id = current_id ++;
+                lines_marker.color = current_color;
 
-				appendLineMarker( lines_marker, "head", "neck", point_map );
-				appendLineMarker( lines_marker, "neck", "left_shoulder", point_map );
-				appendLineMarker( lines_marker, "neck", "right_shoulder", point_map );
-				appendLineMarker( lines_marker, "torso", "left_shoulder", point_map );
-				appendLineMarker( lines_marker, "torso", "right_shoulder", point_map );
-				appendLineMarker( lines_marker, "torso", "left_hip", point_map );
-				appendLineMarker( lines_marker, "torso", "right_hip", point_map );
-				appendLineMarker( lines_marker, "left_shoulder", "left_elbow", point_map );
-				appendLineMarker( lines_marker, "left_elbow", "left_hand", point_map );
-				appendLineMarker( lines_marker, "right_shoulder", "right_elbow", point_map );
-				appendLineMarker( lines_marker, "right_elbow", "right_hand", point_map );
-				appendLineMarker( lines_marker, "left_hip", "right_hip", point_map );
-				appendLineMarker( lines_marker, "left_hip", "left_knee", point_map );
-				appendLineMarker( lines_marker, "left_knee", "left_foot", point_map );
-				appendLineMarker( lines_marker, "right_hip", "right_knee", point_map );
-				appendLineMarker( lines_marker, "right_knee", "right_foot", point_map );
+                appendLineMarker( lines_marker, "head", "neck", point_map );
+                appendLineMarker( lines_marker, "neck", "left_shoulder", point_map );
+                appendLineMarker( lines_marker, "neck", "right_shoulder", point_map );
+                appendLineMarker( lines_marker, "torso", "left_shoulder", point_map );
+                appendLineMarker( lines_marker, "torso", "right_shoulder", point_map );
+                appendLineMarker( lines_marker, "torso", "left_hip", point_map );
+                appendLineMarker( lines_marker, "torso", "right_hip", point_map );
+                appendLineMarker( lines_marker, "left_shoulder", "left_elbow", point_map );
+                appendLineMarker( lines_marker, "left_elbow", "left_hand", point_map );
+                appendLineMarker( lines_marker, "right_shoulder", "right_elbow", point_map );
+                appendLineMarker( lines_marker, "right_elbow", "right_hand", point_map );
+                appendLineMarker( lines_marker, "left_hip", "right_hip", point_map );
+                appendLineMarker( lines_marker, "left_hip", "left_knee", point_map );
+                appendLineMarker( lines_marker, "left_knee", "left_foot", point_map );
+                appendLineMarker( lines_marker, "right_hip", "right_knee", point_map );
+                appendLineMarker( lines_marker, "right_knee", "right_foot", point_map );
 
-				// set text position
-				_MarkerMsg text_marker( text_marker_template_ );
-				text_marker.header.stamp = now;
-				text_marker.id = current_id ++;
-				text_marker.color = current_color;
+                // set text position
+                _MarkerMsg text_marker( text_marker_template_ );
+                text_marker.header.stamp = now;
+                text_marker.id = current_id ++;
+                text_marker.color = current_color;
 
-				text_marker.text = state->name;
-				text_marker.pose.position = point_map["torso"].pose.position;
-				text_marker.pose.position.y -= 0.7;  // determined empirically...
+                text_marker.text = state->name;
+                text_marker.pose.position = point_map["torso"].pose.position;
+                text_marker.pose.position.y -= 0.7;  // determined empirically...
 
-				markers.markers.push_back( points_marker );
-				markers.markers.push_back( lines_marker );
-				markers.markers.push_back( text_marker );
-			}
-		}
+                markers.markers.push_back( points_marker );
+                markers.markers.push_back( lines_marker );
+                markers.markers.push_back( text_marker );
+            }
+        }
 
-		_HumanoidRecognizerPolicy::update( markers );
+        _HumanoidRecognizerPolicy::update( markers );
 
-		auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
-		multi_pub.publish( "humanoid_states_agg", quickdev::make_const_shared( combined_states_msg ) );
+        auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
+        multi_pub.publish( "humanoid_states_agg", quickdev::make_const_shared( combined_states_msg ) );
 
-		state_arrays_cache_.clear();
-	}
+        // clear out the cache for the next update iteration
+        state_arrays_cache.clear();
+    }
 
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
-	{
-		auto lock = state_arrays_mutex_.tryLock();
-		QUICKDEV_TRY_LOCK_OR_RETURN2( lock, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
+    {
+        // get a lock to the cache
+        QUICKDEV_TRY_LOCK_MUTEX( state_arrays_cache_ );
+        // test the lock on the cache or return
+        QUICKDEV_TRY_LOCK_OR_RETURN( state_arrays_cache_, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+        // if we got the lock, get a read/write reference to the cache's data
+        auto & state_arrays_cache = state_arrays_cache_.get();
 
-		state_arrays_cache_.push_back( msg );
-	}
+        state_arrays_cache.push_back( msg );
+    }
 };
 
 #endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_

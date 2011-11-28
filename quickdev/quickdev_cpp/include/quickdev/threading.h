@@ -63,11 +63,25 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     public:
         __Storage cache_;
 
+        MutexedCache( const __Storage & cache = __Storage() )
+        :
+            cache_( cache )
+        {
+            //
+        }
+
         _UniqueLock tryLockAndUpdate( const __Storage & cache )
         {
             auto lock = tryLock();
             if( lock ) cache_ = cache;
             return lock;
+        }
+
+        MutexedCache & operator=( const __Storage & cache )
+        {
+            auto lock = tryLock();
+            if( lock ) cache_ = cache;
+            return *this;
         }
 
         const __Storage & get() const
