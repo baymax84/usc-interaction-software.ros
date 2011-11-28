@@ -37,41 +37,120 @@
 #define PROXEMICRECOGNIZERS_PROXEMICRECOGNIZERS_MEHRABIANRECOGNIZER_H_
 
 #include <quickdev/node.h>
+#include <LinearMath/btVector3.h>
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
+//#include <proxemic_models/mehrabian_metrics.h>
 
 typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
 QUICKDEV_DECLARE_NODE( MehrabianRecognizer, _HumanoidRecognizerPolicy )
 
 typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
+using humanoid::_HumanoidStateMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( MehrabianRecognizer )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( MehrabianRecognizer )
-	{
-		//
-	}
+private:
+    _MarkerMsg
+        marker_template_,
+        arrow_marker_template_,
+        text_marker_template_;
 
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-	}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( MehrabianRecognizer )
+    {
+        //
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-		if( !states_msg ) return;
+    QUICKDEV_SPIN_FIRST()
+    {
+        initAll();
 
-		_MarkerArrayMsg markers;
+        marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+        marker_template_.ns = "mehrabian_visualization";
+        marker_template_.action = visualization_msgs::Marker::ADD;
+        marker_template_.lifetime = ros::Duration( 0.001 );
+        marker_template_.pose.orientation.w = 1.0;
 
-		for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
-		{
-			//
-		}
+        arrow_marker_template_ = marker_template_;
+        arrow_marker_template_.type = visualization_msgs::Marker::ARROW;
+        arrow_marker_template_.scale.x = 0.01;
+        arrow_marker_template_.scale.y = 0.02;
 
-		_HumanoidRecognizerPolicy::update( markers );
-	}
+        text_marker_template_ = marker_template_;
+        text_marker_template_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+        text_marker_template_.scale.z = 0.1;
+    }
+
+    QUICKDEV_SPIN_ONCE()
+    {
+        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
+        if( !states_msg ) return;
+
+        const auto now = ros::Time::now();
+
+        _MarkerArrayMsg markers_msg;
+
+        unsigned int current_id = 0;
+
+        // we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
+        _HumanoidRecognizerPolicy::buildStatesMap( states_msg );
+
+        for( auto humanoid1_msg = states_msg->states.begin(); humanoid1_msg != states_msg->states.end(); ++humanoid1_msg )
+        {
+            for( auto humanoid2_msg = states_msg->states.begin(); humanoid2_msg != states_msg->states.end(); ++humanoid2_msg )
+            {
+                if( humanoid1_msg == humanoid2_msg ) continue;
+
+                const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[humanoid1_msg->name]["torso"];
+                const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[humanoid2_msg->name]["torso"];
+
+                std_msgs::ColorRGBA current_color;
+                current_color.r = 0.0;
+                current_color.g = 0.0;
+                current_color.b = 1.0;
+                current_color.a = 1.0;
+
+                _MarkerMsg arrow_marker = arrow_marker_template_;
+                arrow_marker.header.stamp = now;
+                arrow_marker.id = current_id ++;
+                arrow_marker.color = current_color;
+                arrow_marker.points.push_back( joint1.pose.pose.position );
+                arrow_marker.points.push_back( joint2.pose.pose.position );
+
+                markers_msg.markers.push_back( arrow_marker );
+
+                _MarkerMsg text_marker = text_marker_template_;
+                text_marker.header.stamp = now;
+                text_marker.id = current_id ++;
+                text_marker.color = current_color;
+
+                const btVector3 joint1_vec(
+                    joint1.pose.pose.position.x,
+                    joint1.pose.pose.position.y,
+                    joint1.pose.pose.position.z );
+
+                const btVector3 joint2_vec(
+                    joint2.pose.pose.position.x,
+                    joint2.pose.pose.position.y,
+                    joint2.pose.pose.position.z );
+
+                // text should be placed 25% of the way along the vector from joint1_vec to joint2_vec
+                const btVector3 text_point_vec = ( joint2_vec - joint1_vec ) * 0.25;
+
+                std::stringstream ss;
+                ss << humanoid1_msg->name << " -> " << humanoid2_msg->name << " : " << joint1_vec.distance( joint2_vec ) << "m";
+                text_marker.text = ss.str();
+                text_marker.pose.position.x = text_point_vec.getX();
+                text_marker.pose.position.y = text_point_vec.getY();
+                text_marker.pose.position.z = text_point_vec.getZ() - 0.25;
+
+                markers_msg.markers.push_back( text_marker );
+            }
+        }
+
+        _HumanoidRecognizerPolicy::update( markers_msg );
+    }
 };
 
 #endif // PROXEMICRECOGNIZERS_PROXEMICRECOGNIZERS_MEHRABIANRECOGNIZER_H_

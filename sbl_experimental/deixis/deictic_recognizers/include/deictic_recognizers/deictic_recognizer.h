@@ -48,30 +48,30 @@ typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( DeicticRecognizer )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( DeicticRecognizer )
-	{
-		//
-	}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( DeicticRecognizer )
+    {
+        //
+    }
 
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-	}
+    QUICKDEV_SPIN_FIRST()
+    {
+        initAll();
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-		if( !states_msg ) return;
+    QUICKDEV_SPIN_ONCE()
+    {
+        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
+        if( !states_msg ) return;
 
-		_MarkerArrayMsg markers;
+        _MarkerArrayMsg markers;
 
-		for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
-		{
-			//
-		}
+        for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
+        {
+            //
+        }
 
-		_HumanoidRecognizerPolicy::update( markers );
-	}
+        _HumanoidRecognizerPolicy::update( markers );
+    }
 };
 
 #endif // DEICTICRECOGNIZERS_DEICTICRECOGNIZERS_DEICTICRECOGNIZER_H_

@@ -127,7 +127,7 @@ public:
         QUICKDEV_ASSERT_INITIALIZED();
 
         QUICKDEV_TRY_UPDATE_CACHE( velocity_msg_cache_, msg );
-        QUICKDEV_TRY_LOCK_OR_RETURN( "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+        QUICKDEV_TRY_LOCK_OR_RETURN( velocity_msg_cache_, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
 
         QUICKDEV_GET_POLICY_NAMESPACE( TfManager )::_CallbackTimer::update();
 

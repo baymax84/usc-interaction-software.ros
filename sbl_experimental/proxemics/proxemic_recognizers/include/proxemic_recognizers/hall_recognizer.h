@@ -48,6 +48,7 @@ typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 {
+	_MarkerMsg marker_template_;
 	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HallRecognizer )
 	{
 		//
@@ -56,6 +57,12 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 	QUICKDEV_SPIN_FIRST()
 	{
 		initAll();
+
+		marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+		marker_template_.ns = "mehrabian_visualization";
+		marker_template_.action = visualization_msgs::Marker::ADD;
+		marker_template_.lifetime = ros::Duration( 0.001 );
+		marker_template_.pose.orientation.w = 1.0;
 	}
 
 	QUICKDEV_SPIN_ONCE()
@@ -63,14 +70,40 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 		QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
 		if( !states_msg ) return;
 
-		_MarkerArrayMsg markers;
+		const auto now = ros::Time::now();
 
-		for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
+		_MarkerArrayMsg markers_msg;
+
+		unsigned int current_id = 0;
+
+		// we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
+		_HumanoidRecognizerPolicy::buildStatesMap( states_msg );
+
+		for( auto humanoid1_msg = states_msg->states.begin(); humanoid1_msg != states_msg->states.end(); ++humanoid1_msg )
 		{
-			//
-		}
+			for( auto humanoid2_msg = states_msg->states.begin(); humanoid2_msg != states_msg->states.end(); ++humanoid2_msg )
+			{
+				if( humanoid1_msg == humanoid2_msg ) continue;
 
-		_HumanoidRecognizerPolicy::update( markers );
+				const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[humanoid1_msg->name]["torso"];
+				const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[humanoid2_msg->name]["torso"];
+
+				/*std_msgs::ColorRGBA current_color;
+				current_color.r = 0.0;
+				current_color.g = 0.0;
+				current_color.b = 1.0;
+				current_color.a = 1.0;
+
+				_MarkerMsg arrow_marker = arrow_marker_template_;
+				arrow_marker.header.stamp = now;
+				arrow_marker.id = current_id ++;
+				arrow_marker.color = current_color;
+				arrow_marker.points.push_back( joint1.pose.pose.position );
+				arrow_marker.points.push_back( joint2.pose.pose.position );
+
+				markers_msg.markers.push_back( arrow_marker );*/
+			}
+		}
 	}
 };
 
