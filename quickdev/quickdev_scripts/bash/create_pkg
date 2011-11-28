@@ -470,7 +470,7 @@ done
 for node in $nodes; do
   node_file=`echo "$node" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
   node_h_relpath="include/$include_dir/$node_file""_node.h"
-  node_cpp_relpath="nodes/$node_file""_node.cpp"
+  node_cpp_relpath="nodes/$node_file.cpp"
   node_launch_relpath="launch/$node_file.launch"
 
   has_nodelet=false
@@ -591,7 +591,7 @@ done
 
 for nodelet in $nodelets; do
   nodelet_file=`echo "$nodelet" | sed 's:\([a-z]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z]\):\1_\2:g' | tr A-Z a-z`
-  nodelet_cpp_relpath="nodelets/$nodelet_file""_nodelet.cpp"
+  nodelet_cpp_relpath="nodelets/$nodelet_file.cpp"
 
   echo -n "#include <quickdev/nodelet.h>
 #include <$include_dir/$nodelet_file""_node.h>
