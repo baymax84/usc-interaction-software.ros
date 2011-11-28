@@ -38,19 +38,19 @@ called \ref QuickdevScripts-create_pkg with the following settings:
 To specify the above options, simply run the following command in a terminal:
 
 \verbatim
-rosrun quickdev_scripts create_pkg quickdev_demo -d some_package -d some_other_package -d another_package -P quickdev-doc -i qd_demo -nl SomePackageDemo -n SomeOtherPackageDemo -nl AnotherPackageDemo -p SomePackageExample -p SomeOtherPackageExample -s SomeClass
+rosrun quickdev_scripts create_pkg quickdev_demo -d geometry_msgs -d visualization_msgs -P quickdev-doc -i qd_demo -nl SomeDemo -n SomeOtherDemo -nl AnotherDemo -p SomeExample -p SomeOtherExample -s SomeClass
 \endverbatim
 
 Output:
 
 \verbatim
-Creating package "quickdev_demo" with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) }, dependencies { some_package some_other_package another_package }, sources { SomeClass }, policies { SomePackageExample SomeOtherPackageExample }, nodes { SomePackageDemo SomeOtherPackageDemo AnotherPackageDemo }, and nodelets { SomePackageDemo AnotherPackageDemo }.
+Creating package "quickdev_demo" with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) }, dependencies { geometry_msgs visualization_msgs }, sources { SomeClass }, policies { SomeExample SomeOtherExample }, nodes { SomeDemo SomeOtherDemo AnotherDemo }, and nodelets { SomeDemo AnotherDemo }.
 
 
 Using /usr/bin/quickdevadd_license
 
 
-Adding license with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) } and project "quickdev-doc" to files {  include/qd_demo/some_class.h src/some_class.cpp include/qd_demo/some_package_example_policy.h src/some_package_example_policy.cpp include/qd_demo/some_other_package_example_policy.h src/some_other_package_example_policy.cpp include/qd_demo/some_package_demo_node.h nodes/some_package_demo_node.cpp include/qd_demo/some_other_package_demo_node.h nodes/some_other_package_demo_node.cpp include/qd_demo/another_package_demo_node.h nodes/another_package_demo_node.cpp nodelets/some_package_demo_nodelet.cpp nodelets/another_package_demo_nodelet.cpp }
+Adding license with authors { Edward T. Kaszubski ( ekaszubski@gmail.com ) } and project "quickdev-doc" to files {  include/qd_demo/some_class.h src/some_class.cpp include/qd_demo/some_example_policy.h src/some_example_policy.cpp include/qd_demo/some_other_example_policy.h src/some_other_example_policy.cpp include/qd_demo/some_demo_node.h nodes/some_demo_node.cpp include/qd_demo/some_other_demo_node.h nodes/some_other_demo_node.cpp include/qd_demo/another_demo_node.h nodes/another_demo_node.cpp nodelets/some_demo_nodelet.cpp nodelets/another_demo_nodelet.cpp }
 
 done
 done
@@ -58,7 +58,7 @@ done
 
 This creates "quickdev_demo" in the current directory containing the following:
 \verbatim
-quickdev_demo/:
+quickdev_demo:
 CMakeLists.txt  launch        Makefile      nodelets  src
 include         mainpage.dox  manifest.xml  nodes
 
@@ -66,25 +66,23 @@ quickdev_demo/include:
 qd_demo
 
 quickdev_demo/include/qd_demo:
-another_package_demo_node.h     some_other_package_example_policy.h
-some_class.h                    some_package_demo_node.h
-some_other_package_demo_node.h  some_package_example_policy.h
+another_demo_node.h  some_demo_node.h       some_other_demo_node.h
+some_class.h         some_example_policy.h  some_other_example_policy.h
 
 quickdev_demo/launch:
-another_package_demo.launch     some_package_demo.launch
-some_other_package_demo.launch
+another_demo.launch  some_demo.launch  some_other_demo.launch
 
 quickdev_demo/nodelets:
-another_package_demo_nodelet.cpp  nodelet_plugins.xml
-CMakeLists.txt                    some_package_demo_nodelet.cpp
+another_demo_nodelet.cpp  nodelet_plugins.xml
+CMakeLists.txt            some_demo_nodelet.cpp
 
 quickdev_demo/nodes:
-another_package_demo_node.cpp  some_other_package_demo_node.cpp
-CMakeLists.txt                 some_package_demo_node.cpp
+another_demo_node.cpp  some_demo_node.cpp
+CMakeLists.txt         some_other_demo_node.cpp
 
 quickdev_demo/src:
-CMakeLists.txt  some_other_package_example_policy.cpp
-some_class.cpp  some_package_example_policy.cpp
+CMakeLists.txt  some_example_policy.cpp
+some_class.cpp  some_other_example_policy.cpp
 \endverbatim
 
 \subsection BashCreatePkg-package Closer look - package
