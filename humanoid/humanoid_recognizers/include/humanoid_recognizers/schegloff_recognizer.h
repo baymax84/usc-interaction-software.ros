@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
-#define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
+#ifndef HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
+#define HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
 
 #include <quickdev/node.h>
 
@@ -48,30 +48,30 @@ typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( SchegloffRecognizer )
-	{
-		//
-	}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( SchegloffRecognizer )
+    {
+        //
+    }
 
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-	}
+    QUICKDEV_SPIN_FIRST()
+    {
+        initAll();
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-		if( !states_msg ) return;
+    QUICKDEV_SPIN_ONCE()
+    {
+        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
+        if( !states_msg ) return;
 
-		_MarkerArrayMsg markers;
+        _MarkerArrayMsg markers;
 
-		for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
-		{
-			//
-		}
+        for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
+        {
+            //
+        }
 
-		_HumanoidRecognizerPolicy::update( markers );
-	}
+        _HumanoidRecognizerPolicy::update( markers );
+    }
 };
 
-#endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
+#endif // HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
