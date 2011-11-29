@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
-#define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
+#ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
+#define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
 
 #include <quickdev/node.h>
 
@@ -79,18 +79,21 @@ private:
         marker_template_.header.frame_id = "/openni_depth_tracking_frame";
         marker_template_.ns = "basic_skeleton";
         marker_template_.action = visualization_msgs::Marker::ADD;
-        marker_template_.lifetime = ros::Duration( 0.001 );
+        marker_template_.lifetime = ros::Duration( 0.1 );
         marker_template_.pose.orientation.w = 1.0;
 
         text_marker_template_ = marker_template_;
+        //text_marker_template_.ns = "basic_skeleton_text";
         text_marker_template_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
         text_marker_template_.scale.z = 0.1;
 
         lines_marker_template_ = marker_template_;
+        //lines_marker_template_.ns = "basic_skeleton_lines";
         lines_marker_template_.type = visualization_msgs::Marker::LINE_LIST;
         lines_marker_template_.scale.x = 0.02;
 
         points_marker_template_ = marker_template_;
+        //points_marker_template_.ns = "basic_skeleton_points";
         points_marker_template_.type = visualization_msgs::Marker::SPHERE_LIST;
         points_marker_template_.scale.x = points_marker_template_.scale.y
                                         = points_marker_template_.scale.z
@@ -122,14 +125,14 @@ private:
 
         unsigned int current_id = 0;
 
-        for( auto state_array = state_arrays_cache.begin(); state_array != state_arrays_cache.end(); ++state_array )
+        for( auto users = state_arrays_cache.begin(); users != state_arrays_cache.end(); ++users )
         {
             // if the current state array is null, discard it and move on
-            if( !( *state_array ) ) continue;
+            if( !( *users ) ) continue;
 
-            for( auto state = (*state_array)->states.begin(); state != (*state_array)->states.end(); ++state )
+            for( auto user = (*users)->states.begin(); user != (*users)->states.end(); ++user )
             {
-                combined_states_msg.states.push_back( *state );
+                combined_states_msg.states.push_back( *user );
 
                 std::map<std::string, _PoseWithConfidenceMsg> point_map;
 
@@ -144,7 +147,7 @@ private:
                 points_marker.id = current_id ++;
                 points_marker.color = current_color;
 
-                for( auto joint = state->joints.begin(); joint != state->joints.end(); ++joint )
+                for( auto joint = user->joints.begin(); joint != user->joints.end(); ++joint )
                 {
                     // create point markers
                     points_marker.points.push_back( joint->pose.pose.position );
@@ -183,13 +186,15 @@ private:
                 text_marker.id = current_id ++;
                 text_marker.color = current_color;
 
-                text_marker.text = state->name;
-                text_marker.pose.position = point_map["torso"].pose.position;
-                text_marker.pose.position.y -= 0.7;  // determined empirically...
+                text_marker.text = user->name;
+                text_marker.pose.position = point_map["head"].pose.position;
+                text_marker.pose.position.z += 0.2;  // determined empirically...
 
-                markers.markers.push_back( points_marker );
                 markers.markers.push_back( lines_marker );
                 markers.markers.push_back( text_marker );
+                markers.markers.push_back( points_marker );
+
+                //++current_id;
             }
         }
 
@@ -215,4 +220,4 @@ private:
     }
 };
 
-#endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
+#endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_

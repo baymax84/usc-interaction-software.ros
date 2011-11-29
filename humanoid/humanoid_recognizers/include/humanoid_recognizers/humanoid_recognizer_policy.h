@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
-#define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
+#ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
+#define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
 
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
@@ -84,7 +84,7 @@ protected:
     {
         QUICKDEV_GET_NODEHANDLE( nh_rel );
 
-        getMultiPub().addPublishers<_MarkerArrayMsg>( nh_rel, { "/visualization_marker_array" } );
+        getMultiPub().addPublishers<_MarkerArrayMsg, _MarkerArrayMsg>( nh_rel, { "marker_array", "/visualization_marker_array" } );
         getMultiSub().addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
     }
 
@@ -99,7 +99,9 @@ protected:
     {
         QUICKDEV_ASSERT_INITIALIZED();
 
-        getMultiPub().publish( "/visualization_marker_array", quickdev::make_const_shared( markers ) );
+        auto markers_ptr = quickdev::make_const_shared( markers );
+
+        getMultiPub().publish( "marker_array", markers_ptr, "/visualization_marker_array", markers_ptr );
     }
 
     void buildStatesMap( const _HumanoidStateArrayMsg::ConstPtr & states_msg )
@@ -124,4 +126,4 @@ protected:
     }
 };
 
-#endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
+#endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
