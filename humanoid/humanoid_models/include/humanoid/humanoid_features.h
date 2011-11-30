@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/humanoid/humanoid.h
+ *  include/humanoid/humanoid_features.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDMODELS_HUMANOID_HUMANOID_H_
-#define HUMANOIDMODELS_HUMANOID_HUMANOID_H_
+#ifndef HUMANOIDMODELS_HUMANOID_HUMANOIDFEATURES_H_
+#define HUMANOIDMODELS_HUMANOID_HUMANOIDFEATURES_H_
 
 #include <vector>
 #include <string>
@@ -52,32 +52,32 @@ typedef humanoid_models::HumanoidStateArray _HumanoidStateArrayMsg;
 
 const static _JointNames JOINT_NAMES_
 {
-	"head",
-	"neck",
-	"torso",
-	"waist",
-	"right_collar",
-	"right_shoulder",
-	"right_elbow",
-	"right_wrist",
-	"right_hand",
-	"right_finger_tip",
-	"left_collar",
-	"left_shoulder",
-	"left_elbow",
-	"left_wrist",
-	"left_hand",
-	"left_finger_tip",
-	"right_hip",
-	"right_knee",
-	"right_ankle",
-	"right_foot",
-	"left_hip",
-	"left_knee",
-	"left_ankle",
-	"left_foot"
+    "head",
+    "neck",
+    "torso",
+    "waist",
+    "right_collar",
+    "right_shoulder",
+    "right_elbow",
+    "right_wrist",
+    "right_hand",
+    "right_finger_tip",
+    "left_collar",
+    "left_shoulder",
+    "left_elbow",
+    "left_wrist",
+    "left_hand",
+    "left_finger_tip",
+    "right_hip",
+    "right_knee",
+    "right_ankle",
+    "right_foot",
+    "left_hip",
+    "left_knee",
+    "left_ankle",
+    "left_foot"
 };
 
 } // humanoid
 
-#endif // HUMANOIDMODELS_HUMANOID_HUMANOID_H_
+#endif // HUMANOIDMODELS_HUMANOID_HUMANOIDFEATURES_H_

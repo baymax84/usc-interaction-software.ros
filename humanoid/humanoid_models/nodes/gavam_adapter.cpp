@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <humanoid/gavam_adapter.h>
+#include <humanoid/gavam_adapter_node.h>
 QUICKDEV_INST_NODE( GAVAMAdapterNode, "gavam_adapter" )

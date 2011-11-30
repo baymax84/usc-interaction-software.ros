@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodelets/kinect_adapter.cpp
+ *  nodelets/open_ni_adapter.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -34,8 +34,16 @@
  **************************************************************************/
 
 #include <quickdev/nodelet.h>
-#include <humanoid/kinect_adapter.h>
+#include <humanoid/openni_adapter_node.h>
 
-QUICKDEV_DECLARE_NODELET( humanoid_models, KinectAdapter )
+// These are not the codes you're looking for...probably
+// This file was auto-generated; you probably want to modify ../include/humanoid/openni_adapter_node.h
 
-QUICKDEV_INST_NODELET( humanoid_models, KinectAdapter, kinect_adapter )
+// declare OpenNIAdapter in namespace humanoid_models
+//
+QUICKDEV_DECLARE_NODELET( humanoid_models, OpenNIAdapter )
+
+// instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
+// registers our nodelet class humanoid_models::OpenNIAdapter as humanoid_models/openni_adapter
+//
+QUICKDEV_INST_NODELET( humanoid_models, OpenNIAdapter, openni_adapter )

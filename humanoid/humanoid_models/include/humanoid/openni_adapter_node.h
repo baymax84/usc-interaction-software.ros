@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/humanoid/kinect_adapter.h
+ *  include/humanoid/openni_adapter_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDMODELS_HUMANOID_KINECTADAPTER_H_
-#define HUMANOIDMODELS_HUMANOID_KINECTADAPTER_H_
+#ifndef HUMANOIDMODELS_HUMANOID_OPENNIADAPTERNODE_H_
+#define HUMANOIDMODELS_HUMANOID_OPENNIADAPTERNODE_H_
 
 #include <quickdev/node.h>
 #include <quickdev/tf_tranceiver_policy.h>
@@ -43,18 +43,18 @@
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/threading.h>
 
-#include <humanoid/humanoid.h>
+#include <humanoid/humanoid_features.h>
 #include <openni_multitracker/UserStateArray.h>
 
 typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
 typedef quickdev::TimedPolicy<> _UserStatesCBTimer;
-QUICKDEV_DECLARE_NODE( KinectAdapter, _TfTranceiverPolicy, _UserStatesCBTimer )
+QUICKDEV_DECLARE_NODE( OpenNIAdapter, _TfTranceiverPolicy, _UserStatesCBTimer )
 
 using humanoid::_HumanoidStateArrayMsg;
 using humanoid::_HumanoidStateMsg;
 using humanoid::_HumanoidJointMsg;
 
-QUICKDEV_DECLARE_NODE_CLASS( KinectAdapter )
+QUICKDEV_DECLARE_NODE_CLASS( OpenNIAdapter )
 {
 private:
     typedef openni_multitracker::UserStateArray _UserStateArrayMsg;
@@ -67,7 +67,7 @@ private:
     std::string camera_frame_;
     ros::Duration kinect_timeout_duration_;
 
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( KinectAdapter ),
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( OpenNIAdapter ),
         camera_frame_( "/openni_depth_tracking_frame" ),
         kinect_timeout_duration_( 1.0 )
     {
@@ -80,7 +80,7 @@ private:
 
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
         multi_pub_.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states" } );
-        multi_sub_.addSubscriber( nh_rel, "user_states", &KinectAdapterNode::userStatesCB, this );
+        multi_sub_.addSubscriber( nh_rel, "user_states", &OpenNIAdapterNode::userStatesCB, this );
     }
 
     QUICKDEV_SPIN_ONCE()
@@ -139,4 +139,4 @@ private:
     }
 };
 
-#endif // HUMANOIDMODELS_HUMANOID_KINECTADAPTER_H_
+#endif // HUMANOIDMODELS_HUMANOID_OPENNIADAPTERNODE_H_
