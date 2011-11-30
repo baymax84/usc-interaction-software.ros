@@ -34,7 +34,7 @@
  **************************************************************************/
 
 #include <quickdev/nodelet.h>
-#include <humanoid/gavam_adapter.h>
+#include <humanoid/gavam_adapter_node.h>
 
 QUICKDEV_DECLARE_NODELET( humanoid_models, GAVAMAdapter )
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodes/kinect_adapter.cpp
+ *  src/humanoid_features.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,5 +33,4 @@
  *
  **************************************************************************/
 
-#include <humanoid/kinect_adapter.h>
-QUICKDEV_INST_NODE( KinectAdapterNode, "kinect_adapter" )
+#include <humanoid/humanoid_features.h>

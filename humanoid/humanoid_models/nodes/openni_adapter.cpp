@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/humanoid/gavam_adapter.h
+ *  nodes/openni_adapter.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,29 +33,11 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDMODELS_HUMANOID_GAVAMADAPTER_H_
-#define HUMANOIDMODELS_HUMANOID_GAVAMADAPTER_H_
+#include <humanoid/openni_adapter_node.h>
 
-#include <quickdev/node.h>
+// These are not the codes you're looking for...probably
+// This file was auto-generated; you probably want to modify ../include/humanoid/openni_adapter_node.h
 
-QUICKDEV_DECLARE_NODE( GAVAMAdapter )
-
-QUICKDEV_DECLARE_NODE_CLASS( GAVAMAdapter )
-{
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( GAVAMAdapter )
-	{
-		//
-	}
-
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-	}
-
-	QUICKDEV_SPIN_ONCE()
-	{
-		//
-	}
-};
-
-#endif // HUMANOIDMODELS_HUMANOID_GAVAMADAPTER_H_
+// instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
+QUICKDEV_INST_NODE( OpenNIAdapterNode, "openni_adapter" )

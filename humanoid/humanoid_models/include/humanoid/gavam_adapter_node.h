@@ -1,5 +1,5 @@
 /***************************************************************************
- *  src/humanoid.cpp
+ *  include/humanoid/gavam_adapter_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,4 +33,29 @@
  *
  **************************************************************************/
 
-#include <humanoid/humanoid.h>
+#ifndef HUMANOIDMODELS_HUMANOID_GAVAMADAPTERNODE_H_
+#define HUMANOIDMODELS_HUMANOID_GAVAMADAPTERNODE_H_
+
+#include <quickdev/node.h>
+
+QUICKDEV_DECLARE_NODE( GAVAMAdapter )
+
+QUICKDEV_DECLARE_NODE_CLASS( GAVAMAdapter )
+{
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( GAVAMAdapter )
+    {
+        //
+    }
+
+    QUICKDEV_SPIN_FIRST()
+    {
+        initAll();
+    }
+
+    QUICKDEV_SPIN_ONCE()
+    {
+        //
+    }
+};
+
+#endif // HUMANOIDMODELS_HUMANOID_GAVAMADAPTERNODE_H_
