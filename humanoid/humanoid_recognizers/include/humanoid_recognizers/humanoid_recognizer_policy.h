@@ -64,14 +64,20 @@ QUICKDEV_DECLARE_POLICY_CLASS( HumanoidRecognizer )
 public:
     typedef visualization_msgs::MarkerArray _MarkerArrayMsg;
     typedef visualization_msgs::Marker _MarkerMsg;
+    typedef humanoid::_HumanoidStateMsg _HumanoidStateMsg;
     typedef humanoid::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
     typedef humanoid::_HumanoidJointMsg _HumanoidJointMsg;
     typedef std::map<std::string, std::map<std::string, _HumanoidJointMsg> > _StatesMap;
+    typedef std::pair<_HumanoidStateMsg, _HumanoidStateMsg> _UserPair;
+    typedef std::map<std::string, size_t> _UserPairsMap;
+    typedef std::vector<_UserPair> _UserPairs;
 
 protected:
     quickdev::MessageCache<_HumanoidStateArrayMsg> states_cache_;
 
     _StatesMap states_map_;
+    _UserPairsMap user_pairs_map_;
+    _UserPairs user_pairs_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( HumanoidRecognizer ),
         initialized_( false )
@@ -106,6 +112,7 @@ protected:
 
     void buildStatesMap( const _HumanoidStateArrayMsg::ConstPtr & states_msg )
     {
+        // map from user name to user state
         states_map_.clear();
 
         for( auto humanoid_msg = states_msg->states.begin(); humanoid_msg != states_msg->states.end(); ++humanoid_msg )
@@ -113,6 +120,27 @@ protected:
             for( auto joint_msg = humanoid_msg->joints.begin(); joint_msg != humanoid_msg->joints.end(); ++joint_msg )
             {
                 states_map_[humanoid_msg->name][joint_msg->name] = *joint_msg;
+            }
+        }
+    }
+
+    void buildPairs( const _HumanoidStateArrayMsg::ConstPtr & states_msg )
+    {
+        // map from user pair names [user<m>user<n>],[user<n>,user<m>] to user pair id
+        user_pairs_map_.clear();
+        // vector from user pair id to user pair
+        user_pairs_.clear();
+
+        for( auto humanoid_msg = states_msg->states.begin(); humanoid_msg != states_msg->states.end(); ++humanoid_msg )
+        {
+            for( auto humanoid2_msg = states_msg->states.begin(); humanoid2_msg != states_msg->states.end(); ++humanoid2_msg )
+            {
+                if( humanoid_msg->name == humanoid2_msg->name ) continue;
+                if( user_pairs_map_.count( humanoid_msg->name + humanoid2_msg->name )  || user_pairs_map_.count( humanoid2_msg->name + humanoid_msg->name ) ) continue;
+
+                user_pairs_map_[humanoid_msg->name + humanoid2_msg->name] = user_pairs_.size();
+                user_pairs_map_[humanoid2_msg->name + humanoid_msg->name] = user_pairs_.size();
+                user_pairs_.push_back( _UserPair( *humanoid_msg, *humanoid2_msg ) );
             }
         }
     }

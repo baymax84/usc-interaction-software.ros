@@ -275,7 +275,7 @@ public:
 
 	//! Wrap an existing const mxArray
 	/*! Note that we const_cast to remove the const property.
-	 *  When using this constructor, one should use the syntax to preserve const-ness: const MatlabMat<Type>( value ) */
+	 *  When using this constructor, one should use the following syntax to preserve const-ness: const MatlabMat<Type>( value ) */
 	template<class __Mat, typename std::enable_if<(std::is_same<__Mat, const _Mat>::value), int>::type = 0>
 	MatlabMat( __Mat * mat )
 	:

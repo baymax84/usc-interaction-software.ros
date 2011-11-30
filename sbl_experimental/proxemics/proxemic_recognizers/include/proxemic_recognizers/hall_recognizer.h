@@ -78,31 +78,27 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
         // we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
         _HumanoidRecognizerPolicy::buildStatesMap( states_msg );
+        _HumanoidRecognizerPolicy::buildPairs( states_msg );
 
-        for( auto humanoid1_msg = states_msg->states.begin(); humanoid1_msg != states_msg->states.end(); ++humanoid1_msg )
+        for( auto pair = _HumanoidRecognizerPolicy::user_pairs_.begin(); pair != _HumanoidRecognizerPolicy::user_pairs_.end(); ++pair )
         {
-            for( auto humanoid2_msg = states_msg->states.begin(); humanoid2_msg != states_msg->states.end(); ++humanoid2_msg )
-            {
-                if( humanoid1_msg == humanoid2_msg ) continue;
+            const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
+            const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];
 
-                const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[humanoid1_msg->name]["torso"];
-                const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[humanoid2_msg->name]["torso"];
+            /*std_msgs::ColorRGBA current_color;
+            current_color.r = 0.0;
+            current_color.g = 0.0;
+            current_color.b = 1.0;
+            current_color.a = 1.0;
 
-                /*std_msgs::ColorRGBA current_color;
-                current_color.r = 0.0;
-                current_color.g = 0.0;
-                current_color.b = 1.0;
-                current_color.a = 1.0;
+            _MarkerMsg arrow_marker = arrow_marker_template_;
+            arrow_marker.header.stamp = now;
+            arrow_marker.id = current_id ++;
+            arrow_marker.color = current_color;
+            arrow_marker.points.push_back( joint1.pose.pose.position );
+            arrow_marker.points.push_back( joint2.pose.pose.position );
 
-                _MarkerMsg arrow_marker = arrow_marker_template_;
-                arrow_marker.header.stamp = now;
-                arrow_marker.id = current_id ++;
-                arrow_marker.color = current_color;
-                arrow_marker.points.push_back( joint1.pose.pose.position );
-                arrow_marker.points.push_back( joint2.pose.pose.position );
-
-                markers_msg.markers.push_back( arrow_marker );*/
-            }
+            markers_msg.markers.push_back( arrow_marker );*/
         }
     }
 };
