@@ -36,6 +36,7 @@
 #ifndef QUICKDEVCPP_QUICKDEV_TFMANAGER_H_
 #define QUICKDEVCPP_QUICKDEV_TFMANAGER_H_
 
+#include <quickdev/macros.h>
 #include <quickdev/console.h>
 #include <string>
 #include <map>

@@ -36,6 +36,7 @@
 #ifndef QUICKDEVCPP_QUICKDEV_THREADING_H_
 #define QUICKDEVCPP_QUICKDEV_THREADING_H_
 
+#include <quickdev/macros.h>
 #include <boost/thread/mutex.hpp>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
