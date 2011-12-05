@@ -35,6 +35,7 @@
 
 #include <quickdev/macros.h>
 #include <quickdev/multi_publisher.h>
+#include <quickdev/param_reader.h>
 #include <ros/rate.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Point.h>
@@ -50,6 +51,9 @@ public:
         multi_pub_(),
         loop_rate_( 10 )
     {
+        auto loop_rate = ros::ParamReader<double, 1>::readParam( nh, "loop_rate", 10 );
+        loop_rate_ = ros::Rate( loop_rate );
+
         multi_pub_.addPublishers<
             std_msgs::String,
             geometry_msgs::Point>(
