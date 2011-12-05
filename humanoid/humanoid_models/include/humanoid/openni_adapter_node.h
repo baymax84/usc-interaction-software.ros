@@ -92,11 +92,17 @@ private:
 
         _HumanoidStateArrayMsg state_array_msg;
 
+        const auto now = ros::Time::now();
+
+        state_array_msg.header.stamp = now;
+
         for( auto user_state = user_states_msg->user_states.begin(); user_state != user_states_msg->user_states.end(); ++user_state )
         {
             if( !user_state->is_tracked ) continue;
 
             _HumanoidStateMsg state_msg;
+            state_msg.header.stamp = now;
+
             state_msg.name = user_state->name;
 
             for( auto joint = humanoid::JOINT_NAMES_.begin(); joint != humanoid::JOINT_NAMES_.end(); ++joint )
