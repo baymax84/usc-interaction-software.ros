@@ -264,10 +264,8 @@ public:
 
     inline _MessageArrayCache & getInstance(){ return *this; }
 
-    auto getStorage() -> decltype( storage_ ) &
-    {
-        return storage_;
-    }
+    // read access for storage_ (via getStorage)
+    QUICKDEV_DECLARE_ACCESSOR2( storage_, Storage )
 
     _ROSMessageArray getMessages()
     {
@@ -369,10 +367,7 @@ public:
         eraseOld( ros::Duration( message_lifetime ) );
     }
 
-    auto getStamp() const -> const decltype( stamp_ ) &
-    {
-        return stamp_;
-    }
+    QUICKDEV_DECLARE_ACCESSOR2( stamp_, Stamp )
 };
 
 template<class __Message, unsigned int __Flag__>
@@ -592,6 +587,22 @@ public:
         message_index_map_.erase( erase_index );
     }
 
+    typename _MessageArray::iterator find( std::string name )
+    {
+        auto index = message_index_map_.find( name );
+
+        if( index != message_index_map_.end() ) return _Parent::getStorage()->message_array_.begin() + index->second;
+        else return _Parent::getStorage()->message_array_.end();
+    }
+
+    typename _MessageArray::const_iterator find( std::string name ) const
+    {
+        auto index = message_index_map_.find( name );
+
+        if( index != message_index_map_.end() ) return _Parent::getStorage()->message_array_.begin() + index->second;
+        else return _Parent::getStorage()->message_array_.end();
+    }
+
     typename _MessageArray::iterator begin()
     {
         return _Parent::getStorage()->message_array_.begin();
@@ -612,13 +623,18 @@ public:
         return _Parent::getStorage()->message_array_.end();
     }
 
-    __Message & operator[]( const std::string & name )
+    __Message & at( const std::string & name )
     {
         static __Message default_return;
-        auto index = message_index_map_.find( name );
+        auto message = find( name );
 
-        if( index != message_index_map_.end() ) return _Parent::getStorage()->message_array_[index->second];
+        if( message != end() ) return *message;
         else return default_return;
+    }
+
+    __Message & operator[]( const std::string & name )
+    {
+        return at( name );
     }
 
     void updateMessage( const __Message & msg )
