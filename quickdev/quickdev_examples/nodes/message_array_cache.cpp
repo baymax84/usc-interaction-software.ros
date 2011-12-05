@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodes/multi_publisher.cpp
+ *  nodes/message_array_cache.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -34,72 +34,67 @@
  **************************************************************************/
 
 #include <quickdev/macros.h>
+#include <quickdev/type_utils.h>
+#include <quickdev/message_array_cache.h>
+#include <quickdev/multi_subscriber.h>
 #include <quickdev/multi_publisher.h>
+
 #include <ros/rate.h>
+
 #include <std_msgs/String.h>
 #include <geometry_msgs/Point.h>
+#include <quickdev_examples/StringArray.h>
 
-class MultiPublisherNode
+class MessageArrayCacheNode
 {
 public:
+    typedef std_msgs::String _StringMsg;
+    typedef quickdev_examples::StringArray _StringArrayMsg;
+    typedef quickdev::StampedMessage<_StringMsg> _StampedStringMsg;
+    typedef geometry_msgs::Point _PointMsg;
+
+    ros::MultiSubscriber<> multi_sub_;
     ros::MultiPublisher<> multi_pub_;
+    quickdev::TimedMessageArrayCache<quickdev::StampedMessage<_StringMsg>, quickdev::TimedMessageArrayCacheFlags::STAMPED_ON_UPDATE> timed_cache_;
     ros::Rate loop_rate_;
 
-    MultiPublisherNode( ros::NodeHandle & nh )
+    MessageArrayCacheNode( ros::NodeHandle & nh )
     :
-        multi_pub_(),
         loop_rate_( 10 )
     {
-        multi_pub_.addPublishers<
-            std_msgs::String,
-            geometry_msgs::Point>(
+        multi_sub_.addSubscriber(
                 nh,
-                { "string", "point" } );
+                "string",
+                &MessageArrayCacheNode::stringCB, this );
 
-        multi_pub_.addPublishers<
-            std_msgs::String,
-            geometry_msgs::Point>(
-                nh,
-                { "string2", "point2" } );
+        multi_pub_.addPublishers<_StringMsg>( nh, { "string_array" } );
+    }
+
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( stringCB, _StringMsg )
+    {
+        timed_cache_.updateMessage( _StampedStringMsg( *msg, ros::Time::now() ) );
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        static unsigned int i = 0;
+        const auto now = ros::Time::now();
 
-        std::stringstream ss;
-        ss << "hello " << i;
-        ++i;
-        std_msgs::String string_msg;
-        string_msg.data = ss.str();
+        timed_cache_.eraseOld( 2.0 );
+        // get messages ready for output
+        const auto messages = timed_cache_.getMessages();
+        // get read-only messages (faster)
+        // const auto messages = timed_cache_.getRawMessages();
 
-        geometry_msgs::Point point_msg;
-        point_msg.x = 1;
-        point_msg.y = 2;
-        point_msg.z = 3;
+        printf( "Cache contains:\n" );
+        for( auto message = messages.begin(); message != messages.end(); ++message )
+        {
+            printf( "%s\n", message->data.c_str() );
+        }
+        printf( "----------\n" );
 
-        // it is possible to publish 1 or more key-value pairs with a
-        // single call to publish( ... )
-        multi_pub_.publish(
-            "string", string_msg,
-            "point", point_msg );
-
-        /*string_msg.data = "goodbye";
-
-        multi_pub_.publish( "string2", string_msg );
-
-        point_msg.z = 5;
-
-        multi_pub_.publish( "point2", point_msg );
-
-        string_msg.data = "whatever";
-        point_msg = geometry_msgs::Point();
-
-        multi_pub_.publish(
-            "string", string_msg,
-            "point", point_msg,
-            "string2", string_msg,
-            "point2", point_msg );*/
+        _StringArrayMsg string_array;
+        string_array.strings = messages;
+        multi_pub_.publish( "string_array", string_array );
     }
 
     void spin()
@@ -113,4 +108,6 @@ public:
     }
 };
 
-QUICKDEV_INST_NODE( MultiPublisherNode, "multi_publisher" )
+// instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
+QUICKDEV_INST_NODE( MessageArrayCacheNode, "message_array_cache" )

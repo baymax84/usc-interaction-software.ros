@@ -19,6 +19,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 quickdev_gencfg()
 rosbuild_gensrv()
+rosbuild_genmsg()
 
 add_subdirectory( nodes )
 add_subdirectory( nodelets )
