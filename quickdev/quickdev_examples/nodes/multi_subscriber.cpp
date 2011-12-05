@@ -35,6 +35,7 @@
 
 #include <quickdev/macros.h>
 #include <quickdev/multi_subscriber.h>
+#include <quickdev/param_reader.h>
 #include <ros/rate.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Point.h>
@@ -42,49 +43,52 @@
 class MultiSubscriberNode
 {
 public:
-	ros::MultiSubscriber<> multi_sub_;
-	ros::Rate loop_rate_;
+    ros::MultiSubscriber<> multi_sub_;
+    ros::Rate loop_rate_;
 
-	MultiSubscriberNode( ros::NodeHandle & nh )
-	:
-		multi_sub_(),
-		loop_rate_( 10 )
-	{
-		multi_sub_.addSubscriber(
-				nh,
-				"string",
-				&MultiSubscriberNode::stringCB, this );
+    MultiSubscriberNode( ros::NodeHandle & nh )
+    :
+        multi_sub_(),
+        loop_rate_( 10 )
+    {
+        auto loop_rate = ros::ParamReader<double, 1>::readParam( nh, "loop_rate", 10 );
+        loop_rate_ = ros::Rate( loop_rate );
 
-		multi_sub_.addSubscriber(
-				nh,
-				"point",
-				&MultiSubscriberNode::pointCB, this );
-	}
+        multi_sub_.addSubscriber(
+                nh,
+                "string",
+                &MultiSubscriberNode::stringCB, this );
 
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( stringCB, std_msgs::String )
-	{
-		printf( "Got string: %s\n", msg->data.c_str() );
-	}
+        multi_sub_.addSubscriber(
+                nh,
+                "point",
+                &MultiSubscriberNode::pointCB, this );
+    }
 
-	QUICKDEV_DECLARE_MESSAGE_CALLBACK( pointCB, geometry_msgs::Point )
-	{
-		printf( "Got point: [%f %f %f]\n", msg->x, msg->y, msg->z );
-	}
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( stringCB, std_msgs::String )
+    {
+        printf( "Got string: %s\n", msg->data.c_str() );
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		//
-	}
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( pointCB, geometry_msgs::Point )
+    {
+        printf( "Got point: [%f %f %f]\n", msg->x, msg->y, msg->z );
+    }
 
-	void spin()
-	{
-		while( ros::ok() )
-		{
-			spinOnce();
-			ros::spinOnce();
-			loop_rate_.sleep();
-		}
-	}
+    QUICKDEV_SPIN_ONCE()
+    {
+        //
+    }
+
+    void spin()
+    {
+        while( ros::ok() )
+        {
+            spinOnce();
+            ros::spinOnce();
+            loop_rate_.sleep();
+        }
+    }
 };
 
 QUICKDEV_INST_NODE( MultiSubscriberNode, "multi_subscriber" )
