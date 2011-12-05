@@ -46,6 +46,7 @@ typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
 QUICKDEV_DECLARE_NODE( HumanoidRecognizer, _HumanoidRecognizerPolicy )
 
 using humanoid::_PoseWithConfidenceMsg;
+using humanoid::_Humanoid;
 typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerMsg _MarkerMsg;
@@ -100,15 +101,15 @@ private:
                                         = 0.05;
     }
 
-    void appendLineMarker( _MarkerMsg & msg, const std::string & from, const std::string & to, const std::map<std::string, _PoseWithConfidenceMsg> & point_map )
+    void appendLineMarker( _MarkerMsg & msg, const std::string & from, const std::string & to, const _Humanoid & humanoid )
     {
-        const auto & from_point = point_map.find( from );
-        const auto & to_point = point_map.find( to );
+        const auto & from_point = humanoid.find( from );
+        const auto & to_point = humanoid.find( to );
 
-        if( from_point == point_map.end() || to_point == point_map.end() ) return;
+        if( from_point == humanoid.end() || to_point == humanoid.end() ) return;
 
-        msg.points.push_back( from_point->second.pose.position );
-        msg.points.push_back( to_point->second.pose.position );
+        msg.points.push_back( from_point->pose.pose.position );
+        msg.points.push_back( to_point->pose.pose.position );
     }
 
     QUICKDEV_SPIN_ONCE()
@@ -116,16 +117,90 @@ private:
         // get a read/write reference to the cache's data (called state_arrays_cache)
         QUICKDEV_LOCK_CACHE_AND_GET( state_arrays_cache_, state_arrays_cache );
 
-        // if there are no items in the cache then we have no work to do
-        if( state_arrays_cache.size() == 0 ) return;
-
         _HumanoidStateArrayMsg combined_states_msg;
         _MarkerArrayMsg markers;
         const auto now = ros::Time::now();
 
         unsigned int current_id = 0;
 
-        for( auto users = state_arrays_cache.begin(); users != state_arrays_cache.end(); ++users )
+        for( auto users_components = state_arrays_cache.begin(); users_components != state_arrays_cache.end(); ++users_components )
+        {
+            // mesh all parts of all humanoids into one message
+            _HumanoidRecognizerPolicy::updateHumanoids( *users_components );
+        }
+
+        // recursively erase all old messages
+        _HumanoidRecognizerPolicy::eraseOld();
+
+        auto & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
+
+        for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
+        {
+            auto & joints = humanoid->getJointsMessage();
+            combined_states_msg.states.push_back( joints );
+
+            //std::map<std::string, _PoseWithConfidenceMsg> point_map;
+
+            std_msgs::ColorRGBA current_color;
+            current_color.r = 0.0;
+            current_color.g = 0.0;
+            current_color.b = 1.0;
+            current_color.a = 1.0;
+
+            _MarkerMsg points_marker( points_marker_template_ );
+            points_marker.header.stamp = now;
+            points_marker.id = current_id ++;
+            points_marker.color = current_color;
+
+            for( auto joint = joints.joints.begin(); joint != joints.joints.end(); ++joint )
+            {
+                // create point markers
+                points_marker.points.push_back( joint->pose.pose.position );
+//                  points_marker.colors.push_back( current_color );
+
+                // map joint names to points for easy lookup later
+                //point_map[joint->name] = joint->pose;
+            }
+
+            // connect points
+            _MarkerMsg lines_marker( lines_marker_template_ );
+            lines_marker.header.stamp = now;
+            lines_marker.id = current_id ++;
+            lines_marker.color = current_color;
+
+            appendLineMarker( lines_marker, "head", "neck", *humanoid );
+            appendLineMarker( lines_marker, "neck", "left_shoulder", *humanoid );
+            appendLineMarker( lines_marker, "neck", "right_shoulder", *humanoid );
+            appendLineMarker( lines_marker, "torso", "left_shoulder", *humanoid );
+            appendLineMarker( lines_marker, "torso", "right_shoulder", *humanoid );
+            appendLineMarker( lines_marker, "torso", "left_hip", *humanoid );
+            appendLineMarker( lines_marker, "torso", "right_hip", *humanoid );
+            appendLineMarker( lines_marker, "left_shoulder", "left_elbow", *humanoid );
+            appendLineMarker( lines_marker, "left_elbow", "left_hand", *humanoid );
+            appendLineMarker( lines_marker, "right_shoulder", "right_elbow", *humanoid );
+            appendLineMarker( lines_marker, "right_elbow", "right_hand", *humanoid );
+            appendLineMarker( lines_marker, "left_hip", "right_hip", *humanoid );
+            appendLineMarker( lines_marker, "left_hip", "left_knee", *humanoid );
+            appendLineMarker( lines_marker, "left_knee", "left_foot", *humanoid );
+            appendLineMarker( lines_marker, "right_hip", "right_knee", *humanoid );
+            appendLineMarker( lines_marker, "right_knee", "right_foot", *humanoid );
+
+            // set text position
+            _MarkerMsg text_marker( text_marker_template_ );
+            text_marker.header.stamp = now;
+            text_marker.id = current_id ++;
+            text_marker.color = current_color;
+
+            text_marker.text = humanoid->name;
+            text_marker.pose.position = humanoid->at("head").pose.pose.position;
+            text_marker.pose.position.z += 0.2;  // determined empirically...
+
+            markers.markers.push_back( lines_marker );
+            markers.markers.push_back( text_marker );
+            markers.markers.push_back( points_marker );
+        }
+
+        /*for( auto users = state_arrays_cache.begin(); users != state_arrays_cache.end(); ++users )
         {
             // if the current state array is null, discard it and move on
             if( !( *users ) ) continue;
@@ -196,7 +271,7 @@ private:
 
                 //++current_id;
             }
-        }
+        }*/
 
         _HumanoidRecognizerPolicy::update( markers );
 

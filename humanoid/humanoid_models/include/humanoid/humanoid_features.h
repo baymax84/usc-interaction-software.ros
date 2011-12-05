@@ -38,6 +38,7 @@
 
 #include <vector>
 #include <string>
+#include <quickdev/message_array_cache.h>
 #include <humanoid_models/HumanoidStateArray.h>
 
 namespace humanoid
@@ -77,6 +78,67 @@ const static _JointNames JOINT_NAMES_
     "left_ankle",
     "left_foot"
 };
+
+class Humanoid : public quickdev::NamedMessageArrayCache<_HumanoidJointMsg>, public quickdev::TimedMessageArrayCache<_HumanoidJointMsg>
+{
+public:
+    typedef quickdev::NamedMessageArrayCache<_HumanoidJointMsg> _NamedMessageArrayCache;
+    typedef quickdev::TimedMessageArrayCache<_HumanoidJointMsg> _TimedMessageArrayCache;
+
+    struct Header
+    {
+        ros::Time stamp;
+    };
+
+    std::string name;
+    Header header;
+
+protected:
+    _HumanoidStateMsg joint_array_msg_;
+
+public:
+    Humanoid( const _HumanoidStateMsg & msg = _HumanoidStateMsg() )
+    :
+        _NamedMessageArrayCache(),
+        _TimedMessageArrayCache( _NamedMessageArrayCache::getStorage() )
+    {
+        updateJoints( msg );
+    }
+
+    Humanoid & updateJoints( const _HumanoidStateMsg & msg, const double & message_lifetime = 0.5 )
+    {
+        name = msg.name;
+        header.stamp = msg.header.stamp;
+
+        _NamedMessageArrayCache::updateMessages( msg.joints );
+        _TimedMessageArrayCache::eraseOld( message_lifetime );
+
+        return *this;
+    }
+
+    Humanoid & operator=( const _HumanoidStateMsg & msg )
+    {
+        return updateJoints( msg );
+    }
+
+    const _HumanoidStateMsg & getJointsMessage()
+    {
+        // triggers re-building of the cached ROS message, if necessary
+        joint_array_msg_.joints = _NamedMessageArrayCache::getMessages();
+        joint_array_msg_.header.stamp = _TimedMessageArrayCache::getStamp();
+        return joint_array_msg_;
+    }
+
+    const Humanoid & updateJoint( const _HumanoidJointMsg & msg, const double & message_lifetime = 0.5 )
+    {
+        _NamedMessageArrayCache::updateMessage( msg );
+        _TimedMessageArrayCache::eraseOld( message_lifetime );
+
+        return *this;
+    }
+};
+
+typedef Humanoid _Humanoid;
 
 } // humanoid
 
