@@ -1,14 +1,14 @@
 <launch>
   <param name="use_sim_time" value="true" type="bool"/>
-  <node pkg="stage" type="stageros" name="world" args="$(find proxemics_controllers)/worlds/empty.world"/>
-  
+  <node pkg="stage" type="stageros" name="world" args="$(find proxemic_controllers)/worlds/empty.world"/>
+
   <group ns="robot">
     <param name="axis_vx" type="int" value="1"/>
     <param name="axis_vy" type="int" value="0"/>
     <param name="axis_vw" type="int" value="2"/>
     <param name="deadman_button" type="int" value="5"/>
     <param name="run_button" type="int" value="4"/>
-    
+
     <node pkg="joy" type="joy" name="teleop_joy">
       <remap from="des_vel" to="/base_controller/command"/>
     </node>

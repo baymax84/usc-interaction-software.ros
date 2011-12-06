@@ -1,3 +1,0 @@
-<launch>
-  <node pkg="proxemics_controllers" type="stage_proxemic_controller" name="stage_proxemic_controller"/>
-</launch>

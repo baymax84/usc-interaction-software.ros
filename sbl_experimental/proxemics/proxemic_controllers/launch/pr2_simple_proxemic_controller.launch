@@ -1,8 +1,8 @@
 <launch>
   <!--DEBUGGING-->
   <!--<node pkg="tf" type="static_transform_publisher" name="target" args="0 0 0 0 0 0 /odom_combined /target 50"/>-->
-  
-  <node pkg="proxemics_controllers" type="simple_proxemic_controller" name="simple_proxemic_controller" output="screen">
+
+  <node pkg="proxemic_controllers" type="simple_proxemic_controller" name="simple_proxemic_controller" output="screen">
     <param name="social_distance" value="1.5"/>
     <param name="angle_robot_to_person" value="0.0"/>
     <param name="angle_person_to_robot" value="0.0"/>

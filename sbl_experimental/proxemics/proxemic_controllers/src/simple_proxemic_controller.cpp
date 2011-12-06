@@ -5,7 +5,7 @@
 #include <angles/angles.h>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/Twist.h>
-#include <proxemics_controllers/ProxemicControllerConfig.h>
+#include <proxemic_controllers/ProxemicControllerConfig.h>
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 
@@ -35,7 +35,7 @@ double getAngle(double target_x, double target_y, double origin_x = 0.0, double 
 double sign(double x);
 
 // callback function prototypes
-void cbReconfigure(proxemics_controllers::ProxemicControllerConfig &config, uint32_t level);
+void cbReconfigure(proxemic_controllers::ProxemicControllerConfig &config, uint32_t level);
 
 // executes main program code
 int main(int argc, char** argv)
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
   nh.setParam("g_max_speed_ang_z", g_max_speed_ang_z);
 
   // initialize dynamic reconfigure parameter server
-  dynamic_reconfigure::Server<proxemics_controllers::ProxemicControllerConfig> srv_reconfig;
-  dynamic_reconfigure::Server<proxemics_controllers::ProxemicControllerConfig>::CallbackType cb_reconfig;
+  dynamic_reconfigure::Server<proxemic_controllers::ProxemicControllerConfig> srv_reconfig;
+  dynamic_reconfigure::Server<proxemic_controllers::ProxemicControllerConfig>::CallbackType cb_reconfig;
   cb_reconfig = boost::bind(&cbReconfigure, _1, _2);
   srv_reconfig.setCallback(cb_reconfig);
 
@@ -100,12 +100,12 @@ int main(int argc, char** argv)
         tf_listener.lookupTransform(g_origin_frame, g_target_frame, t_now, tf_rp);
         tf_listener.lookupTransform(g_target_frame, g_origin_frame, t_now, tf_pr);
 
-	// +
-	// v
-	// 
-	// 
-	// ^
-	// +
+    // +
+    // v
+    //
+    //
+    // ^
+    // +
 
         // get range/angle to target frame
         range_rp = getDistance(tf_rp.getOrigin().x(), tf_rp.getOrigin().y());
@@ -114,10 +114,10 @@ int main(int argc, char** argv)
 
         // proportional control: velocity(error) = gain * error
         //vel_x = g_gain_lin_x * (range_rp - g_social_distance);
-        
+
         double a1 = angle_rp - g_angle_robot_to_person;
         double a2 = -angle_rp;
-        
+
         vel_x = g_gain_lin_x * cos( a1 ) * ( range_rp - g_social_distance );
         if ( g_use_orientation ) vel_y = g_gain_lin_y * sin( sign( angle_pr - g_angle_person_to_robot ) * min( abs( angle_pr - g_angle_person_to_robot ), M_PI_2 ) );
         //vel_th = g_gain_ang_z * angle_rp;
@@ -127,13 +127,13 @@ int main(int argc, char** argv)
         //if (g_use_orientation)
         //  vel_y = g_gain_lin_y * sin(sign(angle_pr - g_angle_person_to_robot) * min(abs(angle_pr - g_angle_person_to_robot), 0.5 * M_PI));
         //vel_th = g_gain_ang_z * (angle_rp - g_angle_robot_to_person);
-		
-		//ROS_INFO( "%.2f %.2f", g_angle_robot_to_person, angle_rp );
-		
-		//ROS_INFO( "%.2f", a1 );
-		//ROS_INFO( "%.2f", a2 );
-		
-		vel_th = g_gain_ang_z * a1;
+
+        //ROS_INFO( "%.2f %.2f", g_angle_robot_to_person, angle_rp );
+
+        //ROS_INFO( "%.2f", a1 );
+        //ROS_INFO( "%.2f", a2 );
+
+        vel_th = g_gain_ang_z * a1;
 
         // "rotate" velocities based on desired angle from robot to person
         double vel_x_p = vel_x * cos( a2 ) + vel_y * sin( a2 );
@@ -199,7 +199,7 @@ double sign(double x)
   return ((x < 0.0) ? -1.0 : 1.0);} // sign(double x)
 
       void
-cbReconfigure (proxemics_controllers::ProxemicControllerConfig &config, uint32_t level)
+cbReconfigure (proxemic_controllers::ProxemicControllerConfig &config, uint32_t level)
 {
   g_social_distance = config.social_distance;
   g_angle_robot_to_person = config.angle_robot_to_person;
@@ -216,4 +216,4 @@ cbReconfigure (proxemics_controllers::ProxemicControllerConfig &config, uint32_t
   g_max_speed_lin_x = config.max_speed_lin_x;
   g_max_speed_lin_y = config.max_speed_lin_y;
   g_max_speed_ang_z = config.max_speed_ang_z;
-} // cbReconfigure(proxemics_controllers::ProxemicControllerConfig &, uint32_t)
+} // cbReconfigure(proxemic_controllers::ProxemicControllerConfig &, uint32_t)
