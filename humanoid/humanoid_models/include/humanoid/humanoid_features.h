@@ -139,6 +139,7 @@ public:
 };
 
 typedef Humanoid _Humanoid;
+typedef std::pair<_Humanoid, _Humanoid> _HumanoidPair;
 
 } // humanoid
 

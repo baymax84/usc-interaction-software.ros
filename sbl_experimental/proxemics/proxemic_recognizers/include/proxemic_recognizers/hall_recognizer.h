@@ -77,13 +77,15 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
         unsigned int current_id = 0;
 
         // we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
-        _HumanoidRecognizerPolicy::buildStatesMap( states_msg );
-        _HumanoidRecognizerPolicy::buildPairs( states_msg );
+        _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
+        _HumanoidRecognizerPolicy::updateHumanoidPairs();
 
-        for( auto pair = _HumanoidRecognizerPolicy::user_pairs_.begin(); pair != _HumanoidRecognizerPolicy::user_pairs_.end(); ++pair )
+        const auto & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
+
+        for( auto pair = humanoid_pairs.begin(); pair != humanoid_pairs.end(); ++pair )
         {
-            const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
-            const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];
+            //const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
+            //const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];
 
             /*std_msgs::ColorRGBA current_color;
             current_color.r = 0.0;

@@ -11,6 +11,7 @@
   <depend package="quickdev_cpp"/>
   <depend package="nodelet"/>
   <depend package="humanoid_recognizers"/>
+  <depend package="proxemic_models"/>
   <depend package="visualization_msgs"/>
   <export>
     <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
