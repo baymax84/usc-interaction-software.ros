@@ -1,55 +1,55 @@
 <launch>
-	<arg name="PI" value="3.14159265" />
-	<arg name="PI_2" value="1.57079633" />
+    <arg name="PI" value="3.14159265" />
+    <arg name="PI_2" value="1.57079633" />
 <!-- general tools -->
-	<!-- kinect -->
-		<include file="$(find openni_multitracker)/launch/openni_multitracker.launch" />
-		
-	<!-- world -->
-		<node
-			pkg="tf"
-			type="static_transform_publisher"
-			name="odom_combined_to_world"
-			output="screen"
-			args="0 0 0 0 0 0 /odom_combined /world 100" />
-		<node
-			pkg="tf"
-			type="static_transform_publisher"
-			name="proxemics_target_to_proxemics_target_rotated"
-			output="screen"
-			args="0 0 0 0 1.57 -1.57 /proxemics_target /proxemics_target_rotated 100" />
+    <!-- kinect -->
+        <include file="$(find openni_multitracker)/launch/openni_multitracker.launch" />
 
-	<!-- person selection -->
-		<node
-			pkg="openni_multitracker"
-			type="person_auto_selector"
-			name="person_auto_selector"
-			output="screen"
-			args="~user_states:=/openni_multitracker/user_states _distance_frame:=torso" />
-		<node
-			pkg="tf"
-			type="static_transform_publisher"
-			name="base_link_to_proxemics_observer"
-			output="screen"
-			args="0 0 0 0 0 0 /base_link /proxemics_observer 100" />
-		<node
-			pkg="tf"
-			type="static_transform_publisher"
-			name="proxemics_target_to_oculesics_target"
-			output="screen"
-			args="0 0 0 0 0 0 /proxemics_target /oculesics_target 100" />
-	
-	<!-- pr2 head control -->
-		<include file="$(find pr2_oculesics_adapters)/launch/pr2_head_controller.launch" />
-	
+    <!-- world -->
+        <node
+            pkg="tf"
+            type="static_transform_publisher"
+            name="odom_combined_to_world"
+            output="screen"
+            args="0 0 0 0 0 0 /odom_combined /world 100" />
+        <node
+            pkg="tf"
+            type="static_transform_publisher"
+            name="proxemics_target_to_proxemics_target_rotated"
+            output="screen"
+            args="0 0 0 0 1.57 -1.57 /proxemics_target /proxemics_target_rotated 100" />
+
+    <!-- person selection -->
+        <node
+            pkg="openni_multitracker"
+            type="person_auto_selector"
+            name="person_auto_selector"
+            output="screen"
+            args="~user_states:=/openni_multitracker/user_states _distance_frame:=torso" />
+        <node
+            pkg="tf"
+            type="static_transform_publisher"
+            name="base_link_to_proxemics_observer"
+            output="screen"
+            args="0 0 0 0 0 0 /base_link /proxemics_observer 100" />
+        <node
+            pkg="tf"
+            type="static_transform_publisher"
+            name="proxemics_target_to_oculesics_target"
+            output="screen"
+            args="0 0 0 0 0 0 /proxemics_target /oculesics_target 100" />
+
+    <!-- pr2 head control -->
+        <include file="$(find pr2_oculesics_adapters)/launch/pr2_head_controller.launch" />
+
 <!-- proxemics -->
-	<!-- proxemics controller -->
-		<include file="$(find proxemics_controllers)/launch/pr2_simple_proxemic_controller.launch" />
-	<!-- proxemics recognizer -->
-		<!--include file="$(find csci599)/launch/icsr2011.launch" /-->
+    <!-- proxemic controller -->
+        <include file="$(find proxemics_controller)/launch/pr2_simple_proxemic_controller.launch" />
+    <!-- proxemic recognizer -->
+        <!--include file="$(find csci599)/launch/icsr2011.launch" /-->
 
 <!-- oculesics -->
-	<!-- oculesics controller -->
-		<include file="$(find oculesics_controllers)/launch/oculesics_controller.launch" />
-	<!-- no oculesics recognizer -->
+    <!-- oculesics controller -->
+        <include file="$(find oculesics_controllers)/launch/oculesics_controller.launch" />
+    <!-- no oculesics recognizer -->
 </launch>

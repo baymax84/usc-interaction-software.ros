@@ -1,13 +1,13 @@
 <package>
-  <description brief="proxemics_controllers">
+  <description brief="proxemic_controllers">
 
-     proxemics_controllers
+     proxemic_controller
 
   </description>
-  <author>Ross Mead</author>
+  <author>Ross Mead, Edward T. Kaszubski</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/proxemics_controllers</url>
+  <url>http://ros.org/wiki/proxemic_controllers</url>
   <depend package="bullet"/>
   <depend package="driver_base"/>
   <depend package="dynamic_reconfigure"/>
