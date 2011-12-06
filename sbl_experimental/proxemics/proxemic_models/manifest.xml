@@ -1,0 +1,16 @@
+<package>
+  <description brief="proxemic_models">
+
+     proxemic_models
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/proxemic_models</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="humanoid_models"/>
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lproxemic_models"/>
+  </export>
+</package>

@@ -75,7 +75,7 @@ public:
     typedef quickdev::NamedMessageArrayCache<_Humanoid> _NamedHumanoidCache;
     typedef quickdev::TimedMessageArrayCache<_Humanoid> _TimedHumanoidCache;
 
-    typedef std::pair<_Humanoid, _Humanoid> _HumanoidPair;
+    typedef humanoid::_HumanoidPair _HumanoidPair;
     typedef std::map<std::string, size_t> _HumanoidPairIdsMap;
     typedef std::vector<_HumanoidPair> _HumanoidPairs;
 
@@ -144,7 +144,10 @@ protected:
         message_index_map_.erase( erase_index );
     }*/
 
-    auto getHumanoids() -> decltype( named_humanoid_cache_ ) &
+    QUICKDEV_DECLARE_ACCESSOR2( named_humanoid_cache_, Humanoids )
+    QUICKDEV_DECLARE_ACCESSOR2( humanoid_pairs_, HumanoidPairs )
+
+    /*auto getHumanoids() -> decltype( named_humanoid_cache_ ) &
     {
         return named_humanoid_cache_;
     }
@@ -152,7 +155,7 @@ protected:
     auto getHumanoidPairs() -> decltype( humanoid_pairs_ ) &
     {
         return humanoid_pairs_;
-    }
+    }*/
 
     //! Build a list of unique humanoids (mapped from name to _Humanoid)
     void updateHumanoids( const _HumanoidStateArrayMsg::ConstPtr & states_msg )

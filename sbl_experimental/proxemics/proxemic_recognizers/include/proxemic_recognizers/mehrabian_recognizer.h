@@ -37,7 +37,7 @@
 #define PROXEMICRECOGNIZERS_MEHRABIANRECOGNIZER_H_
 
 #include <quickdev/node.h>
-#include <LinearMath/btVector3.h>
+#include <proxemic_models/spatial_features.h>
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 //#include <proxemic_models/mehrabian_metrics.h>
@@ -99,13 +99,16 @@ private:
         unsigned int current_id = 0;
 
         // we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
-        _HumanoidRecognizerPolicy::buildStatesMap( states_msg );
-        _HumanoidRecognizerPolicy::buildPairs( states_msg );
+        _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
+        _HumanoidRecognizerPolicy::updateHumanoidPairs();
 
-        for( auto pair = _HumanoidRecognizerPolicy::user_pairs_.begin(); pair != _HumanoidRecognizerPolicy::user_pairs_.end(); ++pair )
+        const auto & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
+
+        for( auto pair = humanoid_pairs.begin(); pair != humanoid_pairs.end(); ++pair )
         {
-            const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
-            const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];
+            const auto & spatial_feature_vec = proxemics::SpatialFeature( *pair ).getFeatureVec();
+            //const auto & joint1 = pair->first["torso"];
+            //const auto & joint2 = pair->second["torso"];
 
             std_msgs::ColorRGBA current_color;
             current_color.r = 0.0;
@@ -117,8 +120,8 @@ private:
             lines_marker.header.stamp = now;
             lines_marker.id = current_id ++;
             lines_marker.color = current_color;
-            lines_marker.points.push_back( joint1.pose.pose.position );
-            lines_marker.points.push_back( joint2.pose.pose.position );
+            lines_marker.points.push_back( spatial_feature_vec.joint1.pose.pose.position );
+            lines_marker.points.push_back( spatial_feature_vec.joint2.pose.pose.position );
 
             markers_msg.markers.push_back( lines_marker );
 
@@ -127,25 +130,12 @@ private:
             text_marker.id = current_id ++;
             text_marker.color = current_color;
 
-            const btVector3 joint1_vec(
-                joint1.pose.pose.position.x,
-                joint1.pose.pose.position.y,
-                0 );
-
-            const btVector3 joint2_vec(
-                joint2.pose.pose.position.x,
-                joint2.pose.pose.position.y,
-                0 );
-
-            // text should be placed 50% of the way along the vector from joint1_vec to joint2_vec
-            const btVector3 text_point_vec = ( joint2_vec - joint1_vec ) * 0.5 + joint1_vec;
-
             char buffer[10];
-            sprintf( buffer, "%.2f", joint1_vec.distance( joint2_vec ) );
+            sprintf( buffer, "%.2f", spatial_feature_vec.distance );
             text_marker.text = buffer;
-            text_marker.pose.position.x = text_point_vec.getX();
-            text_marker.pose.position.y = text_point_vec.getY();
-            text_marker.pose.position.z = text_point_vec.getZ() - 0.25;
+            text_marker.pose.position.x = spatial_feature_vec.midpoint.getX();
+            text_marker.pose.position.y = spatial_feature_vec.midpoint.getY();
+            text_marker.pose.position.z = spatial_feature_vec.midpoint.getZ() - 0.25;
 
             markers_msg.markers.push_back( text_marker );
         }
