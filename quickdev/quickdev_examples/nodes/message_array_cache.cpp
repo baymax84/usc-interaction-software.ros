@@ -85,7 +85,7 @@ public:
 
         timed_cache_.eraseOld( 2.0 );
         // get messages ready for output
-        const auto messages = timed_cache_.getMessages();
+        const auto & messages = timed_cache_.getMessages();
         // get read-only messages (faster)
         // const auto messages = timed_cache_.getRawMessages();
 
