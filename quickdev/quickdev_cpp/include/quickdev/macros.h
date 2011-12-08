@@ -451,9 +451,9 @@ access: __Type var_name; \
 QUICKDEV_DECLARE_MEMBER_RW2( var_name, VarName )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MEMBER2( access, __Type, var_name ) \
-QUICKDEV_DECLARE_MEMBER_RW3( var_name, var_name )
+QUICKDEV_DECLARE_MEMBER3( access, __Type, var_name, var_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MEMBER( __Type, var_name ) \
-QUICKDEV_DECLARE_MEMBER( protected, __Type, var_name )
+QUICKDEV_DECLARE_MEMBER2( protected, __Type, var_name )
 
 #endif // QUICKDEVCPP_QUICKDEV_MACROS_H_
