@@ -36,97 +36,271 @@
 #ifndef QUICKDEVCPP_QUICKDEV_CONTAINER_H_
 #define QUICKDEVCPP_QUICKDEV_CONTAINER_H_
 
+#include <quickdev/macros.h>
+
 #include <type_traits>
+#include <tuple>
+#include <ostream>
+#include <iostream>
 
-template<bool __Enable__, class... __Types>
-struct DeclareIfSingleTypeHelper
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
-	typedef void _Type;
-};
 
-template<class __Type>
-struct DeclareIfSingleTypeHelper<true, __Type>
-{
-	typedef __Type _Type;
-};
-
-// typedefs _Type if __Types has only one element
-template<class... __Types>
-struct DeclareIfSingleType
-{
-	typedef typename DeclareIfSingleTypeHelper<sizeof...( __Types ) == 1, __Types...>::_Type _Type;
-};
-
-// stores a list of types; provides tools for accessing that list of types
+// #############################################################################################################################################
+// Container
+//
 template<class... __Types>
 struct Container
 {
-	const static unsigned int num_types_ = sizeof...( __Types );
+    typedef std::tuple<__Types...> _Storage;
+    _Storage values_;
+    const static unsigned int size_ = sizeof...( __Types );
+    const static unsigned int front_ = 0;
+    const static unsigned int back_ = size_ - 1;
 
-	// typedef for the front type
-	typedef typename DeclareIfSingleType<__Types...>::_Type _Type;
-	// front() will always return a container of with a __Types... of size 1
-
-	//typedef typename ContainerTypes<__Types...>::_Front _Front;
-	//typedef typename ContainerTypes<__Types...>::_Rest _Rest;
-
-	//typedef Container<__Types...> _Container;
-	//typedef typename ContainerTypes<_Container>::_Front _Front;
-	//typedef typename ContainerTypes<_Container>::_Rest _Rest;
+    Container( __Types... values )
+    :
+        values_( std::make_tuple( values... ) )
+    {
+        //
+    }
+    Container(){}
 };
 
-// can't use qualified-id in decltype ie decltype(std::vector<int>)::value_type until gcc 4.6
-// work-around is to make several helper classes, in this case:
-// - ContainerTypesHelper
-// - ContainerTypes
-struct ContainerTypesHelper
+template<>
+struct Container<>
 {
-	// get a container for the type at the front of the container
-	template<class __Front, class... __Rest>
-	static Container<__Front> front( const Container<__Front, __Rest...> & container )
-	{
-		return Container<__Front>();
-	}
+    const static unsigned int size_ = 0;
+    const static unsigned int front_ = 0;
+    const static unsigned int back_ = 0;
+};
 
-	static Container<void> front( const Container<> & container )
-	{
-		return Container<void>();
-	}
+// #############################################################################################################################################
+// Create a Container from a variadic list
+//
+template<class... __Types>
+static Container<__Types...> make_container( __Types... types )
+{
+    return Container<__Types...>( types... );
+}
 
-	/*static auto front() -> decltype( frontHelper( __Container() ) )
-	{
-		return frontHelper( __Container() );
-	}*/
+} // quickdev
 
-	// get a container for the types after the front of the container
-	template<class __Front, class... __Rest>
-	static Container<__Rest...> rest( const Container<__Front, __Rest...> & container )
-	{
-		return Container<__Rest...>();
-	}
+namespace container
+{
 
-	static Container<void> rest( const Container<> & container )
-	{
-		return Container<void>();
-	}
+// #############################################################################################################################################
+// Container element type access
+//
+template<unsigned int I, class T>
+struct element;
 
-	/*static auto rest() -> decltype( restHelper( __Container() ) )
-	{
-		return restHelper( __Container() );
-	}*/
+template<unsigned int I, class __Head, class... __Tail>
+struct element<I, quickdev::Container<__Head, __Tail...> > : container::element<I-1, quickdev::Container<__Tail...> >
+{
+    //
+};
 
-//	typedef decltype( front( Container<__Types...>() ) ) _Front;
-//	typedef decltype( rest( Container<__Types...>() ) ) _Rest;
+template<class __Head, class... __Tail>
+struct element<0, quickdev::Container<__Head, __Tail...> >
+{
+    typedef __Head type;
+};
+
+template<unsigned int I>
+struct element<I, quickdev::Container<> > {};
+
+// #############################################################################################################################################
+// container_elem traits
+//
+
+template<unsigned int __ContainerSize__, class __Container>
+struct elem_traits_helper
+{
+    typedef typename container::element<__Container::front_, __Container>::type _Front;
+    typedef typename container::element<__Container::back_, __Container>::type _Back;
 };
 
 template<class __Container>
-struct ContainerTypes
+struct elem_traits_helper<0, __Container>
 {
-	typedef decltype( ContainerTypesHelper::front( __Container() ) ) _FrontContainer;
-	typedef decltype( ContainerTypesHelper::rest( __Container() ) ) _RestContainer;
-	typedef typename _FrontContainer::_Type _Type;
-	typedef _Type _Front;
-	typedef _RestContainer _Rest;
+
 };
+
+template<class __Container>
+struct elem_traits : elem_traits_helper<__Container::size_, __Container>
+{
+    //
+};
+
+// #############################################################################################################################################
+// Common element access
+//
+template<unsigned int __Index__, class __Container>
+static typename container::element<__Index__, __Container>::type at( const __Container & container )
+{
+    return std::get<__Index__>( container.values_ );
+}
+
+template<class __Container>
+static typename container::elem_traits<__Container>::_Front front( const __Container & container )
+{
+    return container::at<container::elem_traits<__Container>::front_>( container );
+}
+
+template<class __Container>
+static typename container::elem_traits<__Container>::_Back back( const __Container & container )
+{
+    return container::at<container::elem_traits<__Container>::back_>( container );
+}
+
+// #############################################################################################################################################
+// Calculate a subset of the types of a Container
+//
+template<unsigned int __EndIndex__, unsigned int __StartIndex__, class __Container, class... __Types>
+struct subtype_rec : container::subtype_rec<__EndIndex__ - 1, __StartIndex__, __Container, typename container::element<__EndIndex__, __Container>::type, __Types...>
+{
+    //
+};
+
+template<unsigned int __StartIndex__, class __Container, class... __Types>
+struct subtype_rec<__StartIndex__, __StartIndex__, __Container, __Types...>
+{
+    typedef quickdev::Container<typename container::element<__StartIndex__, __Container>::type, __Types...> type;
+};
+
+template<unsigned int __StartIndex__, unsigned int __NumItems__, class __Container>
+struct subtype : container::subtype_rec<__StartIndex__ + __NumItems__ - 1, __StartIndex__, __Container>
+{
+    //
+};
+
+template<unsigned int __StartIndex__, class __Container>
+struct subtype<__StartIndex__, 0, __Container>
+{
+    typedef quickdev::Container<> type;
+};
+
+// #############################################################################################################################################
+// container traits
+//
+
+template<unsigned int __ContainerSize__, class __Container>
+struct traits_helper
+{
+    typedef quickdev::Container<typename container::elem_traits<__Container>::_Front> _Head;
+};
+
+template<class __Container>
+struct traits_helper<0, __Container>
+{
+    typedef quickdev::Container<> _Head;
+};
+
+template<class __Container>
+struct traits : container::traits_helper<__Container::size_, __Container>, container::elem_traits<__Container>
+{
+    typedef typename container::subtype<1, __Container::back_, __Container>::type _Tail;
+};
+
+// #############################################################################################################################################
+// Print Container contents
+//
+template<unsigned int __CurrentIndex__, class... __Types>
+static typename std::enable_if<(__CurrentIndex__ == sizeof...( __Types ) - 1 ), void>::type
+print_rec( const quickdev::Container<__Types...> & container )
+{
+    std::cout << container::at<__CurrentIndex__>( container ) << std::endl;
+}
+
+template<unsigned int __CurrentIndex__, class... __Types>
+static typename std::enable_if<(__CurrentIndex__ < sizeof...( __Types ) - 1 ), void>::type
+print_rec( const quickdev::Container<__Types...> & container )
+{
+    std::cout << container::at<__CurrentIndex__>( container ) << std::endl;
+    container::print_rec<__CurrentIndex__ + 1>( container );
+}
+
+template<class... __Types>
+static typename std::enable_if<(sizeof...(__Types) > 0), void>::type
+print( const quickdev::Container<__Types...> & container )
+{
+    container::print_rec<0>( container );
+}
+
+template<class... __Types>
+static typename std::enable_if<(sizeof...(__Types) == 0), void>::type
+print( const quickdev::Container<__Types...> & container )
+{
+    std::cout << "<empty container>" << std::endl;
+}
+
+// #############################################################################################################################################
+// Get a subset of the contents of a Container
+//
+template<unsigned int __EndIndex__, unsigned int __StartIndex__>
+struct subset_rec
+{
+    /* this kills the compiler...
+    template<class __AllTypesContainer, class... __Types>
+    static auto
+    exec( const __AllTypesContainer & container, __Types... types )
+    -> decltype( container_copy_rec<I - 1, __StartIndex__>::exec( container, std::get<I>( container.values_ ), types... ) )*/
+
+    template<class __Container, class... __Types>
+    static typename container::subtype_rec<__EndIndex__, __StartIndex__, __Container, __Types...>::type
+    exec( const __Container & container, __Types... types )
+    {
+        return container::subset_rec<__EndIndex__ - 1, __StartIndex__>::exec( container, container::at<__EndIndex__>( container ), types... );
+    }
+};
+
+template<unsigned int __StartIndex__>
+struct subset_rec<__StartIndex__, __StartIndex__>
+{
+    template<class __Container, class... __Types>
+    static quickdev::Container<typename container::element<__StartIndex__, __Container>::type, __Types...>
+    exec( const __Container & container, __Types... types )
+    {
+        return quickdev::make_container( container::at<__StartIndex__>( container ), types... );
+    }
+};
+
+template<unsigned int __StartIndex__>
+struct subset_rec<__StartIndex__, 0>
+{
+    template<class __Container, class... __Types>
+    static quickdev::Container<>
+    exec( const __Container & container, __Types... types )
+    {
+        return quickdev::Container<>();
+    }
+};
+
+template<unsigned int __StartIndex__, unsigned int __NumItems__, class __Container>
+static typename container::subtype<__StartIndex__, __NumItems__, __Container>::type subset( const __Container & container )
+{
+    return container::subset_rec<__StartIndex__ + __NumItems__ - 1, __StartIndex__>::exec( container );
+}
+
+// #############################################################################################################################################
+// Get a container with the first type popped off the front
+//
+template<class __Container>
+static typename container::subtype<1, __Container::back_, __Container>::type pop_front( const __Container & container )
+{
+    return container::subset<1, __Container::back_>( container );
+}
+
+// #############################################################################################################################################
+// Get a container with the last type popped off the back
+//
+template<class __Container>
+static typename container::subtype<0, __Container::back_, __Container>::type pop_back( const __Container & container )
+{
+    return container::subset<0, __Container::back_>( container );
+}
+
+} // container
 
 #endif // QUICKDEVCPP_QUICKDEV_CONTAINER_H_

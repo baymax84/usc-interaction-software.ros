@@ -608,9 +608,9 @@ public:
         return _Parent::getStorage()->message_array_.begin();
     }
 
-    typename _MessageArray::const_iterator begin() const
+    typename _MessageArray::const_iterator cbegin() const
     {
-        return _Parent::getStorage()->message_array_.begin();
+        return _Parent::getStorage()->message_array_.cbegin();
     }
 
     typename _MessageArray::iterator end()
@@ -618,9 +618,9 @@ public:
         return _Parent::getStorage()->message_array_.end();
     }
 
-    typename _MessageArray::const_iterator end() const
+    typename _MessageArray::const_iterator cend() const
     {
-        return _Parent::getStorage()->message_array_.end();
+        return _Parent::getStorage()->message_array_.cend();
     }
 
     __Message & at( const std::string & name )
@@ -632,7 +632,21 @@ public:
         else return default_return;
     }
 
+    const __Message & at( const std::string & name ) const
+    {
+        static __Message default_return;
+        auto message = find( name );
+
+        if( message != end() ) return *message;
+        else return default_return;
+    }
+
     __Message & operator[]( const std::string & name )
+    {
+        return at( name );
+    }
+
+    const __Message & operator[]( const std::string & name ) const
     {
         return at( name );
     }

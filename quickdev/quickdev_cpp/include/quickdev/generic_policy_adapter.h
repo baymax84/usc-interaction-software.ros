@@ -87,15 +87,15 @@ public:
     // initialize the first policy in the subset
     // recurse through the remaining policies in the subset
     template<class __PoliciesSubset, class... __Args>
-    typename std::enable_if<(__PoliciesSubset::num_types_ > 0), void>::type
+    typename std::enable_if<(__PoliciesSubset::size_ > 0), void>::type
     initRec( __Args&&... args )
     {
-        tryInit<typename ContainerTypes<__PoliciesSubset>::_Front>( args... );
-        initRec<typename ContainerTypes<__PoliciesSubset>::_Rest>( args... );
+        tryInit<typename container::traits<__PoliciesSubset>::_Front>( args... );
+        initRec<typename container::traits<__PoliciesSubset>::_Tail>( args... );
     }
 
     template<class __PoliciesSubset, class... __Args>
-    typename std::enable_if<(__PoliciesSubset::num_types_ == 0), void>::type
+    typename std::enable_if<(__PoliciesSubset::size_ == 0), void>::type
     initRec( __Args&&... args ) {}
 
     // Do any post-construction initialization. Note that all policies
