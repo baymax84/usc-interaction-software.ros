@@ -145,13 +145,13 @@ static typename container::element<__Index__, __Container>::type at( const __Con
 template<class __Container>
 static typename container::elem_traits<__Container>::_Front front( const __Container & container )
 {
-    return container::at<container::elem_traits<__Container>::front_>( container );
+    return container::at<__Container::front_>( container );
 }
 
 template<class __Container>
 static typename container::elem_traits<__Container>::_Back back( const __Container & container )
 {
-    return container::at<container::elem_traits<__Container>::back_>( container );
+    return container::at<__Container::back_>( container );
 }
 
 // #############################################################################################################################################
@@ -263,17 +263,6 @@ struct subset_rec<__StartIndex__, __StartIndex__>
     exec( const __Container & container, __Types... types )
     {
         return quickdev::make_container( container::at<__StartIndex__>( container ), types... );
-    }
-};
-
-template<unsigned int __StartIndex__>
-struct subset_rec<__StartIndex__, 0>
-{
-    template<class __Container, class... __Types>
-    static quickdev::Container<>
-    exec( const __Container & container, __Types... types )
-    {
-        return quickdev::Container<>();
     }
 };
 
