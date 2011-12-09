@@ -200,24 +200,6 @@ static typename container::elem_traits<__Container>::_Back back( const __Contain
     return container::at<__Container::back_>( container );
 }
 
-//! Return the head of the container
-/*! \param container the container to read values from
- *  \return the head of the container */
-template<class __Container>
-static typename container::traits<__Container>::_Head head( const __Container & container )
-{
-    return container::subset<__Container::front_, 1>( container );
-}
-
-//! Return the tail of the container
-/*! \param container the container to read values from
- *  \return the tail of the container */
-template<class __Container>
-static typename container::traits<__Container>::_Tail tail( const __Container & container )
-{
-    return container::subset<1, __Container::back_>( container );
-}
-
 // #############################################################################################################################################
 //! Calculate the subset of the types of a Container
 /*! Recursive implementation; general case
@@ -411,6 +393,26 @@ template<class __Container>
 static typename container::subtype<0, __Container::back_, __Container>::type pop_back( const __Container & container )
 {
     return container::subset<0, __Container::back_>( container );
+}
+
+// #############################################################################################################################################
+//! Return the head of the container
+/*! \param container the container to read values from
+ *  \return the head of the container */
+template<class __Container>
+static typename container::traits<__Container>::_Head head( const __Container & container )
+{
+    return container::subset<__Container::front_, 1>( container );
+}
+
+// #############################################################################################################################################
+//! Return the tail of the container
+/*! \param container the container to read values from
+ *  \return the tail of the container */
+template<class __Container>
+static typename container::traits<__Container>::_Tail tail( const __Container & container )
+{
+    return container::subset<1, __Container::back_>( container );
 }
 
 } // container
