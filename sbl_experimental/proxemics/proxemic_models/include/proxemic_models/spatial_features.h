@@ -36,31 +36,47 @@
 #ifndef PROXEMICMODELS_SPATIALFEATURES_H_
 #define PROXEMICMODELS_SPATIALFEATURES_H_
 
-#include <humanoid/humanoid_features.h>
-#include <LinearMath/btVector3.h>
+#include <quickdev/convolved_struct.h>
 
-using humanoid::_Humanoid;
-using humanoid::_HumanoidPair;
-using humanoid::_HumanoidJointMsg;
+#include <humanoid/humanoid_features.h>
+
+#include <LinearMath/btVector3.h>
 
 namespace proxemics
 {
+    using humanoid::_Humanoid;
+    using humanoid::_HumanoidPair;
+    using humanoid::_HumanoidJointMsg;
+
+    DECLARE_CONVOLVED_STRUCT_BASE( SpatialFeatureVec )
+    {
+        _HumanoidJointMsg joint1;
+        _HumanoidJointMsg joint2;
+        btVector3 point1;
+        btVector3 point2;
+        double distance;
+        btVector3 midpoint;
+        double orientation1;
+        double orientation2;
+
+        DECLARE_CONVOLVED_STRUCT_TYPES( SpatialFeatureVec, _HumanoidJointMsg, _HumanoidJointMsg, btVector3, btVector3, double, btVector3, double, double );
+
+        INST_CONVOLVED_STRUCT( SpatialFeatureVec ),
+            INST_CONVOLVED_STRUCT_VAR( joint1, 0 ),
+            INST_CONVOLVED_STRUCT_VAR( joint2, 1 ),
+            INST_CONVOLVED_STRUCT_VAR( point1, 2 ),
+            INST_CONVOLVED_STRUCT_VAR( point2, 3 ),
+            INST_CONVOLVED_STRUCT_VAR( distance, 4 ),
+            INST_CONVOLVED_STRUCT_VAR( midpoint, 5 ),
+            INST_CONVOLVED_STRUCT_VAR( orientation1, 6 ),
+            INST_CONVOLVED_STRUCT_VAR( orientation2, 7 )
+        {}
+    };
+
     class SpatialFeature
     {
     public:
-        struct FeatureVec
-        {
-            _HumanoidJointMsg joint1;
-            _HumanoidJointMsg joint2;
-            btVector3 point1;
-            btVector3 point2;
-            double distance;
-            btVector3 midpoint;
-            double orientation1;
-            double orientation2;
-        };
-
-        typedef FeatureVec _FeatureVec;
+        typedef SpatialFeatureVec _FeatureVec;
 
     protected:
         _FeatureVec feature_vec_;
@@ -92,7 +108,7 @@ namespace proxemics
                 joint2.pose.pose.position.y,
                 0 );
 
-            return _FeatureVec { joint1, joint2, joint1_vec, joint2_vec, joint1_vec.distance( joint2_vec ), 0.5 * ( joint1_vec + joint2_vec ), 0, 0 };
+            return _FeatureVec( joint1, joint2, joint1_vec, joint2_vec, joint1_vec.distance( joint2_vec ), 0.5 * ( joint1_vec + joint2_vec ), 0.0, 0.0 );
         }
     };
 }

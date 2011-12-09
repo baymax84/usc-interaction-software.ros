@@ -608,6 +608,11 @@ public:
         return _Parent::getStorage()->message_array_.begin();
     }
 
+    typename _MessageArray::const_iterator begin() const
+    {
+        return cbegin();
+    }
+
     typename _MessageArray::const_iterator cbegin() const
     {
         return _Parent::getStorage()->message_array_.cbegin();
@@ -616,6 +621,11 @@ public:
     typename _MessageArray::iterator end()
     {
         return _Parent::getStorage()->message_array_.end();
+    }
+
+    typename _MessageArray::const_iterator end() const
+    {
+        return cend();
     }
 
     typename _MessageArray::const_iterator cend() const

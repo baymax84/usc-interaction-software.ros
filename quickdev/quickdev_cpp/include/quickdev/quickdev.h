@@ -42,6 +42,7 @@
 #include <quickdev/callback_policy.h>
 #include <quickdev/console.h>
 #include <quickdev/container.h>
+#include <quickdev/convolved_struct.h>
 #include <quickdev/generic_policy_adapter.h>
 #include <quickdev/geometry_message_conversions.h>
 #include <quickdev/image_loader.h>
