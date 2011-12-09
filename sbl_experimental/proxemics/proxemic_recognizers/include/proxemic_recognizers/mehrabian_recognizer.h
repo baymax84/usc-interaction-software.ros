@@ -104,7 +104,7 @@ private:
 
         const auto & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
 
-        for( auto pair = humanoid_pairs.begin(); pair != humanoid_pairs.end(); ++pair )
+        for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
             const auto & spatial_feature_vec = proxemics::SpatialFeature( *pair ).getFeatureVec();
             //const auto & joint1 = pair->first["torso"];

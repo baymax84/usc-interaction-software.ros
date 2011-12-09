@@ -43,29 +43,115 @@
 #include <ostream>
 #include <iostream>
 
+namespace variadic
+{
+
+//! Access the type of a variadic element
+/*! Specialization for non-empty containers
+ *  \tparam I the index at which the desired type is defined
+ *  \tparam T the type of the variadic to use */
+template<unsigned int I, class... T>
+struct element;
+
+//! Access the type of a variadic element
+/*! Specialization for empty containers
+ *  \tparam I the index at which the desired type is defined */
+template<unsigned int I>
+struct element<I> {};
+
+//! Access the type of a variadic element
+/*! Recursive implementation; general case
+ *  \tparam I the index at which the desired type is defined
+ *  \tparam __Head the type of the element at the front of the subset of types
+ *  \tparam __Tail the types of remaining elements in the subset of types */
+template<unsigned int I, class __Head, class... __Tail>
+struct element<I, __Head, __Tail...> : variadic::element<I-1, __Tail...>
+{
+    //
+};
+
+//! Access the type of a variadic element
+/*! Recursive implementation; base case
+ *  \tparam __Head the type of the element at the front of the subset of types
+ *  \tparam __Tail the types of remaining elements in the subset of types */
+template<class __Head, class... __Tail>
+struct element<0, __Head, __Tail...>
+{
+    typedef __Head type;
+};
+
+// #############################################################################################################################################
+
+template<unsigned int __Index__, class __Type, class... __Types>
+static typename std::enable_if<(__Index__ == 0), typename variadic::element<__Index__, __Type, __Types...>::type>::type &
+at_rec( __Type & type, __Types&&... types )
+{
+    return type;
+}
+
+template<unsigned int __Index__, class __Type, class... __Types>
+static typename std::enable_if<(__Index__ > 0), typename variadic::element<__Index__, __Type, __Types...>::type>::type &
+at_rec( __Type & type, __Types&&... types )
+{
+    return variadic::at_rec<__Index__ - 1>( types... );
+}
+
+template<unsigned int __Index__, class... __Types>
+static typename variadic::element<__Index__, __Types...>::type &
+at( __Types&&... types )
+{
+    return variadic::at_rec<__Index__>( types... );
+}
+
+} // variadic
+
+// #############################################################################################################################################
+
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 // #############################################################################################################################################
-//! A variadic Container
-/*! Specialization for a non-empty container
- *  \tparam __Types the types the container will store */
+//! A variadic Container with no storage
+/*! Specialization for a non-empty container */
 template<class... __Types>
-struct Container
+struct SimpleContainer
 {
-    //! internal storage type
-    typedef std::tuple<__Types...> _Storage;
-    //! internal storage
-    _Storage values_;
     //! number of elements
     const static unsigned int size_ = sizeof...( __Types );
     //! front index
     const static unsigned int front_ = 0;
     //! back index
     const static unsigned int back_ = size_ - 1;
+};
+
+//! A variadic Container with no storage
+/*! Specialization for an empty container */
+template<>
+struct SimpleContainer<>
+{
+    //! number of elements
+    const static unsigned int size_ = 0;
+    //! front index
+    const static unsigned int front_ = 0;
+    //! back index
+    const static unsigned int back_ = 0;
+};
+
+//! A variadic Container with std::tuple<> storage
+/*! Specialization for a non-empty container
+ *  \tparam __Types the types the container will store */
+template<class... __Types>
+struct Container : SimpleContainer<__Types...>
+{
+    //! internal storage type
+    typedef std::tuple<__Types...> _Storage;
+    //! internal storage
+    _Storage values_;
 
     //! Constructor for one or more values
-    Container( __Types... values )
+    /*! enabled only if __Types consists of at least one type */
+    template<class... __MTypes, typename std::enable_if<(sizeof...(__MTypes) > 0 && std::is_same<SimpleContainer<__Types...>, SimpleContainer<__MTypes...> >::value), int>::type = 0>
+    Container( __MTypes... values )
     :
         values_( std::make_tuple( values... ) )
     {
@@ -76,28 +162,25 @@ struct Container
     Container(){}
 };
 
-//! A variadic Container
-/*! Specialization for an empty container */
-template<>
-struct Container<>
-{
-    //! number of elements
-    const static unsigned int size_ = 0;
-    //! front index
-    const static unsigned int front_ = 0;
-    //! back index
-    const static unsigned int back_ = 0;
-};
-
 // #############################################################################################################################################
 //! Create a Container from a variadic list
 /*! \tparam __Types the types of the values to store
  *  \param types the values to store
  *  \return a container wrapping the given values */
 template<class... __Types>
-static Container<__Types...> make_container( __Types... types )
+static Container<__Types...> make_container( __Types&&... types )
 {
-    return Container<__Types...>( types... );
+    return quickdev::Container<__Types...>( types... );
+}
+
+//! Create a SimpleContainer from a variadic list
+/*! \tparam __Types the types of the values to store
+ *  \param types the values to store
+ *  \return a SimpleContainer wrapping the given values */
+template<class... __Types>
+static Container<__Types...> make_simple_container( __Types&&... types )
+{
+    return quickdev::SimpleContainer<__Types...>();
 }
 
 } // quickdev
@@ -414,6 +497,151 @@ static typename container::traits<__Container>::_Tail tail( const __Container & 
 {
     return container::subset<1, __Container::back_>( container );
 }
+
+// #############################################################################################################################################
+//! Access the Container type that results from pushing the given type onto the front of the given Container
+template<class __Container, class __NewType>
+struct push_front_type;
+
+//! Access the Container type that results from pushing the given type onto the front of the given Container
+template<class __NewType, class... __Types>
+struct push_front_type<quickdev::Container<__Types...>, __NewType>
+{
+    typedef quickdev::Container<__NewType, __Types...> type;
+};
+
+// #############################################################################################################################################
+//! Access the Container type that results from pushing the given type onto the back of the given Container
+template<class __Container, class __NewType>
+struct push_back_type;
+
+//! Access the Container type that results from pushing the given type onto the back of the given Container
+template<class __NewType, class... __Types>
+struct push_back_type<quickdev::Container<__Types...>, __NewType>
+{
+    typedef quickdev::Container<__Types..., __NewType> type;
+};
+
+// #############################################################################################################################################
+template<unsigned int __EndSize__>
+struct push_back_rec
+{
+    template<class __Container, class... __Types>
+    static typename container::push_back_type<__Container, typename container::elem_traits<quickdev::Container<__Types...> >::_Back>::type
+    exec( const __Container & container, __Types... types )
+    {
+        // push the items of container in order onto types...
+        return container::push_back_rec<__EndSize__ - 1>::exec( container, container::at<__EndSize__ - 2>( container ), types... );
+    }
+};
+
+template<>
+struct push_back_rec<1>
+{
+    template<class __Container, class... __Types>
+    static quickdev::Container<__Types...>
+    exec( const __Container & container, __Types... types )
+    {
+        return quickdev::make_container( types... );
+    }
+};
+
+//! Return the result of pushing the given value onto the back of the given Container
+/*! \param container the container to use for the operation
+ *  \param type the value to push onto the back of the container
+ *  \return the result of pushing the given value onto the back of the given Container */
+template<class __Container, class __Type>
+static typename container::push_back_type<__Container, __Type>::type
+push_back( const __Container & container, const __Type & type )
+{
+    return container::push_back_rec<__Container::size_ + 1>::exec( container, type );
+}
+
+// #############################################################################################################################################
+template<unsigned int __EndSize__>
+struct push_front_rec
+{
+    template<class __Container, class __Type, class... __Types>
+    static typename container::push_front_type<__Container, __Type>::type
+    exec( const __Container & container, const __Type & type, __Types... types )
+    {
+        // push the items of container in order onto types ending with type
+        return container::push_front_rec<__EndSize__ - 1>::exec( container, type, container::at<__EndSize__ - 2>( container ), types... );
+    }
+};
+
+template<>
+struct push_front_rec<1>
+{
+    template<class __Container, class __Type, class... __Types>
+    static quickdev::Container<__Type, __Types...>
+    exec( const __Container & container, const __Type & type, __Types... types )
+    {
+        return quickdev::make_container( type, types... );
+    }
+};
+
+//! Return the result of pushing the given value onto the front of the given Container
+/*! \param container the container to use for the operation
+ *  \param type the value to push onto the front of the container
+ *  \return the result of pushing the given value onto the front of the given Container */
+template<class __Container, class __Type>
+static typename container::push_front_type<__Container, __Type>::type
+push_front( const __Container & container, const __Type & type )
+{
+    return container::push_front_rec<__Container::size_ + 1>::exec( container, type );
+}
+
+// #############################################################################################################################################
+//! Return the type of the union of the given containers
+template<class __Container1, class __Container2>
+struct combine_type;
+
+//! Return the type of the union of the given containers
+template<class... __Types1, class... __Types2>
+struct combine_type<quickdev::Container<__Types1...>, quickdev::Container<__Types2...> >
+{
+    typedef quickdev::Container<__Types1..., __Types2...> type;
+};
+
+// #############################################################################################################################################
+template<unsigned int __Index__>
+struct combine_rec
+{
+    template<class __Container1, class __Container2, class... __Types>
+    static typename std::enable_if<(__Index__ > __Container1::size_), typename combine_type<__Container1, __Container2>::type>::type
+    exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    {
+        return combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - __Container1::size_ - 1>( container2 ), types... );
+    }
+
+    template<class __Container1, class __Container2, class... __Types>
+    static typename std::enable_if<(__Index__ <= __Container1::size_), typename combine_type<__Container1, __Container2>::type>::type
+    exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    {
+        return combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - 1>( container1 ), types... );
+    }
+};
+
+template<>
+struct combine_rec<0>
+{
+    template<class __Container1, class __Container2, class... __Types>
+    static typename combine_type<__Container1, __Container2>::type exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    {
+        return quickdev::make_container( types... );
+    }
+};
+
+//! Return the union of the given containers
+/*! \param container1 the first container
+ *  \param container2 the second container
+ *  \return a new container composed of { <container1 values...>, <container2 values...> } */
+template<class __Container1, class __Container2>
+static typename combine_type<__Container1, __Container2>::type combine( const __Container1 & container1, const __Container2 & container2 )
+{
+    return combine_rec<__Container1::size_+ __Container2::size_>::exec( container1, container2 );
+};
 
 } // container
 

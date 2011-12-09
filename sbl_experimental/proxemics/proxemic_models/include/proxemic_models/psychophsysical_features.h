@@ -36,11 +36,63 @@
 #ifndef PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
 #define PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
 
-#include <humanoid/humanoid_features.h>
+#include <proxemic_models/spatial_features.h>
 
-class PsychophsysicalFeatures
+namespace proxemics
 {
+    using humanoid::_Humanoid;
+    using humanoid::_HumanoidPair;
+    using humanoid::_HumanoidJointMsg;
 
-};
+    /*DECLARE_CONVOLVED_STRUCT( PsychophysicalFeatureVec, SpatialFeatureVec )
+    {
+        double placeholder;
+
+        DECLARE_CONVOLVED_STRUCT_TYPES( PsychophysicalFeatureVec, double );
+
+        INST_CONVOLVED_STRUCT( PsychophysicalFeatureVec ),
+            INST_CONVOLVED_STRUCT_VAR( placeholder, 0 )
+        {}
+    };
+
+    class PsychophysicalFeature
+    {
+    public:
+        typedef PsychophysicalFeatureVec _FeatureVec;
+
+    protected:
+        _FeatureVec feature_vec_;
+
+    QUICKDEV_DECLARE_ACCESSOR2( feature_vec_, FeatureVec )
+
+    public:
+        template<class... __Args>
+        SpatialFeature( __Args&&... args )
+        :
+            feature_vec_( calculateFeatureVec( args... ) )
+        {
+            //
+        }
+
+    private:
+        static _FeatureVec calculateFeatureVec( const _HumanoidPair & pair )
+        {
+            const auto & joint1 = pair.first["torso"];
+            const auto & joint2 = pair.second["torso"];
+
+            const btVector3 joint1_vec(
+                    joint1.pose.pose.position.x,
+                    joint1.pose.pose.position.y,
+                    0 );
+
+            const btVector3 joint2_vec(
+                joint2.pose.pose.position.x,
+                joint2.pose.pose.position.y,
+                0 );
+
+            return _FeatureVec { joint1, joint2, joint1_vec, joint2_vec, joint1_vec.distance( joint2_vec ), 0.5 * ( joint1_vec + joint2_vec ), 0, 0 };
+        }
+    };*/
+}
 
 #endif // PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
