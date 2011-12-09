@@ -106,7 +106,7 @@ private:
         const auto & from_point = humanoid.find( from );
         const auto & to_point = humanoid.find( to );
 
-        if( from_point == humanoid.end() || to_point == humanoid.end() ) return;
+        if( from_point == humanoid.cend() || to_point == humanoid.cend() ) return;
 
         msg.points.push_back( from_point->pose.pose.position );
         msg.points.push_back( to_point->pose.pose.position );
@@ -136,7 +136,8 @@ private:
 
         for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
         {
-            auto & joints = humanoid->getJointsMessage();
+            //note: can't use cbegin() in for() above because getJointsMessage() modifies Humanoid (specifically, it modifies the ROS message cache of the humanoid's storage object)
+            const auto & joints = humanoid->getJointsMessage();
             combined_states_msg.states.push_back( joints );
 
             //std::map<std::string, _PoseWithConfidenceMsg> point_map;
@@ -152,7 +153,7 @@ private:
             points_marker.id = current_id ++;
             points_marker.color = current_color;
 
-            for( auto joint = joints.joints.begin(); joint != joints.joints.end(); ++joint )
+            for( auto joint = joints.joints.cbegin(); joint != joints.joints.cend(); ++joint )
             {
                 // create point markers
                 points_marker.points.push_back( joint->pose.pose.position );
@@ -199,79 +200,6 @@ private:
             markers.markers.push_back( text_marker );
             markers.markers.push_back( points_marker );
         }
-
-        /*for( auto users = state_arrays_cache.begin(); users != state_arrays_cache.end(); ++users )
-        {
-            // if the current state array is null, discard it and move on
-            if( !( *users ) ) continue;
-
-            for( auto user = (*users)->states.begin(); user != (*users)->states.end(); ++user )
-            {
-                combined_states_msg.states.push_back( *user );
-
-                std::map<std::string, _PoseWithConfidenceMsg> point_map;
-
-                std_msgs::ColorRGBA current_color;
-                current_color.r = 0.0;
-                current_color.g = 0.0;
-                current_color.b = 1.0;
-                current_color.a = 1.0;
-
-                _MarkerMsg points_marker( points_marker_template_ );
-                points_marker.header.stamp = now;
-                points_marker.id = current_id ++;
-                points_marker.color = current_color;
-
-                for( auto joint = user->joints.begin(); joint != user->joints.end(); ++joint )
-                {
-                    // create point markers
-                    points_marker.points.push_back( joint->pose.pose.position );
-//                  points_marker.colors.push_back( current_color );
-
-                    // map joint names to points for easy lookup later
-                    point_map[joint->name] = joint->pose;
-                }
-
-                // connect points
-                _MarkerMsg lines_marker( lines_marker_template_ );
-                lines_marker.header.stamp = now;
-                lines_marker.id = current_id ++;
-                lines_marker.color = current_color;
-
-                appendLineMarker( lines_marker, "head", "neck", point_map );
-                appendLineMarker( lines_marker, "neck", "left_shoulder", point_map );
-                appendLineMarker( lines_marker, "neck", "right_shoulder", point_map );
-                appendLineMarker( lines_marker, "torso", "left_shoulder", point_map );
-                appendLineMarker( lines_marker, "torso", "right_shoulder", point_map );
-                appendLineMarker( lines_marker, "torso", "left_hip", point_map );
-                appendLineMarker( lines_marker, "torso", "right_hip", point_map );
-                appendLineMarker( lines_marker, "left_shoulder", "left_elbow", point_map );
-                appendLineMarker( lines_marker, "left_elbow", "left_hand", point_map );
-                appendLineMarker( lines_marker, "right_shoulder", "right_elbow", point_map );
-                appendLineMarker( lines_marker, "right_elbow", "right_hand", point_map );
-                appendLineMarker( lines_marker, "left_hip", "right_hip", point_map );
-                appendLineMarker( lines_marker, "left_hip", "left_knee", point_map );
-                appendLineMarker( lines_marker, "left_knee", "left_foot", point_map );
-                appendLineMarker( lines_marker, "right_hip", "right_knee", point_map );
-                appendLineMarker( lines_marker, "right_knee", "right_foot", point_map );
-
-                // set text position
-                _MarkerMsg text_marker( text_marker_template_ );
-                text_marker.header.stamp = now;
-                text_marker.id = current_id ++;
-                text_marker.color = current_color;
-
-                text_marker.text = user->name;
-                text_marker.pose.position = point_map["head"].pose.position;
-                text_marker.pose.position.z += 0.2;  // determined empirically...
-
-                markers.markers.push_back( lines_marker );
-                markers.markers.push_back( text_marker );
-                markers.markers.push_back( points_marker );
-
-                //++current_id;
-            }
-        }*/
 
         _HumanoidRecognizerPolicy::update( markers );
 
