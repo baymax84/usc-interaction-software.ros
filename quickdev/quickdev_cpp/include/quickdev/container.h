@@ -609,17 +609,17 @@ template<unsigned int __Index__>
 struct combine_rec
 {
     template<class __Container1, class __Container2, class... __Types>
-    static typename std::enable_if<(__Index__ > __Container1::size_), typename combine_type<__Container1, __Container2>::type>::type
+    static typename std::enable_if<(__Index__ > __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
     exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
     {
-        return combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - __Container1::size_ - 1>( container2 ), types... );
+        return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - __Container1::size_ - 1>( container2 ), types... );
     }
 
     template<class __Container1, class __Container2, class... __Types>
-    static typename std::enable_if<(__Index__ <= __Container1::size_), typename combine_type<__Container1, __Container2>::type>::type
+    static typename std::enable_if<(__Index__ <= __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
     exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
     {
-        return combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - 1>( container1 ), types... );
+        return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - 1>( container1 ), types... );
     }
 };
 
@@ -627,7 +627,7 @@ template<>
 struct combine_rec<0>
 {
     template<class __Container1, class __Container2, class... __Types>
-    static typename combine_type<__Container1, __Container2>::type exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    static typename container::combine_type<__Container1, __Container2>::type exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
     {
         return quickdev::make_container( types... );
     }
@@ -638,9 +638,9 @@ struct combine_rec<0>
  *  \param container2 the second container
  *  \return a new container composed of { <container1 values...>, <container2 values...> } */
 template<class __Container1, class __Container2>
-static typename combine_type<__Container1, __Container2>::type combine( const __Container1 & container1, const __Container2 & container2 )
+static typename container::combine_type<__Container1, __Container2>::type combine( const __Container1 & container1, const __Container2 & container2 )
 {
-    return combine_rec<__Container1::size_+ __Container2::size_>::exec( container1, container2 );
+    return container::combine_rec<__Container1::size_+ __Container2::size_>::exec( container1, container2 );
 };
 
 } // container

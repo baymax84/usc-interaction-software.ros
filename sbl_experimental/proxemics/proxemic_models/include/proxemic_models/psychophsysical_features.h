@@ -44,7 +44,7 @@ namespace proxemics
     using humanoid::_HumanoidPair;
     using humanoid::_HumanoidJointMsg;
 
-    /*DECLARE_CONVOLVED_STRUCT( PsychophysicalFeatureVec, SpatialFeatureVec )
+    DECLARE_CONVOLVED_STRUCT( PsychophysicalFeatureVec, SpatialFeatureVec )
     {
         double placeholder;
 
@@ -67,32 +67,19 @@ namespace proxemics
 
     public:
         template<class... __Args>
-        SpatialFeature( __Args&&... args )
+        PsychophysicalFeature( __Args&&... args )
         :
             feature_vec_( calculateFeatureVec( args... ) )
         {
             //
         }
 
-    private:
+    public:
         static _FeatureVec calculateFeatureVec( const _HumanoidPair & pair )
         {
-            const auto & joint1 = pair.first["torso"];
-            const auto & joint2 = pair.second["torso"];
-
-            const btVector3 joint1_vec(
-                    joint1.pose.pose.position.x,
-                    joint1.pose.pose.position.y,
-                    0 );
-
-            const btVector3 joint2_vec(
-                joint2.pose.pose.position.x,
-                joint2.pose.pose.position.y,
-                0 );
-
-            return _FeatureVec { joint1, joint2, joint1_vec, joint2_vec, joint1_vec.distance( joint2_vec ), 0.5 * ( joint1_vec + joint2_vec ), 0, 0 };
+            return _FeatureVec( SpatialFeature::calculateFeatureVec( pair ), 0.0 );
         }
-    };*/
+    };
 }
 
 #endif // PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
