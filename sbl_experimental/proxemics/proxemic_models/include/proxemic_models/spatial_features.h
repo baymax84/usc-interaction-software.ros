@@ -92,7 +92,7 @@ namespace proxemics
             //
         }
 
-    private:
+    public:
         static _FeatureVec calculateFeatureVec( const _HumanoidPair & pair )
         {
             const auto & joint1 = pair.first["torso"];
