@@ -67,7 +67,7 @@ protected:
         printPolicyActionDone( "create", this );
     }
 
-    QUICKDEV_ENABLE_UPDATE
+    QUICKDEV_ENABLE_UPDATE()
     {
         if( now_.toSec() == 0 )
         {

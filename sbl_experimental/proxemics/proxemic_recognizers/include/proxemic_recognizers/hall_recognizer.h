@@ -38,13 +38,15 @@
 
 #include <quickdev/node.h>
 
+#include <proxemic_models/psychophysical_features.h>
+
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
-typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
-QUICKDEV_DECLARE_NODE( HallRecognizer, _HumanoidRecognizerPolicy )
+using humanoid::_HumanoidStateMsg;
+using proxemics::_PsychophysicalFeatureArrayMsg;
 
-typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
-typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
+typedef HumanoidRecognizerPolicy<_PsychophysicalFeatureArrayMsg> _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( HallRecognizer, _HumanoidRecognizerPolicy )
 
 QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 {

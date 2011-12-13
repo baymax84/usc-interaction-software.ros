@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodes/proxemic_recognizer.cpp
+ *  src/psychophysical_features.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,5 +33,4 @@
  *
  **************************************************************************/
 
-#include <proxemic_recognizers/proxemic_recognizer.h>
-QUICKDEV_INST_NODE( ProxemicRecognizerNode, "proxemic_recognizer" )
+#include <proxemic_models/psychophysical_features.h>

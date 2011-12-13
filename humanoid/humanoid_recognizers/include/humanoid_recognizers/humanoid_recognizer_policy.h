@@ -38,8 +38,8 @@
 
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
-#include <quickdev/subscriber_policy.h>
-#include <quickdev/publisher_policy.h>
+#include <quickdev/multi_subscriber.h>
+#include <quickdev/multi_publisher.h>
 #include <quickdev/threading.h>
 #include <quickdev/message_array_cache.h>
 
@@ -53,16 +53,17 @@ QUICKDEV_DECLARE_POLICY_NS( HumanoidRecognizer )
 {
     typedef quickdev::NodeHandlePolicy _NodeHandlePolicy;
     typedef quickdev::MessageCallbackPolicy<humanoid::_HumanoidStateArrayMsg> _HumanoidStateArrayMessageCallbackPolicy;
-    typedef quickdev::PublisherPolicy<> _PublisherPolicy;
-    typedef quickdev::SubscriberPolicy<> _SubscriberPolicy;
 }
 
-QUICKDEV_DECLARE_POLICY( HumanoidRecognizer, _NodeHandlePolicy, _HumanoidStateArrayMessageCallbackPolicy, _PublisherPolicy, _SubscriberPolicy )
+QUICKDEV_DECLARE_POLICY( HumanoidRecognizer, _NodeHandlePolicy, _HumanoidStateArrayMessageCallbackPolicy )
+
+template<class __FeatureArrayMsg>
 QUICKDEV_DECLARE_POLICY_CLASS( HumanoidRecognizer )
 {
     QUICKDEV_MAKE_POLICY_FUNCS( HumanoidRecognizer )
 
 public:
+    typedef __FeatureArrayMsg _FeatureArrayMsg;
     typedef visualization_msgs::MarkerArray _MarkerArrayMsg;
     typedef visualization_msgs::Marker _MarkerMsg;
 
@@ -80,9 +81,10 @@ public:
     typedef std::vector<_HumanoidPair> _HumanoidPairs;
 
 protected:
+    ros::MultiPublisher<> multi_pub_;
+    ros::MultiSubscriber<> multi_sub_;
+
     quickdev::MessageCache<_HumanoidStateArrayMsg> states_cache_;
-
-
 
     //_HumanoidsMap humanoids_map_;
     _NamedHumanoidCache named_humanoid_cache_;
@@ -90,6 +92,10 @@ protected:
 
     _HumanoidPairIdsMap humanoid_pair_ids_map_;
     _HumanoidPairs humanoid_pairs_;
+
+public:
+    QUICKDEV_DECLARE_ACCESSOR2( multi_pub_, MultiPub )
+    QUICKDEV_DECLARE_ACCESSOR2( multi_sub_, MultiSub )
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( HumanoidRecognizer ),
         named_humanoid_cache_(),
@@ -104,8 +110,8 @@ protected:
     {
         QUICKDEV_GET_NODEHANDLE( nh_rel );
 
-        getMultiPub().addPublishers<_MarkerArrayMsg, _MarkerArrayMsg>( nh_rel, { "marker_array", "/visualization_marker_array" } );
-        getMultiSub().addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
+        multi_pub_.addPublishers<_MarkerArrayMsg, _MarkerArrayMsg, __FeatureArrayMsg>( nh_rel, { "marker_array", "/visualization_marker_array", "features" } );
+        multi_sub_.addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
     }
 
     QUICKDEV_ENABLE_INIT()
@@ -115,13 +121,22 @@ protected:
         QUICKDEV_SET_INITIALIZED();
     }
 
-    void update( _MarkerArrayMsg markers )
+    void updateMarkers( _MarkerArrayMsg markers )
     {
         QUICKDEV_ASSERT_INITIALIZED();
 
         auto markers_ptr = quickdev::make_const_shared( markers );
 
-        getMultiPub().publish( "marker_array", markers_ptr, "/visualization_marker_array", markers_ptr );
+        multi_pub_.publish( "marker_array", markers_ptr, "/visualization_marker_array", markers_ptr );
+    }
+
+    void updateFeatures( __FeatureArrayMsg features )
+    {
+        QUICKDEV_ASSERT_INITIALIZED();
+
+        auto features_ptr = quickdev::make_const_shared( features );
+
+        multi_pub_.publish( "features", features_ptr );
     }
 
     template<class... __ChildArgs>
@@ -220,7 +235,7 @@ protected:
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
     {
         QUICKDEV_TRY_UPDATE_CACHE( states_cache_, msg );
-        QUICKDEV_TRY_LOCK_OR_WARN( states_cache_, "Dropping message [ %s ]", QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str() );
+        QUICKDEV_TRY_LOCK_OR_WARN( states_cache_, "Dropping message [ %s ]", "humanoid_models/HumanoidStateArray" /*QUICKDEV_GET_MESSAGE_INST_NAME( msg ).c_str()*/ );
 
         QUICKDEV_GET_POLICY_NS( HumanoidRecognizer )::_HumanoidStateArrayMessageCallbackPolicy::invokeCallback( msg );
     }
