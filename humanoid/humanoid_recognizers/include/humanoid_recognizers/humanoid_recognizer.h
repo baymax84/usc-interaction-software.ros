@@ -42,12 +42,13 @@
 
 #include <deque>
 
-typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
-QUICKDEV_DECLARE_NODE( HumanoidRecognizer, _HumanoidRecognizerPolicy )
-
 using humanoid::_PoseWithConfidenceMsg;
 using humanoid::_Humanoid;
-typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
+using humanoid::_HumanoidStateArrayMsg;
+
+typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( HumanoidRecognizer, _HumanoidRecognizerPolicy )
+
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerMsg _MarkerMsg;
 
@@ -69,13 +70,9 @@ private:
 
     QUICKDEV_SPIN_FIRST()
     {
+        //initAll( "features_topic_name_param", std::string( "humanoid_states_agg" ) );
         initAll();
         _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidRecognizerNode::humanoidStatesCB, this ) );
-
-        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
-
-        auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
-        multi_pub.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states_agg" } );
 
         marker_template_.header.frame_id = "/openni_depth_tracking_frame";
         marker_template_.ns = "basic_skeleton";
@@ -155,12 +152,7 @@ private:
 
             for( auto joint = joints.joints.cbegin(); joint != joints.joints.cend(); ++joint )
             {
-                // create point markers
                 points_marker.points.push_back( joint->pose.pose.position );
-//                  points_marker.colors.push_back( current_color );
-
-                // map joint names to points for easy lookup later
-                //point_map[joint->name] = joint->pose;
             }
 
             // connect points
@@ -201,10 +193,8 @@ private:
             markers.markers.push_back( points_marker );
         }
 
-        _HumanoidRecognizerPolicy::update( markers );
-
-        auto & multi_pub = _HumanoidRecognizerPolicy::getMultiPub();
-        multi_pub.publish( "humanoid_states_agg", quickdev::make_const_shared( combined_states_msg ) );
+        _HumanoidRecognizerPolicy::updateFeatures( combined_states_msg );
+        _HumanoidRecognizerPolicy::updateMarkers( markers );
 
         // clear out the cache for the next update iteration
         state_arrays_cache.clear();

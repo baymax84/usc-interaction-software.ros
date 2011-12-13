@@ -40,10 +40,11 @@
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
-typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+using humanoid::_HumanoidStateArrayMsg;
+
+typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
 QUICKDEV_DECLARE_NODE( SchegloffRecognizer, _HumanoidRecognizerPolicy )
 
-typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
@@ -70,7 +71,7 @@ QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
             //
         }
 
-        _HumanoidRecognizerPolicy::update( markers );
+        _HumanoidRecognizerPolicy::updateMarkers( markers );
     }
 };
 

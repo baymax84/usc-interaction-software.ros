@@ -37,17 +37,19 @@
 #define PROXEMICRECOGNIZERS_MEHRABIANRECOGNIZER_H_
 
 #include <quickdev/node.h>
+
 #include <proxemic_models/spatial_features.h>
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
-//#include <proxemic_models/mehrabian_metrics.h>
 
-typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+using humanoid::_HumanoidStateMsg;
+using proxemics::_SpatialFeatureArrayMsg;
+
+typedef HumanoidRecognizerPolicy<_SpatialFeatureArrayMsg> _HumanoidRecognizerPolicy;
 QUICKDEV_DECLARE_NODE( MehrabianRecognizer, _HumanoidRecognizerPolicy )
 
 typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
-using humanoid::_HumanoidStateMsg;
 
 QUICKDEV_DECLARE_NODE_CLASS( MehrabianRecognizer )
 {
@@ -95,6 +97,7 @@ private:
         const auto now = ros::Time::now();
 
         _MarkerArrayMsg markers_msg;
+        _SpatialFeatureArrayMsg features_msg;
 
         unsigned int current_id = 0;
 
@@ -106,7 +109,8 @@ private:
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
-            const auto & spatial_feature_vec = proxemics::SpatialFeature::calculateFeatureVec( *pair );
+            const auto & spatial_feature = proxemics::SpatialFeature( pair->first["torso"], pair->second["torso"] );
+            features_msg.features.push_back( unit::make_unit( spatial_feature ) );
             //const auto & joint1 = pair->first["torso"];
             //const auto & joint2 = pair->second["torso"];
 
@@ -120,8 +124,8 @@ private:
             lines_marker.header.stamp = now;
             lines_marker.id = current_id ++;
             lines_marker.color = current_color;
-            lines_marker.points.push_back( spatial_feature_vec.joint1.pose.pose.position );
-            lines_marker.points.push_back( spatial_feature_vec.joint2.pose.pose.position );
+            lines_marker.points.push_back( spatial_feature.joint1.pose.pose.position );
+            lines_marker.points.push_back( spatial_feature.joint2.pose.pose.position );
 
             markers_msg.markers.push_back( lines_marker );
 
@@ -131,16 +135,17 @@ private:
             text_marker.color = current_color;
 
             char buffer[10];
-            sprintf( buffer, "%.2f", spatial_feature_vec.distance );
+            sprintf( buffer, "%.2f", spatial_feature.distance );
             text_marker.text = buffer;
-            text_marker.pose.position.x = spatial_feature_vec.midpoint.getX();
-            text_marker.pose.position.y = spatial_feature_vec.midpoint.getY();
-            text_marker.pose.position.z = spatial_feature_vec.midpoint.getZ() - 0.25;
+            text_marker.pose.position.x = spatial_feature.midpoint.getX();
+            text_marker.pose.position.y = spatial_feature.midpoint.getY();
+            text_marker.pose.position.z = spatial_feature.midpoint.getZ() - 0.25;
 
             markers_msg.markers.push_back( text_marker );
         }
 
-        _HumanoidRecognizerPolicy::update( markers_msg );
+        _HumanoidRecognizerPolicy::updateMarkers( markers_msg );
+        _HumanoidRecognizerPolicy::updateFeatures( features_msg );
     }
 };
 

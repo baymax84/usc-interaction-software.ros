@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/proxemic_models/psychophsysical_features.h
+ *  include/proxemic_models/psychophysical_features.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,10 +33,12 @@
  *
  **************************************************************************/
 
-#ifndef PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
-#define PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
+#ifndef PROXEMICMODELS_PSYCHOPHYSICALFEATURES_H_
+#define PROXEMICMODELS_PSYCHOPHYSICALFEATURES_H_
 
 #include <proxemic_models/spatial_features.h>
+
+#include <proxemic_models/PsychophysicalFeatureArray.h>
 
 namespace proxemics
 {
@@ -44,42 +46,24 @@ namespace proxemics
     using humanoid::_HumanoidPair;
     using humanoid::_HumanoidJointMsg;
 
-    DECLARE_CONVOLVED_STRUCT( PsychophysicalFeatureVec, SpatialFeatureVec )
+    DECLARE_CONVOLVED_STRUCT( PsychophysicalFeature, SpatialFeature )
     {
         double placeholder;
 
-        DECLARE_CONVOLVED_STRUCT_TYPES( PsychophysicalFeatureVec, double );
+        DECLARE_CONVOLVED_STRUCT_TYPES( PsychophysicalFeature, double );
 
-        INST_CONVOLVED_STRUCT( PsychophysicalFeatureVec ),
-            INST_CONVOLVED_STRUCT_VAR( placeholder, 0 )
+        INST_CONVOLVED_STRUCT( PsychophysicalFeature ),
+            INST_CONVOLVED_STRUCT_VAR( 0, placeholder )
         {}
-    };
 
-    class PsychophysicalFeature
-    {
-    public:
-        typedef PsychophysicalFeatureVec _FeatureVec;
-
-    protected:
-        _FeatureVec feature_vec_;
-
-    QUICKDEV_DECLARE_ACCESSOR2( feature_vec_, FeatureVec )
-
-    public:
-        template<class... __Args>
-        PsychophysicalFeature( __Args&&... args )
-        :
-            feature_vec_( calculateFeatureVec( args... ) )
+        static PsychophysicalFeature fromHumanoidPair( const _HumanoidPair & pair )
         {
-            //
-        }
-
-    public:
-        static _FeatureVec calculateFeatureVec( const _HumanoidPair & pair )
-        {
-            return _FeatureVec( SpatialFeature::calculateFeatureVec( pair ), 0.0 );
+            return PsychophysicalFeature( SpatialFeature( pair ), 0.0 );
         }
     };
+
+    typedef PsychophysicalFeature _PsychophysicalFeature;
+    typedef proxemic_models::PsychophysicalFeatureArray _PsychophysicalFeatureArrayMsg;
 }
 
-#endif // PROXEMICMODELS_PSYCHOPHSYSICALFEATURES_H_
+#endif // PROXEMICMODELS_PSYCHOPHYSICALFEATURES_H_

@@ -50,7 +50,7 @@ DECLARE_CONVOLVED_STRUCT( Name, quickdev::ConvolvedBase )
 typedef _##Name##Parent _Parent; \
 typedef quickdev::Container<types> _TypesContainer
 
-// we have three constructors here
+// we have four constructors here
 // - the first constructor
 //   - empty constructor
 // - the second constructor
@@ -71,16 +71,18 @@ typedef quickdev::Container<types> _TypesContainer
 Name(){} \
 template< \
     class... __Args, \
-    typename std::enable_if<(sizeof...(__Args) >= _TypesContainer::size_ + _Parent::_TypesContainer::size_), int>::type = 0, \
+    typename std::enable_if<(sizeof...(__Args) > 0 && sizeof...(__Args) >= _TypesContainer::size_ + _Parent::_TypesContainer::size_), int>::type = 0, \
     typename std::enable_if<(!std::is_same<typename variadic::element<0, __Args...>::type, _Parent>::value), int>::type = 0, \
     typename std::enable_if<(std::is_same<typename container::subtype<_Parent::_TypesContainer::size_, _TypesContainer::size_, quickdev::Container<__Args...> >::type, _TypesContainer>::value), int>::type = 0> \
 Name( __Args... args ){ *this = Name( _Parent( args... ), _Parent::_TypesContainer(), args... ); } \
  \
 template< \
     class... __Args, \
-    typename std::enable_if<(sizeof...(__Args) == _TypesContainer::size_), int>::type = 0, \
+    typename std::enable_if<(sizeof...(__Args) > 0 && sizeof...(__Args) == _TypesContainer::size_), int>::type = 0, \
     typename std::enable_if<(std::is_same<quickdev::Container<__Args...>, _TypesContainer>::value), int>::type = 0> \
 Name( const _Parent & parent, __Args... args ){ *this = Name( parent, quickdev::Container<>(), args... ); } \
+ \
+Name( const _Parent & parent ) : _Parent( parent ){} \
  \
 template<class... __OffsetTypes, class... __Args> \
 Name( const _Parent & parent, const quickdev::Container<__OffsetTypes...> & offset_container, __Args... args ) : _Parent( parent )
@@ -92,7 +94,7 @@ Name( const _Parent & parent, const quickdev::Container<__OffsetTypes...> & offs
 //       INST_CONVOLVED_STRUCT_VAR( c, 2 )
 //     {}
 //
-#define INST_CONVOLVED_STRUCT_VAR( name, index ) \
+#define INST_CONVOLVED_STRUCT_VAR( index, name ) \
 name( variadic::at<quickdev::Container<__OffsetTypes...>::size_ + index>( args... ) )
 
 // Using the above, the user can do:

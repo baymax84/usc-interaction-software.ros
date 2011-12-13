@@ -87,7 +87,7 @@ public:
         updateRec<Container<__Policies...> >( args... );
     }
 
-    QUICKDEV_ENABLE_UPDATE{}
+    QUICKDEV_ENABLE_UPDATE(){}
 };
 
 }

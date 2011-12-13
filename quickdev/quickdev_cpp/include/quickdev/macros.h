@@ -246,7 +246,7 @@ this->setInitialized( true )
 
 // ########## Updateable Policy Macros #################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
-#define QUICKDEV_ENABLE_UPDATE \
+#define QUICKDEV_ENABLE_UPDATE() \
 const static bool HAS_UPDATE_ = true; \
 template<class... __Args> \
 void update( __Args&&... args )
@@ -430,14 +430,10 @@ inline void set##VarName( decltype( var_name ) & value ){ var_name = value; } \
 inline void set##VarName( const decltype( var_name ) & value ){ var_name = value; }
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_ACCESSOR( var_name ) \
-public: \
-inline auto get_##var_name() -> decltype( var_name ) & { return var_name; } \
-inline auto get_##var_name() const -> const decltype( var_name ) & { return var_name; }
+QUICKDEV_DECLARE_MUTATOR2( var_name, var_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MUTATOR( var_name ) \
-public: \
-inline void set_##var_name( decltype( var_name ) & value ){ var_name = value; } \
-inline void set_##var_name( const decltype( var_name ) & value ){ var_name = value; }
+QUICKDEV_DECLARE_MUTATOR2( var_name, var_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MEMBER_RW2( var_name, VarName ) \
 QUICKDEV_DECLARE_ACCESSOR2( var_name, VarName ) \

@@ -53,7 +53,7 @@ QUICKDEV_DECLARE_POLICY_CLASS( Updateable )
         printPolicyActionDone( "create", this );
     }
 
-    QUICKDEV_ENABLE_UPDATE{}
+    QUICKDEV_ENABLE_UPDATE(){}
 };
 
 }
