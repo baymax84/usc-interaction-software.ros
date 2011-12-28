@@ -11,6 +11,7 @@
   <depend package="rosbuild"/>
   <depend package="roscpp"/>
   <depend package="cpp11"/>
+  <depend package="gsl"/>
   <depend package="std_msgs"/>
   <depend package="geometry_msgs"/>
   <depend package="tf"/>
