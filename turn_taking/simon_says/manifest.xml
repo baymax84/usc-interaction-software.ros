@@ -14,7 +14,7 @@
 	<depend package="smach_ros"/>
 
   <export>
-    <cpp cflags="-I${prefix}/srv/cpp"/>
+    <cpp cflags="-I${prefix}/srv/cpp -I${prefix}/msg/cpp"/>
   </export>
 
   <rosdep name="python-yaml"/>
