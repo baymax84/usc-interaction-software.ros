@@ -1,0 +1,6 @@
+<launch>
+	<include file="$(find dave_demo)/turn_taking.launch"/>
+
+  <node pkg="wait_for_response_action" type="wait_for_response_server" name="wait_for_response_server"/>
+
+</launch>
