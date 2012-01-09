@@ -1,0 +1,14 @@
+<launch>
+	<include file="$(find dave_demo)/turn_taking.launch"/>
+  <node pkg="pose_action" type="pose_action_server" name="pose_action_server">
+  </node>
+
+  <node pkg="wait_for_response_action" type="wait_for_response_server" name="wait_for_response_server"/>
+
+	<node pkg="openni_vis" type="openni_vis" name="person_vis">
+		<param name="prefix" type="str" value=""/>
+	</node>
+
+	<node pkg="tf" type="static_transform_publisher" name="bandit_kinect_frame" args="1 1 0 3.1415927 0 0  /openni_camera /bandit_torso_link 100"/>
+
+</launch>
