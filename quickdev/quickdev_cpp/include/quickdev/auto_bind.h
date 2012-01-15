@@ -47,17 +47,9 @@
 namespace details
 {
 
-template<int N> struct placeholder {};
 template<typename... __ArgTypes> struct container{};
 
 } // details
-
-namespace std
-{
-
-template<int N> struct is_placeholder< details::placeholder<N> > : std::integral_constant<int,N> {};
-
-} // std
 
 namespace details
 {
@@ -78,19 +70,19 @@ struct auto_binder
     template <typename __CallerType, typename __ReturnType, typename... __ArgTypes, typename... __PlaceHolders>
     static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(__CallerType::*function_ptr)(__ArgTypes...), __CallerType* const caller, __PlaceHolders... placeholders )
     {
-        return auto_binder<N-1>::auto_bind( function_ptr, caller, placeholder<N>(), placeholders... );
+        return auto_binder<N-1>::auto_bind( function_ptr, caller, std::_Placeholder<N>(), placeholders... );
     }
 
     template <typename __ReturnType, typename... __ArgTypes, typename... __PlaceHolders>
     static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(*function_ptr)(__ArgTypes...), __PlaceHolders... placeholders )
     {
-        return auto_binder<N-1>::auto_bind( function_ptr, placeholder<N>(), placeholders... );
+        return auto_binder<N-1>::auto_bind( function_ptr, std::_Placeholder<N>(), placeholders... );
     }
 
     template <typename... __OutputArgTypes, typename __ReturnType, typename... __InputArgTypes, typename... __Appends>
     static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_append( const container<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends... appends )
     {
-        return auto_binder<N-1>::auto_bind_append( container, function, placeholder<N>(), appends... );
+        return auto_binder<N-1>::auto_bind_append( container, function, std::_Placeholder<N>(), appends... );
     }
 };
 
