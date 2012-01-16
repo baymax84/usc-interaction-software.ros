@@ -13,6 +13,7 @@
   <depend package="cpp11"/>
   <depend package="gsl"/>
   <depend package="std_msgs"/>
+  <depend package="std_srvs"/>
   <depend package="geometry_msgs"/>
   <depend package="tf"/>
   <depend package="dynamic_reconfigure"/>
