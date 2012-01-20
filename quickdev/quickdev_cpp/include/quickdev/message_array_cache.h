@@ -545,6 +545,11 @@ public:
     }
 
     inline TimedMessageArrayCache<__Message> & getInstance(){ return *this; }
+
+    unsigned int size() const
+    {
+        return this->getStorage()->message_array_.size();
+    }
 };
 
 template<class __Message>
@@ -585,6 +590,11 @@ public:
 
         // erase the indicated item from our index map
         message_index_map_.erase( erase_index );
+    }
+
+    unsigned int size() const
+    {
+        return message_index_map_.size();
     }
 
     typename _MessageArray::iterator find( std::string name )
