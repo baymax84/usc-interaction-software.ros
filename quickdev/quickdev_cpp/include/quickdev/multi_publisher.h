@@ -127,9 +127,10 @@ public:
 
     // recursively process the message types in __MessagesSubset and
     // create a publisher for each
-    template<class __MessagesSubset>
-    typename std::enable_if<(__MessagesSubset::size_ > 0 && !std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value ), void>::type
-    createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
+    template<
+        class __MessagesSubset,
+        typename std::enable_if<(__MessagesSubset::size_ > 0 && !std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value ), int>::type = 0>
+    void createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
     {
         typedef typename container::traits<__MessagesSubset>::_Front _CurrentMessageType;
 
@@ -141,9 +142,10 @@ public:
     }
 
     // ignore void types
-    template<class __MessagesSubset>
-    typename std::enable_if<(__MessagesSubset::size_ > 0 && std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value ), void>::type
-    createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
+    template<
+        class __MessagesSubset,
+        typename std::enable_if<(__MessagesSubset::size_ > 0 && std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value ), int>::type = 0>
+    void createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
     {
         createPublishers<typename container::traits<__MessagesSubset>::_Tail>( nh, current_topic + 1, last_topic, storage );
     }

@@ -359,7 +359,7 @@ for policy in $policies; do
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
 if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
-ifdef_string="$ifdef_string"`echo $policy_file | tr a-z A-Z | tr -d _`"_H_"
+ifdef_string="$ifdef_string"`echo $policy_file | tr a-z A-Z | tr -d _`"POLICY_H_"
 
   echo "#ifndef $ifdef_string
 #define $ifdef_string
@@ -487,7 +487,7 @@ for node in $nodes; do
 
 ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
 if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
-ifdef_string="$ifdef_string"`echo $node_file | tr a-z A-Z | tr -d _`"_H_"
+ifdef_string="$ifdef_string"`echo $node_file | tr a-z A-Z | tr -d _`"NODE_H_"
 
   echo "#ifndef $ifdef_string
 #define $ifdef_string
