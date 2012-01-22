@@ -137,9 +137,14 @@ protected:
 
     image_transport::ImageTransport image_transport_;
 
+    ros::PublisherAdapterStorage<image_transport::Publisher> publisher_storage_;
+    ros::SubscriberAdapterStorage<image_transport::Subscriber> subscriber_storage_;
+
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( ImageProc ),
-        image_transport_( NodeHandlePolicy::getNodeHandle() )
+        image_transport_( NodeHandlePolicy::getNodeHandle() ),
+        publisher_storage_( &image_transport_, 1 ),
+        subscriber_storage_( &image_transport_, 1 )
     {
         printPolicyActionStart( "create", this );
 
@@ -150,18 +155,17 @@ protected:
 
     void preInit()
     {
-        ros::PublisherAdapterStorage<image_transport::Publisher> publisher_storage( &image_transport_, 10 );
-        ros::SubscriberAdapterStorage<image_transport::Subscriber> subscriber_storage( &image_transport_, 10 );
         //publisher_storage.image_transport_ = &image_transport_;
         //subscriber_storage.image_transport_ = &image_transport_;
 
-        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+        //auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+        QUICKDEV_GET_NODEHANDLE( nh_rel );
 
         if( ros::ParamReader<bool, 1>::readParam( nh_rel, "subscribe_to_image", true ) )
-            image_subs_.addSubscriber( nh_rel, "image", &ImageProcPolicy::imageCB_0, this, subscriber_storage );
+            image_subs_.addSubscriber( nh_rel, "image", &ImageProcPolicy::imageCB_0, this, subscriber_storage_ );
 
         if( ros::ParamReader<bool, 1>::readParam( nh_rel, "show_image", true ) )
-            image_pubs_.addPublishers<sensor_msgs::Image>( nh_rel, {"output_image"}, publisher_storage );
+            image_pubs_.addPublishers<sensor_msgs::Image>( nh_rel, {"output_image"}, publisher_storage_ );
     }
 
     virtual IMAGE_PROC_PROCESS_IMAGE( image_ptr )
@@ -228,18 +232,18 @@ protected:
         publishImages( rest... );
     }
 
-    sensor_msgs::Image::Ptr fromMat( const cv::Mat & mat, std::string frame_id = "" ) const
+    sensor_msgs::Image::Ptr fromMat( cv::Mat const & mat, std::string const & frame_id = "", std::string const & encoding = "rgb8" ) const
     {
         cv_bridge::CvImage image_wrapper;
 
         image_wrapper.image = mat;
-        image_wrapper.encoding = "rgb8";
+        image_wrapper.encoding = encoding;
         image_wrapper.header.frame_id = frame_id;
 
         return image_wrapper.toImageMsg();
     }
 
-    sensor_msgs::Image::Ptr fromIplImage( IplImage * image_ptr, std::string frame_id = "" ) const
+    sensor_msgs::Image::Ptr fromIplImage( IplImage * image_ptr, std::string const & frame_id = "" ) const
     {
         //cv_bridge::CvImage image_wrapper;
 
