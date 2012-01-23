@@ -418,7 +418,7 @@ public:
         auto & message_array = this->getStorage()->message_array_;
         //auto last_message = message_array.begin();
         //STREAM_INFO( "Filtering through " << message_array.size() << " messages." );
-        unsigned int i = 0;
+        size_t i = 0;
         while( i < message_array.size() )
         {
             const auto & message = message_array[i];
@@ -546,7 +546,7 @@ public:
 
     inline TimedMessageArrayCache<__Message> & getInstance(){ return *this; }
 
-    unsigned int size() const
+    size_t size() const
     {
         return this->getStorage()->message_array_.size();
     }
@@ -592,7 +592,7 @@ public:
         message_index_map_.erase( erase_index );
     }
 
-    unsigned int size() const
+    size_t size() const
     {
         return message_index_map_.size();
     }
@@ -679,6 +679,10 @@ public:
         {
             message_index_map_[msg.name] = _Parent::getStorage()->message_array_.size();
             _Parent::updateMessage( msg );
+        }
+        else
+        {
+            *( _Parent::getStorage()->message_array_.begin() + message_index_map_[msg.name] ) = msg;
         }
     }
 
