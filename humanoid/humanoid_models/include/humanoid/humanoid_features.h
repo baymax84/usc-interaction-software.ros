@@ -105,15 +105,19 @@ public:
         updateJoints( msg );
     }
 
-    Humanoid & updateJoints( const _HumanoidStateMsg & msg, const double & message_lifetime = 0.5 )
+    Humanoid & updateJoints( const _HumanoidStateMsg & msg )
     {
         name = msg.name;
         header.stamp = msg.header.stamp;
 
         _NamedMessageArrayCache::updateMessages( msg.joints );
-        _TimedMessageArrayCache::eraseOld( message_lifetime );
 
         return *this;
+    }
+
+    void eraseOld( double const & message_lifetime = 1.0 )
+    {
+        _TimedMessageArrayCache::eraseOld( message_lifetime );
     }
 
     Humanoid & operator=( const _HumanoidStateMsg & msg )
@@ -129,12 +133,16 @@ public:
         return joint_array_msg_;
     }
 
-    const Humanoid & updateJoint( const _HumanoidJointMsg & msg, const double & message_lifetime = 0.5 )
+    const Humanoid & updateJoint( const _HumanoidJointMsg & msg )
     {
         _NamedMessageArrayCache::updateMessage( msg );
-        _TimedMessageArrayCache::eraseOld( message_lifetime );
 
         return *this;
+    }
+
+    size_t size() const
+    {
+        return _NamedMessageArrayCache::size();
     }
 };
 

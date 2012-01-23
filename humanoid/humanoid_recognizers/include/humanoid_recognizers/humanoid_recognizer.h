@@ -126,15 +126,21 @@ private:
             _HumanoidRecognizerPolicy::updateHumanoids( *users_components );
         }
 
+//        auto & humanoids_temp = _HumanoidRecognizerPolicy::getHumanoids();
+//        printf( "tracking %u humanoids\n", humanoids_temp.size() );
+
         // recursively erase all old messages
-        _HumanoidRecognizerPolicy::eraseOld();
+        _HumanoidRecognizerPolicy::eraseOld( 1.0 );
 
         auto & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
+
+        printf( "tracking %zu humanoids\n", humanoids.size() );
 
         for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
         {
             //note: can't use cbegin() in for() above because getJointsMessage() modifies Humanoid (specifically, it modifies the ROS message cache of the humanoid's storage object)
             const auto & joints = humanoid->getJointsMessage();
+
             combined_states_msg.states.push_back( joints );
 
             //std::map<std::string, _PoseWithConfidenceMsg> point_map;
