@@ -146,31 +146,8 @@ public:
         timed_humanoid_cache_.eraseOld( child_args... );
     }
 
-    /*void notifyErase( const typename _MessageArray::iterator & msg )
-    {
-        const auto & erase_index = message_index_map_.find( msg->name );
-        // starting at the item to erase, decrement all indices by 1
-        for( auto message_index = erase_index; message_index != message_index_map_.end(); ++message_index )
-        {
-            --message_index->second;
-        }
-
-        // erase the indicated item from our index map
-        message_index_map_.erase( erase_index );
-    }*/
-
     QUICKDEV_DECLARE_ACCESSOR2( named_humanoid_cache_, Humanoids )
     QUICKDEV_DECLARE_ACCESSOR2( humanoid_pairs_, HumanoidPairs )
-
-    /*auto getHumanoids() -> decltype( named_humanoid_cache_ ) &
-    {
-        return named_humanoid_cache_;
-    }
-
-    auto getHumanoidPairs() -> decltype( humanoid_pairs_ ) &
-    {
-        return humanoid_pairs_;
-    }*/
 
     //! Build a list of unique humanoids (mapped from name to _Humanoid)
     void updateHumanoids( const _HumanoidStateArrayMsg::ConstPtr & states_msg )
