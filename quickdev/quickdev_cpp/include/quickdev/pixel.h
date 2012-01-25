@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev/quickdev.h
+ *  include/quickdev/pixel.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,50 +33,41 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
-#define QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
+#ifndef QUICKDEVCPP_QUICKDEV_PIXEL_H_
+#define QUICKDEVCPP_QUICKDEV_PIXEL_H_
 
-#include <quickdev/action_client_policy.h>
-#include <quickdev/action_server_policy.h>
-#include <quickdev/auto_bind.h>
-#include <quickdev/callback_policy.h>
-#include <quickdev/console.h>
-#include <quickdev/container.h>
-#include <quickdev/convolved_struct.h>
 #include <quickdev/feature.h>
-#include <quickdev/generic_policy_adapter.h>
-#include <quickdev/image_loader.h>
-#include <quickdev/image_proc_policy.h>
-#include <quickdev/joystick_policy.h>
-#include <quickdev/macros.h>
-#include <quickdev/message_array_cache.h>
-#include <quickdev/message_conversions.h>
-#include <quickdev/multi_publisher.h>
-#include <quickdev/multi_subscriber.h>
-#include <quickdev/multityped_linked_list.h>
-#include <quickdev/node.h>
-#include <quickdev/node_handle_policy.h>
-#include <quickdev/nodelet.h>
-#include <quickdev/param_reader.h>
-#include <quickdev/pixel.h>
-#include <quickdev/policy.h>
-#include <quickdev/publisher_policy.h>
-#include <quickdev/reconfigure_policy.h>
-#include <quickdev/robot_controller_policy.h>
-#include <quickdev/robot_driver_policy.h>
-#include <quickdev/runable_policy.h>
-#include <quickdev/service_client_policy.h>
-#include <quickdev/service_server_policy.h>
-#include <quickdev/subscriber_policy.h>
-#include <quickdev/tf_manager.h>
-#include <quickdev/tf_manager_policy.h>
-#include <quickdev/tf_tranceiver_policy.h>
-#include <quickdev/threading.h>
-#include <quickdev/timed_policy.h>
-#include <quickdev/types.h>
-#include <quickdev/type_utils.h>
-#include <quickdev/unit.h>
-#include <quickdev/unit_conversions.h>
-#include <quickdev/updateable_policy.h>
+#include <opencv/cv.h>
+#include <deque>
 
-#endif // QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
+{
+
+template<class __Data>
+class Pixel : public quickdev::Feature<__Data>
+{
+public:
+    template<class... __Args>
+    Pixel( __Args... args ) : quickdev::Feature<__Data>( args... )
+    {
+        //
+    }
+};
+
+namespace pixel
+{
+
+template<class __Data, int __Dim__>
+Pixel<__Data> make_pixel( cv::Vec<__Data, __Dim__> const & vec )
+{
+    std::deque<__Data> data( __Dim__ );
+    std::copy( vec.val, vec.val + __Dim__, data.begin() );
+
+    return Pixel<__Data>( data );
+}
+
+} // pixel
+
+} // quickdev
+
+#endif // QUICKDEVCPP_QUICKDEV_PIXEL_H_

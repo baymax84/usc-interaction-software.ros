@@ -201,6 +201,21 @@ protected:
 public:
     Feature(){}
 
+    Feature( Feature<__Data> const & feature )
+    :
+        storage_( feature.storage_ )
+    {
+        //
+    }
+
+    //! Construct a Feature from a _Storage object
+    Feature( _Storage const & storage )
+    :
+        storage_( storage )
+    {
+        //
+    }
+
     //! Construct a Feature from an initializer list
     Feature( std::initializer_list<__Data> storage )
     :
@@ -208,6 +223,14 @@ public:
     {
         //
     }
+
+    /*//! Construct a Feature from some other data type
+    template<class __OtherStorage>
+    Feature( __OtherStorage const & storage )
+    {
+        storage_.resize( storage.size() );
+        std::copy( storage.begin(), storage.end(), storage_.begin() );
+    }*/
 
     //! Construct a Feature from a variadic template of size > 0
     /*! Will fail at compile time if, after args... is expanded, all types do not match __Data */
@@ -320,7 +343,7 @@ public:
 
     //! Calculate the distance from this feature to a simple numeric feature
     /*! Simply wraps the given numeric value in a feature and forwards all other params to the primary distanceTo() implementation */
-    template<class __Mode = feature::mode::distance::EUCLIDIAN, class __OtherData, class... __Args>
+    template<class __Mode = feature::mode::distance::EUCLIDIAN, class __OtherData, class std::enable_if<std::is_arithmetic<__OtherData>::value, int>::type = 0, class... __Args>
     double distanceTo( const __OtherData & other, __Args... args ) const
     {
         return distanceToImpl<__Mode>( Feature<__OtherData>( other ), args... );
