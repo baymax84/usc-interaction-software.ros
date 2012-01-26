@@ -39,10 +39,8 @@
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
+#include <quickdev/opencv_conversion.h>
 #include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <cv_bridge/CvBridge.h>
-#include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv/highgui.h>
 
@@ -190,17 +188,7 @@ protected:
     {
         imageCB( image_msg );
 
-        cv_bridge::CvImageConstPtr cv_image_ptr;
-
-        try
-        {
-            cv_image_ptr = cv_bridge::toCvShare( image_msg );
-        }
-        catch (cv_bridge::Exception& e)
-        {
-            PRINT_ERROR( "cv_bridge exception: %s", e.what() );
-            return;
-        }
+        cv_bridge::CvImageConstPtr cv_image_ptr = opencv_conversion::fromImageMsg( image_msg );
 
         processImage( cv_image_ptr );
     }
@@ -230,32 +218,6 @@ protected:
         // publish using specialization for __Image
         publishImages( topic, image );
         publishImages( rest... );
-    }
-
-    sensor_msgs::Image::Ptr fromMat( cv::Mat const & mat, std::string const & frame_id = "", std::string const & encoding = "rgb8" ) const
-    {
-        cv_bridge::CvImage image_wrapper;
-
-        image_wrapper.image = mat;
-        image_wrapper.encoding = encoding;
-        image_wrapper.header.frame_id = frame_id;
-
-        return image_wrapper.toImageMsg();
-    }
-
-    sensor_msgs::Image::Ptr fromIplImage( IplImage * image_ptr, std::string const & frame_id = "" ) const
-    {
-        //cv_bridge::CvImage image_wrapper;
-
-        //image_wrapper.image = cv::Mat( image_ptr );
-        //image_wrapper.encoding = "bgr8";
-        //image_wrapper.frame_name = frame_id;
-
-        //return image_wrapper;
-
-        auto result = sensor_msgs::CvBridge::cvToImgMsg( image_ptr );
-        result->header.frame_id = frame_id;
-        return result;
     }
 
     //void publishImage( IplImage * image_ptr ){}

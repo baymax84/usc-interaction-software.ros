@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev/quickdev.h
+ *  src/opencv_conversion.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,51 +33,51 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
-#define QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
-
-#include <quickdev/action_client_policy.h>
-#include <quickdev/action_server_policy.h>
-#include <quickdev/auto_bind.h>
-#include <quickdev/callback_policy.h>
-#include <quickdev/console.h>
-#include <quickdev/container.h>
-#include <quickdev/convolved_struct.h>
-#include <quickdev/feature.h>
-#include <quickdev/generic_policy_adapter.h>
-#include <quickdev/image_loader.h>
-#include <quickdev/image_proc_policy.h>
-#include <quickdev/joystick_policy.h>
-#include <quickdev/macros.h>
-#include <quickdev/message_array_cache.h>
-#include <quickdev/message_conversions.h>
-#include <quickdev/multi_publisher.h>
-#include <quickdev/multi_subscriber.h>
-#include <quickdev/multityped_linked_list.h>
-#include <quickdev/node.h>
-#include <quickdev/node_handle_policy.h>
-#include <quickdev/nodelet.h>
 #include <quickdev/opencv_conversion.h>
-#include <quickdev/param_reader.h>
-#include <quickdev/pixel.h>
-#include <quickdev/policy.h>
-#include <quickdev/publisher_policy.h>
-#include <quickdev/reconfigure_policy.h>
-#include <quickdev/robot_controller_policy.h>
-#include <quickdev/robot_driver_policy.h>
-#include <quickdev/runable_policy.h>
-#include <quickdev/service_client_policy.h>
-#include <quickdev/service_server_policy.h>
-#include <quickdev/subscriber_policy.h>
-#include <quickdev/tf_manager.h>
-#include <quickdev/tf_manager_policy.h>
-#include <quickdev/tf_tranceiver_policy.h>
-#include <quickdev/threading.h>
-#include <quickdev/timed_policy.h>
-#include <quickdev/types.h>
-#include <quickdev/type_utils.h>
-#include <quickdev/unit.h>
-#include <quickdev/unit_conversions.h>
-#include <quickdev/updateable_policy.h>
 
-#endif // QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
+sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromMat( cv::Mat const & mat, std::string const & frame_id, std::string const & encoding )
+{
+    cv_bridge::CvImage image_wrapper;
+
+    image_wrapper.image = mat;
+    image_wrapper.encoding = encoding;
+    image_wrapper.header.frame_id = frame_id;
+
+    return image_wrapper.toImageMsg();
+}
+
+sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromIplImage( IplImage * image_ptr, std::string const & frame_id )
+{
+    //cv_bridge::CvImage image_wrapper;
+
+    //image_wrapper.image = cv::Mat( image_ptr );
+    //image_wrapper.encoding = "bgr8";
+    //image_wrapper.frame_name = frame_id;
+
+    //return image_wrapper;
+
+    auto result = sensor_msgs::CvBridge::cvToImgMsg( image_ptr );
+    result->header.frame_id = frame_id;
+    return result;
+}
+
+cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromImageMsg( const sensor_msgs::Image::ConstPtr & image_msg )
+{
+    cv_bridge::CvImageConstPtr cv_image_ptr;
+
+    try
+    {
+        cv_image_ptr = cv_bridge::toCvShare( image_msg );
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        PRINT_ERROR( "cv_bridge exception: %s", e.what() );
+    }
+
+    return cv_image_ptr;
+}
+
+cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromImageMsg( const sensor_msgs::Image & image_msg )
+{
+    return fromImageMsg( make_const_shared( image_msg ) );
+}

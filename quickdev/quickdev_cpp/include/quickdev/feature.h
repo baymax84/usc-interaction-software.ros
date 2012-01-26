@@ -243,6 +243,36 @@ public:
         //
     }
 
+    typename _Storage::iterator begin()
+    {
+        return storage_.begin();
+    }
+
+    typename _Storage::const_iterator cbegin() const
+    {
+        return storage_.cbegin();
+    }
+
+    typename _Storage::const_iterator begin() const
+    {
+        return cbegin();
+    }
+
+    typename _Storage::iterator end()
+    {
+        return storage_.end();
+    }
+
+    typename _Storage::const_iterator cend() const
+    {
+        return storage_.cend();
+    }
+
+    typename _Storage::const_iterator end() const
+    {
+        return cend();
+    }
+
     // getStorage()
     QUICKDEV_DECLARE_ACCESSOR2( storage_, Storage )
 
@@ -298,8 +328,12 @@ public:
 
 private:
     //! Calculates the euclidian distance to another feature
-    template<class __Mode, class __OtherData, typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::EUCLIDIAN>::value), int>::type = 0>
-    double distanceToImpl( const Feature<__OtherData> & other ) const
+    template<
+        class __Mode,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::EUCLIDIAN>::value), int>::type = 0,
+        class __OtherData
+    >
+    double distanceToImpl( Feature<__OtherData> const & other ) const
     {
         const auto distance_components = getDistanceComponents( other );
 
@@ -313,18 +347,25 @@ private:
     }
 
     //! Calculates the gaussian distance to another feature
-    template<class __Mode, class __OtherData, typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN>::value), int>::type = 0>
-    double distanceToImpl( const Feature<__OtherData> & other, const double & sigma, const double & resolution = 1.0 ) const
+    template<
+        class __Mode,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN>::value), int>::type = 0,
+        class __OtherData,
+        class __SigmaData,
+        typename std::enable_if<(std::is_floating_point<__SigmaData>::value), int>::type = 0
+    >
+    double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & resolution = 1.0 ) const
     {
         const auto distance_components = getDistanceComponents( other );
 
         const auto half_resolution = resolution / 2.0;
 
         double total_distance = 1.0;
-        for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component )
+        auto sigma = sigmas.cbegin();
+        for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
         {
-            const auto abs_distance_component = fabs( *distance_component );
-            total_distance *= gsl_cdf_gaussian_P( abs_distance_component + half_resolution, sigma ) - gsl_cdf_gaussian_P( abs_distance_component - half_resolution, sigma );
+            auto const abs_distance_component = fabs( *distance_component );
+            total_distance *= gsl_cdf_gaussian_P( abs_distance_component + half_resolution, *sigma ) - gsl_cdf_gaussian_P( abs_distance_component - half_resolution, *sigma );
         }
 
         return 1.0 - total_distance;
