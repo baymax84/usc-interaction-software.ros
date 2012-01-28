@@ -216,7 +216,7 @@ PLUGINLIB_DECLARE_CLASS( namespace_name, nodelet_name, namespace_name::ClassName
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_ENABLE_INIT() \
 /*! \brief Used to determine whether a policy is initializable */ \
-public: const static bool HAS_INIT_ = true; \
+static const bool IS_INITIALIZEABLE_ = true; \
 /*! \brief Used to determine whether a policy has been initialized */ \
 /*! \note This variable needs to be manually set to "false" at construction */ \
 private: bool initialized_; \
@@ -224,6 +224,9 @@ private: bool initialized_; \
 /*! \details Usually called as the last line in init() */ \
 /*! \param value the new initialization state of this policy */ \
 private: inline void setInitialized( const bool & value ){ initialized_ = value; } \
+/*! \brief Used to get the initialization state of an initializable policy */ \
+/*! \return the current initialization state of this policy */ \
+public: inline bool const & getInitialized() const { return initialized_; } \
 /*! \brief Used to pass any post-construction values, usually meta-params, to this policy */ \
 /*! \details Meta-params passed through this function can be extracted with getFirstOfType(), getMetaParam(), or getMetaParamDef() */ \
 /*! \tparam __Args the variadic template of types associated with args */ \

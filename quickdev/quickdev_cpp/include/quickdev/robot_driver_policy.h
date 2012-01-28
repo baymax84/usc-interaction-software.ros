@@ -88,8 +88,11 @@ public:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
-        robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
+        //const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
+        //robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
+
+        robot_name_ = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", args... );
+
         if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
 
         motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals" , args... );

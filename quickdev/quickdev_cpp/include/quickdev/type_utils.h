@@ -116,6 +116,19 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
      *  \param name the name of the desired key
      *  \return __Desired() the default constructor value of the requested type */
     template<class __Desired>
+    bool tryGetMetaParamRec( const std::string & name, __Desired const & desired )
+    {
+        PRINT_ERROR( ">>> Failed to find key [ %s ]", name.c_str() );
+        return false;
+    }
+
+    //! Specialization of getMetaParamRec when a value of type __Desired was in the list but its key did not match the given key
+    /*! This function is called after recursing through all key-value pairs in a variadic template containing at least
+     *  one value of type __Desired without finding a matching key. This signifies that the requested key-value pair
+     *  does not exist in the given list.
+     *  \param name the name of the desired key
+     *  \return __Desired() the default constructor value of the requested type */
+    template<class __Desired>
     __Desired getMetaParamRec( const std::string & name )
     {
         PRINT_ERROR( ">>> Failed to find key [ %s ]", name.c_str() );
@@ -141,6 +154,14 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     // #### Forward declarations of all recursive variants of getMetaParamRec and getMetaParamDefRec
 
     template<class __Desired, class __Current, class... __Rest>
+    static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), bool>::type
+    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest );
+
+    template<class __Desired, class __Current, class... __Rest>
+    static typename std::enable_if<(std::is_same<__Desired, __Current>::value), bool>::type
+    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest );
+
+    template<class __Desired, class __Current, class... __Rest>
     static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), __Desired>::type
     getMetaParamRec( const std::string & name, const std::string & current_name, __Current & current, __Rest&&... rest );
 
@@ -157,6 +178,47 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     getMetaParamDefRec( const std::string & name, const __Desired & default_value, const std::string & current_name, __Current & current, __Rest&&... rest );
 
     // #### Declarations of all recursive variants of getMetaParamRec and getMetaParamDefRec
+
+    //! Specialization of getMetaParamRec enabled if __Desired != __Current
+    /*! This function is called any time during recursion when __Desired != __Current, which signifies that
+     *  a matching type has not yet been located in the given variadic template. This function will recursively
+     *  check all types in __Rest until a better specialization is found (ie if a match is found or all types
+     *  have been checked). Note that this function will fail to compile if __Desired != __Current for all __Rest.
+     *  \param name the value of the desired key
+     *  \param current_name the value of the current key
+     *  \param current the item at the front of the variadic template
+     *  \param rest the remaining items, if any, in the variadic template
+     *  \return getMetaParamRec<__Desired>( name, rest... ) the next best specialization of getMetaParamRec for the given arguments */
+    template<class __Desired, class __Current, class... __Rest>
+    static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), bool>::type
+    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest )
+    {
+        return tryGetMetaParamRec<__Desired>( name, desired, rest... );
+    }
+
+    //! Specialization of getMetaParamRec enabled when __Desired == __Current
+    /*! This function is called any time during recursion when __Desired == __Current, which signifies that
+     *  the requested type has been located in the the given variadic template and the corresponding key should be checked.
+     *  If the keys do not match, the next matching type is recursively selected.
+     *  \param name the value of the desired key
+     *  \param current_name the value of the current key
+     *  \param current the item at the front of the variadic template
+     *  \param rest the remaining items, if any, in the variadic template
+     *  \return current if the given keys match or getMetaParamRec<__Desired>( name, rest... ), the next best specialization of getMetaParamRec for the given arguments */
+    template<class __Desired, class __Current, class... __Rest>
+    static typename std::enable_if<(std::is_same<__Desired, __Current>::value), bool>::type
+    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest )
+    {
+        if( name == current_name )
+        {
+            std::stringstream ss;
+            ss << current;
+            PRINT_INFO( "Found key [ %s ] with value [ %s ]", name.c_str(), ss.str().c_str() );
+            desired = current;
+            return true;
+        }
+        return tryGetMetaParamRec<__Desired>( name, desired, rest... );
+    }
 
     //! Specialization of getMetaParamRec enabled if __Desired != __Current
     /*! This function is called any time during recursion when __Desired != __Current, which signifies that
@@ -257,10 +319,32 @@ Usage:
      *  \param rest the list of key-value pairs
      *  \return getMetaParamRec<__Desired>( name, rest... ) the next best specialization of getMetaParamRec for the given arguments */
     template<class __Desired, class... __Rest>
+    static bool tryGetMetaParam( const std::string & name, __Desired & desired, __Rest&&... rest )
+    {
+        // make sure desired type exists in list; otherwise fail at compile time
+        //getFirstOfType<__Desired>( rest... );
+        return tryGetMetaParamRec<__Desired>( name, desired, rest... );
+    }
+
+    //! A function that, given a variadic list of key-value pairs, and a desired type, will return the first item of the given type with a matching key
+    /*! Entry point. Given a list of key-value pairs ( key, value, key, value, ... ), this function will recursively
+     *  locate the first key-value pair whose value component matches the desired type, then try to match the key-component
+     *  to the given key. If the keys do not match, the next type is located until there are no more types to check.
+     *
+\verbatim
+Usage:
+    getMetaParam<DesiredType>( "<desired_key>", "some_key", some_value, "some_other_key", some_other_value, ... );
+    getMetaParam<DesiredType>( "<desired_key>" ); // evaluates to DesiredType()
+\endverbatim
+     *
+     *  \param name the value of the desired key
+     *  \param rest the list of key-value pairs
+     *  \return getMetaParamRec<__Desired>( name, rest... ) the next best specialization of getMetaParamRec for the given arguments */
+    template<class __Desired, class... __Rest>
     static __Desired getMetaParam( const std::string & name, __Rest&&... rest )
     {
         // make sure desired type exists in list; otherwise fail at compile time
-        getFirstOfType<__Desired>( rest... );
+        //getFirstOfType<__Desired>( rest... );
         return getMetaParamRec<__Desired>( name, rest... );
     }
 
@@ -284,6 +368,31 @@ Usage:
     static __Desired getMetaParamDef( const std::string & name, const __Desired & default_value, __Rest&&... rest )
     {
         return getMetaParamDefRec<__Desired>( name, default_value, rest... );
+    }
+
+    template<class... __Rest>
+    static void make_key_rec( std::stringstream const & ss ){}
+
+    template<class __Current, class... __Rest>
+    static void make_key_rec( std::stringstream & ss, __Current const & current, __Rest... rest )
+    {
+        ss << current;
+        make_key_rec( ss, rest... );
+    }
+
+    template<class... __Args>
+    static std::string make_key( __Args... args )
+    {
+        std::stringstream ss;
+        make_key_rec( ss, args... );
+        return ss.str();
+    }
+
+    template<class... __Args>
+    static std::string make_key_if( bool const & enable, __Args... args )
+    {
+        if( enable ) return make_key( args... );
+        return make_key( variadic::at<0>( args... ) );
     }
 
     //! Simple struct to hold useful pointer types
