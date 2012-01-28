@@ -42,6 +42,7 @@
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/multi_publisher.h>
 #include <quickdev/threading.h>
+#include <quickdev/serial.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {

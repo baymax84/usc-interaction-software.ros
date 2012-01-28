@@ -66,6 +66,7 @@
 #include <quickdev/robot_controller_policy.h>
 #include <quickdev/robot_driver_policy.h>
 #include <quickdev/runable_policy.h>
+#include <quickdev/serial.h>
 #include <quickdev/service_client_policy.h>
 #include <quickdev/service_server_policy.h>
 #include <quickdev/subscriber_policy.h>
