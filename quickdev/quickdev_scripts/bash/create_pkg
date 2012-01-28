@@ -97,7 +97,7 @@ makefile_file="Makefile"
 cmakelists_file="CMakeLists.txt"
 doxygen_file="mainpage.dox"
 nodelet_plugins_file="nodelets/nodelet_plugins.xml"
-add_license_tool="quickdevadd_license"
+add_license_tool="rosrun quickdev_scripts add_license"
 
 default_user=$ROS_USER;
 if [ "$default_user" == "" ]; then default_user=`whoami`; fi
