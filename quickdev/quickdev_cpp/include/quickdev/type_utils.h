@@ -38,6 +38,7 @@
 
 #include <quickdev/console.h>
 #include <quickdev/macros.h>
+#include <quickdev/container.h>
 #include <type_traits>
 #include <string>
 #include <sstream>

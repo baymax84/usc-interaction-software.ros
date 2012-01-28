@@ -71,7 +71,7 @@ protected:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        bool const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, args... ) );
+        auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, args... ) );
 
         auto const service_name = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "service_name_param", __Id__, "service_name", "service", args... );
 
