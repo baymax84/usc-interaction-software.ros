@@ -125,12 +125,27 @@ public:
         bool __ForceInit__,
         class __PoliciesSubset,
         typename std::enable_if<(__PoliciesSubset::size_ > 0), int>::type = 0,
+        typename std::enable_if<(!std::is_same<typename container::traits<__PoliciesSubset>::_Front, policy::ALL>::value), int>::type = 0,
         class... __Args
     >
     void initRec( __Args&&... args )
     {
         tryInit<__ForceInit__, typename container::traits<__PoliciesSubset>::_Front>( args... );
         initRec<__ForceInit__, typename container::traits<__PoliciesSubset>::_Tail>( args... );
+    }
+
+    // if we encounter a "policy::ALL" type, replace it with __Policies... and continue as normal
+    template<
+        bool __ForceInit__,
+        class __PoliciesSubset,
+        typename std::enable_if<(__PoliciesSubset::size_ > 0), int>::type = 0,
+        typename std::enable_if<(std::is_same<typename container::traits<__PoliciesSubset>::_Front, policy::ALL>::value), int>::type = 0,
+        class... __Args
+    >
+    void initRec( __Args&&... args )
+    {
+        initRec<__ForceInit__, Container<__Policies...> >( args... );
+        //initRec<__ForceInit__, typename container::combine_type< Container<__Policies...>, typename container::traits<__PoliciesSubset>::_Tail > >( args... );
     }
 
     template<
@@ -159,17 +174,6 @@ public:
 
     template<
         class... __MPolicies,
-        typename std::enable_if<(std::is_same<typename variadic::element<0, __MPolicies...>::type, policy::AllPolicies>::value), int>::type = 0,
-        class... __Args
-    >
-    void initPolicies( __Args&&... args )
-    {
-        initRec<false, Container<__Policies...> >( args... );
-    }
-
-    template<
-        class... __MPolicies,
-        typename std::enable_if<(!std::is_same<typename variadic::element<0, __MPolicies...>::type, policy::AllPolicies>::value), int>::type = 0,
         class... __Args
     >
     void initPolicies( __Args&&... args )
@@ -179,17 +183,6 @@ public:
 
     template<
         class... __MPolicies,
-        typename std::enable_if<(std::is_same<typename variadic::element<0, __MPolicies...>::type, policy::AllPolicies>::value), int>::type = 0,
-        class... __Args
-    >
-    void forceInitPolicies( __Args&&... args )
-    {
-        initRec<true, Container<__Policies...> >( args... );
-    }
-
-    template<
-        class... __MPolicies,
-        typename std::enable_if<(!std::is_same<typename variadic::element<0, __MPolicies...>::type, policy::AllPolicies>::value), int>::type = 0,
         class... __Args
     >
     void forceInitPolicies( __Args&&... args )

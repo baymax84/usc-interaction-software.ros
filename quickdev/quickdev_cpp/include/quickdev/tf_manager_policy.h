@@ -116,6 +116,13 @@ public:
             registerFrames( from_frame, to_frame );
         }
 
+        initPolicies<
+            QUICKDEV_GET_POLICY_NS( TfManager )::_UpdateTimer,
+            QUICKDEV_GET_POLICY_NS( TfManager )::_CallbackTimer
+        >( "max_duration_param", 1.0 );
+
+        //initAll( "max_duration_param", 1.0 );
+
         postInit();
 
         QUICKDEV_SET_INITIALIZED();

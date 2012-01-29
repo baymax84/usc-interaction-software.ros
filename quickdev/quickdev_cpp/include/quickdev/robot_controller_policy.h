@@ -86,21 +86,14 @@ public:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
-        robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
+        robot_name_ = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", args... );
         if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
 
-        const auto world_frame_name_param = getMetaParamDef<std::string>( "world_frame_name_param", "world_frame_name", args... );
-        world_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, world_frame_name_param, "/world" );
+        auto const world_frame_name_ = policy::readPolicyParam<std::string>( nh_rel, "world_frame_name_param", "world_frame_name", "/world", args... );
 
-        const auto robot_frame_name_param = getMetaParamDef<std::string>( "robot_frame_name_param", "robot_frame_name", args... );
-        robot_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_frame_name_param, "base_link" );
+        robot_frame_name_ = robot_name_ + "/" + policy::readPolicyParam<std::string>( nh_rel, "robot_frame_name_param", "robot_frame_name", "base_link", args... );
 
-        const auto target_frame_name_param = getMetaParamDef<std::string>( "target_frame_name_param", "target_frame_name", args... );
-        target_frame_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, target_frame_name_param, "desired_pose" );
-
-        target_frame_name_ = robot_name_ + "/" + target_frame_name_;
-        robot_frame_name_ = robot_name_ + "/" + robot_frame_name_;
+        target_frame_name_ = robot_name_ + "/" + policy::readPolicyParam<std::string>( nh_rel, "target_frame_name_param", "target_frame_name", "desired_pose", args... );
 
         cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/cmd_vel" : "cmd_vel", args... );
         motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals", args... );
@@ -109,7 +102,7 @@ public:
         nh_rel.setParam( "frame_pair0", world_frame_name_ + "," + target_frame_name_ );
         //TfManagerPolicy::registerFrames( world_frame_name_, target_frame_name_ );
 
-        TfManagerPolicy::init( "cmd_vel_topic_name_param", cmd_vel_topic_name_, args... );
+        initPolicies<TfManagerPolicy>( "cmd_vel_topic_name_param", cmd_vel_topic_name_, args... );
 
         postInit();
 
