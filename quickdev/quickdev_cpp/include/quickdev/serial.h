@@ -93,7 +93,7 @@ public:
   //! destructor
   ~SerialPort(void);
 
-  void connect();
+  bool connect();
 
   bool connect(std::string dev, speed_t baudRate = B115200);
     //! Is this serial port currently connected

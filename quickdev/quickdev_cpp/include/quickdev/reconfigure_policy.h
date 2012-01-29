@@ -87,6 +87,8 @@ public:
 
         server_->setCallback( quickdev::auto_bind( &_ReconfigurePolicy::reconfigureCB_0, this ) );
 
+        reconfigureCB_0( config_, 0 );
+
         QUICKDEV_SET_INITIALIZED();
     }
 
@@ -97,8 +99,6 @@ public:
 
     void registerCallback( const typename _ReconfigureServer::CallbackType & external_callback )
     {
-        QUICKDEV_CHECK_INITIALIZED();
-
         external_callback_ = external_callback;
     }
 
