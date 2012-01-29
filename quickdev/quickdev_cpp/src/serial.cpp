@@ -61,8 +61,7 @@ SerialPort::SerialPort()
 bool SerialPort::connect(std::string dev, speed_t baudRate)
 {
     configure( dev.c_str(), baudRate );
-    connect();
-    return connected();
+    return connect();
 }
 
 bool SerialPort::connected()
@@ -105,7 +104,7 @@ std::vector<uint8_t> SerialPort::read(size_t bytes)
 }
 
 // ######################################################################
-void SerialPort::connect()
+bool SerialPort::connect()
 {
         //Check to see if we have a hardcoded device name. If so, then let's just
         //go ahead and enable that port. If
@@ -162,6 +161,7 @@ void SerialPort::connect()
                 printf("INFO: Opening from cmd line %s\n", itsCmdDevName.c_str());
                 enablePort(itsCmdDevName);
   }
+  return connected();
 }
 
 
