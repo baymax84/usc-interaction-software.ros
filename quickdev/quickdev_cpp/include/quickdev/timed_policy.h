@@ -57,14 +57,24 @@ protected:
     _Time last_time_;
     _Time now_;
     _Duration dt_;
+    _Duration max_duration_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Timed ),
         last_time_( 0 ),
         now_( 0 ),
-        dt_( 0 )
+        dt_( 0 ),
+        max_duration_( 0 ),
+        initialized_( false )
     {
         printPolicyActionStart( "create", this );
         printPolicyActionDone( "create", this );
+    }
+
+    QUICKDEV_ENABLE_INIT()
+    {
+        max_duration_ = getMetaParamDef<_Duration>( "max_duration_param", 0, args... );
+
+        QUICKDEV_SET_INITIALIZED();
     }
 
     QUICKDEV_ENABLE_UPDATE()
@@ -78,7 +88,9 @@ protected:
 
         last_time_ = now_;
         now_ = ros::Time::now();
-        dt_ = ( now_ - last_time_ ).toSec();
+        _Duration const dt = ( now_ - last_time_ ).toSec();
+        if( max_duration_ > 0 && dt > max_duration_ ) dt_ = max_duration_;
+        else dt_ = dt;
     }
 
     inline const _Time & now(){ return now_; }
