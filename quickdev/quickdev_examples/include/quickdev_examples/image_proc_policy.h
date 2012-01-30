@@ -43,24 +43,27 @@ QUICKDEV_DECLARE_NODE( ImageProcPolicy, quickdev::ImageProcPolicy )
 
 QUICKDEV_DECLARE_NODE_CLASS( ImageProcPolicy )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ImageProcPolicy )
-	{
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ImageProcPolicy )
+    {
 
-	}
+    }
 
-	IMAGE_PROC_PROCESS_IMAGE( image_ptr )
-	{
-		IplImage * image = &IplImage( image_ptr->image );
+    IMAGE_PROC_PROCESS_IMAGE( image_ptr )
+    {
+        cv::Mat image = image_ptr->image;
 
-		//
+        // detect edges with cv::Canny and publish the resulting single-channel 8-bit image (need to specify mono8 encoding in fromMat() )
+        cv::Mat bw_image;
+        cv::cvtColor( image, bw_image, CV_BGR2GRAY );
+        cv::Canny( bw_image, bw_image, 0.2, 0.4 );
 
-		publishImages( "output_image", image_ptr );
-	}
+        publishImages( "output_image", quickdev::opencv_conversion::fromMat( bw_image, "", "mono8" ) );
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		//
-	}
+    QUICKDEV_SPIN_ONCE()
+    {
+        //
+    }
 };
 
 #endif // QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICY_H_
