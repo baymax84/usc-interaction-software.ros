@@ -60,11 +60,11 @@ protected:
 
 private:
     _ReconfigureServer * server_;
+    //boost::shared_ptr<_ReconfigureServer> server_;
     typename _ReconfigureServer::CallbackType external_callback_;
 
 public:
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Reconfigure ),
-        server_( NULL ),
         initialized_( false )
     {
         printPolicyActionStart( "create", this );
@@ -73,7 +73,6 @@ public:
 
     QUICKDEV_ENABLE_INIT()
     {
-
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
         auto const reconfigure_namespace = policy::readPolicyParam<std::string>( nh_rel, "reconfigure_namespace_param", "reconfigure_namespace", "reconfigure", args... );
@@ -83,7 +82,10 @@ public:
         ros::NodeHandle reconfigure_nh( nh_rel, reconfigure_namespace );
 
         PRINT_INFO( "Creating dynamic reconfigure server on topic [%s]", reconfigure_nh.getNamespace().c_str() );
-        server_ = new _ReconfigureServer( reconfigure_nh );
+        //server_ = decltype( server_ )( new _ReconfigureServer( reconfigure_nh ) );
+        server_ =  new _ReconfigureServer( reconfigure_nh );
+
+        //printf( "Created server at %p\n", server_ );
 
         server_->setCallback( quickdev::auto_bind( &_ReconfigurePolicy::reconfigureCB_0, this ) );
 
@@ -94,6 +96,8 @@ public:
 
     ~ReconfigurePolicy()
     {
+        //PRINT_INFO( "Destructing ReconfigurePolicy %p", this );
+        //PRINT_INFO( "Destroying server at %p", server_ );
         if( server_ ) delete server_;
     }
 

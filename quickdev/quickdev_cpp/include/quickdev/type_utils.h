@@ -346,6 +346,15 @@ Usage:
     {
         return typename __Message::Ptr( new __Message( message ) );
     }
+
+    template<
+        class __Data,
+        typename std::enable_if<(!boost::is_base_of<ros::Message, __Data>::value), int>::type = 0
+    >
+    boost::shared_ptr<__Data> make_shared( __Data * data )
+    {
+        return boost::shared_ptr<__Data>( data );
+    }
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
