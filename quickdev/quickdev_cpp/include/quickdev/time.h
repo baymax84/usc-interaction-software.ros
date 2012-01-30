@@ -61,9 +61,12 @@ public:
     DurationSeconds getDuration( quickdev::Time const & otherTime );
     DurationSeconds getDuration();
     DurationSeconds update();
+    quickdev::Time const & now();
+    quickdev::Time const & last();
 
 private:
-      quickdev::Time time_;
+    quickdev::Time time_;
+    quickdev::Time last_;
 };
 
 } // quickdev

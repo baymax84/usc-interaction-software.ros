@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_TIMEDPOLICY_H_
 
 #include <quickdev/policy.h>
+#include <quickdev/time.h>
 #include <ros/time.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
@@ -50,18 +51,17 @@ QUICKDEV_DECLARE_POLICY_CLASS( Timed )
     QUICKDEV_MAKE_POLICY_FUNCS( Timed )
 
 public:
-    typedef ros::Time _Time;
-    typedef double _Duration;
+    typedef quickdev::Time _Time;
+    typedef quickdev::DurationSeconds _Duration;
 
 protected:
-    _Time last_time_;
-    _Time now_;
+    ros::Time last_time_;
     _Duration dt_;
     _Duration max_duration_;
+    quickdev::Timer timer_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Timed ),
         last_time_( 0 ),
-        now_( 0 ),
         dt_( 0 ),
         max_duration_( 0 ),
         initialized_( false )
@@ -79,23 +79,15 @@ protected:
 
     QUICKDEV_ENABLE_UPDATE()
     {
-        if( now_.toSec() == 0 )
-        {
-            now_ = ros::Time::now();
-            last_time_ = now_;
-            return;
-        }
+        last_time_ = ros::Time::now();
 
-        last_time_ = now_;
-        now_ = ros::Time::now();
-        _Duration const dt = ( now_ - last_time_ ).toSec();
+        auto const dt = timer_.update();
         if( max_duration_ > 0 && dt > max_duration_ ) dt_ = max_duration_;
         else dt_ = dt;
     }
 
-    inline const _Time & now(){ return now_; }
-    inline const _Time & last(){ return last_time_; }
-    inline const _Duration & dt(){ return dt_; }
+    inline _Duration const & dt() const { return dt_; }
+    inline ros::Time const & last() const { return last_time_; };
 };
 
 }

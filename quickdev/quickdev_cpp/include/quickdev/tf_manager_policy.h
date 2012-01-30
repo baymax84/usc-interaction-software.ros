@@ -152,7 +152,7 @@ public:
 
         for( auto transform = transforms.begin(); transform != transforms.end(); ++transform )
         {
-            TfTranceiverPolicy::publishTransform( transform->second, update_timer.now() );
+            TfTranceiverPolicy::publishTransform( transform->second, update_timer.last() );
         }
     }
 

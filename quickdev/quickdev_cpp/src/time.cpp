@@ -38,39 +38,52 @@
 // ######################################################################
 void QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::reset()
 {
+    last_ = time_;
     time_ = quickdev::now();
 }
 
 // ######################################################################
 quickdev::Time const & QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::start()
 {
-  time_ = quickdev::now();
-  return time_;
+    last_ = time_;
+    time_ = quickdev::now();
+    return time_;
 }
 
 // ######################################################################
 quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::stop()
 {
-  double const dt = getDuration();
-  reset();
-  return dt;
+    double const dt = getDuration();
+    reset();
+    return dt;
 }
 
 quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::getDuration( quickdev::Time const & otherTime )
 {
-  return (quickdev::DurationSeconds) std::chrono::duration_cast<std::chrono::microseconds>( otherTime - time_ ).count() / 1000000.0;
+    return (quickdev::DurationSeconds) std::chrono::duration_cast<std::chrono::microseconds>( otherTime - time_ ).count() / 1000000.0;
 }
 
 quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::getDuration()
 {
-  return getDuration( quickdev::now() );
+    return getDuration( quickdev::now() );
 }
 
 // ######################################################################
 quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::update()
 {
-  auto const now = quickdev::now();
-  auto const dt = getDuration( now );
-  time_ = now;
-  return dt;
+    auto const now = quickdev::now();
+    auto const dt = getDuration( now );
+    last_ = time_;
+    time_ = now;
+    return dt;
+}
+
+quickdev::Time QUICKEV_GET_INTERNAL_NAMESPACE()::Timer::now()
+{
+    return time_;
+}
+
+quickdev::Time QUICKEV_GET_INTERNAL_NAMESPACE()::Timer::last()
+{
+    return last_;
 }

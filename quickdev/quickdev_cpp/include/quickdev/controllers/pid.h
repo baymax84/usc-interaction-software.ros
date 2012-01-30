@@ -90,20 +90,20 @@ public:
     }
 
 private:
-    double desired_value_;
-    double observed_value_;
-    double output_value_;
+    _Data desired_value_;
+    _Data observed_value_;
+    _Data output_value_;
 
-    double i_term_;
+    _Data i_term_;
 
-    double last_observed_value_;
+    _Data last_observed_value_;
 
     bool is_initialized_;
 
     Timer timer_;
 
 public:
-    double const & update()
+    _Data const & update()
     {
         if( !is_initialized_ )
         {
@@ -112,7 +112,7 @@ public:
         }
 
         auto const dt = timer_.update();
-        double const error = desired_value_ - observed_value_;
+        _Data const error = desired_value_ - observed_value_;
 
         auto const & p = settings_->p_;
         auto const & i = settings_->i_ * dt;
@@ -147,6 +147,13 @@ public:
         observed_value_ = observed_value;
     }
 
+    _Data const & update( _Data const & desired, _Data const & observed )
+    {
+        setDesiredValue( desired );
+        setObservedValue( observed );
+        return update();
+    }
+
     void applySettings( _SettingsPtr settings )
     {
         if( settings->output_min_ > settings->output_max_ || settings->output_max_ < settings->output_min_ ) return;
@@ -176,19 +183,20 @@ public:
 };
 
 template<unsigned int __Dim__, class __Settings>
-class PID
+class PID_ND
 {
 public:
+    typedef typename PIDBase<__Settings>::_Data _Data;
     typedef __Settings _Settings;
     typedef boost::shared_ptr<__Settings> _SettingsPtr;
     typedef std::array<_SettingsPtr, __Dim__> _SettingsArray;
 
     std::array<PIDBase<__Settings>, __Dim__> pids_;
 
-    PID(){}
+    PID_ND(){}
 
     template<class... __Args>
-    PID( __Args... args )
+    PID_ND( __Args... args )
     {
         applySettings( args... );
     }
@@ -210,104 +218,78 @@ public:
         _SettingsArray const settings = { { args... } };
         applySettings( settings );
     }
+
+    template<unsigned int __Index__, class... __Args>
+    _Data update( __Args... args )
+    {
+        return pids_[__Index__].update( args... );
+    }
 };
 
-template<class __Settings>
-class PID<1, __Settings> : public PIDBase<__Settings>
+template<unsigned int __Dim__, class __Settings>
+class PID : public PID_ND<__Dim__, __Settings>
 {
 public:
-
-};
-
-template<class __Settings>
-class PID<3, __Settings>
-{
-public:
-    typedef typename PIDBase<__Settings>::_Data _Data;
-    typedef __Settings _Settings;
-    typedef boost::shared_ptr<__Settings> _SettingsPtr;
-    typedef PIDBase<__Settings> _PID;
-    typedef std::array<_SettingsPtr, 3> _SettingsArray;
-
-    std::array<_PID, 3> pids_;
-
-    _PID & x_, y_, z_;
-
-    PID()
+    template<class... __Args>
+    PID( __Args... args )
     :
-        x_( pids_[0] ), y_( pids_[1] ), z_( pids_[2] )
+        PID_ND<__Dim__, __Settings>( args... )
     {
         //
     }
+};
+
+template<class __Settings>
+class PID<3, __Settings> : public PID_ND<3, __Settings>
+{
+public:
+    typedef PIDBase<__Settings> _PID;
+
+    _PID & x_;
+    _PID & y_;
+    _PID & z_;
 
     template<class... __Args>
     PID( __Args... args )
     :
-        x_( pids_[0] ), y_( pids_[1] ), z_( pids_[2] )
+        PID_ND<3, __Settings>( args... ),
+        x_( this->pids_[0] ), y_( this->pids_[1] ), z_( this->pids_[2] )
     {
-        applySettings( args... );
-    }
-
-    void applySettings( _SettingsArray const & settings )
-    {
-        for( size_t i = 0; i < settings.size(); ++i )
-        {
-            pids_[i].applySettings( settings[i] );
-        }
-    }
-
-    template<
-        class... __Args,
-        typename std::enable_if<(sizeof...(__Args) == 3), int>::type = 0
-    >
-    void applySettings( __Args... args )
-    {
-        // apparently it's "better form" to specify the initializer list with {{...}}
-        _SettingsArray const settings = { { args... } };
-        applySettings( settings );
+        //
     }
 };
 
 template<class __Settings>
-class PID<6, __Settings>
+class PID<6, __Settings> : public PID_ND<6, __Settings>
 {
 public:
-    typedef __Settings _Settings;
-    typedef boost::shared_ptr<__Settings> _SettingsPtr;
-    typedef std::array<_SettingsPtr, 6> _SettingsArray;
+    typedef PIDBase<__Settings> _PID;
 
-    PID<3, __Settings> linear_;
-    PID<3, __Settings> angular_;
+    struct Component3d
+    {
+        _PID & x_;
+        _PID & y_;
+        _PID & z_;
 
-    PID(){}
+        Component3d( _PID & x, _PID & y, _PID & z )
+        :
+            x_( x ), y_( y ), z_( z )
+        {
+            //
+        }
+    };
+
+    Component3d linear_;
+    Component3d angular_;
 
     template<class... __Args>
     PID( __Args... args )
+    :
+        PID_ND<6, __Settings>( args... ),
+        linear_( this->pids_[0], this->pids_[1], this->pids_[2] ),
+        angular_( this->pids_[3], this->pids_[4], this->pids_[5] )
     {
-        applySettings( args... );
-    }
-
-    void applySettings( _SettingsArray const & settings )
-    {
-        for( size_t i = 0; i < 3; ++i )
-        {
-            linear_.pids_[i].applySettings( settings[i] );
-        }
-
-        for( size_t i = 0; i < 3; ++i )
-        {
-            angular_.pids_[i].applySettings( settings[i+3] );
-        }
-    }
-
-    template<
-        class... __Args,
-        typename std::enable_if<(sizeof...(__Args) == 6), int>::type = 0
-    >
-    void applySettings( __Args... args )
-    {
-        _SettingsArray const settings = { { args... } };
-        applySettings( settings );
+        //
     }
 };
 
