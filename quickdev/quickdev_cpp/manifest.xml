@@ -29,7 +29,7 @@
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
-    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lquickdev_cpp"/>
+    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lquickdev_cpp"/>
     <rosbuild cmake_directory="${prefix}/cmake"/>
   </export>
 

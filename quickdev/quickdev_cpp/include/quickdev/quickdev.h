@@ -74,11 +74,15 @@
 #include <quickdev/tf_manager_policy.h>
 #include <quickdev/tf_tranceiver_policy.h>
 #include <quickdev/threading.h>
+#include <quickdev/time.h>
 #include <quickdev/timed_policy.h>
 #include <quickdev/types.h>
 #include <quickdev/type_utils.h>
 #include <quickdev/unit.h>
 #include <quickdev/unit_conversions.h>
 #include <quickdev/updateable_policy.h>
+
+#include <quickdev/controllers/pid.h>
+#include <quickdev/controllers/reconfigurable_pid.h>
 
 #endif // QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
