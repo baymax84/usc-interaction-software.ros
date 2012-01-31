@@ -95,7 +95,7 @@ namespace proxemics
         }
 
         //! Create a SpatialFeature from a pair of humanoids
-        /*! Default behavior is to build feature data form the torso joints of the humanoids. This behavior can be overridden using
+        /*! Default behavior is to build feature data from the torso joints of the humanoids. This behavior can be overridden using
          *  SpatialFeature() */
         static SpatialFeature fromHumanoidPair( const _HumanoidPair & pair )
         {
@@ -134,6 +134,7 @@ namespace proxemics
     typedef proxemic_models::SpatialFeatureArray _SpatialFeatureArrayMsg;
 } // proxemics
 
+// convert from a spatial feature struct to a spatial feature message
 DECLARE_UNIT_CONVERSION_LAMBDA( proxemics::_SpatialFeature, proxemics::_SpatialFeatureMsg, vec, proxemics::_SpatialFeatureMsg msg; msg.joint1 = vec.joint1; msg.joint2 = vec.joint2; msg.distance = vec.distance; msg.midpoint = unit::make_unit( vec.midpoint ); msg.orientation1 = unit::make_unit( vec.orientation1 ); msg.orientation2 = unit::make_unit( vec.orientation2 ); return msg; )
 //DECLARE_UNIT_CONVERSION_LAMBDA( _SpatialFeatureMsg, _SpatialFeature, msg, _SpatialFeature vec; vec.distance = msg.distance; vec.midpoint = msg.midpoint; vec.orientation1 = msg.orientation1; vec.orientation2 = msg.orientation2; return vec; )
 
