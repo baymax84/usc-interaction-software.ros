@@ -36,14 +36,14 @@
 #include <quickdev/time.h>
 
 // ######################################################################
-void QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::reset()
+void quickdev::Timer::reset()
 {
     last_ = time_;
     time_ = quickdev::now();
 }
 
 // ######################################################################
-quickdev::Time const & QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::start()
+quickdev::Time const & quickdev::Timer::start()
 {
     last_ = time_;
     time_ = quickdev::now();
@@ -51,25 +51,25 @@ quickdev::Time const & QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::start()
 }
 
 // ######################################################################
-quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::stop()
+quickdev::DurationSeconds quickdev::Timer::stop()
 {
     double const dt = getDuration();
     reset();
     return dt;
 }
 
-quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::getDuration( quickdev::Time const & otherTime )
+quickdev::DurationSeconds quickdev::Timer::getDuration( quickdev::Time const & otherTime )
 {
     return (quickdev::DurationSeconds) std::chrono::duration_cast<std::chrono::microseconds>( otherTime - time_ ).count() / 1000000.0;
 }
 
-quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::getDuration()
+quickdev::DurationSeconds quickdev::Timer::getDuration()
 {
     return getDuration( quickdev::now() );
 }
 
 // ######################################################################
-quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::update()
+quickdev::DurationSeconds quickdev::Timer::update()
 {
     auto const now = quickdev::now();
     auto const dt = getDuration( now );
@@ -78,12 +78,12 @@ quickdev::DurationSeconds QUICKDEV_GET_INTERNAL_NAMESPACE()::Timer::update()
     return dt;
 }
 
-quickdev::Time QUICKEV_GET_INTERNAL_NAMESPACE()::Timer::now()
+quickdev::Time const & quickdev::Timer::now() const
 {
     return time_;
 }
 
-quickdev::Time QUICKEV_GET_INTERNAL_NAMESPACE()::Timer::last()
+quickdev::Time const & quickdev::Timer::last() const
 {
     return last_;
 }
