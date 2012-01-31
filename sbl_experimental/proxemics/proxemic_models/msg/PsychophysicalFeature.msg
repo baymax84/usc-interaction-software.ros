@@ -1,1 +1,80 @@
+int8 SEX_FEMALE  = -1
+int8 SEX_UNKNOWN = 0
+int8 SEX_MALE    = 1
 
+int8 POSTURE_PRONE    = 0
+int8 POSTURE_SITTING  = 1
+int8 POSTURE_STANDING = 2
+
+int8 SFP_AXIS_0 = 0
+int8 SFP_AXIS_1 = 1
+int8 SFP_AXIS_2 = 2
+int8 SFP_AXIS_3 = 3
+int8 SFP_AXIS_4 = 4
+int8 SFP_AXIS_5 = 5
+int8 SFP_AXIS_6 = 6
+int8 SFP_AXIS_7 = 7
+int8 SFP_AXIS_8 = 8
+
+int8 KINESTHETIC_BODY               = 1
+int8 KINESTHETIC_BODY_OUTSIDE       = 2
+int8 KINESTHETIC_LOWER_ARM          = 3
+int8 KINESTHETIC_LOWER_ARM_OUTSIDE  = 4
+int8 KINESTHETIC_WHOLE_ARM          = 5
+int8 KINESTHETIC_WHOLE_ARM_OUTSIDE  = 6
+int8 KINESTHETIC_FULL_REACH         = 7
+int8 KINESTHETIC_FULL_REACH_OUTSIDE = 8
+
+int8 TOUCH_CARESSING_HOLDING = 0
+int8 TOUCH_CARESSING         = 1
+int8 TOUCH_HOLDING_EXTENDED  = 2
+int8 TOUCH_HOLDING           = 3
+int8 TOUCH_SPOT              = 4
+int8 TOUCH_ACCIDENTAL        = 5
+int8 TOUCH_NONE              = 6
+
+int8 VISUAL_FOVEAL     = 0
+int8 VISUAL_MACULAR    = 1
+int8 VISUAL_SCANNING   = 2
+int8 VISUAL_PERIPHERAL = 3
+int8 VISUAL_NONE       = 8
+
+int8 THERMAL_CONDUCTED = 1
+int8 THERMAL_RADIANT   = 2
+int8 THERMAL_PROBABLY  = 3
+int8 THERMAL_NONE      = 8
+
+int8 OLFACTION_BODY_ODOR_DIFF   = 1
+int8 OLFACTION_BODY_ODOR_UNDIFF = 2
+int8 OLFACTION_BREATH           = 3
+int8 OLFACTION_PROBABLY         = 4
+int8 OLFACTION_NONE             = 8
+
+int8 VOICE_LOUDNESS_SILENT      = 0
+int8 VOICE_LOUDNESS_VERY_SOFT   = 1
+int8 VOICE_LOUDNESS_SOFT        = 2
+int8 VOICE_LOUDNESS_NORMAL      = 3
+int8 VOICE_LOUDNESS_NORMAL_PLUS = 4
+int8 VOICE_LOUDNESS_LOUD        = 5
+int8 VOICE_LOUDNESS_VERY_LOUD   = 6
+
+int8 DISTANCE_INTIMATE_CLOSE = 0
+int8 DISTANCE_INTIMATE_FAR   = 1
+int8 DISTANCE_PERSONAL_CLOSE = 2
+int8 DISTANCE_PERSONAL_FAR   = 3
+int8 DISTANCE_SOCIAL_CLOSE   = 4
+int8 DISTANCE_SOCIAL_FAR     = 5
+int8 DISTANCE_PUBLIC_CLOSE   = 6
+int8 DISTANCE_PUBLIC_FAR     = 7
+
+proxemic_models/SpatialFeature spatial_feature
+int8 sex_code
+int8 posture_code
+int8 sfp_axis_code
+int8 kinesthetic_code
+int8 touch_code
+int8 visual_code
+int8 thermal_code
+int8 olfaction_code
+int8 voice_loudness_code
+int8 distance_code

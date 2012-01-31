@@ -72,7 +72,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
         QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
         if( !states_msg ) return;
 
-        const auto now = ros::Time::now();
+        auto const now = ros::Time::now();
 
         _MarkerArrayMsg markers_msg;
 
@@ -82,9 +82,9 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
         _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
         _HumanoidRecognizerPolicy::updateHumanoidPairs();
 
-        const auto & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
+        auto const & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
 
-        for( auto pair = humanoid_pairs.begin(); pair != humanoid_pairs.end(); ++pair )
+        for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
             //const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
             //const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];

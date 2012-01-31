@@ -48,22 +48,94 @@ namespace proxemics
 
     DECLARE_CONVOLVED_STRUCT( PsychophysicalFeature, SpatialFeature )
     {
-        double placeholder;
+        int sex_code;
+        int posture_code;
+        int sfp_axis_code;
+        int kinesthetic_code;
+        int touch_code;
+        int visual_code;
+        int thermal_code;
+        int olfaction_code;
+        int voice_loudness_code;
+        int distance_code;
 
-        DECLARE_CONVOLVED_STRUCT_TYPES( PsychophysicalFeature, double );
+        DECLARE_CONVOLVED_STRUCT_TYPES( PsychophysicalFeature, int );
 
         INST_CONVOLVED_STRUCT( PsychophysicalFeature ),
-            INST_CONVOLVED_STRUCT_VAR( 0, placeholder )
-        {}
+            INST_CONVOLVED_STRUCT_VAR( 0, sex_code )
+        {
+            updateAll();
+        }
+
+        void updateAll()
+        {
+            posture_code = calculatePostureCode();
+            sfp_axis_code = calculateSfpAxisCode();
+            kinesthetic_code = calculateKinestheticCode();
+            touch_code = calculateTouchCode();
+            visual_code = calculateVisualCode();
+            thermal_code = calculateThermalCode();
+            olfaction_code = calculateOlfactionCode();
+            voice_loudness_code = calculateVoiceLoudnessCode();
+            distance_code = calculateDistanceCode();
+        }
 
         static PsychophysicalFeature fromHumanoidPair( const _HumanoidPair & pair )
         {
-            return PsychophysicalFeature( SpatialFeature( pair ), 0.0 );
+            return PsychophysicalFeature( SpatialFeature::fromHumanoidPair( pair ), 0 );
+        }
+
+        auto calculatePostureCode() -> decltype( posture_code )
+        {
+            return decltype( posture_code )();
+        }
+
+        auto calculateSfpAxisCode() -> decltype( sfp_axis_code )
+        {
+            return decltype( sfp_axis_code )();
+        }
+
+        auto calculateKinestheticCode() -> decltype( kinesthetic_code )
+        {
+            return decltype( kinesthetic_code )();
+        }
+
+        auto calculateTouchCode() -> decltype( touch_code )
+        {
+            return decltype( touch_code )();
+        }
+
+        auto calculateVisualCode() -> decltype( visual_code )
+        {
+            return decltype( visual_code )();
+        }
+
+        auto calculateThermalCode() -> decltype( thermal_code )
+        {
+            return decltype( thermal_code )();
+        }
+
+        auto calculateOlfactionCode() -> decltype( olfaction_code )
+        {
+            return decltype( olfaction_code )();
+        }
+
+        auto calculateVoiceLoudnessCode() -> decltype( voice_loudness_code )
+        {
+            return decltype( voice_loudness_code )();
+        }
+
+        auto calculateDistanceCode() -> decltype( distance_code )
+        {
+            return decltype( distance_code )();
         }
     };
 
     typedef PsychophysicalFeature _PsychophysicalFeature;
+    typedef proxemic_models::PsychophysicalFeature _PsychophysicalFeatureMsg;
     typedef proxemic_models::PsychophysicalFeatureArray _PsychophysicalFeatureArrayMsg;
 }
+
+//DECLARE_UNIT_CONVERSION_LAMBDA( proxemics::_PsychophysicalFeature, proxemics::_PsychophysicalFeatureMsg, vec, proxemics::_PsychophysicalFeatureMsg msg; msg.joint1 = vec.joint1; msg.joint2 = vec.joint2; msg.distance = vec.distance; msg.midpoint = unit::make_unit( vec.midpoint ); msg.orientation1 = unit::make_unit( vec.orientation1 ); msg.orientation2 = unit::make_unit( vec.orientation2 ); return msg; )
 
 #endif // PROXEMICMODELS_PSYCHOPHYSICALFEATURES_H_
