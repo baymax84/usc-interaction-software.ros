@@ -366,28 +366,28 @@ ifdef_string="$ifdef_string"`echo $policy_file | tr a-z A-Z | tr -d _`"POLICY_H_
 
 #include <quickdev/policy.h>
 
-// declare private storage for our types, etc
-// this namespace can be retrieved later on using QUICKDEV_GET_POLICY_NS( $policy )
+// Declare private storage for our types, etc
+// This namespace can be retrieved later on using QUICKDEV_GET_POLICY_NS( $policy )
 //
 QUICKDEV_DECLARE_POLICY_NS( $policy )
 {
-    // typedefs for parent policies should be declared here
-    // say we had:
+    // Typedefs for parent policies should be declared here
+    // Say we had:
     //
     // typedef SomePolicy<SomeType> _SomePolicy;
     //
-    // when we declare our policy, we can simply specify _SomePolicy as one of the policies we want to use
-    // when we want to get _SomePolicy anywhere else in the code:
+    // When we declare our policy, we can simply specify _SomePolicy as one of the policies we want to use
+    // When we want to get _SomePolicy anywhere else in the code:
     //
     // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy
     //
-    // in the event that we need to make lots of calls to _SomePolicy, we can store a reference to it using:
+    // In the event that we need to make lots of calls to _SomePolicy, we can store a reference to it using:
     //
     // auto & some_policy = QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::getInstance();
     // some_policy.someFunction();
     // some_policy.someFunction2();
     //
-    // otherwise we'd have to do:
+    // Otherwise we'd have to do:
     //
     // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction();
     // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction2();
@@ -404,15 +404,15 @@ QUICKDEV_DECLARE_POLICY_NS( $policy )
 //
 QUICKDEV_DECLARE_POLICY( $policy, _Policy )
 
-// declare a class called $policy""Policy
+// Declare a class called $policy""Policy
 //
 QUICKDEV_DECLARE_POLICY_CLASS( $policy )
 {
-    // create utility functions for this policy
+    // Create utility functions for this policy
     //
     QUICKDEV_MAKE_POLICY_FUNCS( $policy )
 
-    // variable initializations can be appended to this constructor as a comma-separated list:
+    // Variable initializations can be appended to this constructor as a comma-separated list:
     //
     // QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy ), member1_( some_value ), member2_( some_other_value ){}
     //
@@ -430,17 +430,17 @@ QUICKDEV_DECLARE_POLICY_CLASS( $policy )
 
     QUICKDEV_ENABLE_INIT()
     {
-        // a variadic template called \"args\" is available in this function
-        // use getFirstOfType<Type>( args... ) to parse unnamed args
-        // use getMetaParam<Type>( \"param_name\", args... ) or getMetaParamDef<Type>( \"param_name\", default, args... ) to parse named args
+        // A variadic template called \"args\" is available in this function
+        // Use getFirstOfType<Type>( args... ) to parse unnamed args
+        // Use getMetaParam<Type>( \"param_name\", args... ) or getMetaParamDef<Type>( \"param_name\", default, args... ) to parse named args
         //
-        // say we want to get a parameter of type \"__SomeType\" with the key \"some_value_param\"; if the key is not found, \"default_value\"
+        // Say we want to get a parameter of type \"__SomeType\" with the key \"some_value_param\"; if the key is not found, \"default_value\"
         // will be returned
-        // note that this will fail at compile time if \"__SomeType\" does not exist in the list of arguments passed to this function:
+        // Note that this will fail at compile time if \"__SomeType\" does not exist in the list of arguments passed to this function:
         //
         // const auto some_value_param = quickdev::getMetaParamDef<__SomeType>( \"some_value_param\", default_value, args... );
         //
-        // after we've read all our parameters, we should be sure to set our policy's initialized state to true so that we can respond
+        // After we've read all our parameters, we should be sure to set our policy's initialized state to true so that we can respond
         // accordingly if the user fails to call init() for our policy
         //
         QUICKDEV_SET_INITIALIZED();
@@ -450,15 +450,15 @@ QUICKDEV_DECLARE_POLICY_CLASS( $policy )
 
     void update( args... )
     {
-        // when using init(), it's useful to be able to detect whether our init() function as been called
-        // one option is to simply read the member \"initialized_\"
-        // alternatively, there are some simple macros for notifying/responding to situations where init() has not been called
-        // these macros can be used anywhere within our policy as long as our init() function has been declared with QUICKDEV_ENABLE_INIT{}
+        // When using init(), it's useful to be able to detect whether our init() function as been called
+        // One option is to simply read the member \"initialized_\"
+        // Alternatively, there are some simple macros for notifying/responding to situations where init() has not been called
+        // These macros can be used anywhere within our policy as long as our init() function has been declared with QUICKDEV_ENABLE_INIT{}
         //
-        // if we're not initialized yet, warn and continue
+        // If we're not initialized yet, warn and continue
         // QUICKDEV_CHECK_INITIALIZED();
         //
-        // if we're not initialized yet, warn and return immediately
+        // If we're not initialized yet, warn and return immediately
         // QUICKDEV_ASSERT_INITIALIZED();
         //
     }*/
@@ -494,19 +494,19 @@ ifdef_string="$ifdef_string"`echo $node_file | tr a-z A-Z | tr -d _`"NODE_H_"
 
 #include <quickdev/node.h>
 
-// declare a node called $node""Node
-// a quickdev::RunablePolicy is automatically prepended to the list of policies our node will use
-// to use more policies, simply list them here:
+// Declare a node called $node""Node.
+// A quickdev::RunablePolicy is automatically prepended to the list of policies our node will use.
+// To use more policies, simply list them here:
 //
 // QUICKDEV_DECLARE_NODE( $node, SomePolicy1, SomePolicy2 )
 //
 QUICKDEV_DECLARE_NODE( $node )
 
-// declare a class called $node""Node
+// Declare a class called $node""Node
 //
 QUICKDEV_DECLARE_NODE_CLASS( $node )
 {
-    // variable initializations can be appended to this constructor as a comma-separated list:
+    // Variable initializations can be appended to this constructor as a comma-separated list:
     //
     // QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node ), member1_( some_value ), member2_( some_other_value ){}
     //
@@ -515,30 +515,34 @@ QUICKDEV_DECLARE_NODE_CLASS( $node )
         //
     }
 
-    // this function is called by quickdev::RunablePolicy after all policies are constructed but just before the main loop is started
-    // all policy initialization should be done here
+    // This function is called by quickdev::RunablePolicy after all policies are constructed but just before the main loop is started.
+    // All policy initialization should be done here.
     //
     QUICKDEV_SPIN_FIRST()
     {
-        // say we had a policy called _SomePolicy that looked for the meta-parameter \"some_value1_param\" of type SomeType and
+        // Say we had a policy called _SomePolicy that looked for the meta-parameter \"some_value1_param\" of type SomeType and
         // \"some_value2_param\" of type SomeOtherType in its init function
-        // we can create those meta-params here and then pass them to all policies using initAll():
+        // We can create those meta-params here and then pass them to all policies using initPolicies<...>():
         //
-        // initAll( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
+        // initPolicies<quickdev::policy::ALL>( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
         //
-        // or we can pass those meta-params only to _SomePolicy using its init() function:
+        // Or we can pass those meta-params only to _SomePolicy by specifying its type:
         //
-        // _SomePolicy::init( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
+        // initPolicies<_SomePolicy>( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
         //
-        // if we don't want to initialize all policies and use their default values, we can simply call initAll() with no arguments
-        // note that most initable policies won't function properly unless their init() functions are called
-        // therefore, to get the default behavior from all policies, be sure to call initAll()
+        // If we want to initialize all policies and use their default values, we can simply call initPolicies<quickdev::policy::ALL>()
+        // with no arguments.
+        // Note that most initable policies won't function properly unless their init() functions are called directly or via initPolicies<...>().
+        // Furthermore, since each policy is required to track its initialization state, initPolicies<...>() is guaranteed to only call init()
+        // on policies that have yet to be initialized; therefore, calling initPolicies<quickdev::policy::ALL>() at the end of QUICKDEV_SPIN_FIRST()
+        // is always a safe operation.
+        // To instead force re-initialization, call forceInitPolicies<...>().
         //
-        initAll();
+        initPolicies<quickdev::policy::ALL>();
     }
 
-    // this opitonal function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate)
-    // most updateable policies should have their update( ... ) functions called within this context
+    // This opitonal function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
+    // Most updateable policies should have their update( ... ) functions called within this context.
     //
     QUICKDEV_SPIN_ONCE()
     {
@@ -550,10 +554,9 @@ QUICKDEV_DECLARE_NODE_CLASS( $node )
 
   echo "#include <$include_dir/$node_file""_node.h>
 
-// These are not the codes you're looking for...probably
-// This file was auto-generated; you probably want to modify ../$node_h_relpath
+// This file was auto-generated; the corresponding header file is ../$node_h_relpath
 
-// instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
 //
 QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
 
@@ -600,14 +603,13 @@ for nodelet in $nodelets; do
   echo -n "#include <quickdev/nodelet.h>
 #include <$include_dir/$nodelet_file""_node.h>
 
-// These are not the codes you're looking for...probably
-// This file was auto-generated; you probably want to modify ../include/$include_dir/$nodelet_file""_node.h
+// This file was auto-generated; the corresponding header file is ../include/$include_dir/$nodelet_file""_node.h
 
-// declare $nodelet in namespace $package
+// Declare $nodelet in namespace $package
 //
 QUICKDEV_DECLARE_NODELET( $package, $nodelet )
 
-// instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
+// Instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
 // registers our nodelet class $package::$nodelet as $package/$nodelet_file
 //
 QUICKDEV_INST_NODELET( $package, $nodelet, $nodelet_file )" >> $nodelet_cpp_relpath
