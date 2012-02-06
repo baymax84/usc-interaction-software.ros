@@ -89,7 +89,7 @@ public:
         settings_->registerSettingsChangedCallback( quickdev::auto_bind( &PIDBase::settingsChangedCB, this ) );
     }
 
-private:
+protected:
     _Data desired_value_;
     _Data observed_value_;
     _Data output_value_;

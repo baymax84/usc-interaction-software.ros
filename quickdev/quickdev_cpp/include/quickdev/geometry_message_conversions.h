@@ -55,6 +55,8 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Quaternion, msg, return _Quaternion( msg.z, msg.y, msg.x ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3Msg, quat, _Vector3Msg res; const btMatrix3x3 rot_mat( quat ); rot_mat.getEulerYPR( res.z, res.y, res.x ); return res; )
 
+DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3, quat, double x, y, z; btMatrix3x3 const rot_mat( quat ); rot_mat.getEulerYPR( z, y, x ); return _Vector3( z, y, x ); )
+
 DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quaternion( msg.x, msg.y, msg.z, msg.w ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _QuaternionMsg, quat, _QuaternionMsg msg; msg.x = quat.getX(); msg.y = quat.getY(); msg.z = quat.getZ(); msg.w = quat.getW(); return msg; )
 
