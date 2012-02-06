@@ -91,6 +91,7 @@ public:
         d_ = config.d;
         output_min_ = config.output_min;
         output_max_ = config.output_max;
+        //direction_ = config.output_dir;
 
         if( settings_changed_callback_ ) settings_changed_callback_();
     }
