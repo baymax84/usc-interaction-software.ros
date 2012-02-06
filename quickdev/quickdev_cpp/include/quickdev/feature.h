@@ -112,11 +112,23 @@ struct is_feature<Feature<__Data> >
     const static bool value = true;
 };
 
+template<class __Data>
+struct feature_is_numeric
+{
+    const static bool value = false;
+};
+
+template<class __Data>
+struct feature_is_numeric<Feature<__Data> >
+{
+    const static bool value = std::is_arithmetic<__Data>::value;
+};
+
 //! Traits for features
 template<class __Data>
 struct traits
 {
-    const static bool is_numeric = std::is_arithmetic<__Data>::value;
+    const static bool is_numeric = feature_is_numeric<__Data>::value;
     const static bool is_feature = is_feature<__Data>::value;
 };
 

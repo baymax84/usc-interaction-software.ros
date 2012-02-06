@@ -51,7 +51,6 @@ QUICKDEV_DECLARE_POLICY_CLASS( RobotController )
     QUICKDEV_MAKE_POLICY_FUNCS( RobotController )
 
 public:
-    typedef void _EmptyMsg;
     typedef TfManagerPolicy::_VelocityMsg _VelocityMsg;
 
 protected:
@@ -122,10 +121,15 @@ public:
         multi_pub_.publish( motor_vals_topic_name_, msg );
     }
 
-    tf::StampedTransform getTransformToTarget() const
+    tf::StampedTransform getTransformToTarget( std::string const & target_frame_name ) const
     {
         QUICKDEV_CHECK_INITIALIZED();
 
+        return lookupTransform( robot_frame_name_, target_frame_name, ros::Time::now() );
+    }
+
+    tf::StampedTransform getTransformToTarget() const
+    {
         return lookupTransform( robot_frame_name_, target_frame_name_, ros::Time::now() );
     }
 };
