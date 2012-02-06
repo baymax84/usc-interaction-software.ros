@@ -50,14 +50,14 @@ class PIDSettings
 public:
     typedef double _Data;
 
-    _Data p_, i_, d_, output_min_, output_max_;
+    _Data p_, i_, d_, output_min_, output_max_, direction_;
 
     typedef std::function<void()> _SettingsChangedCallback;
     _SettingsChangedCallback settings_changed_callback_;
 
-    PIDSettings( _Data const & p = 0, _Data const & i = 0, _Data const & d = 0, _Data const & output_min = 0, _Data const & output_max = 0 )
+    PIDSettings( _Data const & p = 0, _Data const & i = 0, _Data const & d = 0, _Data const & output_min = 0, _Data const & output_max = 0, _Data const & direction = 0 )
     :
-        p_( p ), i_( i ), d_( d ), output_min_( output_min ), output_max_( output_max )
+        p_( p ), i_( i ), d_( d ), output_min_( output_min ), output_max_( output_max ), direction_( direction )
     {
         //
     }
@@ -114,11 +114,16 @@ public:
         auto const dt = timer_.update();
         _Data const error = desired_value_ - observed_value_;
 
+        printf( "desired [%f] observed [%f] error [%f]\n", desired_value_, observed_value_, error );
+
         auto const & p = settings_->p_;
         auto const & i = settings_->i_ * dt;
         auto const & d = settings_->d_ / dt;
         auto const & outputMin = settings_->output_min_;
         auto const & outputMax = settings_->output_max_;
+        //auto const & direction = settings_->direction_;
+
+        printf( "[%f][%f][%f][%f:%f]\n", p, i, d, outputMin, outputMax );
 
         i_term_ += i * error;
         if( i_term_ > outputMax ) i_term_ = outputMax;
@@ -133,6 +138,8 @@ public:
 
         /*Remember some variables for next time*/
         last_observed_value_ = observed_value_;
+
+        printf( "output [%f]\n", output_value_ );
 
         return output_value_;
     }
