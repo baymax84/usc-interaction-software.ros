@@ -52,6 +52,9 @@
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
+
+// #############################################################################################################################################
+// Stamped Message Wrapper
 class StampedMessageBase{};
 
 template<class __Message>
@@ -81,11 +84,17 @@ public:
     }
 };
 
+// #############################################################################################################################################
+// Stamped Message Traits
+
 template<class __Message>
 struct has_stamped_wrapper
 {
     const static bool value = boost::is_base_of<StampedMessageBase, __Message>::value;
 };
+
+// #############################################################################################################################################
+// Message Array Cache Storage Traits
 
 template<class __Message, bool has_stamped_wrapper>
 struct MessageArrayCacheStorageTypesHelper{};
@@ -114,6 +123,9 @@ struct MessageArrayCacheStorageTypes
     typedef typename _MessageArrayCacheStorageTypesHelper::_ROSMessage _ROSMessage;
     typedef typename _MessageArrayCacheStorageTypesHelper::_WrapperMessage _WrapperMessage;
 };
+
+// #############################################################################################################################################
+// Message Array Cache Storage
 
 template<class __Message>
 class MessageArrayCacheStorage
@@ -228,6 +240,9 @@ public:
     }
 };
 
+// #############################################################################################################################################
+// Message Array Cache
+
 template<class __Message>
 class MessageArrayCache
 {
@@ -291,13 +306,18 @@ public:
     }
 };
 
-// consider making a flag that would override stored timestamps with the time that the message was received
+// #############################################################################################################################################
+// Compile-Time Flags for Timed Message Array Cache
+
 struct TimedMessageArrayCacheFlags
 {
     typedef unsigned int __Flag;
     const static __Flag STAMPED_ON_MESSAGES = 0;
     const static __Flag STAMPED_ON_UPDATE = 1;
 };
+
+// #############################################################################################################################################
+// Timed Message Array Cache Base
 
 template<class __Message>
 class TimedMessageArrayCacheBase : public MessageArrayCache<__Message>
@@ -369,6 +389,9 @@ public:
 
     QUICKDEV_DECLARE_ACCESSOR2( stamp_, Stamp )
 };
+
+// #############################################################################################################################################
+// Timed Message Array Cache Compile-Time Flags Adapter
 
 template<class __Message, unsigned int __Flag__>
 class TimedMessageArrayCacheHelper{};
@@ -526,6 +549,9 @@ public:
     }
 };
 
+// #############################################################################################################################################
+// Timed Message Array Cache
+
 template<class __Message, unsigned int __Flag__ = TimedMessageArrayCacheFlags::STAMPED_ON_MESSAGES>
 class TimedMessageArrayCache : public TimedMessageArrayCacheHelper<__Message, __Flag__>
 {
@@ -551,6 +577,9 @@ public:
         return this->getStorage()->message_array_.size();
     }
 };
+
+// #############################################################################################################################################
+// Named Message Array Cache
 
 template<class __Message>
 class NamedMessageArrayCache : public MessageArrayCache<__Message>
