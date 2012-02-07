@@ -170,11 +170,11 @@ public:
         // vector from user pair id to user pair
         humanoid_pairs_.clear();
 
-        const auto & humanoids = named_humanoid_cache_.getStorage()->message_array_;
+        auto const & humanoids = named_humanoid_cache_.getStorage()->message_array_;
 
-        for( auto humanoid1 = humanoids.begin(); humanoid1 != humanoids.end(); ++humanoid1 )
+        for( auto humanoid1 = humanoids.cbegin(); humanoid1 != humanoids.cend(); ++humanoid1 )
         {
-            for( auto humanoid2 = humanoids.begin(); humanoid2 != humanoids.end(); ++humanoid2 )
+            for( auto humanoid2 = humanoids.cbegin(); humanoid2 != humanoids.cend(); ++humanoid2 )
             {
                 if( humanoid1->name == humanoid2->name ) continue;
                 if( humanoid_pair_ids_map_.count( humanoid1->name + humanoid2->name ) || humanoid_pair_ids_map_.count( humanoid2->name + humanoid1->name ) ) continue;
@@ -187,19 +187,19 @@ public:
     }
 
     //! Get a reference to the humanoid with the given name
-    _Humanoid & lookupHumanoid( const std::string & name )
+    _Humanoid & lookupHumanoid( std::string const & name )
     {
         return named_humanoid_cache_[name];
     }
 
     //! Get a reference to the joint with the given name of the humanoid with the given name
-    _HumanoidJointMsg & lookupJoint( const std::string & humanoid_name, const std::string & joint_name )
+    _HumanoidJointMsg & lookupJoint( std::string const & humanoid_name, std::string const & joint_name )
     {
         return lookupHumanoid( humanoid_name )[joint_name];
     }
 
     //! Get a const reference to the humanoid pair made up of the humanoids with the given (order-invariant) names
-    const _HumanoidPair & lookupHumanoidPair( const std::string & name1, const std::string & name2 ) const
+    const _HumanoidPair & lookupHumanoidPair( std::string const & name1, std::string const & name2 ) const
     {
         const static _HumanoidPair default_return;
         // get a reference to the pair index, if any
