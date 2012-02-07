@@ -40,11 +40,15 @@
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
+#include <sensor_msgs/JointState.h>
+
 #include <deque>
 
 using humanoid::_PoseWithConfidenceMsg;
 using humanoid::_Humanoid;
 using humanoid::_HumanoidStateArrayMsg;
+using humanoid::_JointStateMsg;
+using humanoid::_JointStateArrayMsg;
 
 typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
 QUICKDEV_DECLARE_NODE( HumanoidAggregator, _HumanoidRecognizerPolicy )
@@ -71,6 +75,8 @@ private:
     QUICKDEV_SPIN_FIRST()
     {
         //initAll( "features_topic_name_param", std::string( "humanoid_states_agg" ) );
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel_ );
+        multi_pub_.addPublishers<_JointStateMsg>( nh_rel_, "joint_states"
         _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidAggregatorNode::humanoidStatesCB, this ) );
         initPolicies<quickdev::policy::ALL>();
 
@@ -201,6 +207,8 @@ private:
 
         _HumanoidRecognizerPolicy::updateFeatures( combined_states_msg );
         _HumanoidRecognizerPolicy::updateMarkers( markers );
+
+
 
         // clear out the cache for the next update iteration
         state_arrays_cache.clear();
