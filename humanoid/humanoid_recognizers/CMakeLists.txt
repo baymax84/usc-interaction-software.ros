@@ -18,10 +18,13 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
+# uncomment if you have defined messages
 #rosbuild_genmsg()
-#uncomment if you have defined services
+# uncomment if you have defined services
 #rosbuild_gensrv()
+# uncomment if you have defined dynamic reconfigure files
+# Note: requires "rosbuild_include( quickdev_cpp dynamic_reconfigure )"
+#quickdev_gencfg()
 
 add_subdirectory( src )
 add_subdirectory( nodes )

@@ -1,10 +1,12 @@
 <library path="lib/libhumanoid_recognizers_nodelets">
-  <class name="humanoid_recognizers/humanoid_recognizer" type="humanoid_recognizers::HumanoidRecognizerNodelet" base_class_type="nodelet::Nodelet">
+
+  <class name="humanoid_recognizers/schegloff_recognizer" type="humanoid_recognizers::SchegloffRecognizerNodelet" base_class_type="nodelet::Nodelet">
     <description>
       todo: fill this in
     </description>
   </class>
-  <class name="humanoid_recognizers/schegloff_recognizer" type="humanoid_recognizers::SchegloffRecognizerNodelet" base_class_type="nodelet::Nodelet">
+
+  <class name="humanoid_recognizers/humanoid_aggregator" type="humanoid_recognizers::HumanoidAggregatorNodelet" base_class_type="nodelet::Nodelet">
     <description>
       todo: fill this in
     </description>

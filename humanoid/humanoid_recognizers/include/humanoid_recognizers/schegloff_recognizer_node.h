@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodelets/humanoid_recognizer.cpp
+ *  include/humanoid_recognizers/schegloff_recognizer_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,9 +33,46 @@
  *
  **************************************************************************/
 
-#include <quickdev/nodelet.h>
-#include <humanoid_recognizers/humanoid_recognizer.h>
+#ifndef HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZERNODE_H_
+#define HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZERNODE_H_
 
-QUICKDEV_DECLARE_NODELET( humanoid_recognizers, HumanoidRecognizer )
+#include <quickdev/node.h>
 
-QUICKDEV_INST_NODELET( humanoid_recognizers, HumanoidRecognizer, humanoid_recognizer )
+#include <humanoid_recognizers/humanoid_recognizer_policy.h>
+
+using humanoid::_HumanoidStateArrayMsg;
+
+typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
+QUICKDEV_DECLARE_NODE( SchegloffRecognizer, _HumanoidRecognizerPolicy )
+
+typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
+
+QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
+{
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( SchegloffRecognizer )
+    {
+        //
+    }
+
+    QUICKDEV_SPIN_FIRST()
+    {
+        initPolicies<quickdev::policy::ALL>();
+    }
+
+    QUICKDEV_SPIN_ONCE()
+    {
+        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
+        if( !states_msg ) return;
+
+        _MarkerArrayMsg markers;
+
+        for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
+        {
+            //
+        }
+
+        _HumanoidRecognizerPolicy::updateMarkers( markers );
+    }
+};
+
+#endif // HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZERNODE_H_
