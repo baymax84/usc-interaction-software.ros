@@ -85,7 +85,7 @@ private:
 
     QUICKDEV_SPIN_ONCE()
     {
-        if( ros::Time::now() - _UserStatesCBTimer::now() > kinect_timeout_duration_ ) return;
+        if( ros::Time::now() - _UserStatesCBTimer::last() > kinect_timeout_duration_ ) return;
 
         QUICKDEV_LOCK_CACHE_AND_GET( user_states_cache_, user_states_msg );
         if( !user_states_msg ) return;
