@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/humanoid_recognizers/schegloff_recognizer.h
+ *  nodes/humanoid_aggregator.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,46 +33,10 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
-#define HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
+#include <humanoid_recognizers/humanoid_aggregator_node.h>
 
-#include <quickdev/node.h>
+// This file was auto-generated; the corresponding header file is ../include/humanoid_recognizers/humanoid_aggregator_node.h
 
-#include <humanoid_recognizers/humanoid_recognizer_policy.h>
-
-using humanoid::_HumanoidStateArrayMsg;
-
-typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
-QUICKDEV_DECLARE_NODE( SchegloffRecognizer, _HumanoidRecognizerPolicy )
-
-typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
-
-QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
-{
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( SchegloffRecognizer )
-    {
-        //
-    }
-
-    QUICKDEV_SPIN_FIRST()
-    {
-        initAll();
-    }
-
-    QUICKDEV_SPIN_ONCE()
-    {
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
-
-        _MarkerArrayMsg markers;
-
-        for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
-        {
-            //
-        }
-
-        _HumanoidRecognizerPolicy::updateMarkers( markers );
-    }
-};
-
-#endif // HUMANOIDRECOGNIZERS_SCHEGLOFFRECOGNIZER_H_
+// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
+QUICKDEV_INST_NODE( HumanoidAggregatorNode, "humanoid_aggregator" )

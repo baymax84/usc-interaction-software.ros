@@ -33,5 +33,10 @@
  *
  **************************************************************************/
 
-#include <humanoid_recognizers/schegloff_recognizer.h>
+#include <humanoid_recognizers/schegloff_recognizer_node.h>
+
+// This file was auto-generated; the corresponding header file is ../include/humanoid_recognizers/schegloff_recognizer_node.h
+
+// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
 QUICKDEV_INST_NODE( SchegloffRecognizerNode, "schegloff_recognizer" )

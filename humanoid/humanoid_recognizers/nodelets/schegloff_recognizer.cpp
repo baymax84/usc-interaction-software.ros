@@ -34,8 +34,15 @@
  **************************************************************************/
 
 #include <quickdev/nodelet.h>
-#include <humanoid_recognizers/schegloff_recognizer.h>
+#include <humanoid_recognizers/schegloff_recognizer_node.h>
 
+// This file was auto-generated; the corresponding header file is ../include/humanoid_recognizers/schegloff_recognizer_node.h
+
+// Declare SchegloffRecognizer in namespace humanoid_recognizers
+//
 QUICKDEV_DECLARE_NODELET( humanoid_recognizers, SchegloffRecognizer )
 
+// Instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
+// registers our nodelet class humanoid_recognizers::SchegloffRecognizer as humanoid_recognizers/schegloff_recognizer
+//
 QUICKDEV_INST_NODELET( humanoid_recognizers, SchegloffRecognizer, schegloff_recognizer )

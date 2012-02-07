@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodes/humanoid_recognizer.cpp
+ *  nodelets/humanoid_aggregator.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,5 +33,16 @@
  *
  **************************************************************************/
 
-#include <humanoid_recognizers/humanoid_recognizer.h>
-QUICKDEV_INST_NODE( HumanoidRecognizerNode, "humanoid_recognizer" )
+#include <quickdev/nodelet.h>
+#include <humanoid_recognizers/humanoid_aggregator_node.h>
+
+// This file was auto-generated; the corresponding header file is ../include/humanoid_recognizers/humanoid_aggregator_node.h
+
+// Declare HumanoidAggregator in namespace humanoid_recognizers
+//
+QUICKDEV_DECLARE_NODELET( humanoid_recognizers, HumanoidAggregator )
+
+// Instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
+// registers our nodelet class humanoid_recognizers::HumanoidAggregator as humanoid_recognizers/humanoid_aggregator
+//
+QUICKDEV_INST_NODELET( humanoid_recognizers, HumanoidAggregator, humanoid_aggregator )

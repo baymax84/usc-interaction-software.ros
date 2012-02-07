@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/humanoid_recognizers/humanoid_recognizer.h
+ *  include/humanoid_recognizers/humanoid_aggregator_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
-#define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
+#ifndef HUMANOIDRECOGNIZERS_HUMANOIDAGGREGATORNODE_H_
+#define HUMANOIDRECOGNIZERS_HUMANOIDAGGREGATORNODE_H_
 
 #include <quickdev/node.h>
 
@@ -47,12 +47,12 @@ using humanoid::_Humanoid;
 using humanoid::_HumanoidStateArrayMsg;
 
 typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
-QUICKDEV_DECLARE_NODE( HumanoidRecognizer, _HumanoidRecognizerPolicy )
+QUICKDEV_DECLARE_NODE( HumanoidAggregator, _HumanoidRecognizerPolicy )
 
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerMsg _MarkerMsg;
 
-QUICKDEV_DECLARE_NODE_CLASS( HumanoidRecognizer )
+QUICKDEV_DECLARE_NODE_CLASS( HumanoidAggregator )
 {
 private:
     quickdev::MutexedCache<std::deque<_HumanoidStateArrayMsg::ConstPtr> > state_arrays_cache_;
@@ -63,7 +63,7 @@ private:
         lines_marker_template_,
         points_marker_template_;
 
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidRecognizer )
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidAggregator )
     {
         //
     }
@@ -71,8 +71,8 @@ private:
     QUICKDEV_SPIN_FIRST()
     {
         //initAll( "features_topic_name_param", std::string( "humanoid_states_agg" ) );
-        initAll();
-        _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidRecognizerNode::humanoidStatesCB, this ) );
+        _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidAggregatorNode::humanoidStatesCB, this ) );
+        initPolicies<quickdev::policy::ALL>();
 
         marker_template_.header.frame_id = "/openni_depth_tracking_frame";
         marker_template_.ns = "basic_skeleton";
@@ -219,4 +219,4 @@ private:
     }
 };
 
-#endif // HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZER_H_
+#endif // HUMANOIDRECOGNIZERS_HUMANOIDAGGREGATORNODE_H_
