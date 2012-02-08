@@ -16,7 +16,7 @@
     <node
         unless="$(arg nodelet)"
         pkg="$(arg pkg)"
-        type="$(arg type)"
+        type="$(arg type)_node"
         name="$(arg name)"
         args="$(arg args)"
         output="screen" />

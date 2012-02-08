@@ -122,7 +122,7 @@ private:
         QUICKDEV_LOCK_CACHE_AND_GET( state_arrays_cache_, state_arrays_cache );
 
         _MarkerArrayMsg markers;
-        const auto now = ros::Time::now();
+        auto const now = ros::Time::now();
 
         unsigned int current_id = 0;
 
@@ -152,7 +152,7 @@ private:
         for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
         {
             joint_states_msg.names.push_back( humanoid->name );
-            joint_states_msg.states.push_back( humanoid->getJointStateMsg() );
+            joint_states_msg.states.push_back( humanoid->getJointStateMessage() );
 
             //note: can't use cbegin() in for() above because getJointsMessage() modifies Humanoid (specifically, it modifies the ROS message cache of the humanoid's storage object)
             const auto & joints = humanoid->getJointsMessage();

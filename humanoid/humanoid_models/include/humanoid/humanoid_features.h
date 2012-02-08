@@ -38,9 +38,11 @@
 
 #include <vector>
 #include <string>
+#include <array>
 
 #include <quickdev/message_array_cache.h>
 #include <quickdev/geometry_message_conversions.h>
+#include <quickdev/feature.h>
 
 #include <humanoid_models/HumanoidStateArray.h>
 #include <humanoid_models/JointStateArray.h>
@@ -50,7 +52,7 @@ namespace humanoid
 
 typedef std::string _JointName;
 typedef std::vector<_JointName> _JointNames;
-typedef std::map<_JointName, std::vector<int> > _JointStateMap;
+typedef std::map<_JointName, std::vector<std::vector<int> > > _JointStateMap;
 typedef humanoid_models::PoseWithConfidence _PoseWithConfidenceMsg;
 typedef humanoid_models::HumanoidJoint _HumanoidJointMsg;
 typedef humanoid_models::HumanoidState _HumanoidStateMsg;
@@ -60,9 +62,9 @@ typedef humanoid_models::JointStateArray _JointStateArrayMsg;
 
 static _JointNames const JOINT_NAMES_
 {
-    "head",             // 0  : rpy
-    "neck",             // 1  : rpy
-    "torso",            // 2  : rpy
+    "head",             // 0  : nnn :
+    "neck",             // 1  : rpy :
+    "torso",            // 2  : rpy :
     "waist",            // 3  : rpy
     "right_collar",     // 4  : nnn
     "right_shoulder",   // 5  : rny
@@ -116,30 +118,30 @@ static _JointStateMap generateJointStateMap()
     auto const & p = AnatomicalPlanes::SAGITTAL;
     auto const & y = AnatomicalPlanes::TRANSVERSE;
 
-    joint_state_map[JOINT_NAMES_[0]]  = { r, p, y };
-    joint_state_map[JOINT_NAMES_[1]]  = { r, p, y };
-    joint_state_map[JOINT_NAMES_[2]]  = { r, p, y };
-    joint_state_map[JOINT_NAMES_[3]]  = { r, p, y };
-    joint_state_map[JOINT_NAMES_[4]]  = { n, n, n };
-    joint_state_map[JOINT_NAMES_[5]]  = { r, n, y };
-    joint_state_map[JOINT_NAMES_[6]]  = { r, p, n };
-    joint_state_map[JOINT_NAMES_[7]]  = { r, p, y };
-    joint_state_map[JOINT_NAMES_[8]]  = { n, n, n };
-    joint_state_map[JOINT_NAMES_[9]]  = { n, n, n };
-    joint_state_map[JOINT_NAMES_[10]] = { n, n, n };
-    joint_state_map[JOINT_NAMES_[11]] = { r, n, y };
-    joint_state_map[JOINT_NAMES_[12]] = { r, p, n };
-    joint_state_map[JOINT_NAMES_[13]] = { r, p, y };
-    joint_state_map[JOINT_NAMES_[14]] = { n, n, n };
-    joint_state_map[JOINT_NAMES_[15]] = { n, n, n };
-    joint_state_map[JOINT_NAMES_[16]] = { r, p, y };
-    joint_state_map[JOINT_NAMES_[17]] = { n, p, n };
-    joint_state_map[JOINT_NAMES_[18]] = { r, p, y };
-    joint_state_map[JOINT_NAMES_[19]] = { n, n, n };
-    joint_state_map[JOINT_NAMES_[20]] = { r, p, y };
-    joint_state_map[JOINT_NAMES_[21]] = { n, p, n };
-    joint_state_map[JOINT_NAMES_[22]] = { r, p, y };
-    joint_state_map[JOINT_NAMES_[23]] = { n, n, n };
+    joint_state_map[JOINT_NAMES_[0]]  = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[1]]  = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[2]]  = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[3]]  = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[4]]  = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[5]]  = { { r, n, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[6]]  = { { r, p, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[7]]  = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[8]]  = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[9]]  = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[10]] = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[11]] = { { r, n, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[12]] = { { r, p, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[13]] = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[14]] = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[15]] = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[16]] = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[17]] = { { n, p, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[18]] = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[19]] = { { n, n, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[20]] = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[21]] = { { n, p, n }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[22]] = { { r, p, y }, { 0, 0, 0 } };
+    joint_state_map[JOINT_NAMES_[23]] = { { n, n, n }, { 0, 0, 0 } };
 
     return joint_state_map;
 }
@@ -163,6 +165,9 @@ class Humanoid : public quickdev::NamedMessageArrayCache<_HumanoidJointMsg>, pub
 public:
     typedef quickdev::NamedMessageArrayCache<_HumanoidJointMsg> _NamedMessageArrayCache;
     typedef quickdev::TimedMessageArrayCache<_HumanoidJointMsg> _TimedMessageArrayCache;
+
+    typedef double _JointFeature;
+    typedef quickdev::Feature<_JointFeature> _HumanoidFeature;
 
     struct Header
     {
@@ -209,10 +214,11 @@ public:
         // triggers re-building of the cached ROS message, if necessary
         joint_array_msg_.joints = _NamedMessageArrayCache::getMessages();
         joint_array_msg_.header.stamp = _TimedMessageArrayCache::getStamp();
+        joint_array_msg_.name = name;
         return joint_array_msg_;
     }
 
-    _JointStateMsg getJointStateMsg()
+    _JointStateMsg getJointStateMessage() const
     {
         _JointStateMsg joint_state_msg;
 
@@ -229,21 +235,48 @@ public:
 
         for( auto joint = _NamedMessageArrayCache::cbegin(); joint != _NamedMessageArrayCache::cend(); ++joint )
         {
-            // { [0-3], [0-3], [0-3] }
+            // {
+            //   { [0:3], [0:3], [0:3] },
+            //   { [-180:180], [-180:180], [-180:180] }
+            // }
             auto const & joint_state_entry = joint_state_map.find(joint->name)->second;
             // convert: btVector3 <- btQuaternion <- geometry_msgs::Quaternion
             btVector3 const position_vec = unit::make_unit( unit::convert<btQuaternion>( joint->pose.pose.orientation ) );
 
-            for( auto component_id = joint_state_entry.cbegin(); component_id != joint_state_entry.cend(); ++component_id )
+            // a joint state entry stores a plane ID and an offset for each component of rotation
+            auto const & plane_ids = joint_state_entry.at( 0 );
+            auto const & offsets = joint_state_entry.at( 1 );
+
+            for( size_t i = 0; i < joint_state_entry.size(); ++i )
+            {
+                auto const & plane_id = plane_ids.at( i );
+
+                // if the given axis has no mapping to an anatomical plane, just skip it
+                if( plane_id == AnatomicalPlanes::NONE ) continue;
+
+                auto const & offset = offsets.at( i );
+
+                joint_state_msg.name.push_back( joint->name + "_" + AnatomicalPlanes::names.at( plane_id ) );
+                joint_state_msg.position.push_back( position_vec.m_floats[plane_id - 1] + offset );
+            }
+
+            /*for( auto component_id = joint_state_entry.cbegin(); component_id != joint_state_entry.cend(); ++component_id )
             {
                 if( *component_id == 0 ) continue;
 
                 joint_state_msg.name.push_back( joint->name + "_" + AnatomicalPlanes::names[*component_id] );
                 joint_state_msg.position.push_back( position_vec.m_floats[*component_id - 1] );
-            }
+            }*/
         }
 
         return joint_state_msg;
+    }
+
+    _HumanoidFeature getFeature() const
+    {
+        auto const joint_state_msg = getJointStateMessage();
+
+        return _HumanoidFeature( joint_state_msg.position );
     }
 
     const Humanoid & updateJoint( _HumanoidJointMsg const & msg )
