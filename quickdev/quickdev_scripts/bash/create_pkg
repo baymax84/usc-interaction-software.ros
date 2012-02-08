@@ -587,7 +587,7 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
   fi;
   echo "
         pkg=\"\$(arg pkg)\"
-        type=\"\$(arg type)\"
+        type=\"\$(arg type)_node\"
         name=\"\$(arg name)\"
         args=\"\$(arg args)\"
         output=\"screen\" />
