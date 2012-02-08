@@ -36,106 +36,63 @@
 #ifndef PROXEMICMODELS_SPATIALFEATURES_H_
 #define PROXEMICMODELS_SPATIALFEATURES_H_
 
-#include <quickdev/convolved_struct.h>
 #include <quickdev/geometry_message_conversions.h>
+#include <quickdev/numeric_unit_conversions.h>
 
 #include <humanoid/humanoid_features.h>
 
 #include <LinearMath/btVector3.h>
 
-#include <proxemic_models/SpatialFeatureArray.h>
-
 namespace proxemics
+{
+namespace spatial
 {
     using humanoid::_Humanoid;
     using humanoid::_HumanoidPair;
     using humanoid::_HumanoidJointMsg;
 
-    DECLARE_CONVOLVED_STRUCT_BASE( SpatialFeature )
+    static double distanceBetween( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        //! The target joint from the first humanoid
-        _HumanoidJointMsg joint1;
-        //! The target joint from the second humanoid
-        _HumanoidJointMsg joint2;
+        btVector3 joint1_pos = unit::make_unit( joint1 );
+        btVector3 joint2_pos = unit::make_unit( joint2 );
 
-        //! The location of the first joint
-        /*! We use a btVector3 to enable easy geometric calculations */
-        btVector3 point1;
-        //! The location of the second joint
-        /*! We use a btVector3 to enable easy geometric calculations */
-        btVector3 point2;
-        //! The distance between the two joints
-        double distance;
-        //! The midpoint between the two joints
-        btVector3 midpoint;
-        //! The orientation of the first joint with respect to the second
-        btQuaternion orientation1;
-        //! The orientation of the second joint with respect to the first
-        btQuaternion orientation2;
+        return joint1_pos.distance( joint2_pos );
+    }
 
-        DECLARE_CONVOLVED_STRUCT_TYPES( SpatialFeature, _HumanoidJointMsg, _HumanoidJointMsg );
+    static btVector3 getDistance( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    {
+        btVector3 joint1_pos = unit::make_unit( joint1 );
+        btVector3 joint2_pos = unit::make_unit( joint2 );
 
-        INST_CONVOLVED_STRUCT( SpatialFeature ),
-            INST_CONVOLVED_STRUCT_VAR( 0, joint1 ),
-            INST_CONVOLVED_STRUCT_VAR( 1, joint2 )
-        {
-            point1 = btVector3( joint1.pose.pose.position.x, joint1.pose.pose.position.y, 0 );
-            point2 = btVector3( joint2.pose.pose.position.x, joint2.pose.pose.position.y, 0 );
+        return joint2_pos - joint1_pos;
+    }
 
-            updateAll();
-        }
+    static btVector3 getMidpoint( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    {
+        btVector3 joint1_pos = unit::make_unit( joint1 );
+        btVector3 joint2_pos = unit::make_unit( joint2 );
 
-        //! Re-calculate all feature components
-        void updateAll()
-        {
-            distance = calculateDistance();
-            midpoint = calculateMidpoint();
-            orientation1 = calculateOrientation1();
-            orientation2 = calculateOrientation2();
-        }
+        return 0.5 * ( joint1_pos + joint2_pos );
+    }
 
-        //! Create a SpatialFeature from a pair of humanoids
-        /*! Default behavior is to build feature data from the torso joints of the humanoids. This behavior can be overridden using
-         *  SpatialFeature() */
-        static SpatialFeature fromHumanoidPair( const _HumanoidPair & pair )
-        {
-            return SpatialFeature( pair.first["torso"], pair.second["torso"] );
-        }
+    static btTransform getTransformTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    {
+        btTransform joint1_tf = unit::make_unit( joint1 );
+        btTransform joint2_tf = unit::make_unit( joint2 );
 
-        //! Get the distance between two joints
-        auto calculateDistance() -> decltype( distance )
-        {
-            return point1.distance( point2 );
-        }
+        return joint1_tf.inverse() * joint2_tf;
+    }
 
-        //! Get the midpoint between two joints
-        auto calculateMidpoint() -> decltype( midpoint )
-        {
-            return 0.5 * ( point1 + point2 );
-        }
+    static btQuaternion getAngleTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    {
+        return getTransformTo( joint1, joint2 ).getRotation();
+    }
 
-        //! Get the orientation of joint1 with respect to joint2
-        /*! \note unimplemented */
-        auto calculateOrientation1() -> decltype( orientation1 )
-        {
-            return btQuaternion();
-        }
-
-        //! Get the orientation of joint2 with respect to joint1
-        /*! \note unimplemented */
-        auto calculateOrientation2() -> decltype( orientation2 )
-        {
-            return btQuaternion();
-        }
-    };
-
-    typedef SpatialFeature _SpatialFeature;
-    typedef proxemic_models::SpatialFeature _SpatialFeatureMsg;
-    typedef proxemic_models::SpatialFeatureArray _SpatialFeatureArrayMsg;
+    static btVector3 getAngleToRPY( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    {
+        return unit::convert<btVector3>( getAngleTo( joint1, joint2 ) );
+    }
+} // spatial
 } // proxemics
-
-// convert from a spatial feature struct to a spatial feature message
-DECLARE_UNIT_CONVERSION_LAMBDA( proxemics::_SpatialFeature, proxemics::_SpatialFeatureMsg, vec, proxemics::_SpatialFeatureMsg msg; msg.joint1 = vec.joint1; msg.joint2 = vec.joint2; msg.distance = vec.distance; msg.midpoint = unit::make_unit( vec.midpoint ); msg.orientation1 = unit::make_unit( vec.orientation1 ); msg.orientation2 = unit::make_unit( vec.orientation2 ); return msg; )
-//DECLARE_UNIT_CONVERSION_LAMBDA( _SpatialFeatureMsg, _SpatialFeature, msg, _SpatialFeature vec; vec.distance = msg.distance; vec.midpoint = msg.midpoint; vec.orientation1 = msg.orientation1; vec.orientation2 = msg.orientation2; return vec; )
 
 #endif // PROXEMICMODELS_SPATIALFEATURES_H_
