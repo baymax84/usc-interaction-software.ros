@@ -42,6 +42,7 @@
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/threading.h>
+#include <quickdev/geometry_message_conversions.h>
 
 #include <humanoid/humanoid_features.h>
 #include <openni_multitracker/UserStateArray.h>
@@ -115,14 +116,8 @@ private:
 
                     joint_msg.name = *joint;
 
-                    joint_msg.pose.pose.position.x = transform.getOrigin().getX();
-                    joint_msg.pose.pose.position.y = transform.getOrigin().getY();
-                    joint_msg.pose.pose.position.z = transform.getOrigin().getZ();
-
-                    joint_msg.pose.pose.orientation.x = transform.getRotation().getX();
-                    joint_msg.pose.pose.orientation.y = transform.getRotation().getY();
-                    joint_msg.pose.pose.orientation.z = transform.getRotation().getZ();
-                    joint_msg.pose.pose.orientation.w = transform.getRotation().getW();
+                    joint_msg.pose.pose.position = unit::make_unit( transform.getOrigin() );
+                    joint_msg.pose.pose.orientation = unit::make_unit( transform.getRotation() );
 
                     joint_msg.pose.confidence = 1.0;
 

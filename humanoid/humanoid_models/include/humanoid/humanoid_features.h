@@ -56,7 +56,7 @@ typedef humanoid_models::HumanoidJoint _HumanoidJointMsg;
 typedef humanoid_models::HumanoidState _HumanoidStateMsg;
 typedef humanoid_models::HumanoidStateArray _HumanoidStateArrayMsg;
 typedef sensor_msgs::JointState _JointStateMsg;
-typedef humanoid_models::JointStateArray _JointStateArraymsg;
+typedef humanoid_models::JointStateArray _JointStateArrayMsg;
 
 static _JointNames const JOINT_NAMES_
 {
@@ -102,6 +102,7 @@ namespace AnatomicalPlanes
     static unsigned int const & P = SAGITTAL;
     static unsigned int const & Y = TRANSVERSE;
 
+    // "map" from plane code to plane name
     static std::vector<std::string> const names { "none", "coronal", "sagittal", "transverse" };
 }
 
