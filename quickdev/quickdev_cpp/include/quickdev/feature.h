@@ -236,13 +236,13 @@ public:
         //
     }
 
-    /*//! Construct a Feature from some other data type
-    template<class __OtherStorage>
-    Feature( __OtherStorage const & storage )
+    //! Construct a Feature from some other data type
+    template<class __Storage>
+    Feature( std::vector<__Storage> const & storage )
     {
         storage_.resize( storage.size() );
         std::copy( storage.begin(), storage.end(), storage_.begin() );
-    }*/
+    }
 
     //! Construct a Feature from a variadic template of size > 0
     /*! Will fail at compile time if, after args... is expanded, all types do not match __Data */
@@ -283,6 +283,11 @@ public:
     typename _Storage::const_iterator end() const
     {
         return cend();
+    }
+
+    size_t size() const
+    {
+        return storage_.size();
     }
 
     // getStorage()
@@ -388,7 +393,7 @@ public:
     /*! \tparam __Mode the distance algorithm to use
      *  \param other the feature to which the distance should be calculated
      *  \param args the set of arguments, if any, to pass to the distance algorithm */
-    template<class __Mode = feature::mode::distance::EUCLIDIAN, class __OtherData, class... __Args>
+    template<class __Mode, class __OtherData, class... __Args>
     double distanceTo( const Feature<__OtherData> & other, __Args... args ) const
     {
         return distanceToImpl<__Mode>( other, args... );
@@ -396,10 +401,16 @@ public:
 
     //! Calculate the distance from this feature to a simple numeric feature
     /*! Simply wraps the given numeric value in a feature and forwards all other params to the primary distanceTo() implementation */
-    template<class __Mode = feature::mode::distance::EUCLIDIAN, class __OtherData, class std::enable_if<std::is_arithmetic<__OtherData>::value, int>::type = 0, class... __Args>
+    template<class __Mode, class __OtherData, class std::enable_if<std::is_arithmetic<__OtherData>::value, int>::type = 0, class... __Args>
     double distanceTo( const __OtherData & other, __Args... args ) const
     {
         return distanceToImpl<__Mode>( Feature<__OtherData>( other ), args... );
+    }
+
+    template<class __OtherData, class... __Args>
+    double distanceTo( const Feature<__OtherData> & other, __Args... args ) const
+    {
+        return distanceTo<feature::mode::distance::EUCLIDIAN>( other, args... );
     }
 };
 
