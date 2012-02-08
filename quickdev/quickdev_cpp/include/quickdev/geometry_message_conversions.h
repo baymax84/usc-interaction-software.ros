@@ -38,6 +38,7 @@
 
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/Point.h>
 #include <LinearMath/btTransform.h>
 #include <quickdev/unit.h>
 
@@ -45,28 +46,43 @@ typedef btVector3 _Vector3;
 typedef btQuaternion _Quaternion;
 typedef btTransform _Transform;
 
+typedef geometry_msgs::Point _PointMsg;
 typedef geometry_msgs::Vector3 _Vector3Msg;
 typedef geometry_msgs::Twist _TwistMsg;
 typedef geometry_msgs::Quaternion _QuaternionMsg;
 
+// Vector3Msg -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Vector3, msg, return _Vector3( msg.x, msg.y, msg.z ); )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
-
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _PointMsg, vec, _PointMsg msg; msg.x = vec.x; msg.y = vec.y; msg.z = vec.z; return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Quaternion, msg, return _Quaternion( msg.z, msg.y, msg.x ); )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3Msg, quat, _Vector3Msg res; const btMatrix3x3 rot_mat( quat ); rot_mat.getEulerYPR( res.z, res.y, res.x ); return res; )
 
+// Vector3 -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _PointMsg, vec, _PointMsg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Quaternion, vec, return _Quaternion( vec.z, vec.y, vec.x ); )
+
+// PointMsg -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _PointMsg, _Vector3Msg, point, _Vector3Msg msg; msg.x = point.x; msg.y = point.y; msg.z = point.z; return msg; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _PointMsg, _Vector3, point, return _Vector3( point.x, point.y, point.z ); )
+
+// Quaternion -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3Msg, quat, _Vector3Msg msg; const btMatrix3x3 rot_mat( quat ); rot_mat.getEulerYPR( msg.z, msg.y, msg.x ); return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3, quat, double x, y, z; btMatrix3x3 const rot_mat( quat ); rot_mat.getEulerYPR( z, y, x ); return _Vector3( x, y, z ); )
-
-DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quaternion( msg.x, msg.y, msg.z, msg.w ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _QuaternionMsg, quat, _QuaternionMsg msg; msg.x = quat.getX(); msg.y = quat.getY(); msg.z = quat.getZ(); msg.w = quat.getW(); return msg; )
 
+// QuaternionMsg -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quaternion( msg.x, msg.y, msg.z, msg.w ); )
+
+// Transform -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, _TwistMsg res; res.angular = unit::make_unit( tf.getRotation() ); res.linear = unit::make_unit( tf.getOrigin() ); return res; )
 
-DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); const _Vector3 vec( unit::convert<_Vector3>( twist.linear ) ); return _Transform( quat, vec ); )
+// TwistMsg -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); const _Vector3 vec = unit::make_unit( twist.linear ); return _Transform( quat, vec ); )
 
+// Transform *= Scalar
 static void operator*=( _Transform & transform, const double & scale )
 {
-    _Vector3 angle_ypr = unit::convert<_Vector3>( unit::convert<_Vector3Msg>( transform.getRotation() ) );
+    _Vector3 angle_ypr = unit::make_unit( unit::convert<_Vector3Msg>( transform.getRotation() ) );
     angle_ypr *= scale;
     transform.setRotation( unit::convert<_Quaternion>( unit::convert<_Vector3Msg>( angle_ypr ) ) );
     transform.getOrigin() *= scale;
