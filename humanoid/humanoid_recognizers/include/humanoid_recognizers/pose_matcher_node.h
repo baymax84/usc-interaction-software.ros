@@ -46,6 +46,7 @@
 #include <humanoid_recognizers/PoseMatcherConfig.h>
 
 using humanoid::_HumanoidStateArrayMsg;
+using namespace quickdev::feature;
 
 typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
@@ -77,23 +78,45 @@ QUICKDEV_DECLARE_NODE_CLASS( PoseMatcher )
 
         //_MarkerArrayMsg markers;
 
-        auto const & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
-        PRINT_INFO( "Tracking %zu humaniods", humanoids.size() );
+        //auto const & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
+        //PRINT_INFO( "Tracking %zu humanoids", humanoids.size() );
 
         auto const template_humanoid = _HumanoidRecognizerPolicy::lookupHumanoid( config_.template_humanoid_name );
-        auto const candidate_humanoid = _HumanoidRecognizerPolicy::lookupHumanoid( config_.candidate_humanoid_name );
+//        auto const candidate_humanoid = _HumanoidRecognizerPolicy::lookupHumanoid( config_.candidate_humanoid_name );
 
-        auto const & template_humanoid_feature = template_humanoid.getFeature();
-        auto const & candidate_humanoid_feature = candidate_humanoid.getFeature();
+        auto const joint_state = template_humanoid.getJointStateMessage();
 
-        PRINT_INFO( "Comparing distance between features: [%s:%zu][%s:%zu]", template_humanoid.name.c_str(), template_humanoid_feature.size(), candidate_humanoid.name.c_str(), candidate_humanoid_feature.size() );
+//        auto const & template_humanoid_feature = template_humanoid.getFeature();
+//        auto const & candidate_humanoid_feature = candidate_humanoid.getFeature();
 
-        auto const distance = template_humanoid_feature.distanceTo( candidate_humanoid_feature );
-        double const max_distance = sqrt( pow( 2 * M_PI, 2 ) * template_humanoid_feature.size() ) * config_.pose_error_threshold;
+//        PRINT_INFO( "Comparing distance between features: [%s:%zu][%s:%zu]", template_humanoid.name.c_str(), template_humanoid_feature.size(), candidate_humanoid.name.c_str(), candidate_humanoid_feature.size() );
 
-        const bool poses_match = distance < max_distance;
+//        auto const distance_components = template_humanoid_feature.getDistanceComponents<mode::distance::EUCLIDIAN_CIRCULAR>( candidate_humanoid_feature, -M_PI, M_PI );
+//        auto const distance = template_humanoid_feature.distanceTo<mode::distance::EUCLIDIAN_CIRCULAR>( candidate_humanoid_feature, -M_PI, M_PI );
 
-        PRINT_INFO( "distance between poses: [%f/%f] match [%u]", distance, max_distance, poses_match );
+//        double const max_distance = sqrt( pow( 2 * M_PI, 2 ) * template_humanoid_feature.size() ) * config_.pose_error_threshold;
+
+//        const bool poses_match = distance < max_distance;
+
+        std::stringstream distance_components_ss;
+        size_t i = 0;
+        auto const num_components = joint_state.position.size();
+//        auto const num_components = distance_components.size();
+        if( num_components > 0 )
+        {
+//            distance_components_ss << "{\n" << joint_state.name.at( i ) << " : " << distance_components.at( i );
+            distance_components_ss << "{\n" << joint_state.name.at( i ) << " : " << joint_state.position.at( i );
+            i ++;
+            for( i; i < num_components; ++i )
+            {
+//                distance_components_ss << ",\n" << joint_state.name.at( i ) << " : " << distance_components.at( i );
+                distance_components_ss << ",\n" << joint_state.name.at( i ) << " : " << joint_state.position.at( i );
+            }
+            distance_components_ss << "\n}";
+            PRINT_INFO( "%s", distance_components_ss.str().c_str() );
+        }
+
+//        PRINT_INFO( "distance between poses: [%f/%f] match [%u]", distance, max_distance, poses_match );
 
         //_HumanoidRecognizerPolicy::updateMarkers( markers );
     }
