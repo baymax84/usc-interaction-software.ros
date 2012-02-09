@@ -42,7 +42,9 @@
 
 #include <quickdev/message_array_cache.h>
 #include <quickdev/geometry_message_conversions.h>
+#include <quickdev/numeric_unit_conversions.h>
 #include <quickdev/feature.h>
+#include <angles/angles.h>
 
 #include <humanoid_models/HumanoidStateArray.h>
 #include <humanoid_models/JointStateArray.h>
@@ -63,32 +65,32 @@ typedef humanoid_models::JointStateArray _JointStateArrayMsg;
 static _JointNames const JOINT_NAMES_
 {
     "head",             // 0  : nnn :
-    "neck",             // 1  : rpy :
-    "torso",            // 2  : rpy :
-    "waist",            // 3  : rpy
+    "neck",             // 1  : ryp :
+    "torso",            // 2  : ryp :
+    "waist",            // 3  : ryp
     "right_collar",     // 4  : nnn
-    "right_shoulder",   // 5  : rny
-    "right_elbow",      // 6  : rpn
-    "right_wrist",      // 7  : rpy
+    "right_shoulder",   // 5  : ryn
+    "right_elbow",      // 6  : nyp
+    "right_wrist",      // 7  : ryp
     "right_hand",       // 8  : nnn
     "right_finger_tip", // 9  : nnn
     "left_collar",      // 10 : nnn
-    "left_shoulder",    // 11 : rny
-    "left_elbow",       // 12 : rpn
-    "left_wrist",       // 13 : rpy
+    "left_shoulder",    // 11 : ryn
+    "left_elbow",       // 12 : nyp
+    "left_wrist",       // 13 : ryp
     "left_hand",        // 14 : nnn
     "left_finger_tip",  // 15 : nnn
-    "right_hip",        // 16 : rpy
-    "right_knee",       // 17 : npn
-    "right_ankle",      // 18 : rpy
+    "right_hip",        // 16 : ryp
+    "right_knee",       // 17 : nnp
+    "right_ankle",      // 18 : ryp
     "right_foot",       // 19 : nnn
-    "left_hip",         // 20 : rpy
-    "left_knee",        // 21 : npn
-    "left_ankle",       // 22 : rpy
+    "left_hip",         // 20 : ryp
+    "left_knee",        // 21 : nnp
+    "left_ankle",       // 22 : ryp
     "left_foot"         // 23 : nnn
 };
 
-namespace AnatomicalPlanes
+namespace RotationAxes
 {
     static unsigned int const NONE = 0;
     static unsigned int const CORONAL = 1;
@@ -105,7 +107,7 @@ namespace AnatomicalPlanes
     static unsigned int const & Y = TRANSVERSE;
 
     // "map" from plane code to plane name
-    static std::vector<std::string> const names { "none", "coronal", "sagittal", "transverse" };
+    static std::vector<std::string> const names { "none", "roll", "pitch", "yaw" };
 }
 
 static _JointStateMap generateJointStateMap()
@@ -113,35 +115,40 @@ static _JointStateMap generateJointStateMap()
     // map from [name]{ r, p, y } -> { plane_code, plane_code, plane_code }
     _JointStateMap joint_state_map;
 
-    auto const & n = AnatomicalPlanes::NONE;
-    auto const & r = AnatomicalPlanes::CORONAL;
-    auto const & p = AnatomicalPlanes::SAGITTAL;
-    auto const & y = AnatomicalPlanes::TRANSVERSE;
+    auto const & n = RotationAxes::NONE;
+    //auto const & r = AnatomicalPlanes::CORONAL;
+    //auto const & p = AnatomicalPlanes::SAGITTAL;
+    //auto const & y = AnatomicalPlanes::TRANSVERSE;
+    auto const & x = RotationAxes::CORONAL;
+    auto const & y = RotationAxes::SAGITTAL;
+    auto const & z = RotationAxes::TRANSVERSE;
 
-    joint_state_map[JOINT_NAMES_[0]]  = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[1]]  = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[2]]  = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[3]]  = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[4]]  = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[5]]  = { { r, n, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[6]]  = { { r, p, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[7]]  = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[8]]  = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[9]]  = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[10]] = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[11]] = { { r, n, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[12]] = { { r, p, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[13]] = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[14]] = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[15]] = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[16]] = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[17]] = { { n, p, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[18]] = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[19]] = { { n, n, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[20]] = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[21]] = { { n, p, n }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[22]] = { { r, p, y }, { 0, 0, 0 } };
-    joint_state_map[JOINT_NAMES_[23]] = { { n, n, n }, { 0, 0, 0 } };
+    //                                       x   y   z      x  y  z
+    //                                       r   p   y      r  p  y
+    joint_state_map[JOINT_NAMES_[0]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // head
+    joint_state_map[JOINT_NAMES_[1]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // neck
+    joint_state_map[JOINT_NAMES_[2]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // torso
+    joint_state_map[JOINT_NAMES_[3]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // waist
+    joint_state_map[JOINT_NAMES_[4]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // right_collar
+    joint_state_map[JOINT_NAMES_[5]]  = { { -z,  n, -y }, { 0, 0, 180 } }; // right_shoulder
+    joint_state_map[JOINT_NAMES_[6]]  = { {  n, -z,  y }, { 0, 0, 90  } }; // right_elbow
+    joint_state_map[JOINT_NAMES_[7]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // right_wrist
+    joint_state_map[JOINT_NAMES_[8]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // right_hand
+    joint_state_map[JOINT_NAMES_[9]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // right_finger_tip
+    joint_state_map[JOINT_NAMES_[10]] = { {  n,  n,  n }, { 0, 0, 0   } }; // left_collar
+    joint_state_map[JOINT_NAMES_[11]] = { { -z,  n,  y }, { 0, 0, 180 } }; // left_shoulder
+    joint_state_map[JOINT_NAMES_[12]] = { {  n,  z,  y }, { 0, 0, -90 } }; // left_elbow
+    joint_state_map[JOINT_NAMES_[13]] = { {  n,  n,  n }, { 0, 0, 0   } }; // left_wrist
+    joint_state_map[JOINT_NAMES_[14]] = { {  n,  n,  n }, { 0, 0, 0   } }; // left_hand
+    joint_state_map[JOINT_NAMES_[15]] = { {  n,  n,  n }, { 0, 0, 0   } }; // left_finger_tip
+    joint_state_map[JOINT_NAMES_[16]] = { { -z, -x,  n }, { 0, 0, 180 } }; // right_hip
+    joint_state_map[JOINT_NAMES_[17]] = { {  n, -x,  y }, { 0, 0, 180 } }; // right_knee
+    joint_state_map[JOINT_NAMES_[18]] = { { -z, -x,  y }, { 0, 0, 180 } }; // right_ankle
+    joint_state_map[JOINT_NAMES_[19]] = { {  n,  n,  n }, { 0, 0, 0   } }; // right_foot
+    joint_state_map[JOINT_NAMES_[20]] = { { -z, -x,  n }, { 0, 0, 180 } }; // left_hip
+    joint_state_map[JOINT_NAMES_[21]] = { {  n, -x,  y }, { 0, 0, 180 } }; // left_knee
+    joint_state_map[JOINT_NAMES_[22]] = { { -z, -x,  y }, { 0, 0, 180 } }; // left_ankle
+    joint_state_map[JOINT_NAMES_[23]] = { {  n,  n,  n }, { 0, 0, 0   } }; // left_foot
 
     return joint_state_map;
 }
@@ -247,17 +254,21 @@ public:
             auto const & plane_ids = joint_state_entry.at( 0 );
             auto const & offsets = joint_state_entry.at( 1 );
 
-            for( size_t i = 0; i < joint_state_entry.size(); ++i )
+            for( size_t i = 0; i < 3; ++i )
             {
-                auto const & plane_id = plane_ids.at( i );
+                auto const & rotation_axis_raw = plane_ids.at( i );
+                auto const rotation_axis = abs( rotation_axis_raw );
 
                 // if the given axis has no mapping to an anatomical plane, just skip it
-                if( plane_id == AnatomicalPlanes::NONE ) continue;
+                if( rotation_axis == RotationAxes::NONE ) continue;
 
-                auto const & offset = offsets.at( i );
+                auto const rotation_axis_sign = rotation_axis_raw < 0 ? -1 : 1;
 
-                joint_state_msg.name.push_back( joint->name + "_" + AnatomicalPlanes::names.at( plane_id ) );
-                joint_state_msg.position.push_back( position_vec.m_floats[plane_id - 1] + offset );
+                auto const & offset_degrees = offsets.at( i );
+                double const offset_rad = Radian( Degree( offset_degrees ) );
+
+                joint_state_msg.name.push_back( joint->name + "_" + RotationAxes::names.at( i + 1 ) );
+                joint_state_msg.position.push_back( rotation_axis_sign * position_vec.m_floats[rotation_axis - 1] + offset_rad );
             }
 
             /*for( auto component_id = joint_state_entry.cbegin(); component_id != joint_state_entry.cend(); ++component_id )
