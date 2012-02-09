@@ -140,6 +140,7 @@ namespace mode
     namespace distance
     {
         struct EUCLIDIAN{};
+        struct EUCLIDIAN_CIRCULAR{};
         struct GAUSSIAN{};
     } // distance
 } // mode
@@ -164,37 +165,101 @@ public:
 
     QUICKDEV_DECLARE_ACCESSOR2( value_, Value )
 
+    template
+    <
+        class __Mode,
+        class __OtherData,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::EUCLIDIAN>::value), int>::type = 0
+    >
+    double distanceToImpl( __OtherData const & other ) const
+    {
+        return value_ - other;
+    }
+
+    template
+    <
+        class __Mode,
+        class __OtherData,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::EUCLIDIAN_CIRCULAR>::value), int>::type = 0
+    >
+    double distanceToImpl( __OtherData const & other, double const & min, double const & max ) const
+    {
+        auto angle1 = other;
+        auto angle2 = value_;
+
+        auto const range = max - min;
+
+        // normalize angle1 and angle2 between min and max
+        angle1 = fmod( angle1, range ) + min;
+        angle2 = fmod( angle2, range ) + min;
+
+        // find min distance between angle1 and angle2
+        auto distance = fabs( angle2 - angle1 );
+        if( distance > range / 2.0 ) return range - distance;
+        return distance;
+    }
+
+    template
+    <
+        class __Mode,
+        class __OtherData,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN>::value), int>::type = 0
+    >
+    double distanceToImpl( __OtherData const & other ) const
+    {
+        return value_ - other;
+    }
+
     //! Calculates the distance to another feature if this feature is complex
     /*! Recurses via Feature::distanceTo() */
-    template<class __MData, class __OtherData, typename std::enable_if<(feature::is_feature<__MData>::value), int>::type = 0>
+    template
+    <
+        class __Mode,
+        class __MData,
+        class __OtherData,
+        typename std::enable_if<(feature::is_feature<__MData>::value), int>::type = 0
+    >
     double distanceToHelper( const FeatureComponent<__OtherData> & other ) const
     {
         //std::cout << "calculating distance between partially non-numeric components" << std::endl;
-        return value_.distanceTo( other.getValue() );
+        return value_.distanceTo<__Mode>( other.getValue() );
     }
 
     //! Calculates the distance to another feature if this feature is not complex but the other feature is complex
     /*! Recurses via Feature::distanceTo() */
-    template<class __MData, class __OtherData, typename std::enable_if<(!feature::is_feature<__MData>::value && feature::is_feature<__OtherData>::value), int>::type = 0>
+    template
+    <
+        class __Mode,
+        class __MData,
+        class __OtherData,
+        typename std::enable_if<(!feature::is_feature<__MData>::value && feature::is_feature<__OtherData>::value), int>::type = 0
+    >
     double distanceToHelper( const FeatureComponent<__OtherData> & other ) const
     {
         //std::cout << "calculating distance between partially non-numeric components" << std::endl;
-        return other.getValue().distanceTo( value_ );
+        return other.getValue().distanceTo<__Mode>( value_ );
     }
 
     //! Calculates the distance to another feature if neither feature is complex
     /*! Bottom level of recursion, if any */
-    template<class __MData, class __OtherData, typename std::enable_if<(!feature::is_feature<__MData>::value && !feature::is_feature<__OtherData>::value), int>::type = 0>
-    double distanceToHelper( const FeatureComponent<__OtherData> & other ) const
+    template
+    <
+        class __Mode,
+        class __MData,
+        class __OtherData,
+        class... __Args,
+        typename std::enable_if<(!feature::is_feature<__MData>::value && !feature::is_feature<__OtherData>::value), int>::type = 0
+    >
+    double distanceToHelper( const FeatureComponent<__OtherData> & other, __Args... args ) const
     {
         //std::cout << "calculating distance between numeric components: " << value_ << " and " << other.getValue() << std::endl;
-        return value_ - other.getValue();
+        return distanceToImpl<__Mode>( other.getValue(), args... );
     }
 
-    template<class __OtherData>
-    double distanceTo( const FeatureComponent<__OtherData> & other ) const
+    template<class __Mode, class __OtherData, class... __Args>
+    double distanceTo( const FeatureComponent<__OtherData> & other, __Args... args ) const
     {
-        return distanceToHelper<__Data>( other );
+        return distanceToHelper<__Mode, __Data>( other, args... );
     }
 };
 
@@ -297,8 +362,8 @@ public:
     /*! Specifically, given an M-dimensional feature and an N-dimensional feature, this function will return a vector of size max( m, n )
      *  where each element is the distance between feature1[i] and feature2[i] (or the distance to the corresponding zero-value if featureX
      *  is not defined for [i]) */
-    template<class __OtherData>
-    std::vector<double> getDistanceComponents( const Feature<__OtherData> & other ) const
+    template<class __Mode, class __OtherData, class... __Args>
+    std::vector<double> getDistanceComponents( const Feature<__OtherData> & other, __Args... args ) const
     {
         const auto & storage1 = storage_;
         const auto & storage2 = other.getStorage();
@@ -334,7 +399,7 @@ public:
             FeatureComponent<_Component1Data> component1( component1_end ? storage1_zero : *component1_it );
             FeatureComponent<_Component2Data> component2( component2_end ? storage2_zero : *component2_it );
 
-            distance_components.push_back( component1.distanceTo( component2 ) );
+            distance_components.push_back( component1.distanceTo<__Mode>( component2, args... ) );
 
             if( !component1_end ) ++component1_it;
             if( !component2_end ) ++component2_it;
@@ -352,7 +417,25 @@ private:
     >
     double distanceToImpl( Feature<__OtherData> const & other ) const
     {
-        const auto distance_components = getDistanceComponents( other );
+        const auto distance_components = getDistanceComponents<__Mode>( other );
+
+        double total_distance = 0.0;
+        for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component )
+        {
+            total_distance += fabs( *distance_component );
+        }
+
+        return total_distance;
+    }
+
+    template<
+        class __Mode,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::EUCLIDIAN_CIRCULAR>::value), int>::type = 0,
+        class __OtherData
+    >
+    double distanceToImpl( Feature<__OtherData> const & other, double const & min, double const & max ) const
+    {
+        const auto distance_components = getDistanceComponents<__Mode>( other, min, max );
 
         double total_distance = 0.0;
         for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component )
@@ -373,7 +456,7 @@ private:
     >
     double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & resolution = 1.0 ) const
     {
-        const auto distance_components = getDistanceComponents( other );
+        const auto distance_components = getDistanceComponents<__Mode>( other );
 
         const auto half_resolution = resolution / 2.0;
 
