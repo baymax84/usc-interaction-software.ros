@@ -55,6 +55,8 @@ inline Time now()
 class Timer
 {
 public:
+    Timer();
+
     void reset();
     quickdev::Time const & start();
     DurationSeconds stop();

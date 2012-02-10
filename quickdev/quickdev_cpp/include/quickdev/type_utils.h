@@ -351,7 +351,7 @@ Usage:
         class __Data,
         typename std::enable_if<(!boost::is_base_of<ros::Message, __Data>::value), int>::type = 0
     >
-    boost::shared_ptr<__Data> make_shared( __Data * data )
+    boost::shared_ptr<__Data> make_shared( __Data * const data )
     {
         return boost::shared_ptr<__Data>( data );
     }
