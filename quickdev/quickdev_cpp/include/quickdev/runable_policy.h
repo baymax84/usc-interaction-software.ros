@@ -74,8 +74,8 @@ private:
         loop_rate_ = make_shared( new ros::Rate( loop_rate_hz_ ) );
     }
 
-    inline auto getLoopRateHz() const -> const decltype( loop_rate_hz_ ) & { return loop_rate_hz_; }
-    inline auto getLoopRateSeconds() const -> const decltype( loop_rate_seconds_ ) & { return loop_rate_seconds_; }
+    QUICKDEV_DECLARE_CONST_ACCESSOR( loop_rate_hz_, LoopRateHz );
+    QUICKDEV_DECLARE_CONST_ACCESSOR( loop_rate_seconds_, LoopRateSeconds );
 
     virtual void spinFirst(){}
 
