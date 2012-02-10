@@ -422,18 +422,21 @@ auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE()::RunablePolicy::getNodeHandle
 auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE()::NodeHandlePolicy::getNodeHandle()
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_CONST_ACCESSOR( var_name, VarName ) \
+inline auto get##VarName() const -> const decltype( var_name ) & { return var_name; }
+// ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_ACCESSOR2( var_name, VarName ) \
 public: \
 inline auto get##VarName() -> decltype( var_name ) & { return var_name; } \
-inline auto get##VarName() const -> const decltype( var_name ) & { return var_name; }
+QUICKDEV_DECLARE_CONST_ACCESSOR( var_name, VarName )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACCESSOR( var_name ) \
+QUICKDEV_DECLARE_ACCESSOR2( var_name, var_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MUTATOR2( var_name, VarName ) \
 public: \
 inline void set##VarName( decltype( var_name ) & value ){ var_name = value; } \
 inline void set##VarName( const decltype( var_name ) & value ){ var_name = value; }
-// ------------------------------------------------------------------------------------------------------------------------------------------
-#define QUICKDEV_DECLARE_ACCESSOR( var_name ) \
-QUICKDEV_DECLARE_MUTATOR2( var_name, var_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MUTATOR( var_name ) \
 QUICKDEV_DECLARE_MUTATOR2( var_name, var_name )
