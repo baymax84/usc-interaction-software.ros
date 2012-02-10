@@ -48,8 +48,11 @@ QUICKDEV_DECLARE_POLICY_CLASS( Runable )
 {
     QUICKDEV_MAKE_POLICY_FUNCS( Runable )
 
-protected:
-    ros::Rate * loop_rate_;
+private:
+    double loop_rate_hz_;
+    double loop_rate_seconds_;
+
+    boost::shared_ptr<ros::Rate> loop_rate_;
     bool run_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Runable ),
@@ -66,13 +69,13 @@ protected:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        loop_rate_ = new ros::Rate( ros::ParamReader<double, 1>::readParam( nh_rel, "loop_rate", 10 ) );
+        loop_rate_hz_ = ros::ParamReader<double, 1>::readParam( nh_rel, "loop_rate", 10 );
+        loop_rate_seconds_ = 1.0 / loop_rate_hz_;
+        loop_rate_ = make_shared( new ros::Rate( loop_rate_hz_ ) );
     }
 
-    ~RunablePolicy()
-    {
-        if( loop_rate_ ) delete loop_rate_;
-    }
+    inline auto getLoopRateHz() const -> const decltype( loop_rate_hz_ ) & { return loop_rate_hz_; }
+    inline auto getLoopRateSeconds() const -> const decltype( loop_rate_seconds_ ) & { return loop_rate_seconds_; }
 
     virtual void spinFirst(){}
 
