@@ -200,7 +200,7 @@ struct element;
 /*! Specialization for empty containers
  *  \tparam I the index at which the desired type is defined */
 template<unsigned int I>
-struct element<I, quickdev::Container<> > {};
+struct element<I, quickdev::SimpleContainer<> > {};
 
 //! Access the type of a Container element
 /*! Recursive implementation; general case
@@ -208,7 +208,7 @@ struct element<I, quickdev::Container<> > {};
  *  \tparam __Head the type of the element at the front of the subset of types
  *  \tparam __Tail the types of remaining elements in the subset of types */
 template<unsigned int I, class __Head, class... __Tail>
-struct element<I, quickdev::Container<__Head, __Tail...> > : container::element<I-1, quickdev::Container<__Tail...> >
+struct element<I, quickdev::SimpleContainer<__Head, __Tail...> > : container::element<I-1, quickdev::SimpleContainer<__Tail...> >
 {
     //
 };
@@ -218,7 +218,7 @@ struct element<I, quickdev::Container<__Head, __Tail...> > : container::element<
  *  \tparam __Head the type of the element at the front of the subset of types
  *  \tparam __Tail the types of remaining elements in the subset of types */
 template<class __Head, class... __Tail>
-struct element<0, quickdev::Container<__Head, __Tail...> >
+struct element<0, quickdev::SimpleContainer<__Head, __Tail...> >
 {
     typedef __Head type;
 };
@@ -305,7 +305,7 @@ template<unsigned int __StartIndex__, class __Container, class... __Types>
 struct subtype_rec<__StartIndex__, __StartIndex__, __Container, __Types...>
 {
     //! The type of the specified subset of the given container
-    typedef quickdev::Container<typename container::element<__StartIndex__, __Container>::type, __Types...> type;
+    typedef quickdev::SimpleContainer<typename container::element<__StartIndex__, __Container>::type, __Types...> type;
 };
 
 //! Calculate the subset of the types of a Container
@@ -326,7 +326,7 @@ struct subtype : container::subtype_rec<__StartIndex__ + __NumItems__ - 1, __Sta
 template<unsigned int __StartIndex__, class __Container>
 struct subtype<__StartIndex__, 0, __Container>
 {
-    typedef quickdev::Container<> type;
+    typedef quickdev::SimpleContainer<> type;
 };
 
 // #############################################################################################################################################
@@ -338,7 +338,7 @@ template<unsigned int __ContainerSize__, class __Container>
 struct traits_helper
 {
     //! the type of the container wrapping the front value of the given container
-    typedef quickdev::Container<typename container::elem_traits<__Container>::_Front> _Head;
+    typedef quickdev::SimpleContainer<typename container::elem_traits<__Container>::_Front> _Head;
 };
 
 //! Store useful traits about a Container
@@ -348,7 +348,7 @@ template<class __Container>
 struct traits_helper<0, __Container>
 {
     //! the type of the container wrapping the front value of the given container
-    typedef quickdev::Container<> _Head;
+    typedef quickdev::SimpleContainer<> _Head;
 };
 
 //! Store useful traits about a Container
@@ -505,9 +505,9 @@ struct push_front_type;
 
 //! Access the Container type that results from pushing the given type onto the front of the given Container
 template<class __NewType, class... __Types>
-struct push_front_type<quickdev::Container<__Types...>, __NewType>
+struct push_front_type<quickdev::SimpleContainer<__Types...>, __NewType>
 {
-    typedef quickdev::Container<__NewType, __Types...> type;
+    typedef quickdev::SimpleContainer<__NewType, __Types...> type;
 };
 
 // #############################################################################################################################################
@@ -517,9 +517,9 @@ struct push_back_type;
 
 //! Access the Container type that results from pushing the given type onto the back of the given Container
 template<class __NewType, class... __Types>
-struct push_back_type<quickdev::Container<__Types...>, __NewType>
+struct push_back_type<quickdev::SimpleContainer<__Types...>, __NewType>
 {
-    typedef quickdev::Container<__Types..., __NewType> type;
+    typedef quickdev::SimpleContainer<__Types..., __NewType> type;
 };
 
 // #############################################################################################################################################
@@ -599,9 +599,9 @@ struct combine_type;
 
 //! Return the type of the union of the given containers
 template<class... __Types1, class... __Types2>
-struct combine_type<quickdev::Container<__Types1...>, quickdev::Container<__Types2...> >
+struct combine_type<quickdev::SimpleContainer<__Types1...>, quickdev::SimpleContainer<__Types2...> >
 {
-    typedef quickdev::Container<__Types1..., __Types2...> type;
+    typedef quickdev::SimpleContainer<__Types1..., __Types2...> type;
 };
 
 // #############################################################################################################################################

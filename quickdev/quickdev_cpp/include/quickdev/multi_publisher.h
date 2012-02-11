@@ -120,16 +120,19 @@ public:
         std::copy( topic_names_init.begin(), topic_names_init.end(), topic_names.begin() );
 
         PRINT_INFO( "Attempting to add [ %zu ] publishers...", topic_names.size() );
-        createPublishers<quickdev::Container<__Messages...> >( nh, topic_names.begin(), topic_names.end(), storage );
+        createPublishers<quickdev::SimpleContainer<__Messages...> >( nh, topic_names.begin(), topic_names.end(), storage );
 
         return *this;
     }
 
     // recursively process the message types in __MessagesSubset and
     // create a publisher for each
-    template<
+    template
+    <
         class __MessagesSubset,
-        typename std::enable_if<(__MessagesSubset::size_ > 0 && !std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value ), int>::type = 0>
+        typename std::enable_if<(__MessagesSubset::size_ > 0), int>::type = 0,
+        typename std::enable_if<(!std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value), int>::type = 0
+    >
     void createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
     {
         typedef typename container::traits<__MessagesSubset>::_Front _CurrentMessageType;
@@ -142,9 +145,12 @@ public:
     }
 
     // ignore void types
-    template<
+    template
+    <
         class __MessagesSubset,
-        typename std::enable_if<(__MessagesSubset::size_ > 0 && std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value ), int>::type = 0>
+        typename std::enable_if<(__MessagesSubset::size_ > 0), int>::type = 0,
+        typename std::enable_if<(std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value), int>::type = 0
+    >
     void createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
     {
         createPublishers<typename container::traits<__MessagesSubset>::_Tail>( nh, current_topic + 1, last_topic, storage );
@@ -153,9 +159,12 @@ public:
     // bottom-level in the createPublishers recursive algorithm
     // __MessagesSubset should be Container<>; if so, all topics have
     // been registered
-    template<class __MessagesSubset>
-    typename std::enable_if<(__MessagesSubset::size_ == 0 ), void>::type
-    createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
+    template
+    <
+        class __MessagesSubset,
+        typename std::enable_if<(__MessagesSubset::size_ == 0), int>::type = 0
+    >
+    void createPublishers( ros::NodeHandle & nh, const typename _TopicArray::iterator & current_topic, const typename _TopicArray::iterator last_topic, _PublisherAdapterStorage & storage )
     {
         //PRINT_INFO( "Finished creating topics." );
     }

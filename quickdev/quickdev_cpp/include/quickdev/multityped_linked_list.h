@@ -65,10 +65,10 @@ public:
 
 // one data type
 template<class __Data>
-class MultitypedNode<__Data, quickdev::Container<> >
+class MultitypedNode<__Data, quickdev::SimpleContainer<> >
 {
 public:
-    typedef quickdev::Container<__Data> _Container;
+    typedef quickdev::SimpleContainer<__Data> _Container;
     typedef __Data _Data;
 
     __Data data_;
@@ -84,9 +84,9 @@ public:
 };
 
 template<class __Data, class... __RestChildData>
-static MultitypedNode<__Data, quickdev::Container<__RestChildData...> > createMultitypedNode( const __Data & data, __RestChildData&&... rest_child_data )
+static MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> > createMultitypedNode( const __Data & data, __RestChildData&&... rest_child_data )
 {
-    return MultitypedNode<__Data, quickdev::Container<__RestChildData...> >( data, rest_child_data... );
+    return MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> >( data, rest_child_data... );
 }
 
 template<class __MultitypedNodeType, unsigned int i>
@@ -105,7 +105,7 @@ template<class... __Types>
 class MultitypedLinkedList
 {
 public:
-    typedef quickdev::Container<__Types...> _Container;
+    typedef quickdev::SimpleContainer<__Types...> _Container;
     typedef typename container::traits<_Container>::_Tail _RestContainer;
     typedef typename container::traits<_Container>::_Front _Front;
     typedef MultitypedNode<_Front, _RestContainer> _MultitypedNode;

@@ -144,7 +144,7 @@ public:
     >
     void initRec( __Args&&... args )
     {
-        initRec<__ForceInit__, Container<__Policies...> >( args... );
+        initRec<__ForceInit__, SimpleContainer<__Policies...> >( args... );
         //initRec<__ForceInit__, typename container::combine_type< Container<__Policies...>, typename container::traits<__PoliciesSubset>::_Tail > >( args... );
     }
 
@@ -161,7 +161,7 @@ public:
     template<class... __Args>
     void initAll( __Args&&... args )
     {
-        initRec<false, Container<__Policies...> >( args... );
+        initRec<false, SimpleContainer<__Policies...> >( args... );
     }
 
     // Do any post-construction initialization. Note that all policies
@@ -169,7 +169,7 @@ public:
     template<class... __Args>
     void forceInitAll( __Args&&... args )
     {
-        initRec<true, Container<__Policies...> >( args... );
+        initRec<true, SimpleContainer<__Policies...> >( args... );
     }
 
     template<
@@ -178,7 +178,7 @@ public:
     >
     void initPolicies( __Args&&... args )
     {
-        initRec<false, Container<__MPolicies...> >( args... );
+        initRec<false, SimpleContainer<__MPolicies...> >( args... );
     }
 
     template<
@@ -187,7 +187,7 @@ public:
     >
     void forceInitPolicies( __Args&&... args )
     {
-        initRec<true, Container<__MPolicies...> >( args... );
+        initRec<true, SimpleContainer<__MPolicies...> >( args... );
     }
 };
 
