@@ -1,0 +1,8 @@
+<library path="lib/libtfdump_nodelets">
+
+  <class name="tfdump/tf_dump" type="tfdump::TfDumpNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>
