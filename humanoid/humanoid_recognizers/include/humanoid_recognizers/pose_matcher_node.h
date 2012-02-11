@@ -48,7 +48,7 @@
 using humanoid::_HumanoidStateArrayMsg;
 using namespace quickdev::feature;
 
-typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
+typedef HumanoidRecognizerPolicy<> _HumanoidRecognizerPolicy;
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 
 typedef humanoid_recognizers::PoseMatcherConfig _PoseMatcherConfig;

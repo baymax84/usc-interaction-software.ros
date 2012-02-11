@@ -225,7 +225,7 @@ public:
         return joint_array_msg_;
     }
 
-    _JointStateMsg getJointStateMessage() const
+    _JointStateMsg getJointStateMessage( _JointStateMap const & joint_state_map = getJointStateMap() ) const
     {
         _JointStateMsg joint_state_msg;
 
@@ -238,7 +238,7 @@ public:
         joint_state_msg.velocity.resize( num_joint_states );
         joint_state_msg.effort.resize( num_joint_states );
 
-        auto const & joint_state_map = getJointStateMap();
+        //auto const & joint_state_map = getJointStateMap();
 
         for( auto joint = _NamedMessageArrayCache::cbegin(); joint != _NamedMessageArrayCache::cend(); ++joint )
         {
