@@ -1,0 +1,17 @@
+<package>
+  <description brief="tfdump">
+
+     tfdump
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tfdump</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="nodelet"/>
+  <depend package="humanoid_recognizers"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>
