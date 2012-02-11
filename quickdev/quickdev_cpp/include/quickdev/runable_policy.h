@@ -94,7 +94,7 @@ private:
         PRINT_INFO( "<<<<< Done pre-spin" );
 
         PRINT_INFO( "--------------------" );
-        PRINT_INFO( ">>>>> Spinning at %f Hz...", 1.0 / loop_rate_->expectedCycleTime().toSec() );
+        PRINT_INFO( ">>>>> Spinning at %f Hz...", loop_rate_hz_ );
 
         while( run_ && ros::ok() )
         {
