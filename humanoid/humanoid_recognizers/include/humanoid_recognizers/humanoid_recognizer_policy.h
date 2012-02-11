@@ -57,7 +57,7 @@ QUICKDEV_DECLARE_POLICY_NS( HumanoidRecognizer )
 
 QUICKDEV_DECLARE_POLICY( HumanoidRecognizer, _NodeHandlePolicy, _HumanoidStateArrayMessageCallbackPolicy )
 
-template<class __FeatureArrayMsg>
+template<class __FeatureArrayMsg = void>
 QUICKDEV_DECLARE_POLICY_CLASS( HumanoidRecognizer )
 {
     QUICKDEV_MAKE_POLICY_FUNCS( HumanoidRecognizer )
@@ -130,7 +130,12 @@ public:
         multi_pub_.publish( "marker_array", markers_ptr, "/visualization_marker_array", markers_ptr );
     }
 
-    void updateFeatures( __FeatureArrayMsg features )
+    template
+    <
+        class __MFeatureArrayMsg,
+        typename std::enable_if<(!std::is_same<__MFeatureArrayMsg, void>::value), int>::type = 0
+    >
+    void updateFeatures( __MFeatureArrayMsg const & features )
     {
         QUICKDEV_ASSERT_INITIALIZED();
 
