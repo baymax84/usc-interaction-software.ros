@@ -84,7 +84,7 @@ public:
     template<class... __Args>
     void updateAll( __Args&&... args )
     {
-        updateRec<Container<__Policies...> >( args... );
+        updateRec<SimpleContainer<__Policies...> >( args... );
     }
 
     QUICKDEV_ENABLE_UPDATE(){}
