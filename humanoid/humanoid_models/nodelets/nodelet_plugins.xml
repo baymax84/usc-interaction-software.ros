@@ -9,4 +9,9 @@
       todo: fill this in
     </description>
   </class>
+  <class name="humanoid_models/virtual_humanoid" type="humanoid_models::VirtualHumanoidNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
 </library>
