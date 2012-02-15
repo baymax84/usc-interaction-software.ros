@@ -59,7 +59,7 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Quaternion, msg, return _Quaternio
 // Vector3 -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _PointMsg, vec, _PointMsg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Quaternion, vec, return _Quaternion( vec.z, vec.y, vec.x ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Quaternion, vec, return _Quaternion( vec.getX(), vec.getY(), vec.getZ() ); )
 
 // PointMsg -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _PointMsg, _Vector3Msg, point, _Vector3Msg msg; msg.x = point.x; msg.y = point.y; msg.z = point.z; return msg; )
