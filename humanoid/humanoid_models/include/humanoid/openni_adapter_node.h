@@ -54,6 +54,47 @@ QUICKDEV_DECLARE_NODE( OpenNIAdapter, _TfTranceiverPolicy, _UserStatesCBTimer )
 using humanoid::_HumanoidStateArrayMsg;
 using humanoid::_HumanoidStateMsg;
 using humanoid::_HumanoidJointMsg;
+using humanoid::_JointName;
+typedef std::map<_JointName, btQuaternion> _JointNormMap;
+
+static _JointNormMap generateJointNormMap()
+{
+    _JointNormMap joint_norm_map;
+
+    joint_norm_map["head"]             = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["neck"]             = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["torso"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["waist"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_collar"]     = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_shoulder"]   = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
+    joint_norm_map["right_elbow"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 0  ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_wrist"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_hand"]       = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_finger_tip"] = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_collar"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_shoulder"]    = btQuaternion( Radian( Degree( 90  ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
+    joint_norm_map["left_elbow"]       = btQuaternion( Radian( Degree( 90  ) ), Radian( Degree( 0  ) ), Radian( Degree( -180 ) ) );
+    joint_norm_map["left_wrist"]       = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_hand"]        = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_finger_tip"]  = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_hip"]        = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["right_knee"]       = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["right_ankle"]      = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["right_foot"]       = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_hip"]         = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["left_knee"]        = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["left_ankle"]       = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["left_foot"]        = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+
+    return joint_norm_map;
+}
+
+static auto getJointNormMap() -> decltype( generateJointNormMap() ) const &
+{
+    static auto && joint_norm_map = generateJointNormMap();
+
+    return joint_norm_map;
+}
 
 QUICKDEV_DECLARE_NODE_CLASS( OpenNIAdapter )
 {
@@ -65,11 +106,11 @@ private:
 
     quickdev::MessageCache<_UserStateArrayMsg> user_states_cache_;
 
-    std::string camera_frame_;
+    std::string world_frame_;
     ros::Duration kinect_timeout_duration_;
 
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( OpenNIAdapter ),
-        camera_frame_( "/openni_depth_tracking_frame" ),
+        world_frame_( "/world" ),
         kinect_timeout_duration_( 1.0 )
     {
         //
@@ -77,7 +118,7 @@ private:
 
     QUICKDEV_SPIN_FIRST()
     {
-        initAll();
+        initPolicies<quickdev::policy::ALL>();
 
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
         multi_pub_.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states" } );
@@ -93,11 +134,14 @@ private:
 
         _HumanoidStateArrayMsg state_array_msg;
 
-        const auto now = ros::Time::now();
+        auto const now = ros::Time::now();
 
         state_array_msg.header.stamp = now;
 
-        for( auto user_state = user_states_msg->user_states.begin(); user_state != user_states_msg->user_states.end(); ++user_state )
+        auto const & joint_norm_map = getJointNormMap();
+        auto const & joint_dependency_map = humanoid::getJointDependencyMap();
+
+        for( auto user_state = user_states_msg->user_states.cbegin(); user_state != user_states_msg->user_states.cend(); ++user_state )
         {
             if( !user_state->is_tracked ) continue;
 
@@ -106,22 +150,32 @@ private:
 
             state_msg.name = user_state->name;
 
-            for( auto joint = humanoid::JOINT_NAMES_.begin(); joint != humanoid::JOINT_NAMES_.end(); ++joint )
+            for( auto joint_name = humanoid::JOINT_NAMES_.begin(); joint_name != humanoid::JOINT_NAMES_.end(); ++joint_name )
             {
-                const auto current_joint_frame( "/" + user_state->name + "/" + *joint );
-                if( transformExists( camera_frame_, current_joint_frame ) )
+                auto const parent_joint_name = joint_dependency_map.find( *joint_name )->second;
+
+                auto const joint_frame_name( "/" + user_state->name + "/" + *joint_name );
+                //auto const parent_joint_frame_name( "/" + user_state->name + "/" + parent_joint_name );
+
+                if( transformExists( world_frame_, joint_frame_name ) )
                 {
-                    const auto transform( lookupTransform( camera_frame_, current_joint_frame ) );
+                    auto const world_transform( lookupTransform( world_frame_, joint_frame_name ) );
+                    //auto const parent_transform( lookupTransform( parent_joint_frame_name, joint_frame_name ) );
+
+                    auto const norm_rotation = joint_norm_map.find( *joint_name )->second;
+                    btTransform const normalized_transform( world_transform.getRotation() * norm_rotation, world_transform.getOrigin() );
+
                     _HumanoidJointMsg joint_msg;
 
-                    joint_msg.name = *joint;
-
-                    joint_msg.pose.pose.position = unit::make_unit( transform.getOrigin() );
-                    joint_msg.pose.pose.orientation = unit::make_unit( transform.getRotation() );
-
+                    joint_msg.name = *joint_name;
+                    joint_msg.parent_name = parent_joint_name;
+                    joint_msg.pose.pose.position = unit::make_unit( normalized_transform.getOrigin() );
+                    joint_msg.pose.pose.orientation = unit::make_unit( normalized_transform.getRotation() );
                     joint_msg.pose.confidence = 1.0;
 
                     state_msg.joints.push_back( joint_msg );
+
+                    publishTransform( normalized_transform, world_frame_, joint_frame_name + "_norm" );
                 }
             }
 

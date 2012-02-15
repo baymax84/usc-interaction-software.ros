@@ -11,7 +11,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 rosbuild_include( quickdev_cpp add_library_auto )
-
+rosbuild_include( quickdev_cpp dynamic_reconfigure )
 
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -23,7 +23,7 @@ rosbuild_genmsg()
 # generate service
 #rosbuild_gensrv()
 # generate dynamic_reconfigure files
-#quickdev_gencfg()
+quickdev_gencfg()
 
 add_subdirectory( src )
 add_subdirectory( nodes )

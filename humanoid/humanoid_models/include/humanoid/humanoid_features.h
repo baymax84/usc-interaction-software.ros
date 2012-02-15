@@ -54,6 +54,7 @@ namespace humanoid
 
 typedef std::string _JointName;
 typedef std::vector<_JointName> _JointNames;
+typedef std::map<_JointName, _JointName> _JointDependencyMap;
 typedef std::map<_JointName, std::vector<std::vector<int> > > _JointStateMap;
 typedef humanoid_models::PoseWithConfidence _PoseWithConfidenceMsg;
 typedef humanoid_models::HumanoidJoint _HumanoidJointMsg;
@@ -110,6 +111,84 @@ namespace RotationAxes
     static std::vector<std::string> const names { "none", "roll", "pitch", "yaw" };
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+//                                            //                                             //
+//            [undirected graph]              //              [dependency tree]              //
+//                                            //                                             //
+///////////////////////////////////////////////////////////////////////////////////////////////
+//                                            //                                             //
+//                  [head]                    //                  [<sensor>]                 //
+//                     |                      //                      ^                      //
+//                  [neck]                    //                   [waist]                   //
+//                     |                      //                      ^                      //
+//                     |                      //              ______/ | \______              //
+//     [left_collar]   |   [right_collar]     //             /        |        \             //
+//            |     \  |  /      |            //       [left_hip]     |     [right_hip]      //
+//   [left_shoulder] \ | / [right_shoulder]   //            ^         |          ^           //
+//            |     [torso]      |            //      [left_knee]     |     [right_knee]     //
+//      [left_elbow]   |   [right_elbow]      //            ^         |          ^           //
+//            |        |         |            //     [left_ankle]     |     [right_ankle]    //
+//      [left_wrist]   |   [right_wrist]      //            ^      [torso]       ^           //
+//            |        |         |            //      [left_foot]     ^     [right_foot]     //
+//       [left_hand]   |   [right_hand]       //             _______/ | \_______________     //
+//            |        |         |            //            /          \                \    //
+// [left_finger_tip]   |   [right_finger_tip] //     [left_collar]  [right_collar]    [neck] //
+//                  [waist]                   //           ^              ^              ^   //
+//                  /     \                   //   [left_shoulder]  [right_shoulder]  [head] //
+//                 /       \                  //           ^              ^                  //
+//         [left_hip]     [right_hip]         //      [left_elbow]  [right_elbow]            //
+//              |             |               //           ^              ^                  //
+//        [left_knee]     [right_knee]        //      [left_wrist]  [right_wrist]            //
+//              |             |               //           ^              ^                  //
+//       [left_ankle]     [right_ankle]       //       [left_hand]  [right_hand]             //
+//              |             |               //           ^              ^                  //
+//        [left_foot]     [right_foot]        // [left_finger_tip]  [right_finger_tip]       //
+//                                            //                                             //
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+static _JointDependencyMap generateJointDependencyMap()
+{
+    _JointDependencyMap joint_dependency_map;
+    //        parent of ["joint1"]           = "joint2"
+    joint_dependency_map["head"]             = "neck";
+    joint_dependency_map["neck"]             = "torso";
+    joint_dependency_map["torso"]            = "waist";
+    joint_dependency_map["waist"]            = "sensor";
+
+    joint_dependency_map["right_collar"]     = "torso";
+    joint_dependency_map["right_shoulder"]   = "right_collar";
+    joint_dependency_map["right_elbow"]      = "right_shoulder";
+    joint_dependency_map["right_wrist"]      = "right_elbow";
+    joint_dependency_map["right_hand"]       = "right_wrist";
+    joint_dependency_map["right_finger_tip"] = "right_hand";
+
+    joint_dependency_map["right_hip"]        = "waist";
+    joint_dependency_map["right_knee"]       = "right_hip";
+    joint_dependency_map["right_ankle"]      = "right_knee";
+    joint_dependency_map["right_foot"]       = "right_ankle";
+
+    joint_dependency_map["left_collar"]      = "torso";
+    joint_dependency_map["left_shoulder"]    = "left_collar";
+    joint_dependency_map["left_elbow"]       = "left_shoulder";
+    joint_dependency_map["left_wrist"]       = "left_elbow";
+    joint_dependency_map["left_hand"]        = "left_wrist";
+    joint_dependency_map["left_finger_tip"]  = "left_hand";
+
+    joint_dependency_map["left_hip"]         = "waist";
+    joint_dependency_map["left_knee"]        = "left_hip";
+    joint_dependency_map["left_ankle"]       = "left_knee";
+    joint_dependency_map["left_foot"]        = "left_ankle";
+
+    return joint_dependency_map;
+}
+
+static auto getJointDependencyMap() -> decltype( generateJointDependencyMap() ) const &
+{
+    static auto && joint_dependency_map = generateJointDependencyMap();
+
+    return joint_dependency_map;
+}
+
 static _JointStateMap generateJointStateMap()
 {
     // map from [name]{ r, p, y } -> { plane_code, plane_code, plane_code }
@@ -153,7 +232,7 @@ static _JointStateMap generateJointStateMap()
     return joint_state_map;
 }
 
-static auto getJointStateMap() -> decltype( generateJointStateMap() )
+static auto getJointStateMap() -> decltype( generateJointStateMap() ) const &
 {
     static bool generated = false;
     static decltype( generateJointStateMap() ) joint_state_map;
