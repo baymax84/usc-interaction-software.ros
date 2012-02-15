@@ -2,20 +2,43 @@
 CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=`rospack find rosbuild`/rostoolchain.cmake $(EXTRA_CMAKE_FLAGS)
 ROS_MAKE_FLAGS=$(ROS_PARALLEL_JOBS) $(ROS_OPTIMIZATION_LEVEL)
 
+# all:
+#
+# # setup cmake
+# any:
+#         @mkdir -p build
+#         cd build && cmake $(CMAKE_FLAGS) ..
+#
+# remake:
+#         make clean;
+#
+# #forward all other commands, calling 'any' first if necessary
+# %:
+#         if [ -r build ]; then cd build && make $@ $(ROS_MAKE_FLAGS); else make any && make $@; fi
+#
+###############################################################################################################################
+
 # make sure we default to all
 all:
 
 # setup cmake
-any:
+#any:
+#	@mkdir -p build
+#	cd build && cmake $(CMAKE_FLAGS) ..
+
+init:
 	@mkdir -p build
 	cd build && cmake $(CMAKE_FLAGS) ..
 
 remake:
-	make clean;
+	make init && make $(ROS_MAKE_FLAGS)
+
+force_remake:
+	make clean && make $(ROS_MAKE_FLAGS)
 
 #forward all other commands, calling 'any' first if necessary
 %:
-	if [ -r build ]; then cd build && make $@ $(ROS_MAKE_FLAGS); else make any && make $@; fi
+	if [ -r build ]; then cd build && make $@ $(ROS_MAKE_FLAGS); else make remake; fi
 
 PACKAGE_NAME=$(shell basename $(PWD))
 
