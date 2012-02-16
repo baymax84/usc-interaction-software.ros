@@ -96,6 +96,7 @@ static auto getJointNormMap() -> decltype( generateJointNormMap() ) const &
     return joint_norm_map;
 }
 
+//! Reads data from an openni_multitracker/openni_multitracker node and converts these data into Humanoid messages
 QUICKDEV_DECLARE_NODE_CLASS( OpenNIAdapter )
 {
 private:
