@@ -57,6 +57,7 @@ using humanoid::_HumanoidStateMsg;
 using humanoid::_HumanoidJointMsg;
 using humanoid::_JointName;
 
+//! A node that can publish tf frames and humanoid state messages for a virtual humanoid
 QUICKDEV_DECLARE_NODE( VirtualHumanoid, _VirtualHumanoidLiveParams, _TfTranceiverPolicy )
 
 QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
@@ -66,255 +67,46 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
 
     ros::MultiPublisher<> multi_pub_;
     double zero_angle_;
-    _VirtualHumanoidJointRelOriMap rel_ori_map_;
+    _VirtualHumanoidJointRelOriMap const rel_ori_map_;
 
+    // regex to match any std::make_pair(...) multi-line block below:
+    // std::make_pair(\s)(\s+)\($\s+("\w+"),$\s+.+$\s+\{$\s+(&\S+).*$\s+(&\S+).*$\s+(&\S+).*$\s+\}$\s+\)(.*)
+    // \1 = newline; \2 = indentation; \3 = key; \4 = ori1; \5 = ori2; \6 = ori3; \7 = (<block separator>)
+    //
+    // regex to match any std::make_pair(...) single-line block below:
+    // std::make_pair\(\s+("\S+"),\s+.+\{\s+(&\S+),\s+(&\S+),\s+(&\S+)\s+\}\s+\)(.*)
+    // \1 = key; \2 = ori1; \3 = ori2; \4 = ori3; \5 = (<block separator>)
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( VirtualHumanoid ),
         zero_angle_( 0 ),
         rel_ori_map_
         ( {
-            std::make_pair
-            (
-                "head",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "neck",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.neck_yaw,
-                    &config_.neck_pitch,
-                    &config_.neck_roll
-                }
-            ),
-            std::make_pair
-            (
-                "torso",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.torso_yaw,
-                    &config_.torso_pitch,
-                    &config_.torso_roll
-                }
-            ),
-            std::make_pair
-            (
-                "waist",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.waist_yaw,
-                    &config_.waist_pitch,
-                    &config_.waist_roll
-                }
-            ),
-            std::make_pair
-            (
-                "right_collar",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "right_shoulder",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.right_shoulder_yaw,
-                    &zero_angle_,
-                    &config_.right_shoulder_roll
-                }
-            ),
-            std::make_pair
-            (
-                "right_elbow",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.right_elbow_yaw,
-                    &config_.right_elbow_pitch,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "right_wrist",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.right_wrist_yaw,
-                    &config_.right_wrist_pitch,
-                    &config_.right_wrist_roll
-                }
-            ),
-            std::make_pair
-            (
-                "right_hand",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "right_finger_tip",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "right_hip",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.right_hip_yaw,
-                    &config_.right_hip_pitch,
-                    &config_.right_hip_roll
-                }
-            ),
-            std::make_pair
-            (
-                "right_knee",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &config_.right_knee_pitch,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "right_ankle",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.right_ankle_yaw,
-                    &config_.right_ankle_pitch,
-                    &config_.right_ankle_roll
-                }
-            ),
-            std::make_pair
-            (
-                "right_foot",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "left_collar",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "left_shoulder",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.left_shoulder_yaw,
-                    &zero_angle_,
-                    &config_.left_shoulder_roll
-                }
-            ),
-            std::make_pair
-            (
-                "left_elbow",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.left_elbow_yaw,
-                    &config_.left_elbow_pitch,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "left_wrist",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.left_wrist_yaw,
-                    &config_.left_wrist_pitch,
-                    &config_.left_wrist_roll
-                }
-            ),
-            std::make_pair
-            (
-                "left_hand",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "left_finger_tip",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "left_hip",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.left_hip_yaw,
-                    &config_.left_hip_pitch,
-                    &config_.left_hip_roll
-                }
-            ),
-            std::make_pair
-            (
-                "left_knee",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &config_.left_knee_pitch,
-                    &zero_angle_
-                }
-            ),
-            std::make_pair
-            (
-                "left_ankle",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &config_.left_ankle_yaw,
-                    &config_.left_ankle_pitch,
-                    &config_.left_ankle_roll
-                }
-            ),
-            std::make_pair
-            (
-                "left_foot",
-                _VirtualHumanoidJointRelOriMap::mapped_type
-                {
-                    &zero_angle_,
-                    &zero_angle_,
-                    &zero_angle_
-                }
-            )
+            std::make_pair( "head",             _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "neck",             _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.neck_yaw,           &config_.neck_pitch,        &config_.neck_roll           } ),
+            std::make_pair( "torso",            _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.torso_yaw,          &config_.torso_pitch,       &config_.torso_roll          } ),
+            std::make_pair( "waist",            _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.waist_yaw,          &config_.waist_pitch,       &config_.waist_roll          } ),
+            std::make_pair( "right_collar",     _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "right_shoulder",   _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_shoulder_yaw, &zero_angle_,               &config_.right_shoulder_roll } ),
+            std::make_pair( "right_elbow",      _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_elbow_yaw,    &config_.right_elbow_pitch, &zero_angle_                 } ),
+            std::make_pair( "right_wrist",      _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_wrist_yaw,    &config_.right_wrist_pitch, &config_.right_wrist_roll    } ),
+            std::make_pair( "right_hand",       _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "right_finger_tip", _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "right_hip",        _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_hip_yaw,      &config_.right_hip_pitch,   &config_.right_hip_roll      } ),
+            std::make_pair( "right_knee",       _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &config_.right_knee_pitch,  &zero_angle_                 } ),
+            std::make_pair( "right_ankle",      _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_ankle_yaw,    &config_.right_ankle_pitch, &config_.right_ankle_roll    } ),
+            std::make_pair( "right_foot",       _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "left_collar",      _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "left_shoulder",    _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.left_shoulder_yaw,  &zero_angle_,               &config_.left_shoulder_roll  } ),
+            std::make_pair( "left_elbow",       _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.left_elbow_yaw,     &config_.left_elbow_pitch,  &zero_angle_                 } ),
+            std::make_pair( "left_wrist",       _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.left_wrist_yaw,     &config_.left_wrist_pitch,  &config_.left_wrist_roll     } ),
+            std::make_pair( "left_hand",        _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "left_finger_tip",  _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
+            std::make_pair( "left_hip",         _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.left_hip_yaw,       &config_.left_hip_pitch,    &config_.left_hip_roll       } ),
+            std::make_pair( "left_knee",        _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &config_.left_knee_pitch,   &zero_angle_                 } ),
+            std::make_pair( "left_ankle",       _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.left_ankle_yaw,     &config_.left_ankle_pitch,  &config_.left_ankle_roll     } ),
+            std::make_pair( "left_foot",        _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } )
         } )
     {
-        //
+
     }
 
     QUICKDEV_SPIN_FIRST()
