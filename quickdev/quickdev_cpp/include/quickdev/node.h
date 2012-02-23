@@ -46,39 +46,61 @@ template<class... __Policies>
 class Node : public GenericPolicyAdapter<RunablePolicy, __Policies...>
 {
 public:
+    // #########################################################################################################################################
     template<class... __Args>
     Node( __Args&&... args ) : GenericPolicyAdapter<RunablePolicy, __Policies...>( args... )
     {
 
     }
 
+    // #########################################################################################################################################
     // for all non-initable policies
-    template<class __Policy, class... __Args>
-    typename std::enable_if<( !__Policy::HAS_UPDATE_ ), void>::type
-    tryUpdate( __Args&&... args ) {}
+    template
+    <
+        class __Policy,
+        class... __Args,
+        typename std::enable_if<( !__Policy::HAS_UPDATE_ ), int>::type = 0
+    >
+    void tryUpdate( __Args&&... args ) {}
 
+    // #########################################################################################################################################
     // for all initable policies
-    template<class __Policy, class... __Args>
-    typename std::enable_if<( __Policy::HAS_UPDATE_ ), void>::type
-    tryUpdate( __Args&&... args )
+    template
+    <
+        class __Policy,
+        class... __Args,
+        typename std::enable_if<( __Policy::HAS_UPDATE_ ), int>::type = 0
+    >
+    void tryUpdate( __Args&&... args )
     {
         __Policy::update( args... );
     }
 
+    // #########################################################################################################################################
     // initialize the first policy in the subset
     // recurse through the remaining policies in the subset
-    template<class __PoliciesSubset, class... __Args>
-    typename std::enable_if<(__PoliciesSubset::size_ > 0), void>::type
-    updateRec( __Args&&... args )
+    template
+    <
+        class __PoliciesSubset,
+        class... __Args,
+        typename std::enable_if<(__PoliciesSubset::size_ > 0), int>::type = 0
+    >
+    void updateRec( __Args&&... args )
     {
         tryUpdate<typename container::traits<__PoliciesSubset>::_Front>( args... );
         updateRec<typename container::traits<__PoliciesSubset>::_Tail>( args... );
     }
 
-    template<class __PoliciesSubset, class... __Args>
-    typename std::enable_if<(__PoliciesSubset::size_ == 0), void>::type
-    updateRec( __Args&&... args ) {}
+    // #########################################################################################################################################
+    template
+    <
+        class __PoliciesSubset,
+        class... __Args,
+        typename std::enable_if<(__PoliciesSubset::size_ == 0), int>::type = 0
+    >
+    void updateRec( __Args&&... args ) {}
 
+    // #########################################################################################################################################
     // Do any post-construction initialization. Note that all policies
     // receive the same set of args.
     template<class... __Args>
@@ -87,6 +109,7 @@ public:
         updateRec<SimpleContainer<__Policies...> >( args... );
     }
 
+    // #########################################################################################################################################
     QUICKDEV_ENABLE_UPDATE(){}
 };
 
