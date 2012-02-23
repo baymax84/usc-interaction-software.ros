@@ -1,6 +1,6 @@
 <launch>
     <arg name="user_id" default="1"/>
-    <arg name="output_path" default="~/">
+    <arg name="output_path" default=""/>
 
     <arg name="pkg" value="tfdump" />
     <arg name="type" value="tf_dump" />
