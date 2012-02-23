@@ -1,0 +1,13 @@
+<launch>
+    <arg name="rate" default="30"/>
+
+    <include file="$(find openni_multitracker)/launch/openni_multitracker_standalone.launch" />
+
+    <include file="$(find humanoid_models)/launch/openni_adapter.launch">
+        <arg name="rate" value="$(arg rate)"/>
+    </include>
+
+    <include file="$(find humanoid_recognizers)/launch/humanoid_aggregator.launch">
+        <arg name="rate" value="$(arg rate)"/>
+    </include>
+</launch>

@@ -69,9 +69,10 @@ QUICKDEV_DECLARE_NODE_CLASS( TfDump )
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
         user_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, "user_name", "user1" );
+        auto const output_path_prefix = ros::ParamReader<std::string, 1>::readParam( nh_rel, "output_path", "" );
 
         std::stringstream filename_ss;
-        filename_ss << user_name_ << "_" << ros::Time::now() << ".csv";
+        filename_ss << output_path_prefix << user_name_ << "_" << ros::Time::now() << ".csv";
 
         output_file_.open( filename_ss.str() );
 
@@ -103,6 +104,8 @@ QUICKDEV_DECLARE_NODE_CLASS( TfDump )
                 << joint->pose.pose.orientation.z << ", "
                 << joint->pose.pose.orientation.w << std::endl;
         }
+
+        output_file_ << std::endl;
     }
 };
 
