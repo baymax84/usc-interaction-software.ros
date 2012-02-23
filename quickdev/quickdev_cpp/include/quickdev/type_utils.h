@@ -36,6 +36,7 @@
 #ifndef QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
 #define QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
 
+#include <quickdev/global_settings.h>
 #include <quickdev/console.h>
 #include <quickdev/macros.h>
 #include <quickdev/container.h>
@@ -289,13 +290,37 @@ Usage:
         return typename __MessagePtr::element_type();
     }*/
 
+
+/*
+ * So apparently, in Electric, the definition of ros::Message in ros/message.h was removed and ros::message_traits::IsMessage<T> was added
+ * This compiler switch is here to compensate for this change.
+ * */
+// =============================================================================================================================================
+#if QUICKDEV_ROS_VERSION <= ROS_VERSION_DIAMONDBACK
+    // adapter for diamondback
+    template<class __Message>
+    struct is_ros_message
+    {
+        static bool const value = boost::is_base_of<ros::Message, __Message>::value;
+    };
+#elif QUICKDEV_ROS_VERSION == ROS_VERSION_ELECTRIC
+// =============================================================================================================================================
+    // adapter for electric
+    template<class __Message>
+    struct is_ros_message
+    {
+        static bool const value = ros::message_traits::IsMessage<__Message>::value;
+    };
+#endif
+//==============================================================================================================================================
+
     //! Specialization of getMessageType for any class instance typed on a non-const __Message derived from ros::Message
     /*! Returns the type of the ROS message on which the given class is typed. As an example, if we have an instance
      *  of some_pkg::SomeMessage::Ptr called some_msg_ptr, getMessageType( some_msg_ptr ) will resolve to some_pkg::SomeMessage().
      *  \param message an instance of the class
      *  \return __Message() the default constructor for __Message */
     template<class __Message, template<typename> class __Ptr>
-    typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
+    typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
     getMessageType( const __Ptr<__Message const> & message )
     {
         return __Message();
@@ -307,7 +332,7 @@ Usage:
      *  \param message an instance of the class
      *  \return __Message() the default constructor for __Message */
     template<class __Message, template<typename> class __Ptr>
-    typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
+    typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
     getMessageType( const __Ptr<__Message> & message )
     {
         return __Message();
@@ -319,7 +344,7 @@ Usage:
      *  \param message an instance of __Message
      *  \return message */
     template<class __Message>
-    typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), __Message>::type
+    typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
     getMessageType( const __Message & message )
     {
         return message;
@@ -330,7 +355,7 @@ Usage:
      *  \param message the message instance to use
      *  \return a __Message::ConstPtr with a copy of the data in message */
     template<class __Message>
-    typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::ConstPtr>::type
+    typename std::enable_if<(quickdev::is_ros_message<__Message>::value), typename __Message::ConstPtr>::type
     make_const_shared( const __Message & message )
     {
         return typename __Message::ConstPtr( new __Message( message ) );
@@ -341,20 +366,22 @@ Usage:
      *  \param message the message instance to use
      *  \return a __Message::Ptr with a copy of the data in message */
     template<class __Message>
-    typename std::enable_if<(boost::is_base_of<ros::Message, __Message>::value), typename __Message::Ptr>::type
+    typename std::enable_if<(quickdev::is_ros_message<__Message>::value), typename __Message::Ptr>::type
     make_shared( const __Message & message )
     {
         return typename __Message::Ptr( new __Message( message ) );
     }
 
-    template<
+    template
+    <
         class __Data,
-        typename std::enable_if<(!boost::is_base_of<ros::Message, __Data>::value), int>::type = 0
+        typename std::enable_if<(!quickdev::is_ros_message<__Data>::value), int>::type = 0
     >
     boost::shared_ptr<__Data> make_shared( __Data * const data )
     {
         return boost::shared_ptr<__Data>( data );
     }
+
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
