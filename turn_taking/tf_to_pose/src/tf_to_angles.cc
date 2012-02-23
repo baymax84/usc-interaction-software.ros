@@ -29,7 +29,7 @@ KDL::Vector right_hand;
 KDL::Vector right_elbow;
 KDL::Vector right_shoulder;
 KDL::Vector neck;
-KDL::Vector torso;
+//KDL::Vector torso;
 tf::TransformListener* tl;
 std::string global_frame;
 std::string suffix;
@@ -47,8 +47,8 @@ bool get_poses()
 {
 	try{
 		tf::StampedTransform stf;
-		tl->lookupTransform( global_frame, "torso"+suffix, ros::Time(0), stf );
-		set_vector( stf, torso );
+		//tl->lookupTransform( global_frame, "torso"+suffix, ros::Time(0), stf );
+		//set_vector( stf, torso );
 		tl->lookupTransform( global_frame, "left_shoulder"+suffix, ros::Time(0), stf );
 		set_vector( stf, left_shoulder );
     tl->lookupTransform( global_frame, "left_elbow"+suffix, ros::Time(0), stf );
