@@ -32,7 +32,7 @@ KDL::Vector neck;
 KDL::Vector torso;
 tf::TransformListener* tl;
 std::string global_frame;
-std::string prefix;
+std::string suffix;
 
 ros::Time time_;
 
@@ -47,21 +47,21 @@ bool get_poses()
 {
 	try{
 		tf::StampedTransform stf;
-		tl->lookupTransform( global_frame, prefix + "torso", ros::Time(0), stf );
+		tl->lookupTransform( global_frame, "torso"+suffix, ros::Time(0), stf );
 		set_vector( stf, torso );
-		tl->lookupTransform( global_frame, prefix + "left_shoulder", ros::Time(0), stf );
+		tl->lookupTransform( global_frame, "left_shoulder"+suffix, ros::Time(0), stf );
 		set_vector( stf, left_shoulder );
-		tl->lookupTransform( global_frame, prefix + "left_elbow", ros::Time(0), stf );
+    tl->lookupTransform( global_frame, "left_elbow"+suffix, ros::Time(0), stf );
 		set_vector( stf, left_elbow );
-		tl->lookupTransform( global_frame, prefix + "left_hand", ros::Time(0), stf );
+    tl->lookupTransform( global_frame, "left_hand"+suffix, ros::Time(0), stf );
 		set_vector( stf, left_hand );
-		tl->lookupTransform( global_frame, prefix + "right_shoulder", ros::Time(0), stf );
+		tl->lookupTransform( global_frame, "right_shoulder"+suffix, ros::Time(0), stf );
 		set_vector( stf, right_shoulder );
-		tl->lookupTransform( global_frame, prefix + "right_elbow", ros::Time(0), stf );
+		tl->lookupTransform( global_frame, "right_elbow"+suffix, ros::Time(0), stf );
 		set_vector( stf, right_elbow );
-		tl->lookupTransform( global_frame, prefix + "right_hand", ros::Time(0), stf );
+    tl->lookupTransform( global_frame, "right_hand"+suffix, ros::Time(0), stf );
 		set_vector( stf, right_hand );
-		tl->lookupTransform( global_frame, prefix + "neck", ros::Time(0), stf );
+    tl->lookupTransform( global_frame, "neck"+suffix, ros::Time(0), stf );
 		set_vector( stf, neck );
 		time_ = stf.stamp_;
 /*
@@ -98,8 +98,8 @@ int main( int argc, char* argv[] )
 	ros::NodeHandle nh;
 	ros::Rate loop_rate(10);
 	tl = new tf::TransformListener();
-	global_frame = "openni_depth_frame";
-	prefix = "";
+	global_frame = "camera_skeleton_frame";
+	suffix = "";
 
   ros::Publisher joint_pub_ = nh.advertise<sensor_msgs::JointState>("output_joint_state",10);
 
