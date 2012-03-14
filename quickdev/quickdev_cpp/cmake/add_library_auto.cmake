@@ -34,7 +34,23 @@
 ###########################################################################
 
 macro( add_library_auto lib )
-	# gather all sources in current dir using relative filenames
-	file( GLOB LIB_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${ARGN} )
-	rosbuild_add_library( ${lib} ${LIB_SOURCES} )
+    set( FUNC_ARGS ${ARGN} )
+    list( GET FUNC_ARGS 0 linkage )
+
+    string( COMPARE EQUAL ${linkage} "STATIC" is_static )
+    string( COMPARE EQUAL ${linkage} "SHARED" is_shared )
+
+    if( ${is_static} OR ${is_shared} )
+        message( "static" )
+        list( REMOVE_AT FUNC_ARGS 0 )
+    else()
+        set( linkage )
+    endif()
+
+    set( filters ${FUNC_ARGS} )
+
+    # gather all sources in current dir using relative filenames
+    file( GLOB LIB_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${filters} )
+
+    rosbuild_add_library( ${lib} ${linkage} ${LIB_SOURCES} )
 endmacro( add_library_auto )
