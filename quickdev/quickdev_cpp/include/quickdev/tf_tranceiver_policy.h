@@ -57,6 +57,8 @@ protected:
 
 public:
     typedef std::string _TfFrameId;
+    typedef tf::StampedTransform _StampedTransform;
+    typedef btTransform _Transform;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( TfTranceiver )
     {
