@@ -232,6 +232,12 @@ public:
         return axis_it->second;
     }
 
+    _Axis::_Value getAxisValue( _Axis::_Name const & axis_name ) const
+    {
+        auto const & axis = getAxis( axis_name );
+        return axis.getValue( last_joystick_message_ );
+    }
+
     void update( const bool & auto_publish = true )
     {
         QUICKDEV_ASSERT_INITIALIZED();
