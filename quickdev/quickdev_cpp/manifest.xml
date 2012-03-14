@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/quickdev_cpp</url>
   <depend package="rosbuild"/>
   <depend package="roscpp"/>
+  <depend package="quickdev_build"/>
   <depend package="cpp11"/>
   <depend package="gsl"/>
   <depend package="std_msgs"/>
@@ -30,6 +31,7 @@
   <export>
     <rosdoc config="rosdoc.yaml"/>
     <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lquickdev_cpp"/>
+    <!-- cmake files exported for backwards compatibility; new packages should be using quickdev_build for this functionality -->
     <rosbuild cmake_directory="${prefix}/cmake"/>
   </export>
 
