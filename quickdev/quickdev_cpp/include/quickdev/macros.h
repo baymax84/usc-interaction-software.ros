@@ -402,7 +402,7 @@ std::function
 // ########## ROS Message Macros #######################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_GET_MESSAGE_NAME( __Message ) \
-std::string( ros::message_traits::DataType<__Message>::value() )
+quickdev::get_message_name<__Message>::value()
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_GET_MESSAGE_INST_NAME( msg ) \
