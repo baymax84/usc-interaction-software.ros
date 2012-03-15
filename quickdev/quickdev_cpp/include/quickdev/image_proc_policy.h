@@ -173,7 +173,7 @@ protected:
          * When done, if applicable, publish a debug image on the given topic
          *
          * IplImage * image = &IplImage( image_ptr->image );
-         * image_pubs_.publish( image_ptr->toImageMsg(), "output_image" );
+         * image_pubs_.publish( "output_image", image_ptr->toImageMsg() );
          */
     }
 
