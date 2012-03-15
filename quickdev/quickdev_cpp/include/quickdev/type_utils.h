@@ -344,11 +344,38 @@ Usage:
      *  \param message an instance of __Message
      *  \return message */
     template<class __Message>
-    typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
-    getMessageType( const __Message & message )
+    //typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
+    __Message getMessageType( const __Message & message )
     {
         return message;
     }
+
+    template<bool __IsROSMessage__, class __Message>
+    struct get_message_name_helper
+    {
+        static std::string value()
+        {
+            return ros::message_traits::DataType<__Message>::value();
+        }
+    };
+
+    template<class __Message>
+    struct get_message_name_helper<false, __Message>
+    {
+        static std::string value()
+        {
+            return "";
+        }
+    };
+
+    template<class __Message>
+    struct get_message_name
+    {
+        static std::string value()
+        {
+            return get_message_name_helper<quickdev::is_ros_message<__Message>::value, __Message>::value();
+        }
+    };
 
     //! Converts a ROS message into a ::ConstPtr
     /*! Given an instance of __Message derived from ros::Message, copies the message to a new __Message::ConstPtr
