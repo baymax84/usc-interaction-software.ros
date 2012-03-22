@@ -44,11 +44,13 @@
 #include <quickdev/container.h>
 #include <quickdev/convolved_struct.h>
 #include <quickdev/feature.h>
+#include <quickdev/gaussian_pdf.h>
 #include <quickdev/generic_policy_adapter.h>
 #include <quickdev/image_loader.h>
 #include <quickdev/image_proc_policy.h>
 #include <quickdev/joystick_policy.h>
 #include <quickdev/macros.h>
+#include <quickdev/matrix.h>
 #include <quickdev/message_array_cache.h>
 #include <quickdev/message_conversions.h>
 #include <quickdev/multi_publisher.h>
@@ -63,6 +65,7 @@
 #include <quickdev/policy.h>
 #include <quickdev/publisher_policy.h>
 #include <quickdev/reconfigure_policy.h>
+#include <quickdev/reference.h>
 #include <quickdev/robot_controller_policy.h>
 #include <quickdev/robot_driver_policy.h>
 #include <quickdev/runable_policy.h>
@@ -81,6 +84,7 @@
 #include <quickdev/unit.h>
 #include <quickdev/unit_conversions.h>
 #include <quickdev/updateable_policy.h>
+#include <quickdev/vector.h>
 
 #include <quickdev/controllers/pid.h>
 #include <quickdev/controllers/reconfigurable_pid.h>
