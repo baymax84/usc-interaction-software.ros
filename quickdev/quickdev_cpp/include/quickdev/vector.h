@@ -291,7 +291,7 @@ public:
         for( auto elem = vector.cbegin(); elem != vector.cend(); ++elem )
         {
             stream << *elem;
-            if( elem != vector.cend() - 1 ) stream << ", ";
+            if( elem != vector.cend() - 1 ) stream << ",";// << std::endl;
         }
         stream << " ]";
 
