@@ -121,7 +121,7 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
     {
         _VirtualHumanoidJointRelPosMap virtual_humanoid_joint_rel_pos_map;
 
-        //                      "parent->child"
+        //                                ["parent->child"]
         virtual_humanoid_joint_rel_pos_map["neck->head"]                   = btVector3( 0,     0,     0.15 );
         virtual_humanoid_joint_rel_pos_map["torso->neck"]                  = btVector3( 0,     0,     0.4  );
         virtual_humanoid_joint_rel_pos_map["waist->torso"]                 = btVector3( 0,     0,     0.2  );
