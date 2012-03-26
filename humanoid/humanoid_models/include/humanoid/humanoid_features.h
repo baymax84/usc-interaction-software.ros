@@ -49,6 +49,8 @@
 #include <humanoid_models/HumanoidStateArray.h>
 #include <humanoid_models/JointStateArray.h>
 
+#include <kdl/jntarray.hpp>
+
 namespace humanoid
 {
 
@@ -62,6 +64,7 @@ typedef humanoid_models::HumanoidState _HumanoidStateMsg;
 typedef humanoid_models::HumanoidStateArray _HumanoidStateArrayMsg;
 typedef sensor_msgs::JointState _JointStateMsg;
 typedef humanoid_models::JointStateArray _JointStateArrayMsg;
+typedef KDL::JntArray _JntArray;
 
 static _JointNames const JOINT_NAMES_
 {
@@ -184,7 +187,7 @@ static _JointDependencyMap generateJointDependencyMap()
 
 static auto getJointDependencyMap() -> decltype( generateJointDependencyMap() ) const &
 {
-    static auto && joint_dependency_map = generateJointDependencyMap();
+    static auto const && joint_dependency_map = generateJointDependencyMap();
 
     return joint_dependency_map;
 }
@@ -234,17 +237,17 @@ static _JointStateMap generateJointStateMap()
 
 static auto getJointStateMap() -> decltype( generateJointStateMap() ) const &
 {
-    static bool generated = false;
-    static decltype( generateJointStateMap() ) joint_state_map;
-
-    if( !generated )
-    {
-        joint_state_map = generateJointStateMap();
-        generated = true;
-    }
+    static auto const && joint_state_map = generateJointStateMap();
 
     return joint_state_map;
 }
+
+/*
+struct HumanoidChainIterator : std::iterator<std::bidirectional_iterator_tag,
+{
+
+};
+*/
 
 class Humanoid : public quickdev::NamedMessageArrayCache<_HumanoidJointMsg>, public quickdev::TimedMessageArrayCache<_HumanoidJointMsg>
 {
@@ -339,7 +342,7 @@ public:
                 auto const rotation_axis = abs( rotation_axis_raw );
 
                 // if the given axis has no mapping to an anatomical plane, just skip it
-                if( rotation_axis == RotationAxes::NONE ) continue;
+                if( abs( rotation_axis ) == RotationAxes::NONE ) continue;
 
                 auto const rotation_axis_sign = rotation_axis_raw < 0 ? -1 : 1;
 
@@ -360,6 +363,77 @@ public:
         }
 
         return joint_state_msg;
+    }
+/*
+    _JointStateMsg getJointStateChain( std::string const & from_joint, std::string const & to_joint, _JointStateMap const & joint_state_map = getJointStateMap() ) const
+    {
+        _JointStateMsg joint_state_msg;
+
+        // ensure we have at most 3 * number_of_joints to work with (since we'll be making a "joint state" for every rotational component of each joint )
+        auto const num_joint_states = _NamedMessageArrayCache::size() * 3;
+
+        joint_state_msg.name.reserve( num_joint_states );
+        joint_state_msg.position.reserve( num_joint_states );
+
+        joint_state_msg.velocity.resize( num_joint_states );
+        joint_state_msg.effort.resize( num_joint_states );
+
+        //auto const & joint_state_map = getJointStateMap();
+
+        for( auto joint = find( to_joint ); joint != end(); find( getParentJointName( joint.name ) )
+        {
+            // {
+            //   { [0:3], [0:3], [0:3] },
+            //   { [-180:180], [-180:180], [-180:180] }
+            // }
+            auto const & joint_state_entry = joint_state_map.find(joint->name)->second;
+            // convert: btVector3 <- btQuaternion <- geometry_msgs::Quaternion
+            btVector3 const position_vec = unit::make_unit( unit::convert<btQuaternion>( joint->pose.pose.orientation ) );
+
+            // a joint state entry stores a plane ID and an offset for each component of rotation
+            auto const & plane_ids = joint_state_entry.at( 0 );
+            auto const & offsets = joint_state_entry.at( 1 );
+
+            for( size_t i = 0; i < 3; ++i )
+            {
+                auto const & rotation_axis_raw = plane_ids.at( i );
+                auto const rotation_axis = abs( rotation_axis_raw );
+
+                // if the given axis has no mapping to an anatomical plane, just skip it
+                if( abs( rotation_axis ) == RotationAxes::NONE ) continue;
+
+                auto const rotation_axis_sign = rotation_axis_raw < 0 ? -1 : 1;
+
+                auto const & offset_degrees = offsets.at( i );
+                double const offset_rad = Radian( Degree( offset_degrees ) );
+
+                joint_state_msg.name.push_back( joint->name + "_" + RotationAxes::names.at( i + 1 ) );
+                joint_state_msg.position.push_back( rotation_axis_sign * position_vec.m_floats[rotation_axis - 1] + offset_rad );
+            }
+//
+            for( auto component_id = joint_state_entry.cbegin(); component_id != joint_state_entry.cend(); ++component_id )
+            {
+                if( *component_id == 0 ) continue;
+
+                joint_state_msg.name.push_back( joint->name + "_" + AnatomicalPlanes::names[*component_id] );
+                joint_state_msg.position.push_back( position_vec.m_floats[*component_id - 1] );
+            }
+//
+        }
+
+        return joint_state_msg;
+    }
+*/
+
+    std::string getParentJointName( std::string const & joint_name ) const
+    {
+        auto const & joint_dependency_map = getJointDependencyMap();
+        return joint_dependency_map.find(joint_name)->second;
+    }
+
+    _HumanoidJointMsg getParentJoint( _HumanoidJointMsg const & joint ) const
+    {
+        return operator[]( getParentJointName( joint.name ) );
     }
 
     _HumanoidFeature getFeature() const
@@ -393,5 +467,7 @@ DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, btVector3, msg, ret
 DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, btQuaternion, msg, return btQuaternion( msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w ); )
 //! conversion: _HumanoidJointMsg -> btTransform
 DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, btTransform, msg, return btTransform( btQuaternion( msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w ), btVector3( msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z ) ); )
+//! conversion: _JointStateMsg -> KDL::JntArray
+//DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_JointStateMsg, humanoid::_JntArray, msg, humanoid::_JntArray joints( msg.positions.size() ); std::copy( &joints( 0 ), &joints( joints.rows() - 1 ), msg.positions.begin() ); return joints; )
 
 #endif // HUMANOIDMODELS_HUMANOID_HUMANOIDFEATURES_H_
