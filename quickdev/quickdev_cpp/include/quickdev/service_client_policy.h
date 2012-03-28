@@ -78,10 +78,10 @@ private:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        // look up the meta-param remap of the service name param in args..., if it exists
-        const std::string service_name_param = getMetaParamDef<std::string>( "service_name_param", "service_name", args... );
-        // look up the ros-param rempa of the service name on the ros parameter server, if it exists
-        service_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, service_name_param, service_name_ );
+        auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, args... ) );
+
+        service_name_ = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "service_name_param", __Id__, "service_name", "service", args... );
+
         service_topic_name_ = ros::NodeHandle( nh_rel, service_name_ ).getNamespace();
         // now that we have a final value for the service name, create a service with that name
 
