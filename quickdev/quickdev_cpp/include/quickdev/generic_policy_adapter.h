@@ -76,9 +76,9 @@ public:
      *  \param arg the argument to pass to all parent policies
      *  \note Given the above, arg is almost always a ros::NodeHandle */
     template<class __Arg>
-    GenericPolicyAdapter( __Arg & arg )
+    GenericPolicyAdapter( __Arg && arg )
     :
-        __Policies( arg )...
+        __Policies( std::forward<__Arg>( arg ) )...
     {
 
     }
@@ -101,7 +101,7 @@ public:
     void tryInit( __Args&&... args )
     {
         printPolicyActionStart( "initialize", &__Policy::getInstance() );
-        __Policy::init( args... );
+        __Policy::init( std::forward<__Args>( args )... );
         printPolicyActionDone( "initialize", &__Policy::getInstance() );
     }
 
@@ -114,9 +114,12 @@ public:
     >
     void tryInit( __Args&&... args )
     {
-        if( __Policy::getInitialized() ) return;
+        if( __Policy::getInitialized() )
+        {
+            return;
+        }
 
-        tryInit<true, __Policy>( args... );
+        tryInit<true, __Policy>( std::forward<__Args>( args )... );
     }
 
     // initialize the first policy in the subset
@@ -130,8 +133,8 @@ public:
     >
     void initRec( __Args&&... args )
     {
-        tryInit<__ForceInit__, typename container::traits<__PoliciesSubset>::_Front>( args... );
-        initRec<__ForceInit__, typename container::traits<__PoliciesSubset>::_Tail>( args... );
+        tryInit<__ForceInit__, typename container::traits<__PoliciesSubset>::_Front>( std::forward<__Args>( args )... );
+        initRec<__ForceInit__, typename container::traits<__PoliciesSubset>::_Tail>( std::forward<__Args>( args )... );
     }
 
     // if we encounter a "policy::ALL" type, replace it with __Policies... and continue as normal
@@ -144,7 +147,7 @@ public:
     >
     void initRec( __Args&&... args )
     {
-        initRec<__ForceInit__, SimpleContainer<__Policies...> >( args... );
+        initRec<__ForceInit__, SimpleContainer<__Policies...> >( std::forward<__Args>( args )... );
         //initRec<__ForceInit__, typename container::combine_type< Container<__Policies...>, typename container::traits<__PoliciesSubset>::_Tail > >( args... );
     }
 
@@ -161,7 +164,7 @@ public:
     template<class... __Args>
     void initAll( __Args&&... args )
     {
-        initRec<false, SimpleContainer<__Policies...> >( args... );
+        initRec<false, SimpleContainer<__Policies...> >( std::forward<__Args>( args )... );
     }
 
     // Do any post-construction initialization. Note that all policies
@@ -169,7 +172,7 @@ public:
     template<class... __Args>
     void forceInitAll( __Args&&... args )
     {
-        initRec<true, SimpleContainer<__Policies...> >( args... );
+        initRec<true, SimpleContainer<__Policies...> >( std::forward<__Args>( args )... );
     }
 
     template<
@@ -178,7 +181,8 @@ public:
     >
     void initPolicies( __Args&&... args )
     {
-        initRec<false, SimpleContainer<__MPolicies...> >( args... );
+        std::cout << ">>> Initializing " << sizeof...( __Args ) << " policies..." << std::endl;
+        initRec<false, SimpleContainer<__MPolicies...> >( std::forward<__Args>( args )... );
     }
 
     template<
@@ -187,7 +191,7 @@ public:
     >
     void forceInitPolicies( __Args&&... args )
     {
-        initRec<true, SimpleContainer<__MPolicies...> >( args... );
+        initRec<true, SimpleContainer<__MPolicies...> >( std::forward<__Args>( args )... );
     }
 };
 
