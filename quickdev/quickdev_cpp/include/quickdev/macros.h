@@ -53,7 +53,8 @@ public: static std::string const & name() { static std::string const name = #Pol
 /*! \brief Auto-generated function to return a reference to this policy */ \
 /*! \details Used by child policies to get a reference to their parent PolicyNameBase##Policy */ \
 /*! \return a reference to PolicyNameBase##Policy */ \
-public: inline PolicyNameBase##Policy & getInstance() { return *this; }
+public: inline PolicyNameBase##Policy & getInstance() { return *this; }\
+public: inline PolicyNameBase##Policy const & getInstance() const { return *this; }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_MAKE_POLICY_FUNCS( PolicyNameBase ) \

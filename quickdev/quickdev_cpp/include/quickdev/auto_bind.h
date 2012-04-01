@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_AUTOBIND_H_
 
 #include <quickdev/macros.h>
+#include <quickdev/container.h>
 #include <functional>
 
 /* auto_binder inspired by code written by "superbonzo" and "Chris_F" (http://www.codeguru.com/forum/showthread.php?t=512875) */
@@ -47,65 +48,131 @@
 namespace details
 {
 
-template<typename... __ArgTypes> struct container{};
-
-} // details
-
-namespace details
-{
-
 template<class __FunctionType>
 struct funct_types {};
 
-template<class __ReturnType, class... __ArgTypes>
+template
+<
+    class __ReturnType,
+    class... __ArgTypes
+>
 struct funct_types<__AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> >
 {
-    typedef container<__ArgTypes...> _ArgTypesContainer;
+    typedef quickdev::SimpleContainer<__ArgTypes...> _ArgTypesContainer;
     typedef __ReturnType _ReturnType;
+};
+
+template<class __Return, class __Container>
+struct make_function{};
+
+template<class __Return, template<typename...> class __Container, class... __Args>
+struct make_function<__Return, __Container<__Args...> >
+{
+    typedef __AUTO_BIND_FUNCTION_TYPE<__Return(__Args...)> function_type;
 };
 
 template<int N>
 struct auto_binder
 {
-    template <typename __CallerType, typename __ReturnType, typename... __ArgTypes, typename... __PlaceHolders>
-    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(__CallerType::*function_ptr)(__ArgTypes...), __CallerType* const caller, __PlaceHolders... placeholders )
+    template
+    <
+        class __CallerType,
+        class __ReturnType,
+        class... __ArgTypes,
+        class... __PlaceHolders
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(__CallerType::*function_ptr)(__ArgTypes...), __CallerType* const caller, __PlaceHolders&&... placeholders )
     {
-        return auto_binder<N-1>::auto_bind( function_ptr, caller, std::_Placeholder<N>(), placeholders... );
+        return auto_binder<N-1>::auto_bind( function_ptr, caller, std::_Placeholder<N>(), std::forward<__PlaceHolders>( placeholders )... );
     }
 
-    template <typename __ReturnType, typename... __ArgTypes, typename... __PlaceHolders>
-    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(*function_ptr)(__ArgTypes...), __PlaceHolders... placeholders )
+    template
+    <
+        class __ReturnType,
+        class... __ArgTypes,
+        class... __PlaceHolders
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(*function_ptr)(__ArgTypes...), __PlaceHolders&&... placeholders )
     {
-        return auto_binder<N-1>::auto_bind( function_ptr, std::_Placeholder<N>(), placeholders... );
+        return auto_binder<N-1>::auto_bind( function_ptr, std::_Placeholder<N>(), std::forward<__PlaceHolders>( placeholders )... );
     }
 
-    template <typename... __OutputArgTypes, typename __ReturnType, typename... __InputArgTypes, typename... __Appends>
-    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_append( const container<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends... appends )
+    template
+    <
+        class... __OutputArgTypes,
+        class __ReturnType,
+        class... __InputArgTypes,
+        class... __Appends
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_append( const quickdev::SimpleContainer<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends&&... appends )
     {
-        return auto_binder<N-1>::auto_bind_append( container, function, std::_Placeholder<N>(), appends... );
+        return auto_binder<N-1>::auto_bind_append( container, function, std::_Placeholder<N>(), std::forward<__Appends>( appends )... );
     }
+/*
+    template
+    <
+        class... __OutputArgTypes,
+        class __ReturnType,
+        class... __InputArgTypes,
+        class... __Prepends
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_prepend( const quickdev::SimpleContainer<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Prepends&&... prepends )
+    {
+        return auto_binder<N-1>::auto_bind_prepend( container, function, std::_Placeholder<N>(), std::forward<__Prepends>( prepends )... );
+    }
+*/
 };
 
 template<>
 struct auto_binder<0>
 {
-    template <typename __CallerType, typename __ReturnType, typename... __ArgTypes, typename... __PlaceHolders>
-    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(__CallerType::*function_ptr)(__ArgTypes...), __CallerType* const caller, __PlaceHolders... placeholders )
+    template
+    <
+        class __CallerType,
+        class __ReturnType,
+        class... __ArgTypes,
+        class... __PlaceHolders
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(__CallerType::*function_ptr)(__ArgTypes...), __CallerType* const caller, __PlaceHolders&&... placeholders )
     {
-        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)>( std::bind( function_ptr, caller, placeholders... ) );
+        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)>( std::bind( function_ptr, caller, std::forward<__PlaceHolders>( placeholders )... ) );
     }
 
-    template <typename __ReturnType, typename... __ArgTypes, typename... __PlaceHolders>
-    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(*function_ptr)(__ArgTypes...), __PlaceHolders... placeholders )
+    template
+    <
+        class __ReturnType,
+        class... __ArgTypes,
+        class... __PlaceHolders
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(*function_ptr)(__ArgTypes...), __PlaceHolders&&... placeholders )
     {
-        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)>( std::bind( function_ptr, placeholders... ) );
+        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)>( std::bind( function_ptr, std::forward<__PlaceHolders>( placeholders )... ) );
     }
 
-    template <typename... __OutputArgTypes, typename __ReturnType, typename... __InputArgTypes, typename... __Appends>
-    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_append( const container<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends... appends )
+    template
+    <
+        class... __OutputArgTypes,
+        class __ReturnType,
+        class... __InputArgTypes,
+        class... __Appends
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_append( const quickdev::SimpleContainer<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends&&... appends )
     {
-        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType( __OutputArgTypes... )>( std::bind( function, appends... ) );
+        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType( __OutputArgTypes... )>( std::bind( function, std::forward<__Appends>( appends )... ) );
     }
+/*
+    template
+    <
+        class... __OutputArgTypes,
+        class __ReturnType,
+        class... __InputArgTypes,
+        class... __Prepends
+    >
+    static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind_prepend( const quickdev::SimpleContainer<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Prepends&&... prepends )
+    {
+        return __AUTO_BIND_FUNCTION_TYPE<__ReturnType( __OutputArgTypes... )>( std::bind( function, std::forward<__Prepends>( prepends )... ) );
+    }
+*/
 };
 
 } // details
@@ -113,65 +180,56 @@ struct auto_binder<0>
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
-template <typename __CallerType, typename __ReturnType, typename... __ArgTypes>
-__AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(__CallerType::*function_ptr)(__ArgTypes...), __CallerType* const caller)
+template
+<
+    class __CallerType,
+    class __ReturnType,
+    class... __ArgTypes
+>
+__AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind( __ReturnType( __CallerType::*function_ptr )( __ArgTypes... ), __CallerType* const caller )
 {
     return details::auto_binder<sizeof...(__ArgTypes)>::auto_bind( function_ptr, caller );
 }
 
-template <typename __ReturnType, typename... __ArgTypes>
-__AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind(__ReturnType(*function_ptr)(__ArgTypes...))
+template
+<
+    class __ReturnType,
+    class... __ArgTypes
+>
+__AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind( __ReturnType( *function_ptr )( __ArgTypes... ) )
 {
     return details::auto_binder<sizeof...(__ArgTypes)>::auto_bind( function_ptr );
 }
 
-// this a bit ugly because the compiler was failing to pick up on the output function's args, so now the function type has to be manually specified with __OutputFunctionType and the output args can then be extracted
-/* usage:
- *  std::auto_bind<__OutputFunctionType>( @input_function, @args_to_append... )
- *
- * example:
- *  typedef std::function<void(int, int, int)> _FunctionType1
- *  typedef std::function<void(int, int, int, int)> _FunctionType2
- *
- *  void some_function( int arg1, int arg2, int arg3, int arg4 ){};
- *  const int value_of_arg4 = 5;
- *
- *  // the usual thing to do is:
- *  _FunctionType1 other_function_boost ( boost::bind( &some_function, _1, _2, _3, value_of_arg4 ) );
- *  other_function_boost( 4, 5, 6 ); // calls some_function( 4, 5, 6, value_of_arg4 );
- *
- *  // but now you can do:
- *  _FunctionType1 other_function ( std::bind<_FunctionType1>( &some_function, value_of_arg4 ) );
- *  other_function( 4, 5, 6 ); // calls some_function( 4, 5, 6, value_of_arg4 );
- *
- *  // the improvement here is that placeholders are automatically calculated
- *  // so if _FunctionType1 had N more arguments, the code for std::bind would remain the same
- *  // whereas with boost it would be necessary to specify an additional N placeholders for those arguments
- *
- *  // the downside is that you can't re-order arguments like you can with boost
- *
- */
-
-/*template <typename __OutputFunctionType, typename __ReturnType, typename __CallerType, typename... __InputArgTypes, typename... __Appends>
-auto auto_bind( __ReturnType(__CallerType::*function_ptr)(__InputArgTypes...), __CallerType* caller, __Appends... appends ) -> decltype( auto_bind( details::auto_binder<sizeof...(__InputArgTypes)>::auto_bind( function_ptr, caller ), appends... ) )
+template
+<
+    class __ReturnType,
+    class... __InputArgTypes,
+    class... __Appends,
+    typename std::enable_if<(sizeof...(__Appends) > 0), int>::type = 0
+>
+typename details::make_function<__ReturnType, typename container::subtype<0, sizeof...(__InputArgTypes) - sizeof...(__Appends), SimpleContainer<__InputArgTypes...> >::type>::function_type
+auto_bind( const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends&&... appends )
 {
-    return auto_bind( details::auto_binder<sizeof...(__InputArgTypes)>::auto_bind( function_ptr, caller ), appends... );
-}*/
-
-template <typename __OutputFunctionType, typename __ReturnType, typename... __InputArgTypes, typename... __Appends>
-auto auto_bind( const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends... appends ) -> decltype( auto_bind( typename details::funct_types<__OutputFunctionType>::_ArgTypesContainer(), function, appends... ) )
-{
-    // first, we need to find out how many args are in the return function type, since we need a placeholder for each of those args
-    return auto_bind( typename details::funct_types<__OutputFunctionType>::_ArgTypesContainer(), function, appends... );
+    typedef typename container::subtype<0, sizeof...(__InputArgTypes) - sizeof...(__Appends), SimpleContainer<__InputArgTypes...> >::type _OutputArgs;
+    return details::auto_binder<_OutputArgs::size_>::auto_bind_append( _OutputArgs(), function, std::forward<__Appends>( appends )... );
 }
 
-// we need to make a placeholder for each item of __OutputArgTypes...
-template <typename... __OutputArgTypes, typename __ReturnType, typename... __InputArgTypes, typename... __Appends>
-static __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__OutputArgTypes...)> auto_bind( const details::container<__OutputArgTypes...> & container, const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Appends... appends )
+/*
+template
+<
+    class __ReturnType,
+    class... __InputArgTypes,
+    class... __Prepends,
+    typename std::enable_if<(sizeof...(__Prepends) > 0), int>::type = 0
+>
+typename details::make_function<__ReturnType, typename container::subtype<0, sizeof...(__InputArgTypes) - sizeof...(__Prepends), SimpleContainer<__InputArgTypes...> >::type>::function_type
+bind_front( const __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__InputArgTypes...)> & function, __Prepends&&... prepends )
 {
-    return details::auto_binder<sizeof...(__OutputArgTypes)>::auto_bind_append( container, function, appends... );
+    typedef typename container::subtype<sizeof...(__Prepends), sizeof...(__InputArgTypes) - sizeof...(__Prepends), SimpleContainer<__InputArgTypes...> >::type _OutputArgs;
+    return details::auto_binder<_OutputArgs::size_>::auto_bind_prepend( _OutputArgs(), function, std::forward<__Prepends>( prepends )... );
 }
-
+*/
 } // quickdev
 
 #endif // QUICKDEVCPP_QUICKDEV_AUTOBIND_H_

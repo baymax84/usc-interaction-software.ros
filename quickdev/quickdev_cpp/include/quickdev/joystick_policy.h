@@ -222,6 +222,11 @@ public:
         return true;
     }
 
+    auto getVelocityMsg() -> decltype( velocity_msg_ ) &
+    {
+        return velocity_msg_;
+    }
+
     bool axisExists( _Axis::_Name const & axis_name ) const
     {
         return axes_map_.count( axis_name );
