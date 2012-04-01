@@ -55,7 +55,7 @@ public:
     typedef std::function<void()> _SettingsChangedCallback;
     _SettingsChangedCallback settings_changed_callback_;
 
-    PIDSettings( _Data const & p = 0, _Data const & i = 0, _Data const & d = 0, _Data const & output_min = 0, _Data const & output_max = 0, _Data const & direction = 0 )
+    PIDSettings( _Data const & p = 1, _Data const & i = 0, _Data const & d = 0, _Data const & output_min = -10, _Data const & output_max = 10, _Data const & direction = 1 )
     :
         p_( p ), i_( i ), d_( d ), output_min_( output_min ), output_max_( output_max ), direction_( direction )
     {
@@ -121,7 +121,7 @@ public:
         auto const & d = settings_->d_ / dt;
         auto const & outputMin = settings_->output_min_;
         auto const & outputMax = settings_->output_max_;
-        //auto const & direction = settings_->direction_;
+        auto const & direction = settings_->direction_;
 
 //        printf( "[%f][%f][%f][%f:%f]\n", p, i, d, outputMin, outputMax );
 
@@ -141,7 +141,7 @@ public:
 
 //        printf( "output [%f]\n", output_value_ );
 
-        return output_value_;
+        return direction * output_value_;
     }
 
     void setDesiredValue( _Data const & desired_value )
