@@ -50,6 +50,7 @@
 #include <quickdev/image_proc_policy.h>
 #include <quickdev/joystick_policy.h>
 #include <quickdev/macros.h>
+#include <quickdev/math.h>
 #include <quickdev/matrix.h>
 #include <quickdev/message_array_cache.h>
 #include <quickdev/message_conversions.h>
