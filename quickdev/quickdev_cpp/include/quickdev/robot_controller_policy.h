@@ -108,6 +108,11 @@ public:
         QUICKDEV_SET_INITIALIZED();
     }
 
+    void resetPose()
+    {
+        TfManagerPolicy::resetFrames( target_frame_name_ );
+    }
+
     void update( const __MotorValsMsg & msg )
     {
         update( typename __MotorValsMsg::ConstPtr( new __MotorValsMsg( msg ) ) );

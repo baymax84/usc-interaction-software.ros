@@ -114,7 +114,7 @@ public:
         auto const dt = timer_.update();
         _Data const error = desired_value_ - observed_value_;
 
-        printf( "desired [%f] observed [%f] error [%f]\n", desired_value_, observed_value_, error );
+//        printf( "desired [%f] observed [%f] error [%f]\n", desired_value_, observed_value_, error );
 
         auto const & p = settings_->p_;
         auto const & i = settings_->i_ * dt;
@@ -123,7 +123,7 @@ public:
         auto const & outputMax = settings_->output_max_;
         //auto const & direction = settings_->direction_;
 
-        printf( "[%f][%f][%f][%f:%f]\n", p, i, d, outputMin, outputMax );
+//        printf( "[%f][%f][%f][%f:%f]\n", p, i, d, outputMin, outputMax );
 
         i_term_ += i * error;
         if( i_term_ > outputMax ) i_term_ = outputMax;
@@ -139,7 +139,7 @@ public:
         /*Remember some variables for next time*/
         last_observed_value_ = observed_value_;
 
-        printf( "output [%f]\n", output_value_ );
+//        printf( "output [%f]\n", output_value_ );
 
         return output_value_;
     }

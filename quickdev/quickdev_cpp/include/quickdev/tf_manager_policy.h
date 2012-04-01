@@ -147,17 +147,30 @@ public:
         auto & update_timer = QUICKDEV_GET_POLICY_NAMESPACE( TfManager )::_UpdateTimer::getInstance();
         update_timer.update();
 
-        const auto & transforms = tf_manager_.getTransforms();
+        auto const & transforms = tf_manager_.getTransforms();
         STREAM_DEBUG( "Publishing " << transforms.size() << " frames"  );
 
-        for( auto transform = transforms.begin(); transform != transforms.end(); ++transform )
+        for( auto transform = transforms.cbegin(); transform != transforms.cend(); ++transform )
         {
             TfTranceiverPolicy::publishTransform( transform->second, update_timer.last() );
         }
     }
 
+    void resetFrames() const {}
+
+    //! Reset all specified frames to ( 0, 0, 0 ), ( 0, 0, 0 )
+    template<class... __Args>
+    void resetFrames( TfManager::_TfFrameId const & frame_id, __Args&&... args )
+    {
+        auto transform = tf_manager_[frame_id];
+        transform.setOrigin( btVector3( 0, 0, 0 ) );
+        transform.setRotation( btQuaternion( 0, 0, 0, 1 ) );
+        updateFrames( transform );
+        resetFrames( std::forward<__Args>( args )... );
+    }
+
     //! Transform all locally-cached TF frames by the velocity encoded in the given message pointer
-    void updateFrames( const _VelocityMsg::ConstPtr & msg )
+    void updateFrames( _VelocityMsg::ConstPtr const & msg )
     {
         const auto & transforms = tf_manager_.getTransforms();
         for( auto transform = transforms.begin(); transform != transforms.end(); ++transform )
@@ -171,11 +184,11 @@ public:
      *  \param msg : the velocity of the frame
      *  \param rest : the rest of the parameters in the variadic template */
     template<class... __Rest>
-    void updateFrames( const TfManager::_TfFrameId & frame_id, const _VelocityMsg::ConstPtr & msg, __Rest&&... rest )
+    void updateFrames( TfManager::_TfFrameId const & frame_id, _VelocityMsg::ConstPtr const & msg, __Rest&&... rest )
     {
         // since no duration is specified, get the duration from our TimedPolicy and pass everything to the next updateFrames function
         const auto & dt = QUICKDEV_GET_POLICY_NAMESPACE( TfManager )::_CallbackTimer::dt();
-        updateFrames( frame_id, msg, dt, rest... );
+        updateFrames( frame_id, msg, dt, std::forward<__Rest>( rest )... );
     }
 
     //! Update a set of frames (recursively) given a mixed variadic template
@@ -184,20 +197,20 @@ public:
      *  \param dt : the duration for which the given velocity was experienced
      *  \param rest : the rest of the parameters in the variadic template */
     template<class... __Rest>
-    void updateFrames( const TfManager::_TfFrameId & frame_id, const _VelocityMsg::ConstPtr & msg, const TimedPolicy<>::_Duration & dt, __Rest&&... rest )
+    void updateFrames( TfManager::_TfFrameId const & frame_id, _VelocityMsg::ConstPtr const & msg, TimedPolicy<>::_Duration const & dt, __Rest&&... rest )
     {
         // now that we have a TfManager::_Transform, pass everything to the next updateFrames function
-        updateFrames( updateFrameFromVelocity( frame_id, msg, dt ), rest... );
+        updateFrames( updateFrameFromVelocity( frame_id, msg, dt ), std::forward<__Rest>( rest )... );
     }
 
     //! Update a set of frames (recursively) given a mixed variadic template
     /*! \param transform : the transform containing the data used to update an existing transform in tf_manager_ */
     template<class... __Rest>
-    void updateFrames( const TfManager::_Transform & transform, __Rest&&... rest )
+    void updateFrames( TfManager::_Transform const & transform, __Rest&&... rest )
     {
         // update the current transform and pass the rest of the parameters along for processing
         tf_manager_.updateTransforms( transform );
-        updateFrames( rest... );
+        updateFrames( std::forward<__Rest>( rest )... );
     }
 
     //! Bottom level in the updateFrames recursion
@@ -208,7 +221,7 @@ public:
      *  \param to_frame_id : the name of the child frame
      *  \param rest : the rest of the parameters in the variadic template */
     template<class... __Rest>
-    void registerFrames( const TfManager::_TfFrameId & from_frame_id, const TfManager::_TfFrameId & to_frame_id, __Rest&&... rest )
+    void registerFrames( TfManager::_TfFrameId const & from_frame_id, TfManager::_TfFrameId const & to_frame_id, __Rest&&... rest )
     {
         if( tf_manager_.exists( to_frame_id ) )
         {
@@ -219,7 +232,7 @@ public:
             PRINT_INFO( "Registering transform [ %s -> %s ]", from_frame_id.c_str(), to_frame_id.c_str() );
             tf_manager_.updateTransforms( TfManager::_Transform( btTransform( tf::createIdentityQuaternion() ), ros::Time( 0 ), from_frame_id, to_frame_id ) );
         }
-        registerFrames( rest... );
+        registerFrames( std::forward<__Rest>( rest )... );
     }
 
     //! Bottom level in registerFrames recursion
@@ -229,7 +242,7 @@ public:
     /*! \param frame_id : the frame to update
      *  \param msg : the velocity message to pull values from
      *  \param dt : the duration during which the given velocity was experienced */
-    TfManager::_Transform updateFrameFromVelocity( const TfManager::_TfFrameId & frame_id, const _VelocityMsg::ConstPtr & msg, const TimedPolicy<>::_Duration & dt ) const
+    TfManager::_Transform updateFrameFromVelocity( TfManager::_TfFrameId const & frame_id, _VelocityMsg::ConstPtr const & msg, TimedPolicy<>::_Duration const & dt ) const
     {
         auto transform = tf_manager_[frame_id];
 
@@ -245,7 +258,7 @@ public:
     /*! \param frame_ids : the list of frames to update; { "frame_id1", "frame_id2", "frame_idN" }
      *  \param msg : the velocity message to use when calculating the change in position/orientation of the frames
      *  \param dt : the duration to integrate velocity over when calculating the change in position/orientation of the frames */
-    void updateFramesFromVelocity( const std::initializer_list<TfManager::_TfFrameId> & frame_ids, const _VelocityMsg::ConstPtr & msg, const TimedPolicy<>::_Duration & dt )
+    void updateFramesFromVelocity( std::initializer_list<TfManager::_TfFrameId> const & frame_ids, _VelocityMsg::ConstPtr const & msg, TimedPolicy<>::_Duration const & dt )
     {
         for( auto frame_id = frame_ids.begin(); frame_id != frame_ids.end(); ++frame_id )
         {

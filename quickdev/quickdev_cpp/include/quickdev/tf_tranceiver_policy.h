@@ -66,14 +66,14 @@ public:
         printPolicyActionDone( "create", this );
     }
 
-    void publishTransform( const tf::StampedTransform & transform, ros::Time frame_time )
+    void publishTransform( tf::StampedTransform const & transform, ros::Time const & frame_time )
     {
         auto new_transform( transform );
         new_transform.stamp_ = frame_time;
         publishTransform( new_transform );
     }
 
-    void publishTransform( const tf::StampedTransform & transform, const bool & fix_timestamp = true )
+    void publishTransform( tf::StampedTransform const & transform, bool const & fix_timestamp = true )
     {
         if( transform.frame_id_.size() == 0 || transform.child_frame_id_.size() == 0 )
         {
@@ -95,9 +95,9 @@ public:
     }
 
     void publishTransform(
-        const tf::Transform & transform,
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id )
+        tf::Transform const & transform,
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id )
     {
         publishTransform(
             transform,
@@ -107,10 +107,10 @@ public:
     }
 
     void publishTransform(
-        const tf::Transform & transform,
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & frame_time )
+        tf::Transform const & transform,
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & frame_time )
     {
         publishTransform(
             tf::StampedTransform(
@@ -121,13 +121,13 @@ public:
     }
 
     tf::StampedTransform lookupTransform(
-        const _TfFrameId & from_frame_id,
-        const ros::Time & from_frame_time,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & to_frame_time,
-        const _TfFrameId & fixed_frame_id,
-        const double & wait_time = 0.05,
-        const bool & default_to_latest = true ) const
+        _TfFrameId const & from_frame_id,
+        ros::Time const & from_frame_time,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & to_frame_time,
+        _TfFrameId const & fixed_frame_id,
+        double const & wait_time = 0.05,
+        bool const & default_to_latest = true ) const
     {
         return lookupTransform(
             from_frame_id,
@@ -140,13 +140,13 @@ public:
     }
 
     tf::StampedTransform lookupTransform(
-        const _TfFrameId & from_frame_id,
-        const ros::Time & from_frame_time,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & to_frame_time,
-        const _TfFrameId & fixed_frame_id,
-        const ros::Duration & wait_time,
-        const bool & default_to_latest = true ) const
+        _TfFrameId const & from_frame_id,
+        ros::Time const & from_frame_time,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & to_frame_time,
+        _TfFrameId const & fixed_frame_id,
+        ros::Duration const & wait_time,
+        bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f -> %f )...", from_frame_id.c_str(), to_frame_id.c_str(), from_frame_time.toSec(), to_frame_time.toSec() );
         tf::StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
@@ -179,7 +179,7 @@ public:
             }
             else
             {
-                PRINT_WARN(
+                PRINT_DEBUG(
                     "Cannot find transform from %s to %s via %s at the given times",
                     from_frame_id.c_str(),
                     to_frame_id.c_str(),
@@ -187,7 +187,7 @@ public:
 
                 if( default_to_latest )
                 {
-                    PRINT_WARN( "Attempting to look up latest transform..." );
+                    PRINT_DEBUG( "Attempting to look up latest transform..." );
                     return lookupTransform( from_frame_id, to_frame_id, ros::Time( 0 ), wait_time, false );
                 }
                 else
@@ -211,10 +211,10 @@ public:
     }
 
     tf::StampedTransform lookupTransform(
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id,
-        const double & wait_time = 0.05,
-        const bool & default_to_latest = true ) const
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id,
+        double const & wait_time = 0.05,
+        bool const & default_to_latest = true ) const
     {
         return lookupTransform(
             from_frame_id,
@@ -224,11 +224,11 @@ public:
     }
 
     tf::StampedTransform lookupTransform(
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & frame_time,
-        const double & wait_time = 0.05,
-        const bool & default_to_latest = true ) const
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & frame_time,
+        double const & wait_time = 0.05,
+        bool const & default_to_latest = true ) const
     {
         return lookupTransform(
             from_frame_id,
@@ -238,11 +238,11 @@ public:
     }
 
     tf::StampedTransform lookupTransform(
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & frame_time,
-        const ros::Duration & wait_time,
-        const bool & default_to_latest = true ) const
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & frame_time,
+        ros::Duration const & wait_time,
+        bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f )...", from_frame_id.c_str(), to_frame_id.c_str(), frame_time.toSec() );
         tf::StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
@@ -269,14 +269,14 @@ public:
             }
             else
             {
-                PRINT_WARN(
+                PRINT_DEBUG(
                     "Cannot find transform from %s to %s at the given time",
                     from_frame_id.c_str(),
                     to_frame_id.c_str() );
 
                 if( default_to_latest )
                 {
-                    PRINT_WARN( "Attempting to look up latest transform..." );
+                    PRINT_DEBUG( "Attempting to look up latest transform..." );
                     return lookupTransform( from_frame_id, to_frame_id, ros::Time( 0 ), wait_time, false );
                 }
                 else
@@ -288,7 +288,7 @@ public:
                 }
             }
         }
-        catch ( const tf::TransformException & ex )
+        catch ( tf::TransformException const & ex )
         {
             PRINT_ERROR(
                 "%s",
@@ -299,8 +299,8 @@ public:
     }
 
     bool transformExists(
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id ) const
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id ) const
     {
         return transformExists(
             from_frame_id,
@@ -309,9 +309,9 @@ public:
     }
 
     bool transformExists(
-        const _TfFrameId & from_frame_id,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & frame_time ) const
+        _TfFrameId const & from_frame_id,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & frame_time ) const
     {
         // to_frame and from_frame are flipped in the tf api here
         return tf_listener_.canTransform(
@@ -321,11 +321,11 @@ public:
     }
 
     bool transformExists(
-        const _TfFrameId & from_frame_id,
-        const ros::Time & from_frame_time,
-        const _TfFrameId & to_frame_id,
-        const ros::Time & to_frame_time,
-        const _TfFrameId & fixed_frame_id ) const
+        _TfFrameId const & from_frame_id,
+        ros::Time const & from_frame_time,
+        _TfFrameId const & to_frame_id,
+        ros::Time const & to_frame_time,
+        _TfFrameId const & fixed_frame_id ) const
     {
         // to_frame and from_frame are flipped in the tf api here
         return tf_listener_.canTransform(
