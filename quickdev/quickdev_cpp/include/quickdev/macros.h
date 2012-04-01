@@ -42,7 +42,7 @@
 #define QUICKDEV_MAKE_POLICY_NAME( PolicyNameBase ) \
 /*! \brief Auto-generated function to return the name of this policy */ \
 /*! \return \code "PolicyNameBase" \endcode */ \
-public: const static inline std::string name() { return #PolicyNameBase; }
+public: static std::string const & name() { static std::string const name = #PolicyNameBase; return name; }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 // somehow this actually works for templated classes... [somuchwin]
@@ -216,7 +216,7 @@ PLUGINLIB_DECLARE_CLASS( namespace_name, nodelet_name, namespace_name::ClassName
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_ENABLE_INIT() \
 /*! \brief Used to determine whether a policy is initializable */ \
-static const bool IS_INITIALIZEABLE_ = true; \
+static bool const IS_INITIALIZEABLE_ = true; \
 /*! \brief Used to determine whether a policy has been initialized */ \
 /*! \note This variable needs to be manually set to "false" at construction */ \
 private: bool initialized_; \

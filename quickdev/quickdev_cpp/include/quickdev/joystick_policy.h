@@ -76,19 +76,19 @@ public:
             //
         }
 
-        inline _Value getRawValue( const _JoystickMsg::ConstPtr & msg ) const
+        inline _Value getRawValue( _JoystickMsg::ConstPtr const & msg ) const
         {
             return msg ? ( is_button_ ? msg->buttons[index_] : msg->axes[index_] ) : _Value();
         }
 
-        inline _Value getValue( const _JoystickMsg::ConstPtr & msg ) const
+        inline _Value getValue( _JoystickMsg::ConstPtr const & msg ) const
         {
             return scale_ * getRawValue( msg );
         }
 
-        inline _Value getValueAsButton( const _JoystickMsg::ConstPtr & msg ) const
+        inline _Value getValueAsButton( _JoystickMsg::ConstPtr const & msg ) const
         {
-            return is_button_ ? getRawValue( msg ) : getValue( msg ) < 0.75;
+            return is_button_ ? getRawValue( msg ) : getValue( msg ) > 0.75;
         }
 
         std::string str() const
@@ -149,40 +149,44 @@ public:
 
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
-        const auto robot_name = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
+        auto robot_name = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", args... );
+        if( robot_name.size() > 0 ) robot_name.insert( 0, "/" );
 
-        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name.size() > 0 ? "/" + robot_name + "/cmd_vel" : "cmd_vel", args... );
+        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name.size() > 0 ? robot_name + "/cmd_vel" : "cmd_vel", args... );
+
+        auto params_namespace = policy::readPolicyParam<std::string>( nh_rel, "namespace_name_param", "namespace_name", "joystick", args... );
+
+        if( !params_namespace.empty() && params_namespace.substr( params_namespace.size() - 1, 1 ) != "/" ) params_namespace += "/";
 
         // if we don't get any joystick messages after this much time, zero out all fields of the outgoing velocity message
         joystick_timeout_ = ros::ParamReader<double, 1>::readParam( nh_rel, "keep_alive_period", 1.0 );
 
         // read as many axis#_index values as exist on the parameter server starting with axis0_index
-        const auto axis_indices( ros::ParamReader<_Axis::_Index, 0>::readParams( nh_rel, "axis", "_index", 0 ) );
-        const auto axis_names( ros::ParamReader<_Axis::_Name, 0>::readParams( nh_rel, "axis", "_name", 0 ) );
-        const auto axis_scales( ros::ParamReader<_Axis::_Scale, 0>::readParams( nh_rel, "axis", "_scale", 0 ) );
+        auto const axis_indices( ros::ParamReader<_Axis::_Index, 0>::readParams( nh_rel, params_namespace + "axis", "_index", 0 ) );
+        auto const axis_names( ros::ParamReader<_Axis::_Name, 0>::readParams( nh_rel, params_namespace + "axis", "_name", 0 ) );
+        auto const axis_scales( ros::ParamReader<_Axis::_Scale, 0>::readParams( nh_rel, params_namespace + "axis", "_scale", 0 ) );
 
-        const auto button_indices( ros::ParamReader<_Axis::_Index, 0>::readParams( nh_rel, "button", "_index", 0 ) );
-        const auto button_names( ros::ParamReader<_Axis::_Name, 0>::readParams( nh_rel, "button", "_name", 0 ) );
+        auto const button_indices( ros::ParamReader<_Axis::_Index, 0>::readParams( nh_rel, params_namespace + "button", "_index", 0 ) );
+        auto const button_names( ros::ParamReader<_Axis::_Name, 0>::readParams( nh_rel, params_namespace + "button", "_name", 0 ) );
 
         // unroll the axis names and indices into a map from names to indices
-        for( unsigned int i = 0; i < axis_names.size() && i < axis_indices.size(); ++i )
+        for( size_t i = 0; i < axis_names.size() && i < axis_indices.size(); ++i )
         {
-            const _Axis::_Name & axis_name( axis_names[i] );
-            const _Axis::_Index & axis_index( axis_indices[i] );
-            const _Axis::_Scale & axis_scale( axis_scales.size() > i ? axis_scales[i] : _Axis::_Scale( 1.0 ) );
-            const _Axis axis( axis_name, axis_index, axis_scale );
+            _Axis::_Name const & axis_name( axis_names[i] );
+            _Axis::_Index const & axis_index( axis_indices[i] );
+            _Axis::_Scale const & axis_scale( axis_scales.size() > i ? axis_scales[i] : _Axis::_Scale( 1.0 ) );
+            _Axis const axis( axis_name, axis_index, axis_scale );
 
             PRINT_INFO( "Adding axis: %s", axis.str().c_str() );
             axes_map_[axis_name] = axis;
         }
 
         // unroll the button names and indices into a map from names to indices
-        for( unsigned int i = 0; i < button_names.size() && i < button_indices.size(); ++i )
+        for( size_t i = 0; i < button_names.size() && i < button_indices.size(); ++i )
         {
-            const _Axis::_Name & axis_name( button_names[i] );
-            const _Axis::_Index & axis_index( button_indices[i] );
-            const _Axis axis( axis_name, axis_index, 1.0, true );
+            _Axis::_Name const & axis_name( button_names[i] );
+            _Axis::_Index const & axis_index( button_indices[i] );
+            _Axis const axis( axis_name, axis_index, 1.0, true );
 
             PRINT_INFO( "Adding axis: %s", axis.str().c_str() );
             axes_map_[axis_name] = axis;
@@ -203,31 +207,31 @@ public:
 
     virtual QUICKDEV_DECLARE_MESSAGE_CALLBACK( joystickCB, _JoystickMsg ){}
 
-    bool updateVelocityComponent( const _Axis::_Name & axis_name, _Axis::_Value & axis_value )
+    bool updateVelocityComponent( _Axis::_Name const  & axis_name, _Axis::_Value & axis_value )
     {
         if( !last_joystick_message_ ) return false;
 
-        const auto & axis_it = axes_map_.find( axis_name );
+        auto const & axis_it = axes_map_.find( axis_name );
         if( axis_it == axes_map_.end() ) return false;
 
         const _Axis & axis = axis_it->second;
 
-        if( ( ros::Time::now() - last_joystick_message_time_ ).toSec() > joystick_timeout_ ) axis_value = 0;
+        if( !enabled_ || ( ros::Time::now() - last_joystick_message_time_ ).toSec() > joystick_timeout_ ) axis_value = 0;
         else axis_value = axis.getValue( last_joystick_message_ );
 
         return true;
     }
 
-    bool axisExists( const _Axis::_Name & axis_name ) const
+    bool axisExists( _Axis::_Name const & axis_name ) const
     {
         return axes_map_.count( axis_name );
     }
 
-    const _Axis & getAxis( const _Axis::_Name & axis_name ) const
+    _Axis const & getAxis( _Axis::_Name const & axis_name ) const
     {
-        const static _Axis default_axis = _Axis();
+        static const _Axis default_axis = _Axis();
 
-        const auto & axis_it = axes_map_.find( axis_name );
+        auto const & axis_it = axes_map_.find( axis_name );
         if( axis_it == axes_map_.end() ) return default_axis;
         return axis_it->second;
     }
@@ -238,13 +242,13 @@ public:
         return axis.getValue( last_joystick_message_ );
     }
 
-    void update( const bool & auto_publish = true )
+    void update( bool const & auto_publish = true )
     {
         QUICKDEV_ASSERT_INITIALIZED();
 
         velocity_msg_ = geometry_msgs::Twist::Ptr( new geometry_msgs::Twist );
 
-        const auto & enable_axis_it = axes_map_.find( "enable" );
+        auto const & enable_axis_it = axes_map_.find( "enable" );
         enabled_ = enable_axis_it == axes_map_.end() || enable_axis_it->second.getValue( last_joystick_message_ ) > 0;
 
         updateVelocityComponent( "linear.x", velocity_msg_->linear.x );
@@ -263,7 +267,7 @@ public:
         multi_pub_.publish( cmd_vel_topic_name_, velocity_msg_ );
     }
 
-    inline const bool & isEnabled() const
+    inline bool const & isEnabled() const
     {
         return enabled_;
     }
