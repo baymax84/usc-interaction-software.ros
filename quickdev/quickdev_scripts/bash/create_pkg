@@ -566,8 +566,8 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
 
   echo -n "<launch>
     <arg name=\"pkg\" value=\"$package\" />
-    <arg name=\"type\" value=\"$node_file\" />
-    <arg name=\"name\" default=\"\$(arg type)\" />
+    <arg name=\"name\" default=\"$node_file\" />
+    <arg name=\"type\" value=\"\$(arg name)_node\" />
     <arg name=\"rate\" default=\"30\" />
     <arg name=\"args\" value=\"_loop_rate:=\$(arg rate)\" />" >> $node_launch_relpath
   if [ $has_nodelet == true ]; then
