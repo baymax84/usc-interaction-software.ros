@@ -103,7 +103,7 @@ protected:
     Timer timer_;
 
 public:
-    _Data const & update()
+    _Data update()
     {
         if( !is_initialized_ )
         {
@@ -123,7 +123,7 @@ public:
         auto const & outputMax = settings_->output_max_;
         auto const & direction = settings_->direction_;
 
-//        printf( "[%f][%f][%f][%f:%f]\n", p, i, d, outputMin, outputMax );
+//        printf( "[%f][%f][%f][%f:%f][%f]\n", p, i, d, outputMin, outputMax, dt );
 
         i_term_ += i * error;
         if( i_term_ > outputMax ) i_term_ = outputMax;
@@ -154,7 +154,7 @@ public:
         observed_value_ = observed_value;
     }
 
-    _Data const & update( _Data const & desired, _Data const & observed )
+    _Data update( _Data const & desired, _Data const & observed )
     {
         setDesiredValue( desired );
         setObservedValue( observed );

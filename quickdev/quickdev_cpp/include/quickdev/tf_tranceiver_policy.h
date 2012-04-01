@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_TFTRANCEIVERPOLICY_H_
 
 #include <quickdev/policy.h>
+#include <quickdev/threading.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -64,6 +65,9 @@ public:
     {
         printPolicyActionStart( "create", this );
         printPolicyActionDone( "create", this );
+
+        std::string robot_frame_name_ = "seabee";
+        std::string target_frame_name = "desired_frame";
     }
 
     void publishTransform( tf::StampedTransform const & transform, ros::Time const & frame_time )
@@ -150,61 +154,50 @@ public:
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f -> %f )...", from_frame_id.c_str(), to_frame_id.c_str(), from_frame_time.toSec(), to_frame_time.toSec() );
         tf::StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
-        try
+
+        if( transformExists(
+            from_frame_id,
+            from_frame_time,
+            to_frame_id,
+            to_frame_time,
+            fixed_frame_id ) )
         {
-            if( transformExists(
+            tf_listener_.waitForTransform(
                 from_frame_id,
                 from_frame_time,
                 to_frame_id,
                 to_frame_time,
-                fixed_frame_id ) )
+                fixed_frame_id,
+                wait_time );
+
+            tf_listener_.lookupTransform(
+                from_frame_id,
+                from_frame_time,
+                to_frame_id,
+                to_frame_time,
+                fixed_frame_id,
+                transform );
+
+            PRINT_DEBUG( "OK\n" );
+        }
+        else
+        {
+            PRINT_DEBUG(
+                "Cannot find transform from %s to %s via %s at the given times",
+                from_frame_id.c_str(),
+                to_frame_id.c_str(),
+                fixed_frame_id.c_str() );
+
+            if( default_to_latest )
             {
-                tf_listener_.waitForTransform(
-                    from_frame_id,
-                    from_frame_time,
-                    to_frame_id,
-                    to_frame_time,
-                    fixed_frame_id,
-                    wait_time );
-
-                tf_listener_.lookupTransform(
-                    from_frame_id,
-                    from_frame_time,
-                    to_frame_id,
-                    to_frame_time,
-                    fixed_frame_id,
-                    transform );
-
-                PRINT_DEBUG( "OK\n" );
+                PRINT_DEBUG( "Attempting to look up latest transform..." );
+                return lookupTransform( from_frame_id, to_frame_id, ros::Time( 0 ), wait_time, false );
             }
             else
             {
-                PRINT_DEBUG(
-                    "Cannot find transform from %s to %s via %s at the given times",
-                    from_frame_id.c_str(),
-                    to_frame_id.c_str(),
-                    fixed_frame_id.c_str() );
-
-                if( default_to_latest )
-                {
-                    PRINT_DEBUG( "Attempting to look up latest transform..." );
-                    return lookupTransform( from_frame_id, to_frame_id, ros::Time( 0 ), wait_time, false );
-                }
-                else
-                {
-                    PRINT_WARN(
-                        "Lookup of  %s -> %s via %s failed",
-                        from_frame_id.c_str(),
-                        to_frame_id.c_str(),
-                        fixed_frame_id.c_str() );
-                }
+                std::string const error_str = "Lookup of " + from_frame_id + " -> " + to_frame_id + " via " + fixed_frame_id + " failed.";
+                throw tf::TransformException( error_str );
             }
-        }
-        catch ( const tf::TransformException & ex )
-        {
-            PRINT_ERROR(
-                "%s",
-                ex.what() );
         }
         transform.setRotation( transform.getRotation().normalized() );
         return transform;
@@ -220,7 +213,8 @@ public:
             from_frame_id,
             to_frame_id,
             DEFAULT_LOOKUP_TIME,
-            wait_time );
+            wait_time,
+            default_to_latest );
     }
 
     tf::StampedTransform lookupTransform(
@@ -234,7 +228,8 @@ public:
             from_frame_id,
             to_frame_id,
             frame_time,
-            ros::Duration( wait_time ) );
+            ros::Duration( wait_time ),
+            default_to_latest );
     }
 
     tf::StampedTransform lookupTransform(
@@ -246,54 +241,45 @@ public:
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f )...", from_frame_id.c_str(), to_frame_id.c_str(), frame_time.toSec() );
         tf::StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
-        try
+
+        if( transformExists(
+            from_frame_id,
+            to_frame_id,
+            frame_time ) )
         {
-            if( transformExists(
+            tf_listener_.waitForTransform(
                 from_frame_id,
                 to_frame_id,
-                frame_time ) )
+                frame_time,
+                wait_time );
+
+            tf_listener_.lookupTransform(
+                from_frame_id,
+                to_frame_id,
+                frame_time,
+                transform );
+
+            PRINT_DEBUG( "OK" );
+        }
+        else
+        {
+            PRINT_DEBUG(
+                "Cannot find transform from %s to %s at the given time",
+                from_frame_id.c_str(),
+                to_frame_id.c_str() );
+
+            if( default_to_latest )
             {
-                tf_listener_.waitForTransform(
-                    from_frame_id,
-                    to_frame_id,
-                    frame_time,
-                    wait_time );
-
-                tf_listener_.lookupTransform(
-                    from_frame_id,
-                    to_frame_id,
-                    frame_time,
-                    transform );
-
-                PRINT_DEBUG( "OK" );
+                PRINT_DEBUG( "Attempting to look up latest transform..." );
+                return lookupTransform( from_frame_id, to_frame_id, ros::Time( 0 ), wait_time, false );
             }
             else
             {
-                PRINT_DEBUG(
-                    "Cannot find transform from %s to %s at the given time",
-                    from_frame_id.c_str(),
-                    to_frame_id.c_str() );
-
-                if( default_to_latest )
-                {
-                    PRINT_DEBUG( "Attempting to look up latest transform..." );
-                    return lookupTransform( from_frame_id, to_frame_id, ros::Time( 0 ), wait_time, false );
-                }
-                else
-                {
-                    PRINT_WARN(
-                        "Lookup of %s -> %s failed",
-                        from_frame_id.c_str(),
-                        to_frame_id.c_str() );
-                }
+                std::string const error_str = "Lookup of " + from_frame_id + " -> " + to_frame_id + " failed.";
+                throw tf::TransformException( error_str );
             }
         }
-        catch ( tf::TransformException const & ex )
-        {
-            PRINT_ERROR(
-                "%s",
-                ex.what() );
-        }
+
         transform.setRotation( transform.getRotation().normalized() );
         return transform;
     }

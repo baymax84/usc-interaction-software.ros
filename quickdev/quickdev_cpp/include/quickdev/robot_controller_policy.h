@@ -130,12 +130,16 @@ public:
     {
         QUICKDEV_CHECK_INITIALIZED();
 
-        return lookupTransform( robot_frame_name_, target_frame_name, ros::Time::now() );
+//        auto result = tryFunc( auto_bind( &TfTranceiverPolicy::lookupTransform, &TfTranceiverPolicy::getInstance(), robot_frame_name_, target_frame_name, ros::Time::now() ) );
+
+//        if( result.first ) return result.second;
+
+        return TfTranceiverPolicy::lookupTransform( robot_frame_name_, target_frame_name, ros::Time::now() );
     }
 
     tf::StampedTransform getTransformToTarget() const
     {
-        return lookupTransform( robot_frame_name_, target_frame_name_, ros::Time::now() );
+        return getTransformToTarget( target_frame_name_ );
     }
 };
 

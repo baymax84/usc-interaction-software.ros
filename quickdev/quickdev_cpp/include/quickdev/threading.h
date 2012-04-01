@@ -41,6 +41,7 @@
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
+    // =========================================================================================================================================
     class Mutex
     {
     public:
@@ -58,6 +59,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
         }
     };
 
+    // =========================================================================================================================================
     template<class __Storage>
     class MutexedCache : public Mutex
     {
@@ -96,11 +98,93 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
         }
     };
 
+    // =========================================================================================================================================
     template<class __Message>
     class MessageCache : public MutexedCache<typename __Message::ConstPtr>{};
 
     template<>
     class MessageCache<void>{};
+
+    // =========================================================================================================================================
+    template
+    <
+        class __FuncReturn,
+        class... __FuncArgs,
+        typename std::enable_if<(!std::is_same<__FuncReturn, void>::value), int>::type = 0
+    >
+    std::pair<bool, __FuncReturn> tryFunc( __QUICKDEV_FUNCTION_TYPE<__FuncReturn( __FuncArgs&&... )> func, size_t const & max_attempts, long unsigned int const & sleep_time )
+    {
+        size_t attempts = 0;
+        do
+        {
+            try
+            {
+                return std::make_pair( true, func() );
+            }
+            catch( std::exception const & ex )
+            {
+                PRINT_ERROR( "%s", ex.what() );
+                PRINT_WARN( "Attempt %zu of %zu failed; sleeping for %f seconds", attempts + 1, max_attempts, sleep_time / 1000000.0 );
+                if( max_attempts > 0 ) attempts ++;
+                usleep( sleep_time );
+            }
+        }
+        while( attempts < max_attempts || max_attempts == 0 );
+
+        return std::make_pair( false, __FuncReturn() );
+    }
+
+    // =========================================================================================================================================
+    template
+    <
+        class __FuncReturn,
+        class... __FuncArgs,
+        typename std::enable_if<(std::is_same<__FuncReturn, void>::value), int>::type = 0
+    >
+    bool tryFunc( __QUICKDEV_FUNCTION_TYPE<__FuncReturn( __FuncArgs&&... )> func, size_t const & max_attempts, long unsigned int const & sleep_time )
+    {
+        size_t attempts = 0;
+        do
+        {
+            try
+            {
+                func();
+                return true;
+            }
+            catch( std::exception const & ex )
+            {
+                PRINT_ERROR( "%s", ex.what() );
+                PRINT_WARN( "Attempt %zu of %zu failed; sleeping for %f seconds", attempts + 1, max_attempts, sleep_time / 1000000.0 );
+                if( max_attempts > 0 ) attempts ++;
+                usleep( sleep_time );
+            }
+        }
+        while( attempts < max_attempts || max_attempts == 0 );
+
+        return false;
+    }
+
+    // =========================================================================================================================================
+    template
+    <
+        class __FuncReturn,
+        class... __FuncArgs
+    >
+    auto tryFunc( __QUICKDEV_FUNCTION_TYPE<__FuncReturn( __FuncArgs&&... )> func, size_t const & max_attempts ) -> decltype( tryFunc( func, max_attempts, 1000 ) )
+    {
+        return tryFunc( func, max_attempts, 1000 );
+    }
+
+    // =========================================================================================================================================
+    template
+    <
+        class __FuncReturn,
+        class... __FuncArgs
+    >
+    auto tryFunc( __QUICKDEV_FUNCTION_TYPE<__FuncReturn( __FuncArgs&&... )> func ) -> decltype( tryFunc( func, 1 ) )
+    {
+        return tryFunc( func, 1 );
+    }
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_THREADING_H_

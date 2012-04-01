@@ -42,7 +42,6 @@
 #include <quickdev/tf_manager.h>
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/geometry_message_conversions.h>
-#include <quickdev/threading.h>
 #include <geometry_msgs/Twist.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
