@@ -17,7 +17,7 @@ inline __Data sign( __Data const & value )
 template<class __Data>
 inline __Data signNonzero( __Data const & value )
 {
-    return value > 0 ? 1 : value < 0 ? -1 : 0;
+    return value > 1 ? 1 : -1;
 }
 
 // =============================================================================================================================================
