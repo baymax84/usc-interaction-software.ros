@@ -44,6 +44,7 @@
 #include <string>
 #include <sstream>
 #include <stdlib.h>
+#include <initializer_list>
 #include <boost/shared_ptr.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 #include <ros/message.h>
@@ -407,6 +408,16 @@ Usage:
     boost::shared_ptr<__Data> make_shared( __Data * const data )
     {
         return boost::shared_ptr<__Data>( data );
+    }
+
+    template
+    <
+        class __Front,
+        class... __Args
+    >
+    std::initializer_list<__Front> make_initializer_list( __Front&& front, __Args&&... args )
+    {
+        return std::initializer_list<__Front>( { std::forward<__Front>( front ), std::forward<__Args>( args )... } );
     }
 
 }

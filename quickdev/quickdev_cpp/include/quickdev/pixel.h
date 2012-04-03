@@ -38,7 +38,7 @@
 
 #include <quickdev/feature.h>
 #include <opencv/cv.h>
-#include <deque>
+#include <vector>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
@@ -48,7 +48,7 @@ class Pixel : public quickdev::Feature<__Data>
 {
 public:
     template<class... __Args>
-    Pixel( __Args... args ) : quickdev::Feature<__Data>( args... )
+    Pixel( __Args&&... args ) : quickdev::Feature<__Data>( std::forward<__Args>( args )... )
     {
         //
     }
@@ -60,10 +60,19 @@ namespace pixel
 template<class __Data, int __Dim__>
 Pixel<__Data> make_pixel( cv::Vec<__Data, __Dim__> const & vec )
 {
-    std::deque<__Data> data( __Dim__ );
+    std::vector<__Data> data( __Dim__ );
     std::copy( vec.val, vec.val + __Dim__, data.begin() );
 
     return Pixel<__Data>( data );
+}
+
+template<class __OutputData, class __InputData, int __Dim__>
+Pixel<__OutputData> make_pixel( cv::Vec<__InputData, __Dim__> const & vec )
+{
+    std::vector<__OutputData> data( __Dim__ );
+    std::copy( vec.val, vec.val + __Dim__, data.begin() );
+
+    return Pixel<__OutputData>( data );
 }
 
 } // pixel

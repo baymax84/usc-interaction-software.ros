@@ -101,6 +101,11 @@ public:
         updateCovariance();
     }
 
+    size_t size() const
+    {
+        return data_points_.size();
+    }
+
 protected:
     void invalidate()
     {
