@@ -7,6 +7,9 @@ while [ "$1" != "" ]; do
   shift
 done
 
-export ROS_IP=`ip addr show | grep -m1 -oP "inet\s192\.\d+\.\d+\.\d+" | sed -e 's:inet\s::g'`
+ip_addr=`ip addr show | grep -v "127.0.0.1" | grep -m1 -oP "inet\s\d+\.\d+\.\d+\.\d+" | sed -e 's:inet\s::g'`
+if [ "$ip_addr" == "" ]; then ip_addr=127.0.0.1; fi
+
+export ROS_IP=$ip_addr
 
 if [ $quiet_flag != 1 ]; then echo "ROS_IP set to [" $ROS_IP "]"; fi
