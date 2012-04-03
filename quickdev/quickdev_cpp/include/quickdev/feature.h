@@ -42,8 +42,9 @@
 
 #include <math.h>
 #include <type_traits>
-#include <deque>
 #include <vector>
+#include <ostream>
+#include <iostream>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
@@ -142,6 +143,7 @@ namespace mode
         struct EUCLIDIAN{};
         struct EUCLIDIAN_CIRCULAR{};
         struct GAUSSIAN{};
+        struct GAUSSIAN_FAST{};
     } // distance
 } // mode
 
@@ -210,6 +212,17 @@ public:
         return value_ - other;
     }
 
+    template
+    <
+        class __Mode,
+        class __OtherData,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST>::value), int>::type = 0
+    >
+    double distanceToImpl( __OtherData const & other ) const
+    {
+        return value_ - other;
+    }
+
     //! Calculates the distance to another feature if this feature is complex
     /*! Recurses via Feature::distanceTo() */
     template
@@ -250,16 +263,16 @@ public:
         class... __Args,
         typename std::enable_if<(!feature::is_feature<__MData>::value && !feature::is_feature<__OtherData>::value), int>::type = 0
     >
-    double distanceToHelper( const FeatureComponent<__OtherData> & other, __Args... args ) const
+    double distanceToHelper( const FeatureComponent<__OtherData> & other, __Args&&... args ) const
     {
         //std::cout << "calculating distance between numeric components: " << value_ << " and " << other.getValue() << std::endl;
-        return distanceToImpl<__Mode>( other.getValue(), args... );
+        return distanceToImpl<__Mode>( other.getValue(), std::forward<__Args>( args )... );
     }
 
     template<class __Mode, class __OtherData, class... __Args>
-    double distanceTo( const FeatureComponent<__OtherData> & other, __Args... args ) const
+    double distanceTo( const FeatureComponent<__OtherData> & other, __Args&&... args ) const
     {
-        return distanceToHelper<__Mode, __Data>( other, args... );
+        return distanceToHelper<__Mode, __Data>( other, std::forward<__Args>( args )... );
     }
 };
 
@@ -270,7 +283,7 @@ class Feature
 {
 public:
     typedef __Data _Data;
-    typedef std::deque<__Data> _Storage;
+    typedef std::vector<__Data> _Storage;
 
 protected:
     _Storage storage_;
@@ -294,32 +307,38 @@ public:
     }
 
     //! Construct a Feature from an initializer list
-    Feature( std::initializer_list<__Data> storage )
+    template<class __MData>
+    Feature( std::initializer_list<__MData> storage )
     :
-        storage_( storage )
+        storage_( storage.size() )
     {
-        //
+        std::copy( storage.begin(), storage.end(), storage_.begin() );
     }
 
     //! Construct a Feature from some other data type
-    template<class __Storage>
-    Feature( std::vector<__Storage> const & storage )
+    template<class __MData>
+    Feature( std::vector<__MData> const & storage )
+    :
+        storage_( storage.size() )
     {
-        storage_.resize( storage.size() );
         std::copy( storage.begin(), storage.end(), storage_.begin() );
     }
 
     //! Construct a Feature from a variadic template of size > 0
     /*! Will fail at compile time if, after args... is expanded, all types do not match __Data */
-    template<class... __Args, typename std::enable_if<(sizeof...(__Args) > 0), int>::type = 0>
-    Feature( __Args... args )
+/*
+    template
+    <
+        class... __Args,
+        typename std::enable_if<(sizeof...(__Args) > 0), int>::type = 0
+    >
+    Feature( __Args&&... args )
     :
         // construct our storage via an initializer list containing args...
-        storage_( { args... } )
+        storage_( quickdev::make_initializer_list( std::forward<__Args>( args )... ) )
     {
-        //
     }
-
+*/
     typename _Storage::iterator begin()
     {
         return storage_.begin();
@@ -363,7 +382,7 @@ public:
      *  where each element is the distance between feature1[i] and feature2[i] (or the distance to the corresponding zero-value if featureX
      *  is not defined for [i]) */
     template<class __Mode, class __OtherData, class... __Args>
-    std::vector<double> getDistanceComponents( const Feature<__OtherData> & other, __Args... args ) const
+    std::vector<double> getDistanceComponents( const Feature<__OtherData> & other, __Args&&... args ) const
     {
         const auto & storage1 = storage_;
         const auto & storage2 = other.getStorage();
@@ -399,7 +418,7 @@ public:
             FeatureComponent<_Component1Data> component1( component1_end ? storage1_zero : *component1_it );
             FeatureComponent<_Component2Data> component2( component2_end ? storage2_zero : *component2_it );
 
-            distance_components.push_back( component1.distanceTo<__Mode>( component2, args... ) );
+            distance_components.push_back( component1.distanceTo<__Mode>( component2, std::forward<__Args>( args )... ) );
 
             if( !component1_end ) ++component1_it;
             if( !component2_end ) ++component2_it;
@@ -462,10 +481,45 @@ private:
 
         double total_distance = 1.0;
         auto sigma = sigmas.cbegin();
+
+//        std::cout << "Calculating distance between " << size() << "-D and " << other.size() << "-D feature with variance: " << sigmas << std::endl;
+//        std::cout << "error values { ";
         for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
         {
             auto const abs_distance_component = fabs( *distance_component );
-            total_distance *= gsl_cdf_gaussian_P( abs_distance_component + half_resolution, *sigma ) - gsl_cdf_gaussian_P( abs_distance_component - half_resolution, *sigma );
+            auto const probability_component = gsl_cdf_gaussian_P( abs_distance_component + half_resolution, *sigma ) - gsl_cdf_gaussian_P( abs_distance_component - half_resolution, *sigma );
+
+//            std::cout << abs_distance_component << " ( " << probability_component << " )";
+//            if( distance_component != distance_components.cend() - 1 ) std::cout << ", ";
+
+            total_distance *= probability_component;
+        }
+//        std::cout << " }" << std::endl;
+
+        return 1.0 - total_distance;
+    }
+
+    //! Calculates the gaussian distance to another feature using a fast algorithm
+    template<
+        class __Mode,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST>::value), int>::type = 0,
+        class __OtherData,
+        class __SigmaData,
+        typename std::enable_if<(std::is_floating_point<__SigmaData>::value), int>::type = 0
+    >
+    double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & std_dev = 1.0 ) const
+    {
+        const auto distance_components = getDistanceComponents<__Mode>( other );
+
+        double total_distance = 1.0;
+        auto sigma = sigmas.cbegin();
+
+        for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
+        {
+            auto const abs_distance_component = fabs( *distance_component );
+            auto const probability_component = abs_distance_component < *sigma * std_dev ? 1.0 : *sigma * std_dev / abs_distance_component;
+
+            total_distance *= probability_component;
         }
 
         return 1.0 - total_distance;
@@ -477,23 +531,38 @@ public:
      *  \param other the feature to which the distance should be calculated
      *  \param args the set of arguments, if any, to pass to the distance algorithm */
     template<class __Mode, class __OtherData, class... __Args>
-    double distanceTo( const Feature<__OtherData> & other, __Args... args ) const
+    double distanceTo( const Feature<__OtherData> & other, __Args&&... args ) const
     {
-        return distanceToImpl<__Mode>( other, args... );
+        return distanceToImpl<__Mode>( other, std::forward<__Args>( args )... );
     }
 
     //! Calculate the distance from this feature to a simple numeric feature
     /*! Simply wraps the given numeric value in a feature and forwards all other params to the primary distanceTo() implementation */
     template<class __Mode, class __OtherData, class std::enable_if<std::is_arithmetic<__OtherData>::value, int>::type = 0, class... __Args>
-    double distanceTo( const __OtherData & other, __Args... args ) const
+    double distanceTo( const __OtherData & other, __Args&&... args ) const
     {
-        return distanceToImpl<__Mode>( Feature<__OtherData>( other ), args... );
+        return distanceToImpl<__Mode>( Feature<__OtherData>( other ), std::forward<__Args>( args )... );
     }
 
     template<class __OtherData, class... __Args>
-    double distanceTo( const Feature<__OtherData> & other, __Args... args ) const
+    double distanceTo( const Feature<__OtherData> & other, __Args&&... args ) const
     {
-        return distanceTo<feature::mode::distance::EUCLIDIAN>( other, args... );
+        return distanceTo<feature::mode::distance::EUCLIDIAN>( other, std::forward<__Args>( args )... );
+    }
+
+    friend std::ostream & operator<<( std::ostream & out, Feature<__Data> const & feature )
+    {
+        out << "{ ";
+
+        for( auto elem_it = feature.cbegin(); elem_it != feature.cend(); ++elem_it )
+        {
+            out << *elem_it;
+
+            if( elem_it != feature.cend() - 1 ) out << ", ";
+        }
+        out << " }";
+
+        return out;
     }
 };
 
