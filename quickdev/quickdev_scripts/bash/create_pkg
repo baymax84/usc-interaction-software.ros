@@ -579,7 +579,7 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
         pkg=\"nodelet\"
         type=\"nodelet\"
         name=\"\$(arg name)\"
-        args=\"load \$(arg pkg)/\$(arg type) \$(arg manager) \$(arg args)\"
+        args=\"load \$(arg pkg)/\$(arg name) \$(arg manager) \$(arg args)\"
         output=\"screen\" />" >> $node_launch_relpath
   fi
   echo -n "
