@@ -2,10 +2,10 @@
 #include <ros/ros.h>
 #include <joint_msgs/JointArray.h>
 #include <joint_msgs/Params.h>
-#include <sensor_msgs/JointState.h>
-//#include <sparky/controller.hh>
-#include <sparky/angle_servo_controller.h>
 #include <math.h>
+#include <sensor_msgs/JointState.h>
+#include <sparky/angle_servo_controller.h>
+//#include <sparky/controller.hh>
 
 // angle (degrees and radians) definitions
 #define DTOR(rad) ((rad) * M_PI / 180.0)
