@@ -42,26 +42,12 @@
 
 /* auto_binder inspired by code written by "superbonzo" and "Chris_F" (http://www.codeguru.com/forum/showthread.php?t=512875) */
 
-#define __AUTO_BIND_FUNCTION_TYPE \
-        __QUICKDEV_FUNCTION_TYPE
+#define __AUTO_BIND_FUNCTION_TYPE __QUICKDEV_FUNCTION_TYPE
 
 namespace details
 {
 
-template<class __FunctionType>
-struct funct_types {};
-
-template
-<
-    class __ReturnType,
-    class... __ArgTypes
->
-struct funct_types<__AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> >
-{
-    typedef quickdev::SimpleContainer<__ArgTypes...> _ArgTypesContainer;
-    typedef __ReturnType _ReturnType;
-};
-
+// =============================================================================================================================================
 template<class __Return, class __Container>
 struct make_function{};
 
@@ -71,9 +57,11 @@ struct make_function<__Return, __Container<__Args...> >
     typedef __AUTO_BIND_FUNCTION_TYPE<__Return(__Args...)> function_type;
 };
 
+// #############################################################################################################################################
 template<int N>
 struct auto_binder
 {
+    // =========================================================================================================================================
     template
     <
         class __CallerType,
@@ -86,6 +74,7 @@ struct auto_binder
         return auto_binder<N-1>::auto_bind( function_ptr, caller, std::_Placeholder<N>(), std::forward<__PlaceHolders>( placeholders )... );
     }
 
+    // =========================================================================================================================================
     template
     <
         class __ReturnType,
@@ -97,6 +86,7 @@ struct auto_binder
         return auto_binder<N-1>::auto_bind( function_ptr, std::_Placeholder<N>(), std::forward<__PlaceHolders>( placeholders )... );
     }
 
+    // =========================================================================================================================================
     template
     <
         class... __OutputArgTypes,
@@ -123,9 +113,11 @@ struct auto_binder
 */
 };
 
+// #############################################################################################################################################
 template<>
 struct auto_binder<0>
 {
+    // =========================================================================================================================================
     template
     <
         class __CallerType,
@@ -138,6 +130,7 @@ struct auto_binder<0>
         return __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)>( std::bind( function_ptr, caller, std::forward<__PlaceHolders>( placeholders )... ) );
     }
 
+    // =========================================================================================================================================
     template
     <
         class __ReturnType,
@@ -149,6 +142,7 @@ struct auto_binder<0>
         return __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)>( std::bind( function_ptr, std::forward<__PlaceHolders>( placeholders )... ) );
     }
 
+    // =========================================================================================================================================
     template
     <
         class... __OutputArgTypes,
@@ -177,9 +171,12 @@ struct auto_binder<0>
 
 } // details
 
+// #############################################################################################################################################
+
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
+// =============================================================================================================================================
 template
 <
     class __CallerType,
@@ -191,6 +188,7 @@ __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind( __ReturnType( 
     return details::auto_binder<sizeof...(__ArgTypes)>::auto_bind( function_ptr, caller );
 }
 
+// =============================================================================================================================================
 template
 <
     class __ReturnType,
@@ -201,6 +199,7 @@ __AUTO_BIND_FUNCTION_TYPE<__ReturnType(__ArgTypes...)> auto_bind( __ReturnType( 
     return details::auto_binder<sizeof...(__ArgTypes)>::auto_bind( function_ptr );
 }
 
+// =============================================================================================================================================
 template
 <
     class __ReturnType,
