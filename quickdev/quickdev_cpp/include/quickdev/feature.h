@@ -103,34 +103,34 @@ namespace feature
 template<class __Data>
 struct is_feature
 {
-    const static bool value = false;
+    static bool const value = false;
 };
 
 //! Trait to determine if a type is a feature; specialization for features
 template<class __Data>
 struct is_feature<Feature<__Data> >
 {
-    const static bool value = true;
+    static bool const value = true;
 };
 
 template<class __Data>
 struct feature_is_numeric
 {
-    const static bool value = false;
+    static bool const value = false;
 };
 
 template<class __Data>
 struct feature_is_numeric<Feature<__Data> >
 {
-    const static bool value = std::is_arithmetic<__Data>::value;
+    static bool const value = std::is_arithmetic<__Data>::value;
 };
 
 //! Traits for features
 template<class __Data>
 struct traits
 {
-    const static bool is_numeric = feature_is_numeric<__Data>::value;
-    const static bool is_feature = is_feature<__Data>::value;
+    static bool const is_numeric = feature_is_numeric<__Data>::value;
+    static bool const is_feature = is_feature<__Data>::value;
 };
 
 // #############################################################################################################################################
@@ -155,10 +155,10 @@ template<class __Data>
 class FeatureComponent
 {
 protected:
-    const __Data value_;
+    __Data const value_;
 
 public:
-    FeatureComponent( const __Data & value )
+    FeatureComponent( __Data const & value )
     :
         value_( value )
     {
@@ -232,7 +232,7 @@ public:
         class __OtherData,
         typename std::enable_if<(feature::is_feature<__MData>::value), int>::type = 0
     >
-    double distanceToHelper( const FeatureComponent<__OtherData> & other ) const
+    double distanceToHelper( FeatureComponent<__OtherData> const & other ) const
     {
         //std::cout << "calculating distance between partially non-numeric components" << std::endl;
         return value_.distanceTo<__Mode>( other.getValue() );
@@ -247,7 +247,7 @@ public:
         class __OtherData,
         typename std::enable_if<(!feature::is_feature<__MData>::value && feature::is_feature<__OtherData>::value), int>::type = 0
     >
-    double distanceToHelper( const FeatureComponent<__OtherData> & other ) const
+    double distanceToHelper( FeatureComponent<__OtherData> const & other ) const
     {
         //std::cout << "calculating distance between partially non-numeric components" << std::endl;
         return other.getValue().distanceTo<__Mode>( value_ );
@@ -263,14 +263,14 @@ public:
         class... __Args,
         typename std::enable_if<(!feature::is_feature<__MData>::value && !feature::is_feature<__OtherData>::value), int>::type = 0
     >
-    double distanceToHelper( const FeatureComponent<__OtherData> & other, __Args&&... args ) const
+    double distanceToHelper( FeatureComponent<__OtherData> const & other, __Args&&... args ) const
     {
         //std::cout << "calculating distance between numeric components: " << value_ << " and " << other.getValue() << std::endl;
         return distanceToImpl<__Mode>( other.getValue(), std::forward<__Args>( args )... );
     }
 
     template<class __Mode, class __OtherData, class... __Args>
-    double distanceTo( const FeatureComponent<__OtherData> & other, __Args&&... args ) const
+    double distanceTo( FeatureComponent<__OtherData> const & other, __Args&&... args ) const
     {
         return distanceToHelper<__Mode, __Data>( other, std::forward<__Args>( args )... );
     }
@@ -382,10 +382,10 @@ public:
      *  where each element is the distance between feature1[i] and feature2[i] (or the distance to the corresponding zero-value if featureX
      *  is not defined for [i]) */
     template<class __Mode, class __OtherData, class... __Args>
-    std::vector<double> getDistanceComponents( const Feature<__OtherData> & other, __Args&&... args ) const
+    std::vector<double> getDistanceComponents( Feature<__OtherData> const & other, __Args&&... args ) const
     {
-        const auto & storage1 = storage_;
-        const auto & storage2 = other.getStorage();
+        auto const & storage1 = storage_;
+        auto const & storage2 = other.getStorage();
 
         auto component1_it = storage1.cbegin();
         auto component2_it = storage2.cbegin();
@@ -436,7 +436,7 @@ private:
     >
     double distanceToImpl( Feature<__OtherData> const & other ) const
     {
-        const auto distance_components = getDistanceComponents<__Mode>( other );
+        auto const distance_components = getDistanceComponents<__Mode>( other );
 
         double total_distance = 0.0;
         for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component )
@@ -454,7 +454,7 @@ private:
     >
     double distanceToImpl( Feature<__OtherData> const & other, double const & min, double const & max ) const
     {
-        const auto distance_components = getDistanceComponents<__Mode>( other, min, max );
+        auto const distance_components = getDistanceComponents<__Mode>( other, min, max );
 
         double total_distance = 0.0;
         for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component )
@@ -475,9 +475,9 @@ private:
     >
     double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & resolution = 1.0 ) const
     {
-        const auto distance_components = getDistanceComponents<__Mode>( other );
+        auto const distance_components = getDistanceComponents<__Mode>( other );
 
-        const auto half_resolution = resolution / 2.0;
+        auto const half_resolution = resolution / 2.0;
 
         double total_distance = 1.0;
         auto sigma = sigmas.cbegin();
@@ -509,7 +509,7 @@ private:
     >
     double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & std_dev = 1.0 ) const
     {
-        const auto distance_components = getDistanceComponents<__Mode>( other );
+        auto const distance_components = getDistanceComponents<__Mode>( other );
 
         double total_distance = 1.0;
         auto sigma = sigmas.cbegin();
@@ -531,7 +531,7 @@ public:
      *  \param other the feature to which the distance should be calculated
      *  \param args the set of arguments, if any, to pass to the distance algorithm */
     template<class __Mode, class __OtherData, class... __Args>
-    double distanceTo( const Feature<__OtherData> & other, __Args&&... args ) const
+    double distanceTo( Feature<__OtherData> const & other, __Args&&... args ) const
     {
         return distanceToImpl<__Mode>( other, std::forward<__Args>( args )... );
     }
@@ -539,13 +539,13 @@ public:
     //! Calculate the distance from this feature to a simple numeric feature
     /*! Simply wraps the given numeric value in a feature and forwards all other params to the primary distanceTo() implementation */
     template<class __Mode, class __OtherData, class std::enable_if<std::is_arithmetic<__OtherData>::value, int>::type = 0, class... __Args>
-    double distanceTo( const __OtherData & other, __Args&&... args ) const
+    double distanceTo( __OtherData const & other, __Args&&... args ) const
     {
         return distanceToImpl<__Mode>( Feature<__OtherData>( other ), std::forward<__Args>( args )... );
     }
 
     template<class __OtherData, class... __Args>
-    double distanceTo( const Feature<__OtherData> & other, __Args&&... args ) const
+    double distanceTo( Feature<__OtherData> const & other, __Args&&... args ) const
     {
         return distanceTo<feature::mode::distance::EUCLIDIAN>( other, std::forward<__Args>( args )... );
     }

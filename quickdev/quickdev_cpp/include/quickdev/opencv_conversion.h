@@ -51,8 +51,8 @@ sensor_msgs::Image::Ptr fromMat( cv::Mat const & mat, std::string const & frame_
 
 sensor_msgs::Image::Ptr fromIplImage( IplImage * image_ptr, std::string const & frame_id = "" );
 
-cv_bridge::CvImageConstPtr fromImageMsg( const sensor_msgs::Image::ConstPtr & image_msg );
-cv_bridge::CvImageConstPtr fromImageMsg( const sensor_msgs::Image & image_msg );
+cv_bridge::CvImageConstPtr fromImageMsg( sensor_msgs::Image::ConstPtr const & image_msg );
+cv_bridge::CvImageConstPtr fromImageMsg( sensor_msgs::Image const & image_msg );
 
 } // opencv_conversion
 

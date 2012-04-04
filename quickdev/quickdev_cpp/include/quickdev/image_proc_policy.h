@@ -58,7 +58,7 @@ struct PublisherAdapterStorage<image_transport::Publisher> : PublisherAdapterSto
     template<class... __ParentArgs>
     PublisherAdapterStorage( const decltype( image_transport_ ) & image_transport, __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... ),
+        _Parent( std::forward<__ParentArgs>( parent_args )... ),
         image_transport_( image_transport )
     {}
 };
@@ -73,7 +73,7 @@ public:
 
     static _Publisher createPublisher(
         ros::NodeHandle & nh,
-        const std::string & topic,
+        std::string const & topic,
         PublisherAdapterStorage<_Publisher> & storage )
     {
         return storage.image_transport_->advertise(
@@ -93,7 +93,7 @@ struct SubscriberAdapterStorage<image_transport::Subscriber> : SubscriberAdapter
     template<class... __ParentArgs>
     SubscriberAdapterStorage( const decltype( image_transport_ ) & image_transport, __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... ),
+        _Parent( std::forward<__ParentArgs>( parent_args )... ),
         image_transport_( image_transport )
     {}
 };
@@ -108,14 +108,14 @@ public:
     template<class __Message>
     static _Subscriber createSubscriber(
         ros::NodeHandle & nh,
-        const std::string & topic,
-        const std::function<void( const boost::shared_ptr<__Message const>& )> & callback,
+        std::string const & topic,
+        const std::function<void( boost::shared_ptr<__Message const> const & )> & callback,
         SubscriberAdapterStorage<_Subscriber> & storage )
     {
         return storage.image_transport_->subscribe(
             topic,
             storage.cache_size_,
-            boost::function< void( const boost::shared_ptr< __Message const>& )>( callback ) );
+            boost::function< void( boost::shared_ptr< __Message const> const & )>( callback ) );
     }
 };
 
@@ -179,12 +179,12 @@ protected:
 
     // provided in case a derived class wants to be notified when the
     // raw image comes in, before it's converted
-    virtual void imageCB( const sensor_msgs::Image::ConstPtr & image_msg )
+    virtual void imageCB( sensor_msgs::Image::ConstPtr const & image_msg )
     {
         //
     }
 
-    void imageCB_0( const sensor_msgs::Image::ConstPtr & image_msg )
+    void imageCB_0( sensor_msgs::Image::ConstPtr const & image_msg )
     {
         imageCB( image_msg );
 
@@ -194,7 +194,7 @@ protected:
     }
 
     // publish specializaiton for sensor_msgs::Image::Ptr
-    void publishImages( const std::string & topic, const sensor_msgs::Image::Ptr & image_ptr ) const
+    void publishImages( std::string const & topic, sensor_msgs::Image::Ptr const & image_ptr ) const
     {
         //PRINT_INFO( "publishing image (CvImageConstPtr) on topic %s", topic.c_str() );
 
@@ -202,7 +202,7 @@ protected:
     }
 
     // publish specializaiton for cv_bridge::CvImageConstPtr
-    void publishImages( const std::string & topic, cv_bridge::CvImageConstPtr & image_ptr ) const
+    void publishImages( std::string const & topic, cv_bridge::CvImageConstPtr & image_ptr ) const
     {
         //PRINT_INFO( "publishing image (CvImageConstPtr) on topic %s", topic.c_str() );
 
@@ -210,14 +210,14 @@ protected:
     }
 
     // generic recursive publish with topic/image pairs
-    // enabled only if __Rest... is not empty
+    // enabled only if __Rest&&... is not empty
     template<class __Image, class... __Rest>
     typename std::enable_if<(sizeof...(__Rest) > 0), void>::type
-    publishImages( const std::string & topic, __Image & image, __Rest... rest ) const
+    publishImages( std::string const & topic, __Image & image, __Rest&&... rest ) const
     {
         // publish using specialization for __Image
         publishImages( topic, image );
-        publishImages( rest... );
+        publishImages( std::forward<__Rest>( rest )... );
     }
 
     //void publishImage( IplImage * image_ptr ){}

@@ -57,7 +57,7 @@ DECLARE_UNIT_NAMESPACE()
 #define DECLARE_UNIT_CONVERSION( __FromUnit, __ToUnit ) \
 DECLARE_UNIT_NS(){ \
 template<> \
-struct can_convert<__FromUnit, __ToUnit>{ const static bool value = true; }; \
+struct can_convert<__FromUnit, __ToUnit>{ static bool const value = true; }; \
 }
 
 //namespace __FromUnit#_conversion{ typedef decltype( container_push( type_map, __ToUnit ) ) type_map; }
@@ -71,7 +71,7 @@ DECLARE_UNIT_NS() \
     { \
         template<class __MFromStorage> \
         static typename std::enable_if<std::is_same<__MFromStorage, __FromData>::value, __ToData>::type \
-        convert( const __MFromStorage & var_name ) \
+        convert( __MFromStorage const & var_name ) \
         { \
             conversion \
         } \
@@ -87,7 +87,7 @@ DECLARE_UNIT_NS() \
     { \
         template<class __MFromStorage> \
         static typename std::enable_if<std::is_same<__MFromStorage, __FromStorage>::value, __ToStorage>::type \
-        convert( const __MFromStorage & var_name ) \
+        convert( __MFromStorage const & var_name ) \
         { \
             return conversion; \
         } \
@@ -102,7 +102,7 @@ DECLARE_UNIT_NS() \
     struct UnitConverter<__FromData, __ToData, __ToStorage> \
     { \
         template<class __FromStorage> \
-        static __ToStorage convert( const __FromStorage & var_name ) \
+        static __ToStorage convert( __FromStorage const & var_name ) \
         { \
             return conversion; \
         } \
@@ -119,12 +119,12 @@ class __Unit : public GET_UNIT_NS()::NumericUnit<__Unit, ## __Storage> \
 { \
 public: \
     template<class... __ParentArgs> \
-    __Unit( __ParentArgs&&... parent_args ) : GET_UNIT_NS()::NumericUnit<__Unit, ## __Storage>( parent_args... ) {} \
+    __Unit( __ParentArgs&&... parent_args ) : GET_UNIT_NS()::NumericUnit<__Unit, ## __Storage>( std::forward<__ParentArgs>( parent_args )... ) {} \
 }; \
  \
 DECLARE_UNIT_NS(){ \
 template<> \
-struct is_numeric_helper<__Unit>{ const static bool value = true; }; \
+struct is_numeric_helper<__Unit>{ static bool const value = true; }; \
 }
 
 DECLARE_UNIT_NS()
@@ -137,18 +137,18 @@ template<class __FromUnit, class __ToUnit>
 struct can_convert{};
 
 template<class __Unit>
-struct is_numeric_helper{ const static bool value = false; };
+struct is_numeric_helper{ static bool const value = false; };
 
 template<class __Unit>
 struct is_numeric
 {
-    const static bool value = is_numeric_helper<__Unit>::value;
+    static bool const value = is_numeric_helper<__Unit>::value;
 };
 
 template<class __Unit>
 struct unit_traits
 {
-    const static bool is_numeric_ = is_numeric<__Unit>::value;
+    static bool const is_numeric_ = is_numeric<__Unit>::value;
 };
 
 class UnitBaseType{};
@@ -167,7 +167,7 @@ protected:
 public:
     UnitBase(){}
 
-    UnitBase( const __Storage value )
+    UnitBase( __Storage const value )
     :
         value_( value )
     {
@@ -180,13 +180,13 @@ public:
         operator=( other_unit );
     }
 
-    _UnitBase & operator=( const __Storage & value )
+    _UnitBase & operator=( __Storage const & value )
     {
         value_ = value;
         return *this;
     }
 
-    _UnitBase & operator=( const _UnitBase & other_unit )
+    _UnitBase & operator=( _UnitBase const & other_unit )
     {
         if( this != &other_unit )
         {
@@ -233,7 +233,7 @@ public:
     template<class... __ParentArgs>
     NumericUnit( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
@@ -249,13 +249,13 @@ public:
     template<class... __ParentArgs>
     UnitHelper( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
 
     template<class __OtherData, typename std::enable_if<(!boost::is_base_of<UnitBaseType, __OtherData>::value), int>::type = 0>
-    _Unit & operator=( const __OtherData & value )
+    _Unit & operator=( __OtherData const & value )
     {
         operator=( UnitBase<__OtherData, __OtherData>( value ) );
         return *this;
@@ -263,7 +263,7 @@ public:
 
     // unroll any Unit<Unit<Type> > instances
     template<class __OtherData, typename std::enable_if<(boost::is_base_of<UnitBaseType, __OtherData>::value), int>::type = 0>
-    _Unit & operator=( const __OtherData & value )
+    _Unit & operator=( __OtherData const & value )
     {
         operator=( value.getValue() );
         return *this;
@@ -285,7 +285,7 @@ public:
 
     template<class __ToData, class __FromData>
     typename std::enable_if<(!boost::is_base_of<UnitBaseType, __FromData>::value), __ToData>::type
-    operatorCastHelper( const __FromData & value )
+    operatorCastHelper( __FromData const & value )
     {
         return UnitConverter<__FromData, __ToData, __ToData>::convert( value );
     }
@@ -293,7 +293,7 @@ public:
     // unroll any Unit<Unit<Type> > instances
     template<class __ToData, class __FromData>
     typename std::enable_if<(boost::is_base_of<UnitBaseType, __FromData>::value), __ToData>::type
-    operatorCastHelper( const __FromData & value )
+    operatorCastHelper( __FromData const & value )
     {
         return operatorCastHelper<__ToData>( value.getValue() );
     }
@@ -314,7 +314,7 @@ public:
     template<class... __ParentArgs>
     UnitHelper( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
@@ -329,7 +329,7 @@ public:
     template<class... __ParentArgs>
     Unit( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
@@ -337,35 +337,35 @@ public:
 
 template<class __Data>
 typename std::enable_if<(!unit_traits<__Data>::is_numeric_), Unit<__Data> >::type
-make_unit( const __Data & data )
+make_unit( __Data const & data )
 {
     return Unit<__Data>( data );
 }
 
 template<class __Data, class __Storage = double>
 typename std::enable_if<(unit_traits<__Data>::is_numeric_), NumericUnit<__Data, __Storage> >::type
-make_unit( const __Storage & value )
+make_unit( __Storage const & value )
 {
     return NumericUnit<__Data, __Storage>( value );
 }
 
 template<class __ToData, class __FromData>
 typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
-convert_unit( const Unit<__FromData> & unit )
+convert_unit( Unit<__FromData> const & unit )
 {
     return Unit<__ToData>( unit );
 }
 
 template<class __ToData, class __FromData>
 typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
-convert( const Unit<__FromData> & unit )
+convert( Unit<__FromData> const & unit )
 {
     return Unit<__ToData>( unit ).getValue();
 }
 
 template<class __ToData, class __FromData>
 typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
-convert( const __FromData & data )
+convert( __FromData const & data )
 {
     return Unit<__ToData>( make_unit( data ) ).getValue();
 }

@@ -99,19 +99,19 @@ public:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", "cmd_vel", args... );
-        const auto frame_pairs = ros::ParamReader<std::string, 0>::readParams( nh_rel, "frame_pair", "", 0 );
+        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", "cmd_vel", std::forward<__Args>( args )... );
+        auto const frame_pairs = ros::ParamReader<std::string, 0>::readParams( nh_rel, "frame_pair", "", 0 );
 
         for( auto frame_pair = frame_pairs.begin(); frame_pair != frame_pairs.end(); ++frame_pair )
         {
-            const auto separator_pos = frame_pair->find_first_of( "," );
+            auto const separator_pos = frame_pair->find_first_of( "," );
             if( separator_pos == std::string::npos )
             {
                 PRINT_WARN( "Frame pair not properly formatted; format is: <from_frame>,<to_frame>" );
                 continue;
             }
-            const auto & from_frame = frame_pair->substr( 0, separator_pos );
-            const auto & to_frame = frame_pair->substr( separator_pos + 1 );
+            auto const & from_frame = frame_pair->substr( 0, separator_pos );
+            auto const & to_frame = frame_pair->substr( separator_pos + 1 );
             registerFrames( from_frame, to_frame );
         }
 
@@ -171,7 +171,7 @@ public:
     //! Transform all locally-cached TF frames by the velocity encoded in the given message pointer
     void updateFrames( _VelocityMsg::ConstPtr const & msg )
     {
-        const auto & transforms = tf_manager_.getTransforms();
+        auto const & transforms = tf_manager_.getTransforms();
         for( auto transform = transforms.begin(); transform != transforms.end(); ++transform )
         {
             updateFrames( transform->first, msg );
@@ -186,7 +186,7 @@ public:
     void updateFrames( TfManager::_TfFrameId const & frame_id, _VelocityMsg::ConstPtr const & msg, __Rest&&... rest )
     {
         // since no duration is specified, get the duration from our TimedPolicy and pass everything to the next updateFrames function
-        const auto & dt = QUICKDEV_GET_POLICY_NAMESPACE( TfManager )::_CallbackTimer::dt();
+        auto const & dt = QUICKDEV_GET_POLICY_NAMESPACE( TfManager )::_CallbackTimer::dt();
         updateFrames( frame_id, msg, dt, std::forward<__Rest>( rest )... );
     }
 

@@ -51,12 +51,15 @@ public:
 
     __Data data_;
     _ChildMultitypedNode * child_;
-    const static bool has_child_ = true;
+    static bool const has_child_ = true;
 
     MultitypedNode() : child_( NULL ) {}
 
     template<class... __RestChildData>
-    MultitypedNode( const __Data & data, __RestChildData&&... rest_child_data ) : data_( data ), child_( new _ChildMultitypedNode( rest_child_data... ) )
+    MultitypedNode( __Data const & data, __RestChildData&&... rest_child_data )
+    :
+        data_( data ),
+        child_( new _ChildMultitypedNode( std::forward<__RestChildData>( rest_child_data )... ) )
     {
         //printf( "constructing node with data type %s and %lu children\n", typeid( __Data ).name(), sizeof...( __RestChildData ) );
         //printf( "child exists: %u\n", child_ != false );
@@ -72,11 +75,11 @@ public:
     typedef __Data _Data;
 
     __Data data_;
-    const static bool has_child_ = false;
+    static bool const has_child_ = false;
 
     MultitypedNode(){}
 
-    MultitypedNode( const __Data & data ) : data_( data )
+    MultitypedNode( __Data const & data ) : data_( data )
     {
         //printf( "constructing node with data type %s and 0 children\n", typeid( __Data ).name() );
         //printf( "child exists: %u\n", child_ != false );
@@ -84,7 +87,7 @@ public:
 };
 
 template<class __Data, class... __RestChildData>
-static MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> > createMultitypedNode( const __Data & data, __RestChildData&&... rest_child_data )
+static MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> > createMultitypedNode( __Data const & data, __RestChildData&&... rest_child_data )
 {
     return MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> >( data, rest_child_data... );
 }
@@ -112,7 +115,9 @@ public:
 
     _MultitypedNode * root_;
 
-    MultitypedLinkedList( __Types&&... data ) : root_( new _MultitypedNode( data... ) )
+    MultitypedLinkedList( __Types&&... data )
+    :
+        root_( new _MultitypedNode( std::forward<__Types>( data )... ) )
     {
         //
     }
@@ -147,7 +152,7 @@ public:
 template<class... __Types>
 static MultitypedLinkedList<__Types...> createMultitypedLinkedList( __Types&&... data )
 {
-    return MultitypedLinkedList<__Types...>( data... );
+    return MultitypedLinkedList<__Types...>( std::forward<__Types>( data )... );
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_MULTITYPEDLINKEDLIST_H_

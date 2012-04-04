@@ -54,7 +54,7 @@ typedef AllPolicies ALL;
 template<class __Policy>
 struct is_initializeable
 {
-    static const bool value = false;
+    static bool const value = false;
 };
 
 //! \brief Construct a policy adapter that inherits each of a variable set of policies
@@ -68,7 +68,7 @@ public:
     /*! \note Ideally, we'd be able to pass in a variadic template of types, but gcc can't compile this; "invalid use of pack expansion expression"
      *  \code
      *  template<class... __Args>
-     *  GenericPolicyAdapter( __Args... args ) : __Policies( args... )
+     *  GenericPolicyAdapter( __Args&&... args ) : __Policies( std::forward<__Args>( args )... )
      *  \endcode
      *  Instead, we pass only one argument.
      *  \see http://stackoverflow.com/questions/7694201/unpacking-parameter-pack-of-args-into-the-constructor-of-each-class-defined-in-a
@@ -137,7 +137,7 @@ public:
         initRec<__ForceInit__, typename container::traits<__PoliciesSubset>::_Tail>( std::forward<__Args>( args )... );
     }
 
-    // if we encounter a "policy::ALL" type, replace it with __Policies... and continue as normal
+    // if we encounter a "policy::ALL" type, replace it with __Policies&&... and continue as normal
     template<
         bool __ForceInit__,
         class __PoliciesSubset,
@@ -148,7 +148,7 @@ public:
     void initRec( __Args&&... args )
     {
         initRec<__ForceInit__, SimpleContainer<__Policies...> >( std::forward<__Args>( args )... );
-        //initRec<__ForceInit__, typename container::combine_type< Container<__Policies...>, typename container::traits<__PoliciesSubset>::_Tail > >( args... );
+        //initRec<__ForceInit__, typename container::combine_type< Container<__Policies...>, typename container::traits<__PoliciesSubset>::_Tail > >( std::forward<__Args>( args )... );
     }
 
     template<

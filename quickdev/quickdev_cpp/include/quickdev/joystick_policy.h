@@ -149,12 +149,12 @@ public:
 
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        auto robot_name = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", args... );
+        auto robot_name = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", std::forward<__Args>( args )... );
         if( robot_name.size() > 0 ) robot_name.insert( 0, "/" );
 
-        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name.size() > 0 ? robot_name + "/cmd_vel" : "cmd_vel", args... );
+        cmd_vel_topic_name_ = getMetaParamDef<std::string>( "cmd_vel_topic_name_param", robot_name.size() > 0 ? robot_name + "/cmd_vel" : "cmd_vel", std::forward<__Args>( args )... );
 
-        auto params_namespace = policy::readPolicyParam<std::string>( nh_rel, "namespace_name_param", "namespace_name", "joystick", args... );
+        auto params_namespace = policy::readPolicyParam<std::string>( nh_rel, "namespace_name_param", "namespace_name", "joystick", std::forward<__Args>( args )... );
 
         if( !params_namespace.empty() && params_namespace.substr( params_namespace.size() - 1, 1 ) != "/" ) params_namespace += "/";
 
@@ -214,7 +214,7 @@ public:
         auto const & axis_it = axes_map_.find( axis_name );
         if( axis_it == axes_map_.end() ) return false;
 
-        const _Axis & axis = axis_it->second;
+        _Axis const & axis = axis_it->second;
 
         if( !enabled_ || ( ros::Time::now() - last_joystick_message_time_ ).toSec() > joystick_timeout_ ) axis_value = 0;
         else axis_value = axis.getValue( last_joystick_message_ );
@@ -234,7 +234,7 @@ public:
 
     _Axis const & getAxis( _Axis::_Name const & axis_name ) const
     {
-        static const _Axis default_axis = _Axis();
+        static _Axis const default_axis = _Axis();
 
         auto const & axis_it = axes_map_.find( axis_name );
         if( axis_it == axes_map_.end() ) return default_axis;

@@ -58,7 +58,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     struct is_same_value
     {
         //! The false type for differing IDs
-        const static bool value = false;
+        static bool const value = false;
     };
 
     //! Simple utility struct to determine if two statically-known data types contain the same value
@@ -67,7 +67,13 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     struct is_same_value<__Data, __Id__, __Id__>
     {
         //! The true type for matching IDs
-        const static bool value = true;
+        static bool const value = true;
+    };
+
+    template<class __Type1, class __Type2>
+    struct is_same_type
+    {
+        static bool const value = std::is_same<typename std::remove_reference<__Type1>::type, typename std::remove_reference<__Type2>::type>::value;
     };
 
     //! Type designed to provide somewhat useful compiler output when using other type traits
@@ -91,10 +97,10 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
      *  \param rest the remaining items, if any, in the variadic template
      *  \return current the value of the current item in the list */
     template<class __Desired, class __Current, class... __Rest>
-    static typename std::enable_if<std::is_same<__Desired, __Current>::value, __Desired>::type
-    getFirstOfType( __Current & current, __Rest&&... rest )
+    static typename std::enable_if<quickdev::is_same_type<__Desired, __Current>::value, __Desired>::type
+    getFirstOfType( __Current&& current, __Rest&&... rest )
     {
-        return current;
+        return std::forward<__Current>( current );
     }
 
     //! Specialization of getFirstOfType enabled when __Desired != __Current
@@ -106,10 +112,10 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
      *  \param rest the remaining items, if any, in the variadic template
      *  \return getFirstOfType<__Desired>( rest... ) the best specialization of getFirstOfType for rest */
     template<class __Desired, class __Current, class... __Rest>
-    static typename std::enable_if<!std::is_same<__Desired, __Current>::value, __Desired>::type
-    getFirstOfType( __Current & current, __Rest&&... rest )
+    static typename std::enable_if<!quickdev::is_same_type<__Desired, __Current>::value, __Desired>::type
+    getFirstOfType( __Current const & current, __Rest&&... rest )
     {
-        return getFirstOfType<__Desired>( rest... );
+        return getFirstOfType<__Desired>( std::forward<__Rest>( rest )... );
     }
 
     //! Specialization of tryGetMetaParamRec when a value of type __Desired was in the list but its key did not match the given key
@@ -119,7 +125,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
      *  \param name the name of the desired key
      *  \return __Desired() the default constructor value of the requested type */
     template<class __Desired>
-    bool tryGetMetaParamRec( const std::string & name, __Desired const & desired )
+    bool tryGetMetaParamRec( std::string const & name, __Desired const & desired )
     {
         PRINT_ERROR( ">>> Failed to find key [ %s ]", name.c_str() );
         return false;
@@ -127,13 +133,23 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 
     // #### Forward declarations of all recursive variants of tryGetMetaParamRec
 
-    template<class __Desired, class __Current, class... __Rest>
-    static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), bool>::type
-    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest );
+    template
+    <
+        class __Desired,
+        class __Current,
+        class... __Rest,
+        typename std::enable_if<!(quickdev::is_same_type<__Desired, __Current>::value), int>::type = 0
+    >
+    static bool tryGetMetaParamRec( std::string const & name, __Desired & desired, std::string const & current_name, __Current const & current, __Rest&&... rest );
 
-    template<class __Desired, class __Current, class... __Rest>
-    static typename std::enable_if<(std::is_same<__Desired, __Current>::value), bool>::type
-    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest );
+    template
+    <
+        class __Desired,
+        class __Current,
+        class... __Rest,
+        typename std::enable_if<(quickdev::is_same_type<__Desired, __Current>::value), int>::type = 0
+    >
+    static bool tryGetMetaParamRec( std::string const & name, __Desired & desired, std::string const & current_name, __Current&& current, __Rest&&... rest );
 
     // #### Declarations of all recursive variants of tryGetMetaParamRec
 
@@ -147,11 +163,16 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
      *  \param current the item at the front of the variadic template
      *  \param rest the remaining items, if any, in the variadic template
      *  \return getMetaParamRec<__Desired>( name, rest... ) the next best specialization of getMetaParamRec for the given arguments */
-    template<class __Desired, class __Current, class... __Rest>
-    static typename std::enable_if<(!std::is_same<__Desired, __Current>::value), bool>::type
-    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest )
+    template
+    <
+        class __Desired,
+        class __Current,
+        class... __Rest,
+        typename std::enable_if<!(quickdev::is_same_type<__Desired, __Current>::value), int>::type = 0
+    >
+    static bool tryGetMetaParamRec( std::string const & name, __Desired & desired, std::string const & current_name, __Current const & current, __Rest&&... rest )
     {
-        return tryGetMetaParamRec<__Desired>( name, desired, rest... );
+        return tryGetMetaParamRec<__Desired>( name, desired, std::forward<__Rest>( rest )... );
     }
 
     //! Specialization of tryGetMetaParamRec enabled when __Desired == __Current
@@ -163,19 +184,24 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
      *  \param current the item at the front of the variadic template
      *  \param rest the remaining items, if any, in the variadic template
      *  \return current if the given keys match or getMetaParamRec<__Desired>( name, rest... ), the next best specialization of getMetaParamRec for the given arguments */
-    template<class __Desired, class __Current, class... __Rest>
-    static typename std::enable_if<(std::is_same<__Desired, __Current>::value), bool>::type
-    tryGetMetaParamRec( const std::string & name, __Desired & desired, const std::string & current_name, __Current & current, __Rest&&... rest )
+    template
+    <
+        class __Desired,
+        class __Current,
+        class... __Rest,
+        typename std::enable_if<(quickdev::is_same_type<__Desired, __Current>::value), int>::type = 0
+    >
+    static bool tryGetMetaParamRec( std::string const & name, __Desired & desired, std::string const & current_name, __Current&& current, __Rest&&... rest )
     {
         if( name == current_name )
         {
             std::stringstream ss;
             ss << current;
             PRINT_INFO( "Found key [ %s ] with value [ %s ]", name.c_str(), ss.str().c_str() );
-            desired = current;
+            desired = std::forward<__Current>( current );
             return true;
         }
-        return tryGetMetaParamRec<__Desired>( name, desired, rest... );
+        return tryGetMetaParamRec<__Desired>( name, desired, std::forward<__Rest>( rest )... );
     }
 
     // #### Entry points for getMetaParam and getMetaParamDef
@@ -195,11 +221,11 @@ Usage:
      *  \param rest the list of key-value pairs
      *  \return getMetaParamRec<__Desired>( name, rest... ) the next best specialization of getMetaParamRec for the given arguments */
     template<class __Desired, class... __Rest>
-    static bool tryGetMetaParam( const std::string & name, __Desired & desired, __Rest&&... rest )
+    static bool tryGetMetaParam( std::string const & name, __Desired & desired, __Rest&&... rest )
     {
         // make sure desired type exists in list; otherwise fail at compile time
         //getFirstOfType<__Desired>( rest... );
-        return tryGetMetaParamRec<__Desired>( name, desired, rest... );
+        return tryGetMetaParamRec<__Desired>( name, desired, std::forward<__Rest>( rest )... );
     }
 
     //! A function that, given a variadic list of key-value pairs, and a desired type, will return the first item of the given type with a matching key
@@ -217,12 +243,12 @@ Usage:
      *  \param rest the list of key-value pairs
      *  \return getMetaParamRec<__Desired>( name, rest... ) the next best specialization of getMetaParamRec for the given arguments */
     template<class __Desired, class... __Rest>
-    static __Desired getMetaParam( const std::string & name, __Rest&&... rest )
+    static __Desired getMetaParam( std::string const & name, __Rest&&... rest )
     {
         // make sure desired type exists in list; otherwise fail at compile time
         //getFirstOfType<__Desired>( rest... );
         __Desired desired;
-        tryGetMetaParamRec<__Desired>( name, desired, rest... );
+        tryGetMetaParamRec<__Desired>( name, desired, std::forward<__Rest>( rest )... );
         return desired;
     }
 
@@ -243,35 +269,35 @@ Usage:
      *  \param rest the list of key-value pairs
      *  \return getMetaParamDefRec<__Desired>( name, default_value, rest... ) the best specialization of getMetaParamDefRec for the given arguments */
     template<class __Desired, class... __Rest>
-    static __Desired getMetaParamDef( const std::string & name, const __Desired & default_value, __Rest&&... rest )
+    static __Desired getMetaParamDef( std::string const & name, __Desired&& default_value, __Rest&&... rest )
     {
         __Desired desired;
-        return tryGetMetaParamRec<__Desired>( name, desired, rest... ) ? desired : default_value;
+        return tryGetMetaParamRec<__Desired>( name, desired, std::forward<__Rest>( rest )... ) ? desired : std::forward<__Desired>( default_value );
     }
 
     template<class... __Rest>
     static void make_key_rec( std::stringstream const & ss ){}
 
     template<class __Current, class... __Rest>
-    static void make_key_rec( std::stringstream & ss, __Current const & current, __Rest... rest )
+    static void make_key_rec( std::stringstream & ss, __Current const & current, __Rest&&... rest )
     {
         ss << current;
-        make_key_rec( ss, rest... );
+        make_key_rec( ss, std::forward<__Rest>( rest )... );
     }
 
     template<class... __Args>
-    static std::string make_key( __Args... args )
+    static std::string make_key( __Args&&... args )
     {
         std::stringstream ss;
-        make_key_rec( ss, args... );
+        make_key_rec( ss, std::forward<__Args>( args )... );
         return ss.str();
     }
 
     template<class... __Args>
-    static std::string make_key_if( bool const & enable, __Args... args )
+    static std::string make_key_if( bool const & enable, __Args&&... args )
     {
-        if( enable ) return make_key( args... );
-        return make_key( variadic::at<0>( args... ) );
+        if( enable ) return make_key( std::forward<__Args>( args )... );
+        return make_key( variadic::at<0>( std::forward<__Args>( args )... ) );
     }
 
     //! Simple struct to hold useful pointer types
@@ -280,13 +306,13 @@ Usage:
     {
         //! A shared pointer for __Type
         typedef boost::shared_ptr<__Type> _Shared;
-        //! A const shared pointer for __Type
+        //! A shared pointer const for __Type
         typedef boost::shared_ptr<__Type const> _Const;
     };
 
     /*template<class __MessagePtr>
     typename std::enable_if<(boost::is_base_of<ros::Message, typename __MessagePtr::element_type>::value), typename __MessagePtr::element_type>::type
-    getMessageType( const __MessagePtr & message_ptr )
+    getMessageType( __MessagePtr const & message_ptr )
     {
         return typename __MessagePtr::element_type();
     }*/
@@ -315,26 +341,26 @@ Usage:
 #endif
 //==============================================================================================================================================
 
-    //! Specialization of getMessageType for any class instance typed on a non-const __Message derived from ros::Message
+    //! Specialization of getMessageType for any class instance typed on a non-__Message derived const from ros::Message
     /*! Returns the type of the ROS message on which the given class is typed. As an example, if we have an instance
      *  of some_pkg::SomeMessage::Ptr called some_msg_ptr, getMessageType( some_msg_ptr ) will resolve to some_pkg::SomeMessage().
      *  \param message an instance of the class
      *  \return __Message() the default constructor for __Message */
     template<class __Message, template<typename> class __Ptr>
     typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
-    getMessageType( const __Ptr<__Message const> & message )
+    getMessageType( __Ptr<__Message const> const & message )
     {
         return __Message();
     }
 
-    //! Specialization of getMessageType for any class instance typed on a const __Message derived from ros::Message
+    //! Specialization of getMessageType for any class instance typed on a __Message derived const from ros::Message
     /*! Returns the type of the ROS message on which the given class is typed. As an example, if we have an instance
      *  of some_pkg::SomeMessage::ConstPtr called some_msg_ptr, getMessageType( some_msg_ptr ) will resolve to some_pkg::SomeMessage().
      *  \param message an instance of the class
      *  \return __Message() the default constructor for __Message */
     template<class __Message, template<typename> class __Ptr>
     typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
-    getMessageType( const __Ptr<__Message> & message )
+    getMessageType( __Ptr<__Message> const & message )
     {
         return __Message();
     }
@@ -346,7 +372,7 @@ Usage:
      *  \return message */
     template<class __Message>
     //typename std::enable_if<(quickdev::is_ros_message<__Message>::value), __Message>::type
-    __Message getMessageType( const __Message & message )
+    __Message getMessageType( __Message const & message )
     {
         return message;
     }
@@ -384,7 +410,7 @@ Usage:
      *  \return a __Message::ConstPtr with a copy of the data in message */
     template<class __Message>
     typename std::enable_if<(quickdev::is_ros_message<__Message>::value), typename __Message::ConstPtr>::type
-    make_const_shared( const __Message & message )
+    make_const_shared( __Message const & message )
     {
         return typename __Message::ConstPtr( new __Message( message ) );
     }
@@ -395,7 +421,7 @@ Usage:
      *  \return a __Message::Ptr with a copy of the data in message */
     template<class __Message>
     typename std::enable_if<(quickdev::is_ros_message<__Message>::value), typename __Message::Ptr>::type
-    make_shared( const __Message & message )
+    make_shared( __Message const & message )
     {
         return typename __Message::Ptr( new __Message( message ) );
     }

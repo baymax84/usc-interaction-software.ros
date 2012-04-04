@@ -49,47 +49,47 @@ template<class __Signature> class CallbackPolicy;
 template<class __CallbackReturn, class... __CallbackArgs>
 class CallbackPolicy<__CallbackReturn( __CallbackArgs... )> : public QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( Callback )
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( Callback )
+    QUICKDEV_MAKE_POLICY_FUNCS( Callback )
 
 public:
-	typedef __QUICKDEV_FUNCTION_TYPE<__CallbackReturn( __CallbackArgs&&... )> _CallbackType;
+    typedef __QUICKDEV_FUNCTION_TYPE<__CallbackReturn( __CallbackArgs&&... )> _CallbackType;
 
 private:
-	_CallbackType external_callback_;
+    _CallbackType external_callback_;
 
-	QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Callback )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Callback )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 
-	void registerCallback( const _CallbackType & external_callback )
-	{
-		external_callback_ = external_callback;
-	}
+    void registerCallback( _CallbackType const & external_callback )
+    {
+        external_callback_ = external_callback;
+    }
 
-	template<class __Return>
-	QUICKDEV_ENABLE_IF_SAME( __CallbackReturn, __Return, void )
-	invokeCallback_0( __CallbackArgs&&... args ) const
-	{
-		if( external_callback_ ) external_callback_( args... );
-	}
+    template<class __Return>
+    QUICKDEV_ENABLE_IF_SAME( __CallbackReturn, __Return, void )
+    invokeCallback_0( __CallbackArgs&&... args ) const
+    {
+        if( external_callback_ ) external_callback_( std::forward<__CallbackArgs>( args )... );
+    }
 
-	template<class __Return>
-	QUICKDEV_ENABLE_IF_NOT_SAME( __CallbackReturn, __Return, void )
-	invokeCallback_0( __CallbackArgs&&... args ) const
-	{
-		const static __CallbackReturn default_return = __CallbackReturn();
+    template<class __Return>
+    QUICKDEV_ENABLE_IF_NOT_SAME( __CallbackReturn, __Return, void )
+    invokeCallback_0( __CallbackArgs&&... args ) const
+    {
+        static __CallbackReturn const default_return = __CallbackReturn();
 
-		if( !external_callback_ ) return default_return;
-		return external_callback_( args... );
-	}
+        if( !external_callback_ ) return default_return;
+        return external_callback_( std::forward<__CallbackArgs>( args )... );
+    }
 
-	__CallbackReturn invokeCallback( __CallbackArgs&&... args ) const
-	{
-		// in order to enable/disable functions with enable_if, they need to be directly dependent on some outer type
-		return invokeCallback_0<__CallbackReturn>( args... );
-	}
+    __CallbackReturn invokeCallback( __CallbackArgs&&... args ) const
+    {
+        // in order to enable/disable functions with enable_if, they need to be directly dependent on some outer type
+        return invokeCallback_0<__CallbackReturn>( std::forward<__CallbackArgs>( args )... );
+    }
 };
 
 // ########## Type Adapters for CallbackPolicy #################################################################################################
@@ -101,43 +101,43 @@ template<class __Signature> struct from_function;
 template<class __Return, class... __Args>
 struct from_function<__QUICKDEV_FUNCTION_TYPE<__Return( __Args... )> >
 {
-	typedef CallbackPolicy<__Return( __Args... )> type;
+    typedef CallbackPolicy<__Return( __Args... )> type;
 };
 
 } // QUICKDEV_DECLARE_POLICY_NAMESPACE( Callback )
 
 // ########## Special callback policy for message-based callbacks ##############################################################################
 template<class __Message>
-class MessageCallbackPolicy : public CallbackPolicy<void( const typename __Message::ConstPtr & )>
+class MessageCallbackPolicy : public CallbackPolicy<void( typename __Message::ConstPtr const & )>
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( MessageCallback )
+    QUICKDEV_MAKE_POLICY_FUNCS( MessageCallback )
 
 public:
-	typedef CallbackPolicy<void( const typename __Message::ConstPtr & )> _CallbackPolicy;
+    typedef CallbackPolicy<void( typename __Message::ConstPtr const & )> _CallbackPolicy;
 
-	template<class... __Args>
-	MessageCallbackPolicy( __Args&&... args ) : _CallbackPolicy( args... )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    template<class... __Args>
+    MessageCallbackPolicy( __Args&&... args ) : _CallbackPolicy( std::forward<__Args>( args )... )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 };
 
 // ########## Special callback policy for service-based callbacks ##############################################################################
 template<class __Service>
 class ServiceCallbackPolicy : public CallbackPolicy<bool( typename __Service::Request &, typename __Service::Response & )>
 {
-	QUICKDEV_MAKE_POLICY_FUNCS( ServiceCallback )
+    QUICKDEV_MAKE_POLICY_FUNCS( ServiceCallback )
 
 public:
-	typedef CallbackPolicy<bool( typename __Service::Request &, typename __Service::Response & )> _CallbackPolicy;
+    typedef CallbackPolicy<bool( typename __Service::Request &, typename __Service::Response & )> _CallbackPolicy;
 
-	template<class... __Args>
-	ServiceCallbackPolicy( __Args&&... args ) : _CallbackPolicy( args... )
-	{
-		printPolicyActionStart( "create", this );
-		printPolicyActionDone( "create", this );
-	}
+    template<class... __Args>
+    ServiceCallbackPolicy( __Args&&... args ) : _CallbackPolicy( std::forward<__Args>( args )... )
+    {
+        printPolicyActionStart( "create", this );
+        printPolicyActionDone( "create", this );
+    }
 };
 
 } // quickdev

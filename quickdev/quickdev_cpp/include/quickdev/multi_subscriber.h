@@ -36,11 +36,14 @@
 #ifndef QUICKDEVCPP_QUICKDEV_MULTISUBSCRIBER_H_
 #define QUICKDEVCPP_QUICKDEV_MULTISUBSCRIBER_H_
 
+#include <quickdev/type_utils.h>
 #include <quickdev/container.h>
 #include <quickdev/auto_bind.h>
 #include <quickdev/console.h>
+
 #include <ros/node_handle.h>
 #include <ros/subscriber.h>
+
 #include <vector>
 #include <map>
 
@@ -55,12 +58,12 @@ struct SubscriberAdapterStorage {};
 template<>
 struct SubscriberAdapterStorage<ros::Subscriber>
 {
-	unsigned int cache_size_;
+    unsigned int cache_size_;
 
-	SubscriberAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
-	:
-		cache_size_( cache_size )
-	{}
+    SubscriberAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
+    :
+        cache_size_( cache_size )
+    {}
 };
 
 // ## SubscriberAdapter ################################################
@@ -72,20 +75,20 @@ template<>
 class SubscriberAdapter<ros::Subscriber>
 {
 public:
-	typedef ros::Subscriber _Subscriber;
+    typedef ros::Subscriber _Subscriber;
 
-	template<class __Message>
-	static _Subscriber createSubscriber(
-		ros::NodeHandle & nh,
-		const std::string & topic,
-		const std::function<void( const boost::shared_ptr<__Message const>& )> & callback,
-		SubscriberAdapterStorage<_Subscriber> & storage )
-	{
-		return nh.subscribe(
-			topic,
-			storage.cache_size_,
-			boost::function< void( const boost::shared_ptr< __Message const>& )>( callback ) );
-	}
+    template<class __Message>
+    static _Subscriber createSubscriber(
+        ros::NodeHandle & nh,
+        std::string const & topic,
+        const std::function<void( boost::shared_ptr<__Message const> const & )> & callback,
+        SubscriberAdapterStorage<_Subscriber> & storage )
+    {
+        return nh.subscribe(
+            topic,
+            storage.cache_size_,
+            boost::function< void( boost::shared_ptr< __Message const> const & )>( callback ) );
+    }
 };
 
 
@@ -96,54 +99,54 @@ template<class __Subscriber = ros::Subscriber>
 class MultiSubscriber
 {
 public:
-	typedef std::string _Topic;
-	typedef std::vector<_Topic> _TopicArray;
-	typedef __Subscriber _Subscriber;
-	//typedef SubscriberAdapter<__Subscriber> _SubscriberAdapter;
-	typedef SubscriberAdapterStorage<__Subscriber> _SubscriberAdapterStorage;
-	typedef std::map<_Topic, __Subscriber> _SubscriberMap;
+    typedef std::string _Topic;
+    typedef std::vector<_Topic> _TopicArray;
+    typedef __Subscriber _Subscriber;
+    //typedef SubscriberAdapter<__Subscriber> _SubscriberAdapter;
+    typedef SubscriberAdapterStorage<__Subscriber> _SubscriberAdapterStorage;
+    typedef std::map<_Topic, __Subscriber> _SubscriberMap;
 
 protected:
-	_SubscriberMap subscribers_;
+    _SubscriberMap subscribers_;
 
 public:
-	// default constructor does nothing
-	MultiSubscriber()
-	{
-		//
-	}
+    // default constructor does nothing
+    MultiSubscriber()
+    {
+        //
+    }
 
-	// here, we only support adding one callback at a time, either through a standard or member function pointer
-	template<class __Message, class __CallerBase, class __Caller>
-	MultiSubscriber & addSubscriber( ros::NodeHandle & nh, const _Topic & topic_name, void( __CallerBase::*function_ptr )( const __Message & ), __Caller * const caller, _SubscriberAdapterStorage storage = _SubscriberAdapterStorage() )
-	{
-		return addSubscriber( nh, topic_name, quickdev::auto_bind( function_ptr, caller ), storage );
-	}
+    // here, we only support adding one callback at a time, either through a standard or member function pointer
+    template<class __Message, class __CallerBase, class __Caller>
+    MultiSubscriber & addSubscriber( ros::NodeHandle & nh, _Topic const & topic_name, void( __CallerBase::*function_ptr )( __Message const & ), __Caller * const caller, _SubscriberAdapterStorage storage = _SubscriberAdapterStorage() )
+    {
+        return addSubscriber( nh, topic_name, quickdev::auto_bind( function_ptr, caller ), storage );
+    }
 
-	template<class __Message>
-	MultiSubscriber & addSubscriber( ros::NodeHandle & nh, const _Topic & topic_name, const std::function< void(const boost::shared_ptr< __Message const > &)> & callback, _SubscriberAdapterStorage & storage )
-	{
-		const ros::NodeHandle topic_nh( nh, topic_name );
-		PRINT_INFO( ">>> Creating subscriber [ %s ] on topic [ %s ]", QUICKDEV_GET_MESSAGE_NAME( __Message ).c_str(), topic_nh.getNamespace().c_str() );
+    template<class __Message>
+    MultiSubscriber & addSubscriber( ros::NodeHandle & nh, _Topic const & topic_name, const std::function< void(boost::shared_ptr< __Message const > const &)> & callback, _SubscriberAdapterStorage & storage )
+    {
+        const ros::NodeHandle topic_nh( nh, topic_name );
+        PRINT_INFO( ">>> Creating subscriber [ %s ] on topic [ %s ]", QUICKDEV_GET_MESSAGE_NAME( __Message ).c_str(), topic_nh.getNamespace().c_str() );
 
-		subscribers_[topic_name] = SubscriberAdapter<__Subscriber>::createSubscriber( nh, topic_name, callback, storage );
+        subscribers_[topic_name] = SubscriberAdapter<__Subscriber>::createSubscriber( nh, topic_name, callback, storage );
 
-		return *this;
-	}
+        return *this;
+    }
 
-	// check to see if a topic exists in the list of subscribers
-	const bool & exists( const _Topic & topic ) const
-	{
-		return subscribers_.count( topic );
-	}
+    // check to see if a topic exists in the list of subscribers
+    const bool & exists( _Topic const & topic ) const
+    {
+        return subscribers_.count( topic );
+    }
 
-	// indexing operator; allows read-only access of subscribers_
-	const __Subscriber & operator[]( const _Topic & topic ) const
-	{
-		const auto & subscriber( subscribers_.find( topic ) );
-		if( subscriber != subscribers_.end() ) return subscriber->second;
-		return __Subscriber();
-	}
+    // indexing operator; allows read-only access of subscribers_
+    const __Subscriber & operator[]( _Topic const & topic ) const
+    {
+        const auto & subscriber( subscribers_.find( topic ) );
+        if( subscriber != subscribers_.end() ) return subscriber->second;
+        return __Subscriber();
+    }
 };
 
 }

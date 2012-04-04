@@ -72,7 +72,7 @@ protected:
 
     QUICKDEV_ENABLE_INIT()
     {
-        max_duration_ = getMetaParamDef<_Duration>( "max_duration_param", 0, args... );
+        max_duration_ = getMetaParamDef<_Duration>( "max_duration_param", 0, std::forward<__Args>( args )... );
 
         QUICKDEV_SET_INITIALIZED();
     }

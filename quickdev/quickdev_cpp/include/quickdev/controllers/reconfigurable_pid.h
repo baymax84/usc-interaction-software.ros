@@ -102,9 +102,9 @@ class ReconfigurablePID : public PID<__Dim__, ReconfigurablePIDSettings>
 {
 public:
     template<class... __Args>
-    ReconfigurablePID( __Args... args )
+    ReconfigurablePID( __Args&&... args )
     :
-        PID<__Dim__, ReconfigurablePIDSettings>( args... )
+        PID<__Dim__, ReconfigurablePIDSettings>( std::forward<__Args>( args )... )
     {
         //
     }

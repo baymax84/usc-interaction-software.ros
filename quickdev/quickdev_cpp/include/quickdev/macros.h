@@ -107,12 +107,12 @@ class PolicyNameBase##Policy : public QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( Polic
 /*! \tparam __Args the variadic template of argument types to pass on to the parent policies. */ \
 /*! \param args the variadic template of arguments to pass on to the parent policies. */ \
 /*! \note in reality, the only argument passed through the constructor via __Args is a ros::NodeHandle due to unsupported features in GCC \see GenericPolicyAdapter() */ \
-/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( args... ) \endcode */ \
+/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( std::forward<__Args>( args )... ) \endcode */ \
 public: \
     template<class... __Args> \
     PolicyNameBase##Policy( __Args&&... args ) \
     : \
-        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )( args... )
+        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS( PolicyNameBase )( std::forward<__Args>( args )... )
 
 // ########## Pipeline for Policy with dependent types #################
 // ------------------------------------------------------------------------------------------------------------------------------------------
@@ -147,12 +147,12 @@ class PolicyNameBase##Policy : public QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( Poli
 /*! \tparam __Args the variadic template of argument types to pass on to the parent policies. */ \
 /*! \param args the variadic template of arguments to pass on to the parent policies. */ \
 /*! \note in reality, the only argument passed through the constructor via __Args is a ros::NodeHandle due to unsupported features in GCC \see GenericPolicyAdapter() */ \
-/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( args... ) \endcode */ \
+/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( std::forward<__Args>( args )... ) \endcode */ \
 public: \
     template<class... __Args> \
     PolicyNameBase##Policy( __Args&&... args ) \
     : \
-        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type( args... )
+        QUICKDEV_GET_POLICY_ADAPTER_WITH_NS2( PolicyNameBase, __Types )::type( std::forward<__Args>( args )... )
 
 // ########## Generic Node Macros ######################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
@@ -174,12 +174,12 @@ class NodeNameBase##Node : public _##NodeNameBase##NodeAdapterType
 /*! \tparam __Args the variadic template of argument types to pass on to the parent policies. */ \
 /*! \param args the variadic template of arguments to pass on to the parent policies. */ \
 /*! \note in reality, the only argument passed through the constructor via __Args is a ros::NodeHandle due to unsupported features in GCC \see GenericPolicyAdapter() */ \
-/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( args... ) \endcode */ \
+/*! \note the given ros::NodeHandle can be extracted via getFirstOfType(): \code auto nh_rel = getFirstOfType<ros::NodeHandle>( std::forward<__Args>( args )... ) \endcode */ \
 public: \
     template<class... __Args> \
     NodeNameBase##Node( __Args&&... args ) \
     : \
-        _##NodeNameBase##NodeAdapterType( args... )
+        _##NodeNameBase##NodeAdapterType( std::forward<__Args>( args )... )
 
 // ########## Node Instantiation Macros ################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ private: bool initialized_; \
 /*! \brief Used to set the initialization state of an initializable policy */ \
 /*! \details Usually called as the last line in init() */ \
 /*! \param value the new initialization state of this policy */ \
-private: inline void setInitialized( const bool & value ){ initialized_ = value; } \
+private: inline void setInitialized( bool const & value ){ initialized_ = value; } \
 /*! \brief Used to get the initialization state of an initializable policy */ \
 /*! \return the current initialization state of this policy */ \
 public: inline bool const & getInitialized() const { return initialized_; } \
@@ -251,7 +251,7 @@ this->setInitialized( true )
 // ########## Updateable Policy Macros #################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_ENABLE_UPDATE() \
-const static bool HAS_UPDATE_ = true; \
+static bool const HAS_UPDATE_ = true; \
 template<class... __Args> \
 void update( __Args&&... args )
 
@@ -261,7 +261,7 @@ void update( __Args&&... args )
 /*! \brief Callback for a __MessageType message */ \
 /*! \param message_name a pointer to the incoming message */ \
 /*! \return nothing */ \
-void callbackName( const __MessageType::ConstPtr & message_name )
+void callbackName( __MessageType::ConstPtr const & message_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MESSAGE_CALLBACK( callbackName, __MessageType ) \
 QUICKDEV_DECLARE_MESSAGE_CALLBACK2( callbackName, __MessageType, msg )
@@ -272,7 +272,7 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK2( callbackName, __MessageType, msg )
 /*! \param message_name a pointer to the incoming message */ \
 /*! \return nothing */ \
 typename std::enable_if<condition, void>::type \
-callbackName( const __MessageType::ConstPtr & message_name )
+callbackName( __MessageType::ConstPtr const & message_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_CONDITIONAL_MESSAGE_CALLBACK( callbackName, __MessageType, condition ) \
 QUICKDEV_DECLARE_CONDITIONAL_MESSAGE_CALLBACK2( callbackName, __MessageType, msg, condition )
@@ -360,14 +360,14 @@ QUICKDEV_TRY_LOCK_OR_RETURN2( cache_var##_lock, args )
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_LOCK_MUTEX2( lock_var, mutex_var ) \
-const auto & lock_var = mutex_var.lock()
+auto const & lock_var = mutex_var.lock()
 
 #define QUICKDEV_LOCK_MUTEX( mutex_var ) \
 QUICKDEV_LOCK_MUTEX2( mutex_var##_lock, mutex_var )
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_TRY_LOCK_MUTEX2( lock_var, mutex_var ) \
-const auto & lock_var = mutex_var.tryLock()
+auto const & lock_var = mutex_var.tryLock()
 
 #define QUICKDEV_TRY_LOCK_MUTEX( mutex_var ) \
 QUICKDEV_LOCK_MUTEX2( mutex_var##_lock, mutex_var )
@@ -380,7 +380,7 @@ auto & output_var = cache_var.get()
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_TRY_UPDATE_CACHE2( lock_var, cache_var, value_var ) \
-const auto & lock_var = cache_var.tryLockAndUpdate( value_var )
+auto const & lock_var = cache_var.tryLockAndUpdate( value_var )
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_TRY_UPDATE_CACHE( cache_var, value_var ) \

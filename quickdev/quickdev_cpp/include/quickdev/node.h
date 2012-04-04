@@ -41,14 +41,14 @@
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
-// wrap GenericPolicyAdapter and add RunablePolicy to the front of __Policies...
+// wrap GenericPolicyAdapter and add RunablePolicy to the front of __Policies&&...
 template<class... __Policies>
 class Node : public GenericPolicyAdapter<RunablePolicy, __Policies...>
 {
 public:
     // #########################################################################################################################################
     template<class... __Args>
-    Node( __Args&&... args ) : GenericPolicyAdapter<RunablePolicy, __Policies...>( args... )
+    Node( __Args&&... args ) : GenericPolicyAdapter<RunablePolicy, __Policies...>( std::forward<__Args>( args )... )
     {
 
     }
@@ -73,7 +73,7 @@ public:
     >
     void tryUpdate( __Args&&... args )
     {
-        __Policy::update( args... );
+        __Policy::update( std::forward<__Args>( args )... );
     }
 
     // #########################################################################################################################################
@@ -87,8 +87,8 @@ public:
     >
     void updateRec( __Args&&... args )
     {
-        tryUpdate<typename container::traits<__PoliciesSubset>::_Front>( args... );
-        updateRec<typename container::traits<__PoliciesSubset>::_Tail>( args... );
+        tryUpdate<typename container::traits<__PoliciesSubset>::_Front>( std::forward<__Args>( args )... );
+        updateRec<typename container::traits<__PoliciesSubset>::_Tail>( std::forward<__Args>( args )... );
     }
 
     // #########################################################################################################################################
@@ -106,7 +106,7 @@ public:
     template<class... __Args>
     void updateAll( __Args&&... args )
     {
-        updateRec<SimpleContainer<__Policies...> >( args... );
+        updateRec<SimpleContainer<__Policies...> >( std::forward<__Args>( args )... );
     }
 
     // #########################################################################################################################################
