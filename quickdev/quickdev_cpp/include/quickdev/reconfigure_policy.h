@@ -75,7 +75,7 @@ public:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        auto const reconfigure_namespace = policy::readPolicyParam<std::string>( nh_rel, "reconfigure_namespace_param", "reconfigure_namespace", "reconfigure", args... );
+        auto const reconfigure_namespace = policy::readPolicyParam<std::string>( nh_rel, "reconfigure_namespace_param", "reconfigure_namespace", "reconfigure", std::forward<__Args>( args )... );
 
         //const std::string reconfigure_namespace_name( getMetaParamDef<std::string>( "reconfigure_namespace_param", "reconfigure_namespace", args... ) );
         //const std::string reconfigure_namespace( ros::ParamReader<std::string, 1>::readParam( nh_rel, reconfigure_namespace_name, "reconfigure" ) );
@@ -101,7 +101,7 @@ public:
         if( server_ ) delete server_;
     }
 
-    void registerCallback( const typename _ReconfigureServer::CallbackType & external_callback )
+    void registerCallback( typename _ReconfigureServer::CallbackType const & external_callback )
     {
         external_callback_ = external_callback;
     }

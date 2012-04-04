@@ -65,27 +65,27 @@ static void printPolicyActionDone( std::string const & action, __Policy const * 
 namespace policy
 {
 template<class __ParamType, class... __Args>
-static __ParamType readPolicyParam( ros::NodeHandle & nh, std::string const & meta_param_key, std::string const & ros_param_name, __ParamType const & default_value, __Args&&... args )
+static __ParamType readPolicyParam( ros::NodeHandle & nh, std::string const & meta_param_key, std::string const & ros_param_name, __ParamType&& default_value, __Args&&... args )
 {
     __ParamType param_value;
     if( tryGetMetaParam<__ParamType>( meta_param_key, param_value, std::forward<__Args>( args )... ) ) return param_value;
-    return ros::ParamReader<__ParamType, 1>::readParam( nh, ros_param_name, default_value );
+    return ros::ParamReader<__ParamType, 1>::readParam( nh, ros_param_name, std::forward<__ParamType>( default_value ) );
 }
 
 template<class __ParamType, class... __Args>
-static __ParamType readPolicyParamWithId( std::string const & meta_param_key, unsigned int const & id, __ParamType const & default_value, __Args&&... args )
+static __ParamType readPolicyParamWithId( std::string const & meta_param_key, unsigned int const & id, __ParamType&& default_value, __Args&&... args )
 {
-    return getMetaParamDef<__ParamType>( make_key( meta_param_key, id ), default_value, std::forward<__Args>( args )... );
+    return getMetaParamDef<__ParamType>( make_key( meta_param_key, id ), std::forward<__ParamType>( default_value ), std::forward<__Args>( args )... );
 }
 
 template<class __ParamType, class... __Args>
-static __ParamType readPolicyParamAuto( ros::NodeHandle & nh, bool const & enable_key_ids, std::string const & meta_param_key, unsigned int const & id, std::string const & ros_param_name, __ParamType const & default_value, __Args&&... args )
+static __ParamType readPolicyParamAuto( ros::NodeHandle & nh, bool const & enable_key_ids, std::string const & meta_param_key, unsigned int const & id, std::string const & ros_param_name, __ParamType&& default_value, __Args&&... args )
 {
     if( enable_key_ids )
     {
-        return readPolicyParamWithId( meta_param_key, id, default_value, std::forward<__Args>( args )... );
+        return readPolicyParamWithId( meta_param_key, id, std::forward<__ParamType>( default_value ), std::forward<__Args>( args )... );
     }
-    return readPolicyParam( nh, meta_param_key, ros_param_name, default_value, std::forward<__Args>( args )... );
+    return readPolicyParam( nh, meta_param_key, ros_param_name, std::forward<__ParamType>( default_value ), std::forward<__Args>( args )... );
 }
 
 } // policy

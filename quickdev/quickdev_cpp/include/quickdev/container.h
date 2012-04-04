@@ -93,14 +93,14 @@ template<unsigned int __Index__, class __Type, class... __Types>
 static typename std::enable_if<(__Index__ > 0), typename variadic::element<__Index__, __Type, __Types...>::type>::type &
 at_rec( __Type & type, __Types&&... types )
 {
-    return variadic::at_rec<__Index__ - 1>( types... );
+    return variadic::at_rec<__Index__ - 1>( std::forward<__Types>( types )... );
 }
 
 template<unsigned int __Index__, class... __Types>
 static typename variadic::element<__Index__, __Types...>::type &
 at( __Types&&... types )
 {
-    return variadic::at_rec<__Index__>( types... );
+    return variadic::at_rec<__Index__>( std::forward<__Types>( types )... );
 }
 
 } // variadic
@@ -117,11 +117,11 @@ template<class... __Types>
 struct SimpleContainer
 {
     //! number of elements
-    const static unsigned int size_ = sizeof...( __Types );
+    static unsigned int const size_ = sizeof...( __Types );
     //! front index
-    const static unsigned int front_ = 0;
+    static unsigned int const front_ = 0;
     //! back index
-    const static unsigned int back_ = size_ - 1;
+    static unsigned int const back_ = size_ - 1;
 };
 
 //! A variadic Container with no storage
@@ -130,11 +130,11 @@ template<>
 struct SimpleContainer<>
 {
     //! number of elements
-    const static unsigned int size_ = 0;
+    static unsigned int const size_ = 0;
     //! front index
-    const static unsigned int front_ = 0;
+    static unsigned int const front_ = 0;
     //! back index
-    const static unsigned int back_ = 0;
+    static unsigned int const back_ = 0;
 };
 
 //! A variadic Container with std::tuple<> storage
@@ -151,9 +151,9 @@ struct Container : SimpleContainer<__Types...>
     //! Constructor for one or more values
     /*! enabled only if __Types consists of at least one type */
     template<class... __MTypes, typename std::enable_if<(sizeof...(__MTypes) > 0 && std::is_same<SimpleContainer<__Types...>, SimpleContainer<__MTypes...> >::value), int>::type = 0>
-    Container( __MTypes... values )
+    Container( __MTypes&&... values )
     :
-        values_( std::make_tuple( values... ) )
+        values_( std::make_tuple( std::forward<__MTypes>( values )... ) )
     {
         //
     }
@@ -170,7 +170,7 @@ struct Container : SimpleContainer<__Types...>
 template<class... __Types>
 static Container<__Types...> make_container( __Types&&... types )
 {
-    return quickdev::Container<__Types...>( types... );
+    return quickdev::Container<__Types...>( std::forward<__Types>( types )... );
 }
 
 //! Create a SimpleContainer from a variadic list
@@ -260,7 +260,7 @@ struct elem_traits : elem_traits_helper<__Container::size_, __Container>
  *  \param container the container to read values from
  *  \return the item at an arbitrary index */
 template<unsigned int __Index__, class __Container>
-static typename container::element<__Index__, __Container>::type at( const __Container & container )
+static typename container::element<__Index__, __Container>::type at( __Container const & container )
 {
     return std::get<__Index__>( container.values_ );
 }
@@ -269,7 +269,7 @@ static typename container::element<__Index__, __Container>::type at( const __Con
 /*! \param container the container to read values from
  *  \return the item at the front index */
 template<class __Container>
-static typename container::elem_traits<__Container>::_Front front( const __Container & container )
+static typename container::elem_traits<__Container>::_Front front( __Container const & container )
 {
     return container::at<__Container::front_>( container );
 }
@@ -278,7 +278,7 @@ static typename container::elem_traits<__Container>::_Front front( const __Conta
 /*! \param container the container to read values from
  *  \return the item at the back index */
 template<class __Container>
-static typename container::elem_traits<__Container>::_Back back( const __Container & container )
+static typename container::elem_traits<__Container>::_Back back( __Container const & container )
 {
     return container::at<__Container::back_>( container );
 }
@@ -413,7 +413,7 @@ struct subset_rec
     /* this kills the compiler...
     template<class __AllTypesContainer, class... __Types>
     static auto
-    exec( const __AllTypesContainer & container, __Types... types )
+    exec( __AllTypesContainer const & container, __Types&&... types )
     -> decltype( container_copy_rec<I - 1, __StartIndex__>::exec( container, std::get<I>( container.values_ ), types... ) )*/
 
     //! Get a subset of the contents of a Container
@@ -422,7 +422,7 @@ struct subset_rec
      *  \return the specified subset of the given container */
     template<class __Container, class... __Types>
     static typename container::subtype_rec<__EndIndex__, __StartIndex__, __Container, __Types...>::type
-    exec( const __Container & container, __Types... types )
+    exec( __Container const & container, __Types&&... types )
     {
         return container::subset_rec<__EndIndex__ - 1, __StartIndex__>::exec( container, container::at<__EndIndex__>( container ), types... );
     }
@@ -440,7 +440,7 @@ struct subset_rec<__StartIndex__, __StartIndex__>
      *  \return the specified subset of the given container */
     template<class __Container, class... __Types>
     static quickdev::Container<typename container::element<__StartIndex__, __Container>::type, __Types...>
-    exec( const __Container & container, __Types... types )
+    exec( __Container const & container, __Types&&... types )
     {
         return quickdev::make_container( container::at<__StartIndex__>( container ), types... );
     }
@@ -453,7 +453,7 @@ struct subset_rec<__StartIndex__, __StartIndex__>
  *  \param container the container to read values from
  *  \return the specified subset of the given container */
 template<unsigned int __StartIndex__, unsigned int __NumItems__, class __Container>
-static typename container::subtype<__StartIndex__, __NumItems__, __Container>::type subset( const __Container & container )
+static typename container::subtype<__StartIndex__, __NumItems__, __Container>::type subset( __Container const & container )
 {
     return container::subset_rec<__StartIndex__ + __NumItems__ - 1, __StartIndex__>::exec( container );
 }
@@ -463,7 +463,7 @@ static typename container::subtype<__StartIndex__, __NumItems__, __Container>::t
 /*! \param container the container to read values from
  *  \return a copy of the container with the first type popped off */
 template<class __Container>
-static typename container::subtype<1, __Container::back_, __Container>::type pop_front( const __Container & container )
+static typename container::subtype<1, __Container::back_, __Container>::type pop_front( __Container const & container )
 {
     return container::subset<1, __Container::back_>( container );
 }
@@ -473,7 +473,7 @@ static typename container::subtype<1, __Container::back_, __Container>::type pop
 /*! \param container the container to read values from
  *  \return a copy of the container with the last type popped off */
 template<class __Container>
-static typename container::subtype<0, __Container::back_, __Container>::type pop_back( const __Container & container )
+static typename container::subtype<0, __Container::back_, __Container>::type pop_back( __Container const & container )
 {
     return container::subset<0, __Container::back_>( container );
 }
@@ -483,7 +483,7 @@ static typename container::subtype<0, __Container::back_, __Container>::type pop
 /*! \param container the container to read values from
  *  \return the head of the container */
 template<class __Container>
-static typename container::traits<__Container>::_Head head( const __Container & container )
+static typename container::traits<__Container>::_Head head( __Container const & container )
 {
     return container::subset<__Container::front_, 1>( container );
 }
@@ -493,7 +493,7 @@ static typename container::traits<__Container>::_Head head( const __Container & 
 /*! \param container the container to read values from
  *  \return the tail of the container */
 template<class __Container>
-static typename container::traits<__Container>::_Tail tail( const __Container & container )
+static typename container::traits<__Container>::_Tail tail( __Container const & container )
 {
     return container::subset<1, __Container::back_>( container );
 }
@@ -528,7 +528,7 @@ struct push_back_rec
 {
     template<class __Container, class... __Types>
     static typename container::push_back_type<__Container, typename container::elem_traits<quickdev::Container<__Types...> >::_Back>::type
-    exec( const __Container & container, __Types... types )
+    exec( __Container const & container, __Types&&... types )
     {
         // push the items of container in order onto types...
         return container::push_back_rec<__EndSize__ - 1>::exec( container, container::at<__EndSize__ - 2>( container ), types... );
@@ -540,9 +540,9 @@ struct push_back_rec<1>
 {
     template<class __Container, class... __Types>
     static quickdev::Container<__Types...>
-    exec( const __Container & container, __Types... types )
+    exec( __Container const & container, __Types&&... types )
     {
-        return quickdev::make_container( types... );
+        return quickdev::make_container( std::forward<__Types>( types )... );
     }
 };
 
@@ -552,7 +552,7 @@ struct push_back_rec<1>
  *  \return the result of pushing the given value onto the back of the given Container */
 template<class __Container, class __Type>
 static typename container::push_back_type<__Container, __Type>::type
-push_back( const __Container & container, const __Type & type )
+push_back( __Container const & container, __Type const & type )
 {
     return container::push_back_rec<__Container::size_ + 1>::exec( container, type );
 }
@@ -563,7 +563,7 @@ struct push_front_rec
 {
     template<class __Container, class __Type, class... __Types>
     static typename container::push_front_type<__Container, __Type>::type
-    exec( const __Container & container, const __Type & type, __Types... types )
+    exec( __Container const & container, __Type const & type, __Types&&... types )
     {
         // push the items of container in order onto types ending with type
         return container::push_front_rec<__EndSize__ - 1>::exec( container, type, container::at<__EndSize__ - 2>( container ), types... );
@@ -575,7 +575,7 @@ struct push_front_rec<1>
 {
     template<class __Container, class __Type, class... __Types>
     static quickdev::Container<__Type, __Types...>
-    exec( const __Container & container, const __Type & type, __Types... types )
+    exec( __Container const & container, __Type const & type, __Types&&... types )
     {
         return quickdev::make_container( type, types... );
     }
@@ -587,7 +587,7 @@ struct push_front_rec<1>
  *  \return the result of pushing the given value onto the front of the given Container */
 template<class __Container, class __Type>
 static typename container::push_front_type<__Container, __Type>::type
-push_front( const __Container & container, const __Type & type )
+push_front( __Container const & container, __Type const & type )
 {
     return container::push_front_rec<__Container::size_ + 1>::exec( container, type );
 }
@@ -610,14 +610,14 @@ struct combine_rec
 {
     template<class __Container1, class __Container2, class... __Types>
     static typename std::enable_if<(__Index__ > __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
-    exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types )
     {
         return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - __Container1::size_ - 1>( container2 ), types... );
     }
 
     template<class __Container1, class __Container2, class... __Types>
     static typename std::enable_if<(__Index__ <= __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
-    exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types )
     {
         return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - 1>( container1 ), types... );
     }
@@ -627,9 +627,9 @@ template<>
 struct combine_rec<0>
 {
     template<class __Container1, class __Container2, class... __Types>
-    static typename container::combine_type<__Container1, __Container2>::type exec( const __Container1 & container1, const __Container2 & container2, __Types... types )
+    static typename container::combine_type<__Container1, __Container2>::type exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types )
     {
-        return quickdev::make_container( types... );
+        return quickdev::make_container( std::forward<__Types>( types )... );
     }
 };
 
@@ -638,7 +638,7 @@ struct combine_rec<0>
  *  \param container2 the second container
  *  \return a new container composed of { <container1 values...>, <container2 values...> } */
 template<class __Container1, class __Container2>
-static typename container::combine_type<__Container1, __Container2>::type combine( const __Container1 & container1, const __Container2 & container2 )
+static typename container::combine_type<__Container1, __Container2>::type combine( __Container1 const & container1, __Container2 const & container2 )
 {
     return container::combine_rec<__Container1::size_+ __Container2::size_>::exec( container1, container2 );
 };

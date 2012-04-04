@@ -74,18 +74,18 @@ template< \
     typename std::enable_if<(sizeof...(__Args) > 0 && sizeof...(__Args) >= _TypesContainer::size_ + _Parent::_TypesContainer::size_), int>::type = 0, \
     typename std::enable_if<(!std::is_same<typename variadic::element<0, __Args...>::type, _Parent>::value), int>::type = 0, \
     typename std::enable_if<(std::is_same<typename container::subtype<_Parent::_TypesContainer::size_, _TypesContainer::size_, quickdev::Container<__Args...> >::type, _TypesContainer>::value), int>::type = 0> \
-Name( __Args... args ){ *this = Name( _Parent( args... ), _Parent::_TypesContainer(), args... ); } \
+Name( __Args&&... args ){ *this = Name( _Parent( std::forward<__Args>( args )... ), _Parent::_TypesContainer(), std::forward<__Args>( args )... ); } \
  \
 template< \
     class... __Args, \
     typename std::enable_if<(sizeof...(__Args) > 0 && sizeof...(__Args) == _TypesContainer::size_), int>::type = 0, \
     typename std::enable_if<(std::is_same<quickdev::Container<__Args...>, _TypesContainer>::value), int>::type = 0> \
-Name( const _Parent & parent, __Args... args ){ *this = Name( parent, quickdev::Container<>(), args... ); } \
+Name( _Parent const & parent, __Args&&... args ){ *this = Name( parent, quickdev::Container<>(), std::forward<__Args>( args )... ); } \
  \
-Name( const _Parent & parent ) : _Parent( parent ){} \
+Name( _Parent const & parent ) : _Parent( parent ){} \
  \
 template<class... __OffsetTypes, class... __Args> \
-Name( const _Parent & parent, const quickdev::Container<__OffsetTypes...> & offset_container, __Args... args ) : _Parent( parent )
+Name( _Parent const & parent, const quickdev::Container<__OffsetTypes...> & offset_container, __Args&&... args ) : _Parent( parent )
 
 // allows the user to set the value of member vars by name and offset during construction
 // ie: INST_CONVOLVED_STRUCT( SomeStruct ),
@@ -95,7 +95,7 @@ Name( const _Parent & parent, const quickdev::Container<__OffsetTypes...> & offs
 //     {}
 //
 #define INST_CONVOLVED_STRUCT_VAR( index, name ) \
-name( variadic::at<quickdev::Container<__OffsetTypes...>::size_ + index>( args... ) )
+name( variadic::at<quickdev::Container<__OffsetTypes...>::size_ + index>( std::forward<__Args>( args )... ) )
 
 // Using the above, the user can do:
 //
@@ -159,18 +159,18 @@ template< \
     typename std::enable_if<(sizeof...(__Args) >= _TypesContainer::size_), int>::type = 0, \
     typename std::enable_if<(!std::is_same<typename variadic::element<0, __Args...>::type, _Parent>::value), int>::type = 0, \
     typename std::enable_if<(std::is_same<typename container::subtype<_Parent::_TypesContainer::size_, _TypesContainer::size_, quickdev::Container<__Args...> >::type, _TypesContainer>::value), int>::type = 0> \
-Name( __Args... args ) : _Parent( args... )
+Name( __Args&&... args ) : _Parent( std::forward<__Args>( args )... )
 
 #define INST_CONVOLVED_STRUCT_LVAL( Name ) \
 template<class... __Args, typename std::enable_if<(sizeof...(__Args) >= _TypesContainer::size_), int>::type = 0, typename std::enable_if<(std::is_same<typename container::subtype<_Parent::_TypesContainer::size_, _TypesContainer::size_, quickdev::Container<__Args&...> >::type, _TypesContainer>::value), int>::type = 0> \
-Name( __Args&... args ) : _Parent( args... )
+Name( __Args&... args ) : _Parent( std::forward<__Args>( args )... )
 
 #define INST_CONVOLVED_STRUCT_RVAL( Name ) \
 template<class... __Args, typename std::enable_if<(sizeof...(__Args) >= _TypesContainer::size_), int>::type = 0, typename std::enable_if<(std::is_same<typename container::subtype<_Parent::_TypesContainer::size_, _TypesContainer::size_, quickdev::Container<__Args&&...> >::type, _TypesContainer>::value), int>::type = 0> \
-Name( __Args&&... args ) : _Parent( args... )
+Name( __Args&&... args ) : _Parent( std::forward<__Args>( args )... )
 
 #define INST_CONVOLVED_STRUCT_VAR2( name, index ) \
-name( variadic::at<_Parent::_TypesContainer::size_ + index>( args... ) )
+name( variadic::at<_Parent::_TypesContainer::size_ + index>( std::forward<__Args>( args )... ) )
 
 // #############################################################################################################################################
 

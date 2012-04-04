@@ -60,110 +60,110 @@ template<class __Storage, unsigned int __Dim__ = 0>
 class ParamReader
 {
 public:
-	typedef __Storage _Storage;
-	typedef std::vector<__Storage> _Array;
+    typedef __Storage _Storage;
+    typedef std::vector<__Storage> _Array;
 
-	ros::NodeHandle nh_;
-	std::string prefix_;
-	std::string postfix_;
-	unsigned int start_index_;
-	_Array params_;
+    ros::NodeHandle nh_;
+    std::string prefix_;
+    std::string postfix_;
+    unsigned int start_index_;
+    _Array params_;
 
-	ParamReader(){}
+    ParamReader(){}
 
-	ParamReader(
-		ros::NodeHandle & nh,
-		const std::string & prefix,
-		const std::string & postfix = "",
-		unsigned int start_index = 1 )
-	:
-		nh_( nh ),
-		prefix_( prefix ),
-		postfix_( postfix ),
-		start_index_( start_index )
-	{
-		//
-	}
+    ParamReader(
+        ros::NodeHandle & nh,
+        std::string const & prefix,
+        std::string const & postfix = "",
+        unsigned int start_index = 1 )
+    :
+        nh_( nh ),
+        prefix_( prefix ),
+        postfix_( postfix ),
+        start_index_( start_index )
+    {
+        //
+    }
 
 public:
-	_Array
-		readParams()
-	{
-		params_ = readParams(
-			nh_,
-			prefix_,
-			postfix_,
-			start_index_ );
+    _Array
+        readParams()
+    {
+        params_ = readParams(
+            nh_,
+            prefix_,
+            postfix_,
+            start_index_ );
 
-		return params_;
-	}
+        return params_;
+    }
 
-	static _Array
-		readParams(
-			ros::NodeHandle & nh,
-			const std::string & prefix,
-			const std::string & postfix = "",
-			unsigned int start_index = 1 )
-	{
-		return readParams( nh, prefix, postfix, start_index, {} );
-	}
+    static _Array
+        readParams(
+            ros::NodeHandle & nh,
+            std::string const & prefix,
+            std::string const & postfix = "",
+            unsigned int start_index = 1 )
+    {
+        return readParams( nh, prefix, postfix, start_index, {} );
+    }
 
-	static _Array
-		readParams(
-			ros::NodeHandle & nh,
-			const std::string & prefix,
-			const std::string & postfix,
-			unsigned int start_index,
-			const std::initializer_list<__Storage> & defaults )
-	{
-		_Array params( defaults.size() );
-		std::copy( defaults.begin(), defaults.end(), params.begin() );
+    static _Array
+        readParams(
+            ros::NodeHandle & nh,
+            std::string const & prefix,
+            std::string const & postfix,
+            unsigned int start_index,
+            std::initializer_list<__Storage> const & defaults )
+    {
+        _Array params( defaults.size() );
+        std::copy( defaults.begin(), defaults.end(), params.begin() );
 
-		bool new_param_found = true;
-	    unsigned int n = start_index;
-	    unsigned int i;
+        bool new_param_found = true;
+        unsigned int n = start_index;
+        unsigned int i;
 
-	    std::stringstream num_params_ss;
-		if( __Dim__ > 0 ) num_params_ss << __Dim__;
-		else num_params_ss << "any";
+        std::stringstream num_params_ss;
+        if( __Dim__ > 0 ) num_params_ss << __Dim__;
+        else num_params_ss << "any";
 
-		PRINT_INFO( "Attempting to load [ %s ] parameters in the form [ %s#%s ] starting with index [ %u ]", num_params_ss.str().c_str(), prefix.c_str(), postfix.c_str(), start_index );
+        PRINT_INFO( "Attempting to load [ %s ] parameters in the form [ %s#%s ] starting with index [ %u ]", num_params_ss.str().c_str(), prefix.c_str(), postfix.c_str(), start_index );
 
-	    do
-	    {
-			i = n - start_index;
-			std::stringstream param_name_ss;
-			param_name_ss << prefix << n << postfix;
+        do
+        {
+            i = n - start_index;
+            std::stringstream param_name_ss;
+            param_name_ss << prefix << n << postfix;
 
-			__Storage param_value;
-			const std::string param_name = param_name_ss.str();
+            __Storage param_value;
+            std::string const param_name = param_name_ss.str();
 
-			if( nh.getParam(
-				param_name.c_str(),
-				param_value ) )
-			{
-				std::stringstream param_value_ss;
-				param_value_ss << param_value;
-				PRINT_INFO( ">>> Loaded param [ %s ] with value [ %s ]", param_name.c_str(), param_value_ss.str().c_str() );
-				if( params.size() > i ) params[i] = param_value;
-				else params.push_back( param_value );
-				++n;
-			}
-			else
-			{
-				if( __Dim__ > 0 ) PRINT_WARN( "Only found [ %i/%i ] parameters in array", i, __Dim__ );
-				else
-				{
-					if( i > 0 )	PRINT_INFO( "Found [ %i ] parameters in array", i );
-					else PRINT_WARN( "No parameters found in array" );
-				}
-				//PRINT_WARN( "%s[%u:%u]%s", prefix.c_str(), start_index, start_index + __Dim__, postfix.c_str() );
-				new_param_found = false;
-			}
-	    }
-	    while( new_param_found && ( __Dim__ == 0 || n < __Dim__ + start_index ) );
-		return params;
-	}
+            if( nh.getParam(
+                param_name.c_str(),
+                param_value ) )
+            {
+                std::stringstream param_value_ss;
+                param_value_ss << param_value;
+                PRINT_INFO( ">>> Loaded param [ %s ] with value [ %s ]", param_name.c_str(), param_value_ss.str().c_str() );
+                if( params.size() > i ) params[i] = param_value;
+                else params.push_back( param_value );
+                ++n;
+            }
+            else
+            {
+                if( __Dim__ > 0 ) PRINT_WARN( "Only found [ %i/%i ] parameters in array", i, __Dim__ );
+                else
+                {
+                    if( i > 0 ) PRINT_INFO( "Found [ %i ] parameters in array", i );
+                    else PRINT_WARN( "No parameters found in array" );
+                }
+                //PRINT_WARN( "%s[%u:%u]%s", prefix.c_str(), start_index, start_index + __Dim__, postfix.c_str() );
+                new_param_found = false;
+            }
+        }
+        while( new_param_found && ( __Dim__ == 0 || n < __Dim__ + start_index ) );
+        return params;
+    }
 };
 
 // a ParamReader of length one can be initialized with a single
@@ -180,85 +180,85 @@ template<class __Storage>
 class ParamReader<__Storage, 1>
 {
 public:
-	ros::NodeHandle nh_;
+    ros::NodeHandle nh_;
 
-	std::string param_name_;
+    std::string param_name_;
 
-	__Storage
-		default_value_,
-		last_value_;
+    __Storage
+        default_value_,
+        last_value_;
 
-	ParamReader(){}
+    ParamReader(){}
 
-	ParamReader(
-		ros::NodeHandle & nh,
-		const std::string & param_name = "",
-		const __Storage & default_value = __Storage() )
-	:
-		nh_( nh ),
-		default_value_( default_value ),
-		last_value_( default_value_ )
-	{
-		//
-	}
+    ParamReader(
+        ros::NodeHandle & nh,
+        std::string const & param_name = "",
+        __Storage const & default_value = __Storage() )
+    :
+        nh_( nh ),
+        default_value_( default_value ),
+        last_value_( default_value_ )
+    {
+        //
+    }
 
-	__Storage
-		readParam()
-	{
-		return readParam(
-			nh_,
-			param_name_,
-			default_value_ );
-	}
+    __Storage
+        readParam()
+    {
+        return readParam(
+            nh_,
+            param_name_,
+            default_value_ );
+    }
 
-	static __Storage
-		readParam(
-			ros::NodeHandle & nh,
-			const std::string & param_name,
-			const __Storage & default_value = __Storage() )
-	{
-		__Storage param_value( default_value );
+    static __Storage
+        readParam(
+            ros::NodeHandle & nh,
+            std::string const & param_name,
+            __Storage const & default_value = __Storage() )
+    {
+        __Storage param_value( default_value );
 
-		const bool param_found( tryReadParam( nh, param_name, param_value ) );
+        const bool param_found( tryReadParam( nh, param_name, param_value ) );
 
-		std::stringstream param_value_ss;
-		param_value_ss << param_value;
+        std::stringstream param_value_ss;
+        param_value_ss << param_value;
 
-		if( param_found )
-		{
-			PRINT_INFO( ">>> Using value [ %s ]", param_value_ss.str().c_str() );
-		}
-		else
-		{
-			PRINT_WARN( ">>> Defaulting to [ %s ]", param_value_ss.str().c_str() );
-		}
+        if( param_found )
+        {
+            PRINT_INFO( ">>> Using value [ %s ]", param_value_ss.str().c_str() );
+        }
+        else
+        {
+            PRINT_WARN( ">>> Defaulting to [ %s ]", param_value_ss.str().c_str() );
+        }
 
-		return  param_value;
-	}
+        return  param_value;
+    }
 
-	static bool tryReadParam(
-		ros::NodeHandle & nh,
-		const std::string & param_name,
-		__Storage & param_value )
-	{
-		if( nh.getParam(
-			param_name.c_str(),
-			param_value ) )
-		{
-			PRINT_INFO( "Found param [ %s/%s ]",
-			nh.getNamespace().c_str(),
-			param_name.c_str() );
+    static bool tryReadParam(
+        ros::NodeHandle & nh,
+        std::string const & param_name,
+        __Storage & param_value )
+    {
+        if( nh.getParam(
+            param_name.c_str(),
+            param_value ) )
+        {
+            PRINT_INFO( "Found param [ %s/%s ]",
+            nh.getNamespace().c_str(),
+            param_name.c_str() );
 
-			return true;
-		}
+            return true;
+        }
 
-		PRINT_WARN(
-			"Could not find param [ %s/%s ]",
-			nh.getNamespace().c_str(),
-			param_name.c_str() );
+        PRINT_WARN(
+            "Could not find param [ %s/%s ]",
+            nh.getNamespace().c_str(),
+            param_name.c_str() );
 
-		return false;
-	}
+        return false;
+    }
 };
 
 }

@@ -53,7 +53,7 @@ private:
     ros::NodeHandle nh_rel_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( NodeHandle ),
-        nh_rel_( getFirstOfType<ros::NodeHandle>( args... ) )
+        nh_rel_( getFirstOfType<ros::NodeHandle>( std::forward<__Args>( args )... ) )
     {
         printPolicyActionStart( "create", this );
         printPolicyActionDone( "create", this );

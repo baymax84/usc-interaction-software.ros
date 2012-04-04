@@ -71,9 +71,9 @@ protected:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, args... ) );
+        auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, std::forward<__Args>( args )... ) );
 
-        auto const service_name = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "service_name_param", __Id__, "service_name", "service", args... );
+        auto const service_name = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "service_name_param", __Id__, "service_name", "service", std::forward<__Args>( args )... );
 
         ros::NodeHandle service_nh( nh_rel, service_name );
         PRINT_INFO( "Creating service server [%s] on topic [%s]", ros::service_traits::DataType<__Service>::value(), service_nh.getNamespace().c_str() );

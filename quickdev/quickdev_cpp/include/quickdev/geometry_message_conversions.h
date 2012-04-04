@@ -77,10 +77,10 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quater
 DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, _TwistMsg res; res.angular = unit::make_unit( tf.getRotation() ); res.linear = unit::make_unit( tf.getOrigin() ); return res; )
 
 // TwistMsg -> *
-DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); const _Vector3 vec = unit::make_unit( twist.linear ); return _Transform( quat, vec ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); _Vector3 const vec = unit::make_unit( twist.linear ); return _Transform( quat, vec ); )
 
 // Transform *= Scalar
-static void operator*=( _Transform & transform, const double & scale )
+static void operator*=( _Transform & transform, double const & scale )
 {
     _Vector3 angle_ypr = unit::make_unit( unit::convert<_Vector3Msg>( transform.getRotation() ) );
     angle_ypr *= scale;

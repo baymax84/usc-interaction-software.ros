@@ -216,7 +216,7 @@ class VectorBaseHelper : public VectorBase<__Storage, typename get_derived<__Sto
 template<size_t __Dim__, class __Data>
 struct VectorStorage
 {
-    static const size_t _DIM_ = __Dim__;
+    static size_t const _DIM_ = __Dim__;
     typedef __Data _Data;
 };*/
 

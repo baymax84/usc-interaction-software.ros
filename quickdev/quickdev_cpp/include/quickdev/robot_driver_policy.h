@@ -68,7 +68,7 @@ protected:
         motor_vals_topic_name_;
 
     template<class... __Args>
-    RobotDriverPolicy( __Args&&... args ) : _PolicyAdapter( args... ),
+    RobotDriverPolicy( __Args&&... args ) : _PolicyAdapter( std::forward<__Args>( args )... ),
         initialized_( false )
     {
         printPolicyActionStart( "create", this );
@@ -88,14 +88,14 @@ public:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        //const auto robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
+        //auto const robot_name_param = getMetaParamDef<std::string>( "robot_name_param", "robot_name", args... );
         //robot_name_ = ros::ParamReader<std::string, 1>::readParam( nh_rel, robot_name_param, "" );
 
-        robot_name_ = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", args... );
+        robot_name_ = policy::readPolicyParam<std::string>( nh_rel, "robot_name_param", "robot_name", "", std::forward<__Args>( args )... );
 
         if( robot_name_.size() > 0 ) robot_name_.insert( 0, "/" );
 
-        motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals" , args... );
+        motor_vals_topic_name_ = getMetaParamDef<std::string>( "motor_vals_topic_name_param", robot_name_.size() > 0 ? robot_name_ + "/motor_vals" : "motor_vals" , std::forward<__Args>( args )... );
 
         postInit();
 

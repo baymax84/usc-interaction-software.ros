@@ -24,19 +24,19 @@ struct dims{};
 template<size_t __Rows__, size_t __Cols__>
 struct dims<__Rows__, __Cols__, policies::Rectangular>
 {
-    static const size_t _DIM_ = __Rows__ * __Cols__;
+    static size_t const _DIM_ = __Rows__ * __Cols__;
 };
 
 template<size_t __Dim__>
 struct dims<__Dim__, __Dim__, policies::UpperSymmetric>
 {
-    static const size_t _DIM_ = (__Dim__ * __Dim__ + __Dim__) / 2;
+    static size_t const _DIM_ = (__Dim__ * __Dim__ + __Dim__) / 2;
 };
 
 template<size_t __Dim__>
 struct dims<__Dim__, __Dim__, policies::LowerSymmetric>
 {
-    static const size_t _DIM_ = (__Dim__ * __Dim__ + __Dim__) / 2;
+    static size_t const _DIM_ = (__Dim__ * __Dim__ + __Dim__) / 2;
 };
 
 }

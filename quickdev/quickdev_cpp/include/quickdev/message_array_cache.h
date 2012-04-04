@@ -66,12 +66,12 @@ public:
     {
         ros::Time stamp;
 
-        Header( const ros::Time & stamp_ = ros::Time( 0 ) ) : stamp( stamp_ ){}
+        Header( ros::Time const & stamp_ = ros::Time( 0 ) ) : stamp( stamp_ ){}
     };
 
     Header header;
 
-    StampedMessage( const __Message & msg = __Message(), const ros::Time & stamp_ = ros::Time( 0 ) )
+    StampedMessage( __Message const & msg = __Message(), ros::Time const & stamp_ = ros::Time( 0 ) )
     :
         _Parent( msg ), header( stamp_ )
     {
@@ -90,7 +90,7 @@ public:
 template<class __Message>
 struct has_stamped_wrapper
 {
-    const static bool value = boost::is_base_of<StampedMessageBase, __Message>::value;
+    static bool const value = boost::is_base_of<StampedMessageBase, __Message>::value;
 };
 
 // #############################################################################################################################################
@@ -116,7 +116,7 @@ struct MessageArrayCacheStorageTypesHelper<__Message, false>
 template<class __Message>
 struct MessageArrayCacheStorageTypes
 {
-    const static bool has_stamped_wrapper_ = has_stamped_wrapper<__Message>::value;
+    static bool const has_stamped_wrapper_ = has_stamped_wrapper<__Message>::value;
 
     typedef MessageArrayCacheStorageTypesHelper<__Message, has_stamped_wrapper<__Message>::value> _MessageArrayCacheStorageTypesHelper;
 
@@ -152,7 +152,7 @@ protected:
     bool needs_update_;
 
 public:
-    MessageArrayCacheStorage( const _ROSMessageArray & ros_message_array = _ROSMessageArray() )
+    MessageArrayCacheStorage( _ROSMessageArray const & ros_message_array = _ROSMessageArray() )
     :
         // ros_message_array necessarily contains everything we currently know at this point
         ros_message_array_( ros_message_array ),
@@ -162,12 +162,12 @@ public:
         //
     }
 
-    void registerNotifyEraseFunc( const _NotifyEraseFunc & notify_func )
+    void registerNotifyEraseFunc( _NotifyEraseFunc const & notify_func )
     {
         notify_erase_funcs_.push_back( notify_func );
     }
 
-    void registerNotifyUpdateFunc( const _NotifyUpdateFunc & notify_func )
+    void registerNotifyUpdateFunc( _NotifyUpdateFunc const & notify_func )
     {
         notify_update_funcs_.push_back( notify_func );
     }
@@ -214,7 +214,7 @@ public:
         needs_update_ = true;
     }
 
-    void push_back( const _WrapperMessage & value )
+    void push_back( _WrapperMessage const & value )
     {
         // notify all, then update
         for( auto notify_func = notify_update_funcs_.begin(); notify_func != notify_update_funcs_.end(); ++notify_func )
@@ -225,7 +225,7 @@ public:
         invalidate();
     }
 
-    void erase( const typename _MessageArray::iterator & item )
+    void erase( typename _MessageArray::iterator const & item )
     {
         if( message_array_.size() == 0 || item == message_array_.end() ) return;
 
@@ -271,7 +271,7 @@ public:
     template<class... __StorageArgs>
     MessageArrayCache( __StorageArgs&&... storage_args )
     :
-        storage_( new _Storage( storage_args... ) )
+        storage_( new _Storage( std::forward<__StorageArgs>( storage_args )... ) )
     {
         // we still want to build our cache from the current info
         updateMessages( storage_->getMessages() );
@@ -292,12 +292,12 @@ public:
         return storage_->getRawMessages();
     }
 
-    void updateMessage( const __Message & msg )
+    void updateMessage( __Message const & msg )
     {
         storage_->push_back( msg );
     }
 
-    void updateMessages( const _ROSMessageArray & msg_array )
+    void updateMessages( _ROSMessageArray const & msg_array )
     {
         for( auto message = msg_array.begin(); message != msg_array.end(); ++message )
         {
@@ -312,8 +312,8 @@ public:
 struct TimedMessageArrayCacheFlags
 {
     typedef unsigned int __Flag;
-    const static __Flag STAMPED_ON_MESSAGES = 0;
-    const static __Flag STAMPED_ON_UPDATE = 1;
+    static __Flag const STAMPED_ON_MESSAGES = 0;
+    static __Flag const STAMPED_ON_UPDATE = 1;
 };
 
 // #############################################################################################################################################
@@ -335,7 +335,7 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCacheBase( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... ), stamp_( 0 )
+        _Parent( std::forward<__ParentArgs>( parent_args )... ), stamp_( 0 )
     {
         this->getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyErase_0, this ) );
         this->getStorage()->registerNotifyUpdateFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyUpdate_0, this ) );
@@ -343,46 +343,46 @@ public:
         //eraseOld();
     }
 
-    virtual void notifyUpdate( const _Message & msg ) = 0;
-    virtual void notifyErase( const typename _MessageArray::iterator & msg ) = 0;
+    virtual void notifyUpdate( _Message const & msg ) = 0;
+    virtual void notifyErase( typename _MessageArray::iterator const & msg ) = 0;
 
     //! called by our storage object when an item is about to be updated
-    void notifyUpdate_0( const __Message & msg )
+    void notifyUpdate_0( __Message const & msg )
     {
         notifyUpdate( msg );
     }
 
     //! called by our storage object when an item is about to be erased
-    void notifyErase_0( const typename _MessageArray::iterator & msg )
+    void notifyErase_0( typename _MessageArray::iterator const & msg )
     {
         notifyErase( msg );
     }
 
-    virtual void eraseOldImpl( const ros::Duration & message_lifetime, const ros::Time & now ) = 0;
+    virtual void eraseOldImpl( ros::Duration const & message_lifetime, ros::Time const & now ) = 0;
 
     template<class __Child, typename std::enable_if<boost::is_base_of<TimedMessageArrayCacheBase<__Message>, __Child>::value, int>::type = 0>
-    void tryEraseOld( __Child & child, const ros::Duration & message_lifetime, const ros::Time & now )
+    void tryEraseOld( __Child & child, ros::Duration const & message_lifetime, ros::Time const & now )
     {
         child.eraseOld( message_lifetime, now );
     }
 
     template<class __Child, typename std::enable_if<!boost::is_base_of<TimedMessageArrayCacheBase<__Message>, __Child>::value, int>::type = 0>
-    void tryEraseOld( __Child & child, const ros::Duration & message_lifetime, const ros::Time & now )
+    void tryEraseOld( __Child & child, ros::Duration const & message_lifetime, ros::Time const & now )
     {
         //
     }
 
-    void eraseOld( const ros::Duration & message_lifetime, const ros::Time & now )
+    void eraseOld( ros::Duration const & message_lifetime, ros::Time const & now )
     {
         eraseOldImpl( message_lifetime, now );
     }
 
-    void eraseOld( const ros::Duration & message_lifetime )
+    void eraseOld( ros::Duration const & message_lifetime )
     {
         eraseOld( message_lifetime, ros::Time::now() );
     }
 
-    void eraseOld( const double & message_lifetime = 0.5 )
+    void eraseOld( double const & message_lifetime = 0.5 )
     {
         eraseOld( ros::Duration( message_lifetime ) );
     }
@@ -409,24 +409,24 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCacheHelper( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
 
     //! called by our parent when an item is about to be updated
-    void notifyUpdate( const __Message & msg )
+    void notifyUpdate( __Message const & msg )
     {
         if( msg.header.stamp > _Parent::stamp_ ) _Parent::stamp_ = msg.header.stamp;
     }
 
     //! called by our parent when an item is about to be erased
-    void notifyErase( const typename _MessageArray::iterator & msg )
+    void notifyErase( typename _MessageArray::iterator const & msg )
     {
         // if the message we're about to erase has the most recent timestamp, find the next-most-recent timestamp
         if( msg->header.stamp == _Parent::stamp_ )
         {
-            const auto & message_array = this->getStorage()->message_array_;
+            auto const & message_array = this->getStorage()->message_array_;
             _Parent::stamp_ = ros::Time( 0 );
             //auto last_message = message_array.begin();
             for( auto message = message_array.begin(); message != message_array.end(); ++message )
@@ -436,7 +436,7 @@ public:
         }
     }
 
-    void eraseOldImpl( const ros::Duration & message_lifetime, const ros::Time & now )
+    void eraseOldImpl( ros::Duration const & message_lifetime, ros::Time const & now )
     {
         auto & message_array = this->getStorage()->message_array_;
         //auto last_message = message_array.begin();
@@ -444,7 +444,7 @@ public:
         size_t i = 0;
         while( i < message_array.size() )
         {
-            const auto & message = message_array[i];
+            auto const & message = message_array[i];
             if( now - message.header.stamp > message_lifetime )
             {
                 _Parent::getStorage()->erase( message_array.begin() + i );
@@ -474,13 +474,13 @@ struct is_stamped_helper
 template<class __Message>
 struct is_stamped
 {
-    const static bool value = is_stamped_helper<__Message>::value;
+    static bool const value = is_stamped_helper<__Message>::value;
 };
 
 template<class __Message>
 struct TimedMessageArrayCacheTypes
 {
-    const static bool is_stamped_ = is_stamped<__Message>::value;
+    static bool const is_stamped_ = is_stamped<__Message>::value;
 };*/
 
 template<class __Message>
@@ -499,21 +499,21 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCacheHelper( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
 
     //! called by our parent when an item is about to be updated
-    void notifyUpdate( const __Message & msg )
+    void notifyUpdate( __Message const & msg )
     {
-        const auto & now = ros::Time::now();
+        auto const & now = ros::Time::now();
         timestamps_.push_back( now );
         _Parent::stamp_ = now;
     }
 
     //! called by our parent when an item is about to be erased
-    void notifyErase( const typename _MessageArray::iterator & msg )
+    void notifyErase( typename _MessageArray::iterator const & msg )
     {
         // if the message we're about to erase has the most recent timestamp, find the most-recent timestamp
         // this will necessarily be the message closest to the back of the queue that is not the current message
@@ -525,7 +525,7 @@ public:
         else _Parent::stamp_ = ros::Time( 0 );
     }
 
-    void eraseOldImpl( const ros::Duration & message_lifetime, const ros::Time & now )
+    void eraseOldImpl( ros::Duration const & message_lifetime, ros::Time const & now )
     {
         auto & message_array = this->getStorage()->message_array_;
         //auto last_message = message_array.begin();
@@ -565,7 +565,7 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCache( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         //
     }
@@ -598,7 +598,7 @@ public:
     template<class... __ParentArgs>
     NamedMessageArrayCache( __ParentArgs&&... parent_args )
     :
-        _Parent( parent_args... )
+        _Parent( std::forward<__ParentArgs>( parent_args )... )
     {
         _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &NamedMessageArrayCache::notifyErase, this ) );
         // we still want to build our cache from the current info
@@ -608,9 +608,9 @@ public:
     inline NamedMessageArrayCache<__Message> & getInstance(){ return *this; }
 
     //! called by our storage object when an item is about to be erased
-    void notifyErase( const typename _MessageArray::iterator & msg )
+    void notifyErase( typename _MessageArray::iterator const & msg )
     {
-        const auto & erase_index = message_index_map_.find( msg->name );
+        auto const & erase_index = message_index_map_.find( msg->name );
         // starting at the item to erase, decrement all indices by 1
         for( auto message_index = erase_index; message_index != message_index_map_.end(); ++message_index )
         {
@@ -672,7 +672,7 @@ public:
         return _Parent::getStorage()->message_array_.cend();
     }
 
-    __Message & at( const std::string & name )
+    __Message & at( std::string const & name )
     {
         static __Message default_return;
         auto message = find( name );
@@ -681,7 +681,7 @@ public:
         else return default_return;
     }
 
-    const __Message & at( const std::string & name ) const
+    const __Message & at( std::string const & name ) const
     {
         static __Message default_return;
         auto message = find( name );
@@ -690,19 +690,19 @@ public:
         else return default_return;
     }
 
-    __Message & operator[]( const std::string & name )
+    __Message & operator[]( std::string const & name )
     {
         return at( name );
     }
 
-    const __Message & operator[]( const std::string & name ) const
+    const __Message & operator[]( std::string const & name ) const
     {
         return at( name );
     }
 
-    void updateMessage( const __Message & msg )
+    void updateMessage( __Message const & msg )
     {
-        const auto & message_index = message_index_map_.find( msg.name );
+        auto const & message_index = message_index_map_.find( msg.name );
 
         if( message_index == message_index_map_.end() )
         {
@@ -715,7 +715,7 @@ public:
         }
     }
 
-    void updateMessages( const typename _Parent::_ROSMessageArray & msg_array )
+    void updateMessages( typename _Parent::_ROSMessageArray const & msg_array )
     {
         for( auto message = msg_array.begin(); message != msg_array.end(); ++message )
         {

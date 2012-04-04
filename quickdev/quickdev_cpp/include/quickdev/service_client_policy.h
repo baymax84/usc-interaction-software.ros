@@ -61,8 +61,8 @@ private:
     std::string service_name_, service_topic_name_;
     bool is_valid_;
 
-    const static double _DEF_callService_wait_time = 2.0;
-    const static unsigned int _DEF_callService_attempts = 1;
+    static double const _DEF_callService_wait_time = 2.0;
+    static unsigned int const _DEF_callService_attempts = 1;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( ServiceClient ),
         service_name_( "service" ),
@@ -78,9 +78,9 @@ private:
     {
         auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
-        auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, args... ) );
+        auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, std::forward<__Args>( args )... ) );
 
-        service_name_ = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "service_name_param", __Id__, "service_name", "service", args... );
+        service_name_ = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "service_name_param", __Id__, "service_name", "service", std::forward<__Args>( args )... );
 
         service_topic_name_ = ros::NodeHandle( nh_rel, service_name_ ).getNamespace();
         // now that we have a final value for the service name, create a service with that name
@@ -95,7 +95,7 @@ private:
      *  - If \param show_status_on_success and the attempt to connect succeeded, show that info
      *
      *  \return is_valid_, the state of the service connection */
-    const bool & connectToService( const bool & show_status_on_success = false )
+    const bool & connectToService( bool const & show_status_on_success = false )
     {
         QUICKDEV_ASSERT_INITIALIZED( is_valid_ );
 
@@ -121,7 +121,7 @@ private:
      *
      *  \return false if aborted, otherwise return the result of the service call */
 
-    bool callService( __Service & service, const ros::Duration & wait_time = ros::Duration( _DEF_callService_wait_time ), unsigned int attempts = _DEF_callService_attempts )
+    bool callService( __Service & service, ros::Duration const & wait_time = ros::Duration( _DEF_callService_wait_time ), unsigned int attempts = _DEF_callService_attempts )
     {
         return callService( service.request, service.response, wait_time, attempts );
     }
@@ -129,7 +129,7 @@ private:
     //! Expanded version of callService
     /*! Takes \param service.request and \param service.response as arguments instead of just \param service
         \return the result of the service call or false if the connection failed */
-    bool callService( _ServiceRequest & request, _ServiceResponse & response, const ros::Duration & wait_time = ros::Duration( _DEF_callService_wait_time ), unsigned int attempts = _DEF_callService_attempts )
+    bool callService( _ServiceRequest & request, _ServiceResponse & response, ros::Duration const & wait_time = ros::Duration( _DEF_callService_wait_time ), unsigned int attempts = _DEF_callService_attempts )
     {
         if( !service_mutex_.try_lock() ) return false;
 

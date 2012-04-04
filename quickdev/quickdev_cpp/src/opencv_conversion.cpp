@@ -35,6 +35,7 @@
 
 #include <quickdev/opencv_conversion.h>
 
+// =============================================================================================================================================
 sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromMat( cv::Mat const & mat, std::string const & frame_id, std::string const & encoding )
 {
     cv_bridge::CvImage image_wrapper;
@@ -46,6 +47,7 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
     return image_wrapper.toImageMsg();
 }
 
+// =============================================================================================================================================
 sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromIplImage( IplImage * image_ptr, std::string const & frame_id )
 {
     //cv_bridge::CvImage image_wrapper;
@@ -61,7 +63,8 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
     return result;
 }
 
-cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromImageMsg( const sensor_msgs::Image::ConstPtr & image_msg )
+// =============================================================================================================================================
+cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromImageMsg( sensor_msgs::Image::ConstPtr const & image_msg )
 {
     cv_bridge::CvImageConstPtr cv_image_ptr;
 
@@ -77,7 +80,8 @@ cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion:
     return cv_image_ptr;
 }
 
-cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromImageMsg( const sensor_msgs::Image & image_msg )
+// =============================================================================================================================================
+cv_bridge::CvImageConstPtr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromImageMsg( sensor_msgs::Image const & image_msg )
 {
     return fromImageMsg( make_const_shared( image_msg ) );
 }

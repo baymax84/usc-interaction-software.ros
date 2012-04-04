@@ -63,25 +63,25 @@ public:
     }
 
     template<class... __Rest>
-    void updateTransforms( const _Transform & transform, __Rest&&... rest )
+    void updateTransforms( _Transform const & transform, __Rest&&... rest )
     {
         if( transform.child_frame_id_.size() == 0 || transform.frame_id_.size() == 0 )
             PRINT_WARN( "Cannot update transform with empty source frame or target frame id:\n[ %s -> %s ] : %f", transform.frame_id_.c_str(), transform.child_frame_id_.c_str(), transform.stamp_.toSec() );
         else
             transforms_[transform.child_frame_id_] = transform;
 
-        updateTransforms( rest... );
+        updateTransforms( std::forward<__Rest>( rest )... );
     }
     void updateTransforms(){}
 
     template<class... __Rest>
-    void removeTransforms( const _TfFrameId & frame_id, __Rest&&... rest )
+    void removeTransforms( _TfFrameId const & frame_id, __Rest&&... rest )
     {
         warnIfFrameDNE( frame_id );
 
         transforms_.erase( frame_id );
 
-        removeTransforms( rest... );
+        removeTransforms( std::forward<__Rest>( rest )... );
     }
     void removeTransforms(){}
 
@@ -90,18 +90,18 @@ public:
         return transforms_;
     }
 
-    bool exists( const _TfFrameId & frame_id ) const
+    bool exists( _TfFrameId const & frame_id ) const
     {
         return transforms_.count( frame_id );
     }
 
-    const _Transform & operator[]( const _TfFrameId & frame_id ) const
+    const _Transform & operator[]( _TfFrameId const & frame_id ) const
     {
         if( !warnIfFrameDNE( frame_id ) ) return getEmptyTransform();
         return transforms_.find( frame_id )->second;
     }
 
-    bool warnIfFrameDNE( const _TfFrameId & frame_id ) const
+    bool warnIfFrameDNE( _TfFrameId const & frame_id ) const
     {
         if( exists( frame_id ) ) return true;
 
@@ -111,7 +111,7 @@ public:
 
     const _Transform & getEmptyTransform() const
     {
-        const static _Transform empty_transform = _Transform();
+        static _Transform const empty_transform = _Transform();
         return empty_transform;
     }
 };

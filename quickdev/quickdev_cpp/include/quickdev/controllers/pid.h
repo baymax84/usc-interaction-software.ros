@@ -203,9 +203,9 @@ public:
     PID_ND(){}
 
     template<class... __Args>
-    PID_ND( __Args... args )
+    PID_ND( __Args&&... args )
     {
-        applySettings( args... );
+        applySettings( std::forward<__Args>( args )... );
     }
 
     void applySettings( _SettingsArray const & settings )
@@ -220,16 +220,16 @@ public:
         class... __Args,
         typename std::enable_if<(sizeof...(__Args) == __Dim__), int>::type = 0
     >
-    void applySettings( __Args... args )
+    void applySettings( __Args&&... args )
     {
-        _SettingsArray const settings = { { args... } };
+        _SettingsArray const settings = { { std::forward<__Args>( args )... } };
         applySettings( settings );
     }
 
     template<unsigned int __Index__, class... __Args>
-    _Data update( __Args... args )
+    _Data update( __Args&&... args )
     {
-        return pids_[__Index__].update( args... );
+        return pids_[__Index__].update( std::forward<__Args>( args )... );
     }
 };
 
@@ -238,9 +238,9 @@ class PID : public PID_ND<__Dim__, __Settings>
 {
 public:
     template<class... __Args>
-    PID( __Args... args )
+    PID( __Args&&... args )
     :
-        PID_ND<__Dim__, __Settings>( args... )
+        PID_ND<__Dim__, __Settings>( std::forward<__Args>( args )... )
     {
         //
     }
@@ -257,9 +257,9 @@ public:
     _PID & z_;
 
     template<class... __Args>
-    PID( __Args... args )
+    PID( __Args&&... args )
     :
-        PID_ND<3, __Settings>( args... ),
+        PID_ND<3, __Settings>( std::forward<__Args>( args )... ),
         x_( this->pids_[0] ), y_( this->pids_[1] ), z_( this->pids_[2] )
     {
         //
@@ -290,9 +290,9 @@ public:
     Component3d angular_;
 
     template<class... __Args>
-    PID( __Args... args )
+    PID( __Args&&... args )
     :
-        PID_ND<6, __Settings>( args... ),
+        PID_ND<6, __Settings>( std::forward<__Args>( args )... ),
         linear_( this->pids_[0], this->pids_[1], this->pids_[2] ),
         angular_( this->pids_[3], this->pids_[4], this->pids_[5] )
     {
