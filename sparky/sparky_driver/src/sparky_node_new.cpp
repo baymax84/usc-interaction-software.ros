@@ -13,13 +13,14 @@
 
 // Sparky joint definitions
 #define N_JOINTS (19)
-#define N_DEVICES (2)
+#define N_DEVICES (1)
 #define N_CHANNELS_EACH (24)
-#define PATH ("/dev/ttyACM0")
+//#define PATH ("/dev/ttyACM0")
+std::string g_path = "/dev/ttyACM0";
 
 // global variables
 //controller::Controller       g_sparky;
-pololu::AngleServoController g_sparky(N_DEVICES, N_CHANNELS_EACH, PATH);
+pololu::AngleServoController g_sparky(N_DEVICES, N_CHANNELS_EACH, g_path, true);
 joint_msgs::Params::Response g_params_res;
 
 // function prototypes
@@ -75,9 +76,15 @@ int main(int argc, char** argv)
 
   // initialize ROS node
   ros::init(argc, argv, "sparky");
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
 
   // retrieve ports from parameter server
+  //if (!nh.getParam("path", g_path)) nh.setParam("path", g_path);
+  /*if (!g_sparky.connect())
+  {
+    ROS_ERROR("Unable to connect to Sparky at '%s'", g_path.c_str());
+    return 1;
+  }*/
   //std::string ports[0];
   //nh.param("port0", ports[0], std::string("/dev/ttyUSB0"));
   //nh.param("port1", ports[1], std::string("/dev/ttyUSB1"));
@@ -263,7 +270,7 @@ void shutdownServoController()
 //  returns true on success, false on failure
 //
 //  arguements:
-//      douible vals     - vector of 18 positions
+//      double vals     - vector of 18 positions
 //      bool active      - vector of 18 bools (if true,  use the position val
 //                                             if false, ignore the position val (hold current pos))
 //
@@ -298,175 +305,6 @@ bool jointMoveTo(int id, double angle)
   int device = getJointDevice(id);
   int channel = getJointChannel(id);
 
-  /*
-   double position = 0, z = 0;
-   if (id == 0)
-   {
-   ROS_INFO("Mouth");
-   z = (angle + 18) / 15;
-   position = 0.0030 * pow(z, 6) + 0.0040 * pow(z, 5) + 0.0054 * pow(z, 4) - 0.0098 * pow(z, 3) - 0.0580 * pow(z, 2)
-   - 0.1260 * pow(z, 1) + 0.4206;
-   //position=(angle-46.7488628411476f)/113.6196641077f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 1)
-   {
-   ROS_INFO("Head Nod");
-   z = (angle - 29) / 22;
-   position = -0.0666 * pow(z, 6) + 0.0109 * pow(z, 5) + 0.1640 * pow(z, 4) + 6.5731e-04 * pow(z, 3)
-   - 0.0721 * pow(z, 2) + 0.1682 * pow(z, 1) + 0.6943;
-   //position=(angle-38.3333333333333f)/115.714285714286f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 2)
-   {
-   ROS_INFO("Head Turn");
-   z = (angle - 5.2) / 27;
-   position = -0.1167 * pow(z, 6) + 0.1532 * pow(z, 5) + 0.1681 * pow(z, 4) - 0.1587 * pow(z, 3) - 0.0665 * pow(z, 2)
-   + 0.2005 * pow(z, 1) + 0.6360;
-   //position=(angle+69.6944444444444f)/120.833333333333f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 3)
-   {
-   ROS_INFO("Right Arm Forw");
-   z = (angle - 48) / 35;
-   position = 0.0465 * pow(z, 6) + 0.0776 * pow(z, 5) - 0.1033 * pow(z, 4) - 0.0777 * pow(z, 3) + 0.0565 * pow(z, 2)
-   + 0.2056 * pow(z, 1) + 0.6247;
-   //position=(angle-131.81111111111f)/-141.851851851852f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 4)
-   {
-   ROS_INFO("Right Arm Out");
-   z = (angle - 39) / 25;
-   position = 0.0091 * pow(z, 6) + 0.0064 * pow(z, 5) - 0.0215 * pow(z, 4) - 0.0315 * pow(z, 3) - 0.0047 * pow(z, 2)
-   - 0.1399 * pow(z, 1) + 0.6374;
-   //position=(angle-219.549647417572f)/-144.139508290452f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 5)
-   {
-   ROS_INFO("Right Elbow");
-   z = (angle - 58) / 32;
-   position = 0.0314 * pow(z, 6) + 0.0027 * pow(z, 5) - 0.1092 * pow(z, 4) + 0.0036 * pow(z, 3) + 0.1033 * pow(z, 2)
-   + 0.1592 * pow(z, 1) + 0.5885;
-   //position=(angle-234.478603393623f)/-184.882528435577f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 6)
-   {
-   ROS_INFO("Left Arm Forward");
-   z = (angle - 48) / 27;
-   position = 0.0062 * pow(z, 6) - 2.2328e-04 * pow(z, 5) - 0.0171 * pow(z, 4) + 0.0063 * pow(z, 3)
-   - 0.0083 * pow(z, 2) + 0.1638 * pow(z, 1) + 0.6417;
-   //position=(angle-138.73899869476f)/-154.09752004475f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 7)
-   {
-   ROS_INFO("Left Arm Out");
-   z = (angle - 39) / 24;
-   position = -0.03178 * pow(z, 6) - 1.1871e-04 * pow(z, 5) + 0.1067 * pow(z, 4) - 0.0120 * pow(z, 3)
-   - 0.0911 * pow(z, 2) - 0.1343 * pow(z, 1) + 0.6027;
-   //position=(angle-225.198577824599f)/-163.286805372664f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 8)
-   {
-   ROS_INFO("Left Elbow");
-   z = (angle - 59) / 31;
-   position = 0.0251 * pow(z, 6) - 0.0074 * pow(z, 5) - 0.0787 * pow(z, 4) + 0.0243 * pow(z, 3) + 0.0553 * pow(z, 2)
-   + 0.1596 * pow(z, 1) + 0.5651;
-   //position=(angle-221.268404907975f)/-176.402278702892f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 9)
-   {
-   ROS_INFO("Right Wrist");
-   z = (angle - 28) / 49;
-   position = 0.0282 * pow(z, 6) - 0.0092 * pow(z, 5) - 0.0954 * pow(z, 4) + 0.0073 * pow(z, 3) + 0.0617 * pow(z, 2)
-   - 0.1738 * pow(z, 1) + 0.6084;
-   //position=(angle-275.015397536393f)/-259.658454647255f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 10)
-   {
-   ROS_INFO("Left Wrist");
-   z = (angle - 32) / 50;
-   position = 0.0157 * pow(z, 6) - 0.0065 * pow(z, 5) - 0.0743 * pow(z, 4) - 0.0683 * pow(z, 3) + 0.0129 * pow(z, 2)
-   - 0.1286 * pow(z, 1) + 0.5936;
-   //position=(angle-252.358992154496f)/-230.890162945081f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 11)
-   {
-   ROS_INFO("Body Forw");
-   z = (angle + 38) / 29;
-   position = -0.0380 * pow(z, 6) - 0.04068 * pow(z, 5) + 0.1093 * pow(z, 4) + 0.0038 * pow(z, 3) - 0.0979 * pow(z, 2)
-   - 0.1619 * pow(z, 1) + 0.6570;
-   //position=(angle-41.9785136979112f)/-126.08507400021f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 12)
-   {
-   ROS_INFO("Eyelids");
-   z = (angle - 41) / 37;
-   position = 0.0179 * pow(z, 6) - 0.0401 * pow(z, 5) - 0.0193 * pow(z, 4) + 0.1019 * pow(z, 3) - 0.0554 * pow(z, 2)
-   + 0.0697 * pow(z, 1) + 0.7830;
-   //position= //log((angle/0.174040401645988f))/log(1264.93953011707f)//(angle+169.36599634369f)/292.614259597802f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 13)
-   {
-   ROS_INFO("Eyes Left/Right");
-   z = (angle - 0.22) / 25;
-   position = 0.0286 * pow(z, 6) - 0.0611 * pow(z, 5) - 0.0450 * pow(z, 4) + 0.1518 * pow(z, 3) - 0.0300 * pow(z, 2)
-   + 0.0558 * pow(z, 1) + 0.5385;
-   //position=(angle+92.5977777777777f)/182.0f;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 14)
-   {
-   ROS_INFO("Right Foot Up");
-   z = (angle - 3.1) / 2.2;
-   position = -0.0056 * pow(z, 6) - 0.0164 * pow(z, 5) - 0.0012 * pow(z, 4) - 0.0095 * pow(z, 3) - 0.0030 * pow(z, 2)
-   - 0.1536 * pow(z, 1) + 0.4547;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 15)
-   {
-   ROS_INFO("Right Foot Foward");
-   z = (angle - 0.44) / 6.8;
-   position = -0.1955 * pow(z, 6) + 0.0206 * pow(z, 5) + 0.5468 * pow(z, 4) - 0.1139 * pow(z, 3) - 0.4521 * pow(z, 2)
-   - 0.1703 * pow(z, 1) + 0.4749;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 16)
-   {
-   ROS_INFO("Left Foot Up");
-   z = (angle - 3.1) / 2.3;
-   position = 0.0202 * pow(z, 6) - 0.0050 * pow(z, 5) - 0.0593 * pow(z, 4) - 0.0458 * pow(z, 3) + 0.0251 * pow(z, 2)
-   - 0.1369 * pow(z, 1) + 0.4743;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else if (id == 17)
-   {
-   ROS_INFO("Left Foot Forward");
-   z = (angle + 1.6) / 5.8;
-   position = -0.0784 * pow(z, 8) - 0.1103 * pow(z, 7) + 0.2432 * pow(z, 6) + 0.2296 * pow(z, 5) - 0.2460 * pow(z, 4)
-   - 0.1307 * pow(z, 3) + 0.0595 * pow(z, 2) - 0.2076 * pow(z, 1) + 0.3943;
-   ROS_INFO("Servo Position %f", position);
-   }
-   else
-   position = angle;
-   if ((angle < g_params_res.min[id]) || (angle > g_params_res.max[id]))
-   {
-   ROS_ERROR("Joint angle %.2f out of range!", angle);
-   return false;
-   }
-   */
-
   //int min_limit = g_sparky.getAngleMinLimit(device, channel);
   //int max_limit = g_sparky.getAngleMaxLimit(device, channel);
   //int target = min_limit + angle * (max_limit - min_limit); // assumes param [0, 1]
@@ -484,11 +322,13 @@ bool jointMoveTo(int id, double angle)
 
 int getJointDevice(int id)
 {
+  return 0;
   return (id < (N_JOINTS / 2)) ? 0 : 1;
 } // getJointDevice(int)
 
 int getJointChannel(int id)
 {
+  return id;
   return 2 * ((getJointDevice(id) == 0) ? id : (id - (N_JOINTS / 2)));
 } // getJointChannel(int)
 

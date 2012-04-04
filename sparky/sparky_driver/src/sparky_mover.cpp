@@ -62,7 +62,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
 
   // set up ROS publishers
-  g_joint_pub = nh.advertise<joint_msgs::Joint>("joint_cmd", 1000);
+  g_joint_pub = nh.advertise<joint_msgs::Joint>("sparky/joint_cmd", 1000);
 
   // set up ROS subscribers
   //ros::Subscriber joints_sub = nh.subscribe(
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   ros::Rate loop_rate(10);
   while (ros::ok())
   {
-    if (ros::service::call("sparky_params", params_req, g_params_res)) break;
+    if (ros::service::call("sparky/sparky_params", params_req, g_params_res)) break;
     printf(".");
     fflush(stdout);
     ros::spinOnce();
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
   win.show();
 
   //
-  loop_rate = ros::Rate(50.0f);
+  loop_rate = ros::Rate(50.0);
   while((ros::ok()) && (Fl::check()))
   {
     printf("+");
