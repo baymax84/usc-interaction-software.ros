@@ -89,7 +89,7 @@ public:
 template<class __Data, class... __RestChildData>
 static MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> > createMultitypedNode( __Data const & data, __RestChildData&&... rest_child_data )
 {
-    return MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> >( data, rest_child_data... );
+    return MultitypedNode<__Data, quickdev::SimpleContainer<__RestChildData...> >( data, std::forward<__RestChildData>( rest_child_data )... );
 }
 
 template<class __MultitypedNodeType, unsigned int i>
