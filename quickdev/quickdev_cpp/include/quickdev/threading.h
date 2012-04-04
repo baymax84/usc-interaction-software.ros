@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_THREADING_H_
 
 #include <quickdev/macros.h>
+#include <quickdev/console.h>
 #include <boost/thread/mutex.hpp>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()

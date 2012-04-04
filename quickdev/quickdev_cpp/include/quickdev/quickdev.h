@@ -36,21 +36,21 @@
 #ifndef QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
 #define QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
 
-#include <quickdev/action_client_policy.h>
-#include <quickdev/action_server_policy.h>
+//#include <quickdev/action_client_policy.h>
+//#include <quickdev/action_server_policy.h>
 #include <quickdev/auto_bind.h>
-#include <quickdev/callback_policy.h>
+//#include <quickdev/callback_policy.h>
 #include <quickdev/console.h>
-#include <quickdev/container.h>
+//#include <quickdev/container.h>
 #include <quickdev/convolved_struct.h>
-#include <quickdev/feature.h>
+//#include <quickdev/feature.h>
 #include <quickdev/gaussian_pdf.h>
 #include <quickdev/generic_policy_adapter.h>
 #include <quickdev/image_loader.h>
 #include <quickdev/image_proc_policy.h>
 #include <quickdev/joystick_policy.h>
 #include <quickdev/macros.h>
-#include <quickdev/math.h>
+//#include <quickdev/math.h>
 #include <quickdev/matrix.h>
 #include <quickdev/message_array_cache.h>
 #include <quickdev/message_conversions.h>
@@ -85,6 +85,7 @@
 #include <quickdev/unit.h>
 #include <quickdev/unit_conversions.h>
 #include <quickdev/updateable_policy.h>
+//#include <quickdev/variadic.h>
 #include <quickdev/vector.h>
 
 #include <quickdev/controllers/pid.h>

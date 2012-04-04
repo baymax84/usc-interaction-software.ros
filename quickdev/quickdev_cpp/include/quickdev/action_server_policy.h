@@ -43,6 +43,7 @@
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
+// =============================================================================================================================================
 template<class __Action>
 class ActionServerPolicy : public GenericPolicyAdapter<NodeHandlePolicy, CallbackPolicy<void( typename __Action::Goal::ConstPtr const &, actionlib::SimpleActionServer<__Action> * const )> >
 {
@@ -62,6 +63,8 @@ private:
     _Callback callback_;
     std::string action_topic_name_;
 
+    // =========================================================================================================================================
+
     template<class... __Args>
     ActionServerPolicy( __Args&&... args )
     :
@@ -73,15 +76,7 @@ private:
         printPolicyActionDone( "create", this );
     }
 
-    void postInit()
-    {
-        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
-
-        // we use simple_bind here to link the function required by 'server_' to the function defined by _FUNCTION_BASE_TYPE.
-        // we need to pass f(x) to server_ but when server_ calls f(x), we actually want to call f(x,y)
-        // so simple_bind takes f(x,y) and returns f(x); then, when f(x) is called, we automatically call f(x,y)
-        action_server_( nh_rel, action_topic_name_, simple_bind( &ActionServerPolicy::executeActionCB, this ), false );
-    }
+    // =========================================================================================================================================
 
     QUICKDEV_ENABLE_INIT()
     {
@@ -101,7 +96,15 @@ private:
 
         _GoalMsgCallbackPolicy::invokeCallback( msg, action_server_ );
     }
+
+    // =========================================================================================================================================
+
+    void postInit();
 };
+
+// #############################################################################################################################################
+
+#include <quickdev/details/action_server_policy_impl.h>
 
 }
 

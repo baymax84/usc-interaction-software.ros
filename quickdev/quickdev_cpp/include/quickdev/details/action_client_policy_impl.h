@@ -1,0 +1,163 @@
+#define __ActionClientPolicy ActionClientPolicy<__Action, __Id__>
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+__ActionClientPolicy::~ActionClientPolicy()
+{
+    if( action_client_ ) delete action_client_;
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::postInit()
+{
+    auto nh_rel = NodeHandlePolicy::getNodeHandle();
+
+    action_client_( new _ActionClient( nh_rel, action_topic_name_ ) );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::doneCB( _GoalState const & state, typename _Result::ConstPtr const & result )
+{
+    PRINT_INFO( "Finished in state [%s]", state.toString().c_str() );
+
+    // callback( state, result )
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::activeCB()
+{
+    PRINT_INFO( "Goal just went active" );
+
+    // callback()
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::registerTimeout( double const & duration, _TimeoutCallback const & callback )
+{
+    registerTimeout( ros::Duration( duration ), callback );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::registerTimeout( ros::Duration const & duration, _TimeoutCallback const & callback )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    if( duration.isZero() )
+    {
+        PRINT_WARN( "Registering a timeout with a duration of zero has no effect" );
+        return;
+    }
+
+    timeout_timestamp_ = ros::Time::now() + duration;
+    timeout_callback_ = callback;
+    enable_timeout_ = true;
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionClientPolicy::sendGoalAndWait( _Goal const & goal, double const & duration )
+{
+    return sendGoalAndWait( goal, ros::Duration( duration ) );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionClientPolicy::sendGoalAndWait( _Goal const & goal, ros::Duration const & duration )
+{
+    sendGoal( goal );
+    return waitForResult( duration );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::sendGoalAndWait( _Goal const & goal, double const & duration, _TimeoutCallback const & callback )
+{
+    sendGoalAndWait( goal, ros::Duration( duration ), callback );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::sendGoalAndWait( _Goal const & goal, ros::Duration const & duration, _TimeoutCallback const & callback )
+{
+    sendGoal( goal );
+    waitForResult( duration, callback );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionClientPolicy::waitForResult( double const & duration )
+{
+    return waitForResult( ros::Duration( duration ) );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionClientPolicy::waitForResult( ros::Duration const & duration )
+{
+    QUICKDEV_ASSERT_INITIALIZED( false );
+
+    return action_client_->waitForResult( duration );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::waitForResult( double const & duration, _TimeoutCallback const & callback )
+{
+    return waitForResult( ros::Duration( duration ), callback );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::waitForResult( ros::Duration const & duration, _TimeoutCallback const & callback )
+{
+    registerTimeout( duration, callback );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+typename __ActionClientPolicy::_GoalState __ActionClientPolicy::getState()
+{
+    QUICKDEV_CHECK_INITIALIZED();
+
+    return action_client_->getState();
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::sendGoal( _Goal const & goal )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    if( !action_client_ )
+    {
+        PRINT_ERROR( "Cannot send goal to un-initialized client" );
+        return;
+    }
+
+    PRINT_INFO( "Waiting for action server to start." );
+    action_client_->waitForServer();
+
+    PRINT_INFO( "Action server started; sending goal." );
+    // send a goal to the action
+    action_client_->sendGoal( goal );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::update()
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    if( enable_timeout_ && !timeout_timestamp_.isZero() && ros::Time::now() > timeout_timestamp_ )
+    {
+        enable_timeout_ = false;
+        timeout_callback_();
+    }
+}
+
+#undef __ActionClientPolicy
