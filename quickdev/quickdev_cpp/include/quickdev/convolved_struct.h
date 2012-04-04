@@ -182,7 +182,7 @@ struct ConvolvedBase
     typedef quickdev::Container<> _TypesContainer;
 
     template<class... __Args>
-    ConvolvedBase( __Args... ){}
+    ConvolvedBase( __Args&&... ){}
 };
 
 } // quickdev

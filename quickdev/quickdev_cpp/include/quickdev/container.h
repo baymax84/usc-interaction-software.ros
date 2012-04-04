@@ -531,7 +531,7 @@ struct push_back_rec
     exec( __Container const & container, __Types&&... types )
     {
         // push the items of container in order onto types...
-        return container::push_back_rec<__EndSize__ - 1>::exec( container, container::at<__EndSize__ - 2>( container ), types... );
+        return container::push_back_rec<__EndSize__ - 1>::exec( container, container::at<__EndSize__ - 2>( container ), std::forward<__Types>( types )... );
     }
 };
 
@@ -566,7 +566,7 @@ struct push_front_rec
     exec( __Container const & container, __Type const & type, __Types&&... types )
     {
         // push the items of container in order onto types ending with type
-        return container::push_front_rec<__EndSize__ - 1>::exec( container, type, container::at<__EndSize__ - 2>( container ), types... );
+        return container::push_front_rec<__EndSize__ - 1>::exec( container, type, container::at<__EndSize__ - 2>( container ), std::forward<__Types>( types )... );
     }
 };
 
@@ -577,7 +577,7 @@ struct push_front_rec<1>
     static quickdev::Container<__Type, __Types...>
     exec( __Container const & container, __Type const & type, __Types&&... types )
     {
-        return quickdev::make_container( type, types... );
+        return quickdev::make_container( type, std::forward<__Types>( types )... );
     }
 };
 
@@ -612,14 +612,14 @@ struct combine_rec
     static typename std::enable_if<(__Index__ > __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
     exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types )
     {
-        return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - __Container1::size_ - 1>( container2 ), types... );
+        return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - __Container1::size_ - 1>( container2 ), std::forward<__Types>( types )... );
     }
 
     template<class __Container1, class __Container2, class... __Types>
     static typename std::enable_if<(__Index__ <= __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
     exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types )
     {
-        return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - 1>( container1 ), types... );
+        return container::combine_rec<__Index__ - 1>::exec( container1, container2, container::at<__Index__ - 1>( container1 ), std::forward<__Types>( types )... );
     }
 };
 
