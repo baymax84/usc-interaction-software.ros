@@ -6,6 +6,9 @@
 #include <sensor_msgs/JointState.h>
 #include <sparky/angle_servo_controller.h>
 //#include <sparky/controller.hh>
+#include <yaml-cpp/yaml.h>
+#include <fstream>
+#include <iostream>
 
 // angle (degrees and radians) definitions
 #define DTOR(rad) ((rad) * M_PI / 180.0)
@@ -77,6 +80,17 @@ int main(int argc, char** argv)
   // initialize ROS node
   ros::init(argc, argv, "sparky");
   ros::NodeHandle nh("~");
+
+  std::ifstream fin("params/params.yaml");
+  YAML::Parser parser(fin);
+  YAML::Node nodes;
+  parser.GetNextDocument(nodes);
+  std::string name;
+  for (unsigned int i = 0, n = nodes.size(); i < n; ++i)
+  {
+	  nodes[i]["name"] >> name;
+	  printf("%d: %s\n", i, name.c_str());
+  }
 
   // retrieve ports from parameter server
   //if (!nh.getParam("path", g_path)) nh.setParam("path", g_path);
@@ -152,7 +166,6 @@ bool initParams()
   // set remaining parameters
   double servo_min = 0.0;
   double servo_max = 0.0;
-  double servo_home = 0.0;
   double joint_min = 0.0;
   double joint_max = 0.0;
   double joint_home = 0.0;
@@ -425,7 +438,6 @@ bool jointMoveTo(int id, double angle)
   // servo parameters
   double servo_min = 0.0;
   double servo_max = 0.0;
-  double servo_home = 0.0;
   double servo_radius = 0.0;
   
 	switch (id)

@@ -1,5 +1,5 @@
 <package>
-  <description brief="sparky">
+  <description brief="sparky_driver">
 
     A ROS node wrapped around libsparky.
 
@@ -7,14 +7,11 @@
   <author>Ross Mead</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/sparky</url>
-  <depend package="roscpp"/>
+  <url>http://ros.org/wiki/sparky_driver</url>
   <depend package="libsparky"/>
-  <rosdep name="fltk"/>
-  <depend package="sensor_msgs"/>
-  <rosdep name="xmlrpcpp"/>
-  <depend package="yaml_cpp"/>
   <depend package="joint_msgs"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <rosdep name="fltk"/>
+  
 </package>
-
-
