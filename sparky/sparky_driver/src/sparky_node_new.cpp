@@ -150,59 +150,167 @@ bool initParams()
   g_params_res.name[18] = "Base Turn";
 
   // set remaining parameters
+  double servo_min = 0.0;
+  double servo_max = 0.0;
+  double servo_home = 0.0;
+  double joint_min = 0.0;
+  double joint_max = 0.0;
+  double joint_home = 0.0;
   for (int i = 0; i < n_channels; ++i)
   {
     g_params_res.id[i] = i;
-    if (i == 18) // base_turn
+    switch (i)
     {
-      g_params_res.min[i] = DTOR(-335.0);
-      g_params_res.max[i] = DTOR(340.0);
-    }
-    else
+		case  0:	// Mouth
+			joint_min = 34.0;
+			joint_max = 0.0;
+			servo_min = 80.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  1:	// Head Nod
+			joint_min = 96.0;
+			joint_max = 40.0;
+			servo_min = 51.0;
+			servo_max = 150.0;
+			joint_home = 90.0;
+			break;
+		case  2:	// Head Turn
+			joint_min = -35.0;
+			joint_max = 38.0;
+			servo_min = 48.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case  3:	// Right Arm Forw
+			joint_min = 12.0;
+			joint_max = 96.0;
+			servo_min = 28.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  4:	// Right Arm Out
+			joint_min = 15.0;
+			joint_max = 91.0;
+			servo_min = 36.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  5:	// Right Elbow
+			joint_min = 12.0;
+			joint_max = 105.0;
+			servo_min = 23.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  6:	// Left Arm Forw
+			joint_min = 13.0;
+			joint_max = 101.0;
+			servo_min = 24.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  7:	// Left Arm Out
+			joint_min = 13.0;
+			joint_max = 88.0;
+			servo_min = 22.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  8:	// Left Elbow
+			joint_min = 0.0;
+			joint_max = 104.0;
+			servo_min = 22.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case  9:	// Right Wrist
+			joint_min = -86.0;
+			joint_max = 55.0;
+			servo_min = 38.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case 10:	// Left Wrist
+			joint_min = -90.0;
+			joint_max = 45.0;
+			servo_min = 28.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case 11:	// Body Forw
+			joint_min = 19.0;
+			joint_max = 85.0;
+			servo_min = 30.0;
+			servo_max = 150.0;
+			joint_home = joint_min;
+			break;
+		case 12:	// Eyelids
+			joint_min = 130.0;
+			joint_max = 0.0;
+			servo_min = 62.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case 13:	// Eye Left/Right
+			joint_min = -45.0;//-35.0;
+			joint_max = 45.0;//44.0;
+			servo_min = 46.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case 14:	// Right Foot Up
+			joint_min = 0.0;
+			joint_max = 5.9;
+			servo_min = 10.0;
+			servo_max = 122.0;
+			joint_home = joint_min;
+			break;
+		case 15:	// Right Foot Forward
+			joint_min = 35.0;
+			joint_max = -52.0;
+			servo_min = 18.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case 16:	// Left Foot Up
+			joint_min = 0.0;
+			joint_max = 5.9;
+			servo_min = 10.0;
+			servo_max = 122.0;
+			joint_home = joint_min;
+			break;
+		case 17:	// Left Foot Forward
+			joint_min = -28.0;
+			joint_max = 52.0;
+			servo_min = 24.0;
+			servo_max = 150.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		case 18:	// Base Turn
+			joint_min = -335.0;
+			joint_max = 340.0;
+			servo_min = -335.0;
+			servo_max =  340.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			break;
+		default: break;
+	}
+    
+    int dir = (joint_min < joint_max) ? 1 : -1;
+    if (dir == 1)
     {
-      g_params_res.min[i] = 0.0;
-      g_params_res.max[i] = DTOR(150.0);
-    }
-    g_params_res.curr[i] = g_params_res.min[i] + 0.5 * (g_params_res.max[i] - g_params_res.min[i]);//g_params_res.min[i];
+		g_params_res.min[i] = DTOR(joint_min);
+		g_params_res.max[i] = DTOR(joint_max);
+	}
+	else
+    {
+		g_params_res.min[i] = DTOR(joint_max);
+		g_params_res.max[i] = DTOR(joint_min);
+	}
+    g_params_res.curr[i] = DTOR(joint_home);
   }
-  /*
-   g_params_res.min[0] = -42.0;
-   g_params_res.max[0] = 0.0;
-   g_params_res.min[1] = -1.0;
-   g_params_res.max[1] = 60.0;
-   g_params_res.min[2] = -25.0;
-   g_params_res.max[2] = 45.0;
-   g_params_res.min[3] = 2.0;
-   g_params_res.max[3] = 91.0;
-   g_params_res.min[4] = 3.0;
-   g_params_res.max[4] = 72.0;
-   g_params_res.min[5] = 13.0;
-   g_params_res.max[5] = 104.0;
-   g_params_res.min[6] = 13.0;
-   g_params_res.max[6] = 90.0;
-   g_params_res.min[7] = 2.0;
-   g_params_res.max[7] = 72.0;
-   g_params_res.min[8] = 15.0;
-   g_params_res.max[8] = 105.0;
-   g_params_res.min[9] = -45.0;
-   g_params_res.max[9] = 90.0;
-   g_params_res.min[10] = -42.0;
-   g_params_res.max[10] = 90.0;
-   g_params_res.min[11] = -76.0;
-   g_params_res.max[11] = -1.0;
-   g_params_res.min[12] = 0.0;
-   g_params_res.max[12] = 102.0;
-   g_params_res.min[13] = -30.0;
-   g_params_res.max[13] = 40.0;
-   g_params_res.min[14] = 0.00;
-   g_params_res.max[14] = 5.84;
-   g_params_res.min[15] = -9.61;
-   g_params_res.max[15] = 7.8;
-   g_params_res.min[16] = 0.00;
-   g_params_res.max[16] = 5.92;
-   g_params_res.min[17] = -9.44;
-   g_params_res.max[17] = 5.74;
-   */
+  
   return true;
 } // initParams()
 
@@ -301,19 +409,234 @@ bool jointMoveTo(int id, double angle)
     ROS_ERROR("Joint ID %d out of range!", id);
     return false;
   }
-
   int device = getJointDevice(id);
   int channel = getJointChannel(id);
 
   //int min_limit = g_sparky.getAngleMinLimit(device, channel);
   //int max_limit = g_sparky.getAngleMaxLimit(device, channel);
   //int target = min_limit + angle * (max_limit - min_limit); // assumes param [0, 1]
-  double target = angle;
+  
+  // joint parameters
+  double joint_min = 0.0;
+  double joint_max = 0.0;
+  double joint_home = 0.0;
+  double joint_radius = 0.0;
 
-  ROS_INFO("Moving joint[%d] (servo[%d, %d]) to %.2f (%.2f)", id, device, channel, RTOD(angle), target);
-  if (!g_sparky.setAngleTarget(device, channel, target))
+  // servo parameters
+  double servo_min = 0.0;
+  double servo_max = 0.0;
+  double servo_home = 0.0;
+  double servo_radius = 0.0;
+  
+	switch (id)
+	{
+		case  0:	// Mouth
+			joint_min = 34.0;
+			joint_max = 0.0;
+			joint_home = joint_min;
+			joint_radius = 2.2;
+			
+			servo_min = 80.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  1:	// Head Nod
+			joint_min = 96.0;
+			joint_max = 40.0;
+			joint_home = 90.0;
+			joint_radius = 1.4;
+			
+			servo_min = 51.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  2:	// Head Turn
+			joint_min = -35.0;
+			joint_max = 38.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 1.8;
+			
+			servo_min = 48.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  3:	// Right Arm Forw
+			joint_min = 12.0;
+			joint_max = 96.0;
+			joint_home = joint_min;
+			joint_radius = 1.8;
+			
+			servo_min = 28.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  4:	// Right Arm Out
+			joint_min = 15.0;
+			joint_max = 91.0;
+			joint_home = joint_min;
+			joint_radius = 2.0;
+			
+			servo_min = 36.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  5:	// Right Elbow
+			joint_min = 12.0;
+			joint_max = 105.0;
+			joint_home = joint_min;
+			joint_radius = 1.5;
+			
+			servo_min = 23.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  6:	// Left Arm Forw
+			joint_min = 13.0;
+			joint_max = 101.0;
+			joint_home = joint_min;
+			joint_radius = 1.8;
+			
+			servo_min = 24.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  7:	// Left Arm Out
+			joint_min = 13.0;
+			joint_max = 88.0;
+			joint_home = joint_min;
+			joint_radius = 2.0;
+			
+			servo_min = 22.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  8:	// Left Elbow
+			joint_min = 0.0;
+			joint_max = 104.0;
+			joint_home = joint_min;
+			joint_radius = 1.5;
+			
+			servo_min = 22.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case  9:	// Right Wrist
+			joint_min = -86.0;
+			joint_max = 55.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 1.0;
+			
+			servo_min = 38.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 10:	// Left Wrist
+			joint_min = -90.0;
+			joint_max = 45.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 1.0;
+			
+			servo_min = 28.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 11:	// Body Forw
+			joint_min = 19.0;
+			joint_max = 85.0;
+			joint_home = joint_min;
+			joint_radius = 2.0;
+			
+			servo_min = 30.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 12:	// Eyelids
+			joint_min = 130.0;
+			joint_max = 0.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 0.7;
+			
+			servo_min = 62.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 13:	// Eye Left/Right
+			joint_min = -45.0;//-35.0;
+			joint_max = 45.0;//44.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 2.0;
+			
+			servo_min = 46.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 14:	// Right Foot Up
+			joint_min = 0.0;
+			joint_max = 5.9;
+			joint_home = joint_min;
+			joint_radius = 0.0;
+			
+			servo_min = 10.0;
+			servo_max = 122.0;
+			servo_radius = 4.5;
+			break;
+		case 15:	// Right Foot Forward
+			joint_min = 35.0;
+			joint_max = -52.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 1.6;
+			
+			servo_min = 18.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 16:	// Left Foot Up
+			joint_min = 0.0;
+			joint_max = 5.9;
+			joint_home = joint_min;
+			joint_radius = 0.0;
+			
+			servo_min = 10.0;
+			servo_max = 122.0;
+			servo_radius = 4.5;
+			break;
+		case 17:	// Left Foot Forward
+			joint_min = -28.0;
+			joint_max = 52.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 1.6;
+			
+			servo_min = 24.0;
+			servo_max = 150.0;
+			servo_radius = 1.5;
+			break;
+		case 18:	// Base Turn
+			joint_min = -335.0;
+			joint_max = 340.0;
+			joint_home = 0.5 * (joint_min + joint_max);
+			joint_radius = 0.0;
+			
+			servo_min = -335.0;
+			servo_max =  340.0;
+			servo_radius = 0.0;
+			break;
+		default: break;
+	}
+  double dir = (joint_min < joint_max) ? 1.0 : -1.0;
+
+	double joint_angle = RTOD(angle);
+  double servo_angle = 0.0;
+  if ((id <= 13) || (id == 17))
+		servo_angle = DTOR(servo_max) - acos(1.0 - dir * (DTOR(joint_max) - DTOR(joint_angle)) * joint_radius / servo_radius);
+	else if (id == 18)
+	  servo_angle = DTOR(joint_angle);
+	else
+	  servo_angle = acos(1.0 - DTOR(joint_angle) / servo_radius);
+	  
+	ROS_INFO("Moving joint[%d] (servo[%d, %d]) to %.2f (%.2f)", id, device, channel, joint_angle, servo_angle);
+  if (!g_sparky.setAngleTarget(device, channel, servo_angle))
   {
-    ROS_ERROR("Error moving joint[%d] (servo[%d, %d] to %.2f (%.2f)!", id, device, channel, RTOD(angle), target);
+    ROS_ERROR("Error moving joint[%d] (servo[%d, %d] to %.2f (%.2f)!", id, device, channel, joint_angle, servo_angle);
     return false;
   }
 
