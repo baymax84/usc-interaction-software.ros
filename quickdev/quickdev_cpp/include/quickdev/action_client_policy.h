@@ -87,11 +87,7 @@ private:
     }
 
     //! Called every time feedback is received for the goal
-    QUICKDEV_DECLARE_MESSAGE_CALLBACK2( feedbackCB, typename _Feedback, feedback )
-    {
-        //callback( feedback );
-    }
-
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK2( feedbackCB, typename _Feedback, feedback );
     // =========================================================================================================================================
 
     ~ActionClientPolicy();

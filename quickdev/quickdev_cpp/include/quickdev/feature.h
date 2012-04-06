@@ -113,6 +113,7 @@ namespace mode
         struct EUCLIDIAN_CIRCULAR{};
         struct GAUSSIAN{};
         struct GAUSSIAN_FAST{};
+        struct GAUSSIAN_FAST_CIRCULAR{};
     } // distance
 } // mode
 
@@ -166,6 +167,14 @@ public:
         typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST>::value), int>::type = 0
     >
     double distanceToImpl( __OtherData const & other ) const;
+
+    template
+    <
+        class __Mode,
+        class __OtherData,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST_CIRCULAR>::value), int>::type = 0
+    >
+    double distanceToImpl( __OtherData const & other, double const & min, double const & max ) const;
 
     // =========================================================================================================================================
     //! Calculates the distance to another feature if this feature is complex
@@ -314,6 +323,17 @@ private:
         typename std::enable_if<(std::is_floating_point<__SigmaData>::value), int>::type = 0
     >
     double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & std_dev = 1.0 ) const;
+
+    //! Calculates the gaussian distance to another feature using a fast algorithm
+    template
+    <
+        class __Mode,
+        typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST_CIRCULAR>::value), int>::type = 0,
+        class __OtherData,
+        class __SigmaData,
+        typename std::enable_if<(std::is_floating_point<__SigmaData>::value), int>::type = 0
+    >
+    double distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & min, double const & max, double const & std_dev = 1.0 ) const;
 
 public:
     // =========================================================================================================================================

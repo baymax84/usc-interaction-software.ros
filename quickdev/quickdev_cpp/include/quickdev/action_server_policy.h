@@ -84,18 +84,9 @@ private:
         QUICKDEV_SET_INITIALIZED();
     }
 
-    QUICKDEV_DECLARE_MESSAGE_CALLBACK( executeActionCB, typename _GoalMsg )
-    {
-        QUICKDEV_ASSERT_INITIALIZED();
+    // =========================================================================================================================================
 
-        if( !action_server_ )
-        {
-            PRINT_ERROR( "Cannot send execute request to un-initialized server" );
-            return;
-        }
-
-        _GoalMsgCallbackPolicy::invokeCallback( msg, action_server_ );
-    }
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK( executeActionCB, typename _GoalMsg );
 
     // =========================================================================================================================================
 
