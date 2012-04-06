@@ -2,6 +2,13 @@
 
 // =============================================================================================================================================
 template<class __Action, unsigned int __Id__>
+QUICKDEV_DECLARE_MESSAGE_CALLBACK2( (ActionClientPolicy<__Action, __Id__>::feedbackCB), typename _Feedback, feedback )
+{
+    //callback( feedback );
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
 __ActionClientPolicy::~ActionClientPolicy()
 {
     if( action_client_ ) delete action_client_;

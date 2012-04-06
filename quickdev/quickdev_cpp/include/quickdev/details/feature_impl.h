@@ -75,6 +75,31 @@ double __FeatureComponent::distanceToImpl( __OtherData const & other ) const
     return value_ - other;
 }
 
+// =============================================================================================================================================
+template<class __Data>
+template
+<
+    class __Mode,
+    class __OtherData,
+    typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST_CIRCULAR>::value), int>::type
+>
+double __FeatureComponent::distanceToImpl( __OtherData const & other, double const & min, double const & max ) const
+{
+    auto angle1 = other;
+    auto angle2 = value_;
+
+    auto const range = max - min;
+
+    // normalize angle1 and angle2 between min and max
+    angle1 = fmod( angle1, range ) + min;
+    angle2 = fmod( angle2, range ) + min;
+
+    // find min distance between angle1 and angle2
+    auto distance = fabs( angle2 - angle1 );
+    if( distance > range / 2.0 ) return range - distance;
+    return distance;
+}
+
 // #############################################################################################################################################
 
 // =============================================================================================================================================
@@ -388,7 +413,37 @@ double __Feature::distanceToImpl( Feature<__OtherData> const & other, Feature<__
     for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
     {
         auto const abs_distance_component = fabs( *distance_component );
-        auto const probability_component = abs_distance_component < *sigma * std_dev ? 1.0 : *sigma * std_dev / abs_distance_component;
+        auto const probability_range = *sigma * std_dev;
+        auto const probability_component = probability_range > 0 ? ( abs_distance_component < probability_range ? 1.0 : probability_range / abs_distance_component ) : 1.0;
+
+        total_distance *= probability_component;
+    }
+
+    return 1.0 - total_distance;
+}
+
+// =============================================================================================================================================
+template<class __Data>
+template
+<
+    class __Mode,
+    typename std::enable_if<(std::is_same<__Mode, feature::mode::distance::GAUSSIAN_FAST_CIRCULAR>::value), int>::type,
+    class __OtherData,
+    class __SigmaData,
+    typename std::enable_if<(std::is_floating_point<__SigmaData>::value), int>::type
+>
+double __Feature::distanceToImpl( Feature<__OtherData> const & other, Feature<__SigmaData> const & sigmas, double const & min, double const & max, double const & std_dev ) const
+{
+    auto const distance_components = getDistanceComponents<__Mode>( other, min, max );
+
+    double total_distance = 1.0;
+    auto sigma = sigmas.cbegin();
+
+    for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
+    {
+        auto const abs_distance_component = fabs( *distance_component );
+        auto const probability_range = *sigma * std_dev;
+        auto const probability_component = probability_range > 0 ? ( abs_distance_component < probability_range ? 1.0 : probability_range / abs_distance_component ) : 1.0;
 
         total_distance *= probability_component;
     }
