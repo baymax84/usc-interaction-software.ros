@@ -1,7 +1,7 @@
 /*
  *  PhidgetIFK for ROS
  *  Copyright (C) 2009
- *     David Feil-Seifer 
+ *     David Feil-Seifer
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,9 +44,9 @@ protected:
   int* inputs;
   int* outputs;
 
-	ros::NodeHandle n_;
-	ros::Publisher digin_pub_;
-	ros::Subscriber digout_sub_;
+    ros::NodeHandle n_;
+    ros::Publisher digin_pub_;
+    ros::Subscriber digout_sub_;
   phidget::DigIn  digin_msg_;
 
 };
@@ -54,7 +54,7 @@ protected:
 Phidget::Phidget( ros::NodeHandle n )
 {
   n_ = n;
-  
+
   n_.param("serial", phidget_serial, -1 );
   n_.param("samplingrate", samplingrate, 20.0 );
 
@@ -107,7 +107,7 @@ Phidget::~Phidget()
   ifk = 0;
 }
 
-void 
+void
 Phidget::digout_set_cb( const phidget::DigOutConstPtr& digout_msg )
 {
   int i = digout_msg->num;
@@ -162,8 +162,8 @@ int main( int argc, char* argv[] )
 {
   ros::init( argc, argv, "phidget" );
 
-  ros::NodeHandle n;
-	ros::Rate loop_rate(20);
+  ros::NodeHandle n( "~" );
+    ros::Rate loop_rate(20);
   Phidget p(n);
 
   if( p.status != 0 )
@@ -173,7 +173,7 @@ int main( int argc, char* argv[] )
 
   while( n.ok() && p.spin() )
   {
-		ros::spinOnce();
+        ros::spinOnce();
     loop_rate.sleep();
   }
 
