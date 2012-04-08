@@ -1,0 +1,10 @@
+<launch>
+    <include file="$(find phidget)/launch/phidget.launch" >
+        <arg name="id" value="1" />
+        <arg name="serial" value="#####" />
+    </include>
+    <include file="$(find phidget)/launch/phidget.launch" >
+        <arg name="id" value="2" />
+        <arg name="serial" value="#####" />
+    </include>
+</launch>
