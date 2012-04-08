@@ -1,0 +1,16 @@
+<launch>
+    <arg name="serial" default="-1" />
+    <arg name="id" default="" />
+
+    <arg name="pkg" value="phidget" />
+    <arg name="type" value="phidget" />
+    <arg name="name" default="$(arg type)$(arg id)" />
+    <arg name="args" default="_serial:=$(arg serial)" />
+
+    <node
+        pkg="$(arg pkg)"
+        type="$(arg type)"
+        name="$(arg name)"
+        output="screen"
+        args="_serial:=$(arg serial)" />
+</launch>
