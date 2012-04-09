@@ -66,7 +66,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
 
     QUICKDEV_SPIN_ONCE()
     {
-        //
+        PRINT_INFO( "spinning!" );
+        _TestActionClientPolicy::update();
     }
 
     QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( testActionActiveCB )
