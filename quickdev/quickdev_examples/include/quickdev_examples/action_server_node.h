@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/node.h
+ *  include/quickdev_examples/action_server_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,29 +33,49 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_NODE_H_
-#define QUICKDEV_QUICKDEVTESTS_NODE_H_
+#ifndef QUICKDEVEXAMPLES_ACTIONSERVERNODE_H_
+#define QUICKDEVEXAMPLES_ACTIONSERVERNODE_H_
 
 #include <quickdev/node.h>
+#include <quickdev/action_server_policy.h>
 
-QUICKDEV_DECLARE_NODE( Node )
+#include <quickdev_examples/TestAction.h>
 
-QUICKDEV_DECLARE_NODE_CLASS( Node )
+typedef quickdev_examples::TestAction _TestAction;
+typedef quickdev::ActionServerPolicy<_TestAction> _TestActionServerPolicy;
+
+QUICKDEV_DECLARE_NODE( ActionServer, _TestActionServerPolicy )
+
+QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
 {
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( Node )
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ActionServer )
     {
-
+        //
     }
 
     QUICKDEV_SPIN_FIRST()
     {
-        initAll();
+        _TestActionServerPolicy::registerCallback( quickdev::auto_bind( &ActionServerNode::testActionExecuteCB, this ) );
+        initPolicies<quickdev::policy::ALL>();
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        ROS_INFO( "Spinning!" );
+        PRINT_INFO( "spinning!" );
+    }
+
+    QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( testActionExecuteCB, _TestAction )
+    {
+        _TestActionServerPolicy::_FeedbackMsg feedback_msg;
+        //action_server->publishFeedback( feedback_msg );
+        _TestActionServerPolicy::sendFeedback( feedback_msg );
+
+        sleep( 3 );
+
+        _TestActionServerPolicy::_ResultMsg result_msg;
+        //action_server->setSucceeded( result_msg );
+        _TestActionServerPolicy::setCompleted( result_msg );
     }
 };
 
-#endif // QUICKDEV_QUICKDEVTESTS_NODE_H_
+#endif // QUICKDEVEXAMPLES_ACTIONSERVERNODE_H_

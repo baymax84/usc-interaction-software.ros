@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/node.h
+ *  include/quickdev_examples/action_client_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,29 +33,57 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_NODE_H_
-#define QUICKDEV_QUICKDEVTESTS_NODE_H_
+#ifndef QUICKDEVEXAMPLES_ACTIONCLIENTNODE_H_
+#define QUICKDEVEXAMPLES_ACTIONCLIENTNODE_H_
 
 #include <quickdev/node.h>
+#include <quickdev/action_client_policy.h>
 
-QUICKDEV_DECLARE_NODE( Node )
+#include <quickdev_examples/TestAction.h>
 
-QUICKDEV_DECLARE_NODE_CLASS( Node )
+typedef quickdev_examples::TestAction _TestAction;
+typedef quickdev::ActionClientPolicy<_TestAction> _TestActionClientPolicy;
+
+QUICKDEV_DECLARE_NODE( ActionClient, _TestActionClientPolicy )
+
+QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
 {
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( Node )
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ActionClient )
     {
-
+        //
     }
 
     QUICKDEV_SPIN_FIRST()
     {
-        initAll();
+        _TestActionClientPolicy::registerActiveCB( quickdev::auto_bind( &ActionClientNode::testActionActiveCB, this ) );
+        _TestActionClientPolicy::registerFeedbackCB( quickdev::auto_bind( &ActionClientNode::testActionFeedbackCB, this ) );
+        _TestActionClientPolicy::registerDoneCB( quickdev::auto_bind( &ActionClientNode::testActionDoneCB, this ) );
+        initPolicies<quickdev::policy::ALL>();
+
+        _TestActionClientPolicy::_GoalMsg goal;
+        _TestActionClientPolicy::sendGoal( goal );
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        ROS_INFO( "Spinning!" );
+        //
     }
+
+    QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( testActionActiveCB )
+    {
+        PRINT_INFO( "client detected goal started" );
+    }
+
+    QUICKDEV_DECLARE_ACTION_FEEDBACK_CALLBACK( testActionFeedbackCB, _TestAction )
+    {
+        PRINT_INFO( "client got feedback" );
+    }
+
+    QUICKDEV_DECLARE_ACTION_DONE_CALLBACK( testActionDoneCB, _TestAction )
+    {
+        PRINT_INFO( "client got goal result" );
+    }
+
 };
 
-#endif // QUICKDEV_QUICKDEVTESTS_NODE_H_
+#endif // QUICKDEVEXAMPLES_ACTIONCLIENTNODE_H_
