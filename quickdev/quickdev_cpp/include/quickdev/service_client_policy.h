@@ -95,7 +95,7 @@ private:
      *  - If \param show_status_on_success and the attempt to connect succeeded, show that info
      *
      *  \return is_valid_, the state of the service connection */
-    const bool & connectToService( bool const & show_status_on_success = false )
+    bool const & connectToService( bool const & show_status_on_success = false )
     {
         QUICKDEV_ASSERT_INITIALIZED( is_valid_ );
 
