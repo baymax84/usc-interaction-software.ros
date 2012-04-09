@@ -161,11 +161,22 @@ void __ActionClientPolicy::waitForResult( ros::Duration const & duration, _Timeo
 
 // =============================================================================================================================================
 template<class __Action, unsigned int __Id__>
-typename __ActionClientPolicy::_GoalState __ActionClientPolicy::getState()
+typename __ActionClientPolicy::_GoalState
+__ActionClientPolicy::getState()
 {
     QUICKDEV_CHECK_INITIALIZED();
 
     return action_client_->getState();
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+typename __ActionClientPolicy::_ResultMsg::ConstPtr
+__ActionClientPolicy::getResult()
+{
+    QUICKDEV_CHECK_INITIALIZED();
+
+    return action_client_->getResult();
 }
 
 // =============================================================================================================================================
@@ -208,6 +219,15 @@ void __ActionClientPolicy::interruptAction()
     QUICKDEV_ASSERT_INITIALIZED();
 
     action_client_->cancelGoal();
+}
+
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionClientPolicy::successful()
+{
+    QUICKDEV_CHECK_INITIALIZED();
+
+    return action_client_->getState() == _GoalState::SUCCEEDED;
 }
 
 #undef __ActionClientPolicy

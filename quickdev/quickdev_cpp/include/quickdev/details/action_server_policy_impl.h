@@ -34,19 +34,28 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
         return;
     }
 
-    _GoalMsgCallbackPolicy::invokeCallback( msg, action_server_ );
+    _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
 }
 
 // =========================================================================================================================================
 template<class __Action, unsigned int __Id__>
 template<class... __Args>
-void __ActionServerPolicy::setInterrupted( __Args&&... args )
+void __ActionServerPolicy::registerExecuteCB( __Args&&... args )
+{
+    _ExecuteCallbackPolicy::registerCallback( std::forward<__Args>( args )... );
+}
+
+// =========================================================================================================================================
+/*
+template<class __Action, unsigned int __Id__>
+template<class... __Args>
+void __ActionServerPolicy::interruptAction( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
     action_server_->setPreempted( std::forward<__Args>( args )... );
 }
-
+*/
 // =========================================================================================================================================
 template<class __Action, unsigned int __Id__>
 template<class... __Args>
@@ -65,6 +74,16 @@ void __ActionServerPolicy::setCompleted( __Args&&... args )
     QUICKDEV_ASSERT_INITIALIZED();
 
     action_server_->setSucceeded( std::forward<__Args>( args )... );
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+template<class... __Args>
+void __ActionServerPolicy::abortAction( __Args&&... args )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    action_server_->setAborted( std::forward<__Args>( args )... );
 }
 
 #undef __ActionServerPolicy

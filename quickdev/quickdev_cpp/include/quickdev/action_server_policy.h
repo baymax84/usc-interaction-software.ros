@@ -61,8 +61,8 @@ public:
     typedef typename __Action::_action_result_type::_result_type _ResultMsg;
     typedef __QUICKDEV_FUNCTION_TYPE<void ( typename _GoalMsg::ConstPtr const &, _ActionServer * const )> _Callback;
     //typedef __QUICKDEV_FUNCTION_TYPE<void ( const typename _GoalMsg::ConstPtr & )> _InternalCallback;
-    typedef typename CallbackPolicy_types::from_function<_Callback>::type _GoalMsgCallbackPolicy;
-    typedef GenericPolicyAdapter<NodeHandlePolicy, _GoalMsgCallbackPolicy> _PolicyAdapter;
+    typedef typename CallbackPolicy_types::from_function<_Callback>::type _ExecuteCallbackPolicy;
+    typedef GenericPolicyAdapter<NodeHandlePolicy, _ExecuteCallbackPolicy> _PolicyAdapter;
 
 private:
     _ActionServer * action_server_;
@@ -89,13 +89,19 @@ public:
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( executeActionCB, typename _GoalMsg );
 
     template<class... __Args>
-    void setInterrupted( __Args&&... args );
-
+    void registerExecuteCB( __Args&&... args );
+/*
+    template<class... __Args>
+    void interruptAction( __Args&&... args );
+*/
     template<class... __Args>
     void sendFeedback( __Args&&... args );
 
     template<class... __Args>
     void setCompleted( __Args&&... args );
+
+    template<class... __Args>
+    void abortAction( __Args&&... args );
 };
 
 // #############################################################################################################################################
