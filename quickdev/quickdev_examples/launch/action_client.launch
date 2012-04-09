@@ -1,0 +1,13 @@
+<launch>
+    <arg name="pkg" value="quickdev_examples" />
+    <arg name="name" default="action_client" />
+    <arg name="type" default="$(arg name)_node" />
+    <arg name="rate" default="30" />
+    <arg name="args" value="_loop_rate:=$(arg rate)" />
+    <node
+        pkg="$(arg pkg)"
+        type="$(arg type)"
+        name="$(arg name)"
+        args="$(arg args)"
+        output="screen" />
+</launch>

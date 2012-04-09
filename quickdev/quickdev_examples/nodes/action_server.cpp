@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/node.h
+ *  nodes/action_server.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,29 +33,10 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_NODE_H_
-#define QUICKDEV_QUICKDEVTESTS_NODE_H_
+#include <quickdev_examples/action_server_node.h>
 
-#include <quickdev/node.h>
+// This file was auto-generated; the corresponding header file is ../include/quickdev_examples/action_server_node.h
 
-QUICKDEV_DECLARE_NODE( Node )
-
-QUICKDEV_DECLARE_NODE_CLASS( Node )
-{
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( Node )
-    {
-
-    }
-
-    QUICKDEV_SPIN_FIRST()
-    {
-        initAll();
-    }
-
-    QUICKDEV_SPIN_ONCE()
-    {
-        ROS_INFO( "Spinning!" );
-    }
-};
-
-#endif // QUICKDEV_QUICKDEVTESTS_NODE_H_
+// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
+QUICKDEV_INST_NODE( ActionServerNode, "action_server" )

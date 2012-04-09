@@ -48,78 +48,78 @@
 template<class __Data>
 void print( const __Data & data )
 {
-	std::cout << data << std::endl;
+    std::cout << data << std::endl;
 }
 
 struct TYPE_DNE{};
 
 int main( int argc, char ** argv )
 {
-	/* getFirstOfType takes an output type and a list of args
-	 *  - if the output type is found in the list of args, return the first arg with matching type
-	 *  - else fail at compile time
-	 *
-	 *  Note that args is usually passed as a variadic template */
+    /* getFirstOfType takes an output type and a list of args
+     *  - if the output type is found in the list of args, return the first arg with matching type
+     *  - else fail at compile time
+     *
+     *  Note that args is usually passed as a variadic template */
 
-	// getting a fake type or a type not in the list will fail at compile time
-	// print( quickdev::getFirstOfType<TYPE_DNE>( TEST_ARGS ) );
+    // getting a fake type or a type not in the list will fail at compile time
+    // print( quickdev::getFirstOfType<TYPE_DNE>( TEST_ARGS ) );
 
-	// get the first double in the list
-	print( quickdev::getFirstOfType<double>( TEST_ARGS ) );
+    // get the first double in the list
+    print( quickdev::getFirstOfType<double>( TEST_ARGS ) );
 
-	// get the first float in the list
-	print( quickdev::getFirstOfType<float>( TEST_ARGS ) );
+    // get the first float in the list
+    print( quickdev::getFirstOfType<float>( TEST_ARGS ) );
 
-	// get the first std::string in the list
-	print( quickdev::getFirstOfType<std::string>( TEST_ARGS ) );
+    // get the first std::string in the list
+    print( quickdev::getFirstOfType<std::string>( TEST_ARGS ) );
 
-	printf( "-----\n" );
+    printf( "-----\n" );
 
-	/* getMetaParam takes an output type, a key, and a list of key-value pairs
-	 *  - if the output type is not found in the list of key-value pairs, fail at compile time
-	 *  - else if the key is not found in the list of key-value pairs, give a warning at runtime and return output_type()
-	 *  - else return the requested value
+    /* getMetaParam takes an output type, a key, and a list of key-value pairs
+     *  - if the output type is not found in the list of key-value pairs, fail at compile time
+     *  - else if the key is not found in the list of key-value pairs, give a warning at runtime and return output_type()
+     *  - else return the requested value
 
-	 *  Notice that we can store multiple values under the same key
-	 *  If a complete duplicate (key and value) is given in the list, the first copy encountered is returned */
+     *  Notice that we can store multiple values under the same key
+     *  If a complete duplicate (key and value) is given in the list, the first copy encountered is returned */
 
-	// getting a fake type a type not in the list will fail at compile time
-	//quickdev::getMetaParam<TYPE_DNE>( "reconfigure_namespace" ), TEST_ARGS );
+    // getting a fake type a type not in the list will fail at compile time
+    //quickdev::getMetaParam<TYPE_DNE>( "reconfigure_namespace" ), TEST_ARGS );
 
-	// get the param with type double and key "reconfigure_namespace"
-	print( quickdev::getMetaParam<double>( "reconfigure_namespace", TEST_ARGS ) );
+    // get the param with type double and key "reconfigure_namespace"
+    print( quickdev::getMetaParam<double>( "reconfigure_namespace", TEST_ARGS ) );
 
-	// get the param with type std::string and key "reconfigure_namespace"
-	print( quickdev::getMetaParam<std::string>( "reconfigure_namespace", TEST_ARGS ) );
+    // get the param with type std::string and key "reconfigure_namespace"
+    print( quickdev::getMetaParam<std::string>( "reconfigure_namespace", TEST_ARGS ) );
 
-	// get the param with type float and key "reconfigure_namespace"
-	print( quickdev::getMetaParam<float>( "reconfigure_namespace", TEST_ARGS ) );
+    // get the param with type float and key "reconfigure_namespace"
+    print( quickdev::getMetaParam<float>( "reconfigure_namespace", TEST_ARGS ) );
 
-	// get the param with type std::string and key "reconfigure_namespace2"
-	print( quickdev::getMetaParam<std::string>( "reconfigure_namespace2", TEST_ARGS ) );
+    // get the param with type std::string and key "reconfigure_namespace2"
+    print( quickdev::getMetaParam<std::string>( "reconfigure_namespace2", TEST_ARGS ) );
 
-	// get the param with type std::string and key "reconfigure_namespace2"
-	print( quickdev::getMetaParam<std::string>( "reconfigure_namespace3", TEST_ARGS ) );
+    // get the param with type std::string and key "reconfigure_namespace2"
+    print( quickdev::getMetaParam<std::string>( "reconfigure_namespace3", TEST_ARGS ) );
 
-	// using a fake namespace will fail at runtime
-	print( quickdev::getMetaParam<std::string>( "reconfigure_namespace_DNE", TEST_ARGS ) );
+    // using a fake namespace will fail at runtime
+    print( quickdev::getMetaParam<std::string>( "reconfigure_namespace_DNE", TEST_ARGS ) );
 
-	// using a fake namespace will fail at runtime
-	print( quickdev::getMetaParam<float>( "reconfigure_namespace_DNE2", TEST_ARGS ) );
+    // using a fake namespace will fail at runtime
+    print( quickdev::getMetaParam<float>( "reconfigure_namespace_DNE2", TEST_ARGS ) );
 
-	// using a fake namespace will fail at runtime
-	print( quickdev::getMetaParam<double>( "reconfigure_namespace_DNE3", TEST_ARGS ) );
+    // using a fake namespace will fail at runtime
+    print( quickdev::getMetaParam<double>( "reconfigure_namespace_DNE3", TEST_ARGS ) );
 
-	/* getMetaParamDef is identical to getMetaParam except it also takes a required default value, which it returns instead of output_type() */
+    /* getMetaParamDef is identical to getMetaParam except it also takes a required default value, which it returns instead of output_type() */
 
-	// using a fake namespace will fail at runtime; provide default value
-	print( quickdev::getMetaParamDef<std::string>( "reconfigure_namespace_DNE", "default1", TEST_ARGS ) );
+    // using a fake namespace will fail at runtime; provide default value
+    print( quickdev::getMetaParamDef<std::string>( "reconfigure_namespace_DNE", "default1", TEST_ARGS ) );
 
-	// using a fake namespace will fail at runtime; provide default value
-	print( quickdev::getMetaParamDef<float>( "reconfigure_namespace_DNE2", 0.1, TEST_ARGS ) );
+    // using a fake namespace will fail at runtime; provide default value
+    print( quickdev::getMetaParamDef<float>( "reconfigure_namespace_DNE2", 0.1, TEST_ARGS ) );
 
-	// using a fake namespace will fail at runtime; provide default value
-	print( quickdev::getMetaParamDef<double>( "reconfigure_namespace_DNE3", 0.2, TEST_ARGS ) );
+    // using a fake namespace will fail at runtime; provide default value
+    print( quickdev::getMetaParamDef<double>( "reconfigure_namespace_DNE3", 0.2, TEST_ARGS ) );
 
-	return 0;
+    return 0;
 }
