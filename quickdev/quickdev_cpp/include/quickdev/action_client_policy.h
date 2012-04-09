@@ -38,6 +38,8 @@
 
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
+#include <quickdev/auto_bind.h>
+
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 
@@ -45,10 +47,12 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 // =============================================================================================================================================
-QUICKDEV_DECLARE_POLICY( ActionClient, NodeHandlePolicy );
 
-template<class __Action, unsigned int __Id__>
-QUICKDEV_DECLARE_POLICY_CLASS( ActionClient )
+template<class __Action>
+QUICKDEV_DECLARE_POLICY2( ActionClient, NodeHandlePolicy, CallbackPolicy<void()>, MessageCallbackPolicy<typename __Action::_action_feedback_type::_feedback_type>, CallbackPolicy<void( actionlib::SimpleClientGoalState const &, typename __Action::_action_result_type::_result_type::ConstPtr const & )> );
+
+template<class __Action, unsigned int __Id__ = 0>
+QUICKDEV_DECLARE_POLICY_CLASS2( ActionClient, __Action )
 {
     QUICKDEV_MAKE_POLICY_FUNCS( ActionClient )
 
@@ -56,12 +60,17 @@ public:
     typedef actionlib::SimpleActionClient<__Action> _ActionClient;
     typedef actionlib::SimpleClientGoalState _GoalState;
     typedef __QUICKDEV_FUNCTION_TYPE<void()> _TimeoutCallback;
-    typedef typename __Action::Goal _Goal;
-    typedef typename __Action::Feedback _Feedback;
-    typedef typename __Action::Result _Result;
+    typedef typename __Action::_action_goal_type::_goal_type _GoalMsg;
+    typedef typename __Action::_action_feedback_type::_feedback_type _FeedbackMsg;
+    typedef typename __Action::_action_result_type::_result_type _ResultMsg;
+
+    typedef CallbackPolicy<void()> _ActiveCallbackPolicy;
+    typedef MessageCallbackPolicy<typename __Action::_action_feedback_type::_feedback_type> _FeedbackCallbackPolicy;
+    typedef CallbackPolicy<void( actionlib::SimpleClientGoalState const &, typename __Action::_action_result_type::_result_type::ConstPtr const & )> _DoneCallbackPolicy;
 
 private:
     _ActionClient * action_client_;
+    std::string action_name_;
     std::string action_topic_name_;
     _TimeoutCallback timeout_callback_;
     ros::Time timeout_timestamp_;
@@ -69,7 +78,7 @@ private:
 
     // =========================================================================================================================================
 
-    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( ActionClient ),
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR2( ActionClient, __Action ),
         action_client_( NULL ),
         enable_timeout_( false ),
         initialized_( false )
@@ -78,38 +87,41 @@ private:
         printPolicyActionDone( "create", this );
     }
 
-    // =========================================================================================================================================
-
-    QUICKDEV_ENABLE_INIT()
-    {
-        postInit();
-        QUICKDEV_SET_INITIALIZED();
-    }
-
-    //! Called every time feedback is received for the goal
-    QUICKDEV_DECLARE_MESSAGE_CALLBACK2( feedbackCB, typename _Feedback, feedback );
-    // =========================================================================================================================================
-
     ~ActionClientPolicy();
 
-    void postInit();
+    // =========================================================================================================================================
 
-    void doneCB( _GoalState const & state, typename _Result::ConstPtr const & result );
+    QUICKDEV_ENABLE_INIT();
 
     //! Called once when the goal becomes active
     void activeCB();
+
+    //! Called every time feedback is received for the goal
+    QUICKDEV_DECLARE_MESSAGE_CALLBACK2( feedbackCB, typename _FeedbackMsg, feedback );
+
+    //! Called once when the goal is completed
+    void doneCB( _GoalState const & state, typename _ResultMsg::ConstPtr const & result );
+
+    template<class... __Args>
+    void registerActiveCB( __Args&&... args );
+
+    template<class... __Args>
+    void registerFeedbackCB( __Args&&... args );
+
+    template<class... __Args>
+    void registerDoneCB( __Args&&... args );
 
     void registerTimeout( double const & duration, _TimeoutCallback const & callback );
 
     void registerTimeout( ros::Duration const & duration, _TimeoutCallback const & callback );
 
-    bool sendGoalAndWait( _Goal const & goal, double const & duration );
+    bool sendGoalAndWait( _GoalMsg const & goal, double const & duration );
 
-    bool sendGoalAndWait( _Goal const & goal, ros::Duration const & duration );
+    bool sendGoalAndWait( _GoalMsg const & goal, ros::Duration const & duration );
 
-    void sendGoalAndWait( _Goal const & goal, double const & duration, _TimeoutCallback const & callback );
+    void sendGoalAndWait( _GoalMsg const & goal, double const & duration, _TimeoutCallback const & callback );
 
-    void sendGoalAndWait( _Goal const & goal, ros::Duration const & duration, _TimeoutCallback const & callback );
+    void sendGoalAndWait( _GoalMsg const & goal, ros::Duration const & duration, _TimeoutCallback const & callback );
 
     bool waitForResult( double const & duration );
 
@@ -121,7 +133,7 @@ private:
 
     _GoalState getState();
 
-    void sendGoal( _Goal const & goal );
+    void sendGoal( _GoalMsg const & goal );
 
     void update();
 };

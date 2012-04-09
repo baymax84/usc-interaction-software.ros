@@ -45,7 +45,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 template<class __Service>
-QUICKDEV_DECLARE_POLICY2( ServiceServer, NodeHandlePolicy, ServiceCallbackPolicy<__Service> )
+QUICKDEV_DECLARE_POLICY2( ServiceServer, NodeHandlePolicy, ServiceCallbackPolicy<__Service> );
 
 template<class __Service, unsigned int __Id__ = 0>
 QUICKDEV_DECLARE_POLICY_CLASS2( ServiceServer, __Service )

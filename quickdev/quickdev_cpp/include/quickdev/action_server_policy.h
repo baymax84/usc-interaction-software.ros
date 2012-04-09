@@ -38,33 +38,39 @@
 
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
+
+#include <quickdev/auto_bind.h>
+
 #include <actionlib/server/simple_action_server.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 // =============================================================================================================================================
-template<class __Action>
-class ActionServerPolicy : public GenericPolicyAdapter<NodeHandlePolicy, CallbackPolicy<void( typename __Action::Goal::ConstPtr const &, actionlib::SimpleActionServer<__Action> * const )> >
+template<class __Action, unsigned int __Id__ = 0>
+class ActionServerPolicy
+:
+    public GenericPolicyAdapter<NodeHandlePolicy, CallbackPolicy<void( typename __Action::_action_goal_type::_goal_type::ConstPtr const &, actionlib::SimpleActionServer<__Action> * const )> >
 {
     QUICKDEV_MAKE_POLICY_FUNCS( ActionServer )
 
-private:
+public:
     typedef actionlib::SimpleActionServer<__Action> _ActionServer;
-    typedef typename __Action::Goal _GoalMsg;
-    typedef typename __Action::Feedback _FeedbackMsg;
-    typedef typename __Action::Result _ResultMsg;
+    typedef typename __Action::_action_goal_type::_goal_type _GoalMsg;
+    typedef typename __Action::_action_feedback_type::_feedback_type _FeedbackMsg;
+    typedef typename __Action::_action_result_type::_result_type _ResultMsg;
     typedef __QUICKDEV_FUNCTION_TYPE<void ( typename _GoalMsg::ConstPtr const &, _ActionServer * const )> _Callback;
     //typedef __QUICKDEV_FUNCTION_TYPE<void ( const typename _GoalMsg::ConstPtr & )> _InternalCallback;
-    typedef decltype( CallbackPolicy_types::from_function<_Callback>::type ) _GoalMsgCallbackPolicy;
+    typedef typename CallbackPolicy_types::from_function<_Callback>::type _GoalMsgCallbackPolicy;
     typedef GenericPolicyAdapter<NodeHandlePolicy, _GoalMsgCallbackPolicy> _PolicyAdapter;
 
+private:
     _ActionServer * action_server_;
     _Callback callback_;
-    std::string action_topic_name_;
 
     // =========================================================================================================================================
 
+public:
     template<class... __Args>
     ActionServerPolicy( __Args&&... args )
     :
@@ -78,19 +84,18 @@ private:
 
     // =========================================================================================================================================
 
-    QUICKDEV_ENABLE_INIT()
-    {
-        postInit();
-        QUICKDEV_SET_INITIALIZED();
-    }
-
-    // =========================================================================================================================================
+    QUICKDEV_ENABLE_INIT();
 
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( executeActionCB, typename _GoalMsg );
 
-    // =========================================================================================================================================
+    template<class... __Args>
+    void setInterrupted( __Args&&... args );
 
-    void postInit();
+    template<class... __Args>
+    void sendFeedback( __Args&&... args );
+
+    template<class... __Args>
+    void setCompleted( __Args&&... args );
 };
 
 // #############################################################################################################################################

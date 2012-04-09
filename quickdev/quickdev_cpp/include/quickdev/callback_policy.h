@@ -43,7 +43,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 
 // =============================================================================================================================================
 //! Generic callback policy for any kind of return type/arg types
-QUICKDEV_DECLARE_POLICY( Callback, Policy )
+QUICKDEV_DECLARE_POLICY( Callback, Policy );
 
 template<class __Signature> class CallbackPolicy;
 

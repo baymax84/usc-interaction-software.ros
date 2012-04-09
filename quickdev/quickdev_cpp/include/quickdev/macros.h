@@ -215,6 +215,15 @@ PLUGINLIB_DECLARE_CLASS( namespace_name, nodelet_name, namespace_name::ClassName
 
 // ########## Initable Policy Macros ###################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_INIT( Prefix... ) \
+/*! \brief Used to pass any post-construction values, usually meta-params, to this policy */ \
+/*! \details Meta-params passed through this function can be extracted with getFirstOfType(), getMetaParam(), or getMetaParamDef() */ \
+/*! \tparam __Args the variadic template of types associated with args */ \
+/*! \param args the variadic template of values given to this policy to parse, if applicable */ \
+template<class... __Args> \
+void Prefix init( __Args&&... args )
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_ENABLE_INIT() \
 /*! \brief Used to determine whether a policy is initializable */ \
 static bool const IS_INITIALIZEABLE_ = true; \
@@ -228,12 +237,7 @@ private: inline void setInitialized( bool const & value ){ initialized_ = value;
 /*! \brief Used to get the initialization state of an initializable policy */ \
 /*! \return the current initialization state of this policy */ \
 public: inline bool const & getInitialized() const { return initialized_; } \
-/*! \brief Used to pass any post-construction values, usually meta-params, to this policy */ \
-/*! \details Meta-params passed through this function can be extracted with getFirstOfType(), getMetaParam(), or getMetaParamDef() */ \
-/*! \tparam __Args the variadic template of types associated with args */ \
-/*! \param args the variadic template of values given to this policy to parse, if applicable */ \
-public: template<class... __Args> \
-void init( __Args&&... args )
+public: QUICKDEV_DECLARE_INIT()
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_ASSERT_INITIALIZED( return_val ) \
@@ -298,6 +302,44 @@ void callbackName( __ReconfigureType & config_name, uint32_t level_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( callbackName, __ReconfigureType ) \
 QUICKDEV_DECLARE_RECONFIGURE_CALLBACK2( callbackName, __ReconfigureType, config, level )
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK2( callbackName, __ActionType, msg_name, action_server_name ) \
+/*! \brief Callback for an ActionServerPolicy<__ActionType>; called when an action is triggered */ \
+/*! \param msg_name a const reference to the incoming goal message */ \
+/*! \param action_server_name a const pointer to an SimpleActionServer<__ActionType> (the action server which is triggering this event) */ \
+/*! \return nothing */ \
+void callbackName( __ActionType::_action_goal_type::_goal_type::ConstPtr const & msg_name, actionlib::SimpleActionServer<__ActionType> * const action_server_name )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( callbackName, __ActionType ) \
+QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK2( callbackName, __ActionType, action, action_server )
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( callbackName ) \
+/*! \brief Callback for an ActionClientPolicy; called when the action starts */ \
+/*! \return nothing */ \
+void callbackName()
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_FEEDBACK_CALLBACK2( callbackName, __ActionType, msg_name ) \
+/*! \brief Callback for an ActionClientPolicy<__ActionType>; called when new feedback is received from the server */ \
+/*! \param msg_name a const reference to the incoming feedback message */ \
+/*! \return nothing */ \
+QUICKDEV_DECLARE_MESSAGE_CALLBACK2( callbackName, __ActionType::_action_feedback_type::_feedback_type, msg_name )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_FEEDBACK_CALLBACK( callbackName, __ActionType ) \
+QUICKDEV_DECLARE_ACTION_FEEDBACK_CALLBACK2( callbackName, __ActionType, feedback )
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_DONE_CALLBACK2( callbackName, __ActionType, state_name, result_name ) \
+/*! \brief Callback for an ActionClientPolicy<__ActionType>; called when the goal completes */ \
+/*! \param state_name a const reference to the ending state of the action server */ \
+/*! \param result_name a const reference to the incoming result message */ \
+/*! \return nothing */ \
+void callbackName( actionlib::SimpleClientGoalState const & state_name, __ActionType::_action_result_type::_result_type::ConstPtr const & result_name )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_DONE_CALLBACK( callbackName, __ActionType ) \
+QUICKDEV_DECLARE_ACTION_DONE_CALLBACK2( callbackName, __ActionType, state, result )
 
 // ########## ImageProc Policy Macros ##################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
