@@ -30,7 +30,7 @@ QUICKDEV_DECLARE_INIT( ActionClientPolicy<__Action, __Id__>:: )
 template<class __Action, unsigned int __Id__>
 void __ActionClientPolicy::activeCB()
 {
-    PRINT_INFO( "Goal just went active" );
+    PRINT_INFO( "Activated goal [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
     _ActiveCallbackPolicy::invokeCallback();
 }
@@ -46,7 +46,7 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK2( (ActionClientPolicy<__Action, __Id__>::feedb
 template<class __Action, unsigned int __Id__>
 void __ActionClientPolicy::doneCB( _GoalState const & state, typename _ResultMsg::ConstPtr const & result )
 {
-    PRINT_INFO( "Finished in state [%s]", state.toString().c_str() );
+    PRINT_INFO( "Finished [%s] on topic [%s] in state [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str(), state.toString().c_str() );
 
     _DoneCallbackPolicy::invokeCallback( state, result );
 }

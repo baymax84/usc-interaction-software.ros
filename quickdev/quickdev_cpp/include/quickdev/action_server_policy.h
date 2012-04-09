@@ -67,6 +67,7 @@ public:
 private:
     _ActionServer * action_server_;
     _Callback callback_;
+    std::string action_topic_name_;
 
     // =========================================================================================================================================
 

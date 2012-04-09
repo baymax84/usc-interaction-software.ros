@@ -11,7 +11,10 @@ QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__>:: )
     auto const action_name = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "action_name_param", __Id__, "action_name", "action", std::forward<__Args>( args )... );
 
     ros::NodeHandle action_nh( nh_rel, action_name );
-    PRINT_INFO( "Creating action server [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_nh.getNamespace().c_str() );
+
+    action_topic_name_ = ros::NodeHandle( nh_rel, action_name ).getNamespace();
+
+    PRINT_INFO( "Creating action server [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
     action_server_ = new _ActionServer( nh_rel, action_name, auto_bind( &ActionServerPolicy::executeActionCB, this ), false );
 
@@ -26,7 +29,7 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    PRINT_INFO( "Got goal callback" );
+    PRINT_INFO( "Got goal callback [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
     if( !action_server_ )
     {
