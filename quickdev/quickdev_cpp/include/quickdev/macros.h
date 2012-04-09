@@ -312,7 +312,7 @@ QUICKDEV_DECLARE_RECONFIGURE_CALLBACK2( callbackName, __ReconfigureType, config,
 void callbackName( __ActionType::_action_goal_type::_goal_type::ConstPtr const & msg_name, actionlib::SimpleActionServer<__ActionType> * const action_server_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( callbackName, __ActionType ) \
-QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK2( callbackName, __ActionType, action, action_server )
+QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK2( callbackName, __ActionType, goal, action_server )
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( callbackName ) \

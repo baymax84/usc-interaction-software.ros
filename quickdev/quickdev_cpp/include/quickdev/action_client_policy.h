@@ -133,11 +133,15 @@ private:
 
     _GoalState getState();
 
+    typename _ResultMsg::ConstPtr getResult();
+
     void sendGoal( _GoalMsg const & goal );
 
     void update();
 
     void interruptAction();
+
+    bool successful();
 };
 
 // #############################################################################################################################################
