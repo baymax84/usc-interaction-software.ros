@@ -201,4 +201,13 @@ void __ActionClientPolicy::update()
     }
 }
 
+// =============================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionClientPolicy::interruptAction()
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    action_client_->cancelGoal();
+}
+
 #undef __ActionClientPolicy
