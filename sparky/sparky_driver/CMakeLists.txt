@@ -34,6 +34,5 @@ INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
 LINK_LIBRARIES(${FLTK_LIBRARIES})
 message(${FLTK_LIBRARIES})
 
-#rosbuild_add_executable(sparky_node src/sparky_node.cpp)
-rosbuild_add_executable(sparky_node src/sparky_node_new.cpp)
-rosbuild_add_executable(sparky_mover src/sparky_mover.cpp)
+rosbuild_add_executable(sparky_node nodes/sparky_node.cpp)
+rosbuild_add_executable(sparky_mover_node nodes/sparky_mover_node.cpp)
