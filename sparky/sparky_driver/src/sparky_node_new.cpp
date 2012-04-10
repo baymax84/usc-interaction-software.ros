@@ -4,7 +4,7 @@
 #include <joint_msgs/Params.h>
 #include <math.h>
 #include <sensor_msgs/JointState.h>
-#include <sparky/angle_servo_controller.h>
+#include <sparky/servo_angle_controller.h>
 //#include <sparky/controller.hh>
 
 // angle (degrees and radians) definitions
@@ -20,7 +20,7 @@ std::string g_path = "/dev/ttyACM0";
 
 // global variables
 //controller::Controller       g_sparky;
-pololu::AngleServoController g_sparky(N_DEVICES, N_CHANNELS_EACH, g_path, true);
+pololu::maestro::ServoAngleController g_sparky(N_DEVICES, N_CHANNELS_EACH, g_path, true);
 joint_msgs::Params::Response g_params_res;
 
 // function prototypes
@@ -622,7 +622,7 @@ bool jointMoveTo(int id, double angle)
 	}
   double dir = (joint_min < joint_max) ? 1.0 : -1.0;
 
-	double joint_angle = RTOD(angle);
+  double joint_angle = RTOD(angle);
   double servo_angle = 0.0;
   if ((id <= 13) || (id == 17))
 		servo_angle = DTOR(servo_max) - acos(1.0 - dir * (DTOR(joint_max) - DTOR(joint_angle)) * joint_radius / servo_radius);
@@ -657,14 +657,14 @@ bool initSparky()
 {
   int device = -1;
   int channel = -1;
-  pololu::MaestroServoController::ServoLimits servo_limits(900, 2100);
-  pololu::AngleServoController::AngleServoPair min_limit(0.0, 1100);
-  pololu::AngleServoController::AngleServoPair max_limit(DTOR(150.0), 2100);
-  pololu::AngleServoController::AngleLimits angle_limits(min_limit, max_limit);
-  pololu::MaestroServoController::ServoLimits base_servo_limits(754, 2254);
-  pololu::AngleServoController::AngleServoPair base_min_limit(DTOR(-335.0), 754);
-  pololu::AngleServoController::AngleServoPair base_max_limit(DTOR(340.0), 2254);
-  pololu::AngleServoController::AngleLimits base_angle_limits(base_min_limit, base_max_limit);
+  pololu::maestro::ServoLimits servo_limits(900, 2100);
+  pololu::maestro::ServoAnglePair min_limit(1100, DTOR(0.0));
+  pololu::maestro::ServoAnglePair max_limit(2100, DTOR(150.0));
+  pololu::maestro::ServoAngleLimits angle_limits(min_limit, max_limit);
+  pololu::maestro::ServoLimits base_servo_limits(754, 2254);
+  pololu::maestro::ServoAnglePair base_min_limit(754, DTOR(-335.0));
+  pololu::maestro::ServoAnglePair base_max_limit(2254, DTOR(340.0));
+  pololu::maestro::ServoAngleLimits base_angle_limits(base_min_limit, base_max_limit);
   bool enabled = true;
   int speed = 0;
   int accel = 0;
@@ -680,12 +680,12 @@ bool initSparky()
     if (i == 18) // base_turn
     {
       joint_success = g_sparky.setServoLimits(device, channel, base_servo_limits) && joint_success;
-      joint_success = g_sparky.setAngleLimits(device, channel, base_angle_limits) && joint_success;
+      joint_success = g_sparky.setServoAngleLimits(device, channel, base_angle_limits) && joint_success;
     }
     else
     {
       joint_success = g_sparky.setServoLimits(device, channel, servo_limits) && joint_success;
-      joint_success = g_sparky.setAngleLimits(device, channel, angle_limits) && joint_success;
+      joint_success = g_sparky.setServoAngleLimits(device, channel, angle_limits) && joint_success;
     }
     joint_success = g_sparky.setServoEnabled(device, channel, enabled) && joint_success;
     joint_success = g_sparky.setServoSpeed(device, channel, speed) && joint_success;
