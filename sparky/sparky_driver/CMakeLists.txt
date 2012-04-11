@@ -35,4 +35,7 @@ LINK_LIBRARIES(${FLTK_LIBRARIES})
 message(${FLTK_LIBRARIES})
 
 rosbuild_add_executable(sparky_node nodes/sparky_node.cpp)
+target_link_libraries(sparky_node yaml-cpp)
+
 rosbuild_add_executable(sparky_mover_node nodes/sparky_mover_node.cpp)
+target_link_libraries(sparky_mover_node yaml-cpp)
