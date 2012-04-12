@@ -79,23 +79,28 @@ public:
         {
             updateMean();
 
+            // reset the covariance matrix to 0
             covariance_.fill( 0 );
 
+            // for each data point we've recorded
             for( auto data_point = data_points_.cbegin(); data_point != data_points_.cend(); ++data_point )
             {
                 // remember, this will be a __Dim__-component vector
                 auto diff = mean_ - *data_point;
 
                 // for each item in our symmetric square covariance matrix
+                // sequence for 3x3 should be x x, x y, x z, y y, y z, z z
+                //                            0,0  0,1  0,2  1,1  1,2  2,2
+                // 0 -> m
                 for( size_t y = 0; y < __Dim__; ++y )
                 {
+                    // m -> n
                     for( size_t x = y; x < __Dim__; ++x )
                     {
-                        // build up the sum for each component
+                        // build up the sum of the ( product of the differences ) for each component
                         covariance_( y, x ) += diff[y] * diff[x];
                     }
                 }
-
             }
 
             // divide the sums by the number of data points
