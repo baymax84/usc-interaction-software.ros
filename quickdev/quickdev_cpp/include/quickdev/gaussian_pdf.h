@@ -30,8 +30,8 @@ public:
     template<class... __Args>
     GaussianPDF()
     :
-        //mean_( 0 ),
-        //covariance_( 0 ),
+//        mean_( 0 ),
+//        covariance_( 0 ),
         sum_( 0 ),
         mean_needs_update_( true ),
         covariance_needs_update_( true )
@@ -79,17 +79,27 @@ public:
         {
             updateMean();
 
-            _DataPoint sum( 0 );
+            covariance_.fill( 0 );
+
             for( auto data_point = data_points_.cbegin(); data_point != data_points_.cend(); ++data_point )
             {
+                // remember, this will be a __Dim__-component vector
                 auto diff = mean_ - *data_point;
-                sum += diff * diff;
+
+                // for each item in our symmetric square covariance matrix
+                for( size_t y = 0; y < __Dim__; ++y )
+                {
+                    for( size_t x = y; x < __Dim__; ++x )
+                    {
+                        // build up the sum for each component
+                        covariance_( y, x ) += diff[y] * diff[x];
+                    }
+                }
+
             }
 
-            for( size_t i = 0; i < __Dim__; ++i )
-            {
-                covariance_( i, i ) = sum[i] / data_points_.size();
-            }
+            // divide the sums by the number of data points
+            covariance_ /= data_points_.size();
 
             covariance_needs_update_ = false;
         }
