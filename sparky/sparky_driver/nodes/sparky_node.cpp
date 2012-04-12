@@ -632,7 +632,7 @@ bool jointMoveTo(int id, double angle)
 	  servo_angle = acos(1.0 - DTOR(joint_angle) / servo_radius);
 	  
 	ROS_INFO("Moving joint[%d] (servo[%d, %d]) to %.2f (%.2f)", id, device, channel, joint_angle, servo_angle);
-  if (!g_sparky.setAngleTarget(device, channel, servo_angle))
+  if (!g_sparky.setServoAngleTarget(device, channel, servo_angle))
   {
     ROS_ERROR("Error moving joint[%d] (servo[%d, %d] to %.2f (%.2f)!", id, device, channel, joint_angle, servo_angle);
     return false;
