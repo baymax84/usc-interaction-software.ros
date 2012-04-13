@@ -2,10 +2,19 @@
 #include <tf/transform_listener.h>
 #include <geometry_msgs/Twist.h>
 #include <p2os_driver/MotorState.h>
+#include <geometry_msgs/PoseStamped.h>
 
 bool running = true;
 
 #define MAX_SPD 0.1
+
+bool not_found = true;
+
+void goal_cb( const geometry_msgs::PoseStampedConstPtr &cmd )
+{
+  ROS_INFO( "found" );
+  not_found = false;
+}
 
 void cmd_cb( const p2os_driver::MotorStateConstPtr &cmd )
 {
@@ -18,6 +27,9 @@ int main( int argc, char* argv[] )
 	ros::init( argc, argv, "follower" );
 	ros::NodeHandle nh;
 	ros::NodeHandle nh_priv("~");
+
+  ros::Subscriber goal_sub = nh.subscribe("/move_base_simple/goal", 1, &goal_cb);
+
 	ros::Rate loop_rate(10);
 
 	geometry_msgs::Twist cmd_vel;
@@ -39,6 +51,15 @@ int main( int argc, char* argv[] )
 	ros::Publisher cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel",1);
 
 	ros::Subscriber cmd_sub = nh.subscribe("cmd_motor_state", 1, cmd_cb );
+  
+  while( ros::ok() && not_found )
+  {
+    printf( "." ); fflush(stdout);
+    loop_rate.sleep();
+    ros::spinOnce();
+  }
+  
+  ros::Duration(0.0).sleep();
 
 	while( ros::ok() )
 	{
@@ -56,8 +77,10 @@ int main( int argc, char* argv[] )
 		double xdir = cr.getOrigin().x() > 0 ? 1 : -1;
 		double ydir = cr.getOrigin().y() > 0 ? 1 : -1;
 
-		double dx = fabs(cr.getOrigin().x())-(sqrt(2.0)/2.0);
-		double dy = fabs(cr.getOrigin().y())-(sqrt(2.0)/2.0);
+		double dx = fabs(cr.getOrigin().x())-(1/2.0);
+		double dy = fabs(cr.getOrigin().y())-(1/2.0);
+		//double dx = fabs(cr.getOrigin().x())-(sqrt(2.0)/2.0);
+		//double dy = fabs(cr.getOrigin().y())-(sqrt(2.0)/2.0);
 
 		if( dx < 0 ) dx = 0;
 		if( dy < 0 ) dy = 0;

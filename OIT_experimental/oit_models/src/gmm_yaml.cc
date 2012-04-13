@@ -67,5 +67,5 @@ bool GMM::read_features_from_file( std::string filename )
 		ROS_INFO( "adding %s to model", fname.c_str() );
 	}
 
-	return true;;
+	return true;
 }
