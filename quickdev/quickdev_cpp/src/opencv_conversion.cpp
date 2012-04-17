@@ -43,6 +43,7 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
     image_wrapper.image = mat;
     image_wrapper.encoding = encoding;
     image_wrapper.header.frame_id = frame_id;
+    image_wrapper.header.stamp = ros::Time::now();
 
     return image_wrapper.toImageMsg();
 }
@@ -60,6 +61,7 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
 
     auto result = sensor_msgs::CvBridge::cvToImgMsg( image_ptr );
     result->header.frame_id = frame_id;
+    result->header.stamp = ros::Time::now();
     return result;
 }
 

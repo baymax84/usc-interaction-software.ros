@@ -52,6 +52,8 @@ template<>
 struct PublisherAdapterStorage<image_transport::Publisher> : PublisherAdapterStorage<ros::Publisher>
 {
     typedef PublisherAdapterStorage<ros::Publisher> _Parent;
+    typedef PublisherAdapterStorage<image_transport::Publisher> _PublisherAdapterStorage;
+    typedef boost::shared_ptr<_PublisherAdapterStorage> _Ptr;
 
     image_transport::ImageTransport * image_transport_;
 
@@ -64,21 +66,35 @@ struct PublisherAdapterStorage<image_transport::Publisher> : PublisherAdapterSto
 };
 
 // ## PublisherAdapter for image_transport::Publisher ##################
-
-template<class __Message>
-class PublisherAdapter<image_transport::Publisher, __Message>
+template<>
+class PublisherAdapter<image_transport::Publisher>
 {
 public:
     typedef image_transport::Publisher _Publisher;
+    typedef PublisherAdapterStorage<_Publisher> _Storage;
+    typedef _Storage::_Ptr _StoragePtr;
 
-    static _Publisher createPublisher(
-        ros::NodeHandle & nh,
-        std::string const & topic,
-        PublisherAdapterStorage<_Publisher> & storage )
+    _StoragePtr storage_;
+    _Publisher publisher_;
+
+    PublisherAdapter( _StoragePtr storage = _StoragePtr() )
+    :
+        storage_( storage )
     {
-        return storage.image_transport_->advertise(
+        //
+    }
+
+    template<class __Message>
+    _Publisher & createPublisher(
+        ros::NodeHandle & nh,
+        std::string const & topic )
+    {
+        if( !storage_ ) PRINT_ERROR( "Storage not allocated for publisher adapter!" );
+        publisher_ = storage_->image_transport_->advertise(
             topic,
-            storage.cache_size_ );
+            storage_->cache_size_ );
+
+        return publisher_;
     }
 };
 
@@ -87,6 +103,8 @@ template<>
 struct SubscriberAdapterStorage<image_transport::Subscriber> : SubscriberAdapterStorage<ros::Subscriber>
 {
     typedef SubscriberAdapterStorage<ros::Subscriber> _Parent;
+    typedef SubscriberAdapterStorage<image_transport::Subscriber> _SubscriberAdapterStorage;
+    typedef boost::shared_ptr<_SubscriberAdapterStorage> _Ptr;
 
     image_transport::ImageTransport * image_transport_;
 
@@ -104,18 +122,32 @@ class SubscriberAdapter<image_transport::Subscriber>
 {
 public:
     typedef image_transport::Subscriber _Subscriber;
+    typedef SubscriberAdapterStorage<_Subscriber> _Storage;
+    typedef _Storage::_Ptr _StoragePtr;
+
+    _StoragePtr storage_;
+    _Subscriber subscriber_;
+
+    SubscriberAdapter( _StoragePtr storage = _StoragePtr() )
+    :
+        storage_( storage )
+    {
+        //
+    }
 
     template<class __Message>
-    static _Subscriber createSubscriber(
+    _Subscriber & createSubscriber(
         ros::NodeHandle & nh,
         std::string const & topic,
-        const std::function<void( boost::shared_ptr<__Message const> const & )> & callback,
-        SubscriberAdapterStorage<_Subscriber> & storage )
+        __QUICKDEV_FUNCTION_TYPE<void( boost::shared_ptr<__Message const> const & )> const & callback )
     {
-        return storage.image_transport_->subscribe(
+        if( !storage_ ) PRINT_ERROR( "Storage not allocated for subscriber adapter!" );
+        subscriber_ = storage_->image_transport_->subscribe(
             topic,
-            storage.cache_size_,
+            storage_->cache_size_,
             boost::function< void( boost::shared_ptr< __Message const> const & )>( callback ) );
+
+        return subscriber_;
     }
 };
 
@@ -129,29 +161,30 @@ QUICKDEV_DECLARE_POLICY( ImageProc, NodeHandlePolicy )
 QUICKDEV_DECLARE_POLICY_CLASS( ImageProc )
 {
     QUICKDEV_MAKE_POLICY_FUNCS( ImageProc )
+
+    typedef ros::PublisherAdapterStorage<image_transport::Publisher> _PublisherAdapterStorage;
+    typedef ros::SubscriberAdapterStorage<image_transport::Subscriber> _SubscriberAdapterStorage;
+    typedef __QUICKDEV_FUNCTION_TYPE<void(cv_bridge::CvImageConstPtr const &)> _ImageCallback;
+
 protected:
     ros::MultiPublisher<image_transport::Publisher> image_pubs_;
     ros::MultiSubscriber<image_transport::Subscriber> image_subs_;
 
     image_transport::ImageTransport image_transport_;
 
-    ros::PublisherAdapterStorage<image_transport::Publisher> publisher_storage_;
-    ros::SubscriberAdapterStorage<image_transport::Subscriber> subscriber_storage_;
-
+    std::map<std::string, _ImageCallback> image_callbacks_map_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( ImageProc ),
         image_transport_( NodeHandlePolicy::getNodeHandle() ),
-        publisher_storage_( &image_transport_, 1 ),
-        subscriber_storage_( &image_transport_, 1 )
+//        publisher_storage_( &image_transport_, 1 ),
+//        subscriber_storage_( &image_transport_, 1 ),
+        initialized_( false )
     {
         printPolicyActionStart( "create", this );
-
-        preInit();
-
         printPolicyActionDone( "create", this );
     }
 
-    void preInit()
+    QUICKDEV_ENABLE_INIT()
     {
         //publisher_storage.image_transport_ = &image_transport_;
         //subscriber_storage.image_transport_ = &image_transport_;
@@ -159,38 +192,63 @@ protected:
         //auto & nh_rel = NodeHandlePolicy::getNodeHandle();
         QUICKDEV_GET_NODEHANDLE( nh_rel );
 
-        if( ros::ParamReader<bool, 1>::readParam( nh_rel, "subscribe_to_image", true ) )
-            image_subs_.addSubscriber( nh_rel, "image", &ImageProcPolicy::imageCB_0, this, subscriber_storage_ );
+        auto const subscribe_to_image = policy::readPolicyParam<bool>( nh_rel, "subscribe_to_image_param", "subscribe_to_image", true, std::forward<__Args>( args )... );
+        auto const publish_image = policy::readPolicyParam<bool>( nh_rel, "publish_image_param", "publish_image", true, std::forward<__Args>( args )... );
 
-        if( ros::ParamReader<bool, 1>::readParam( nh_rel, "show_image", true ) )
-            image_pubs_.addPublishers<sensor_msgs::Image>( nh_rel, {"output_image"}, publisher_storage_ );
+        if( subscribe_to_image )
+        {
+            auto const image_topic = policy::readPolicyParam<std::string>( nh_rel, "image_topic_param", "image_topic", "image", std::forward<__Args>( args )... );
+            auto const image_cache_size = policy::readPolicyParam<int>( nh_rel, "image_cache_size_param", "image_cache_size", 1, std::forward<__Args>( args )... );
+            addImageSubscriber( image_topic, getMetaParam<_ImageCallback>( "image_callback_param", std::forward<__Args>( args )... ), image_cache_size );
+        }
+
+        if( publish_image )
+        {
+            auto const output_image_topic = policy::readPolicyParam<std::string>( nh_rel, "output_image_topic_param", "output_image_topic", "output_image", std::forward<__Args>( args )... );
+            addImagePublisher( output_image_topic );
+        }
+
+        QUICKDEV_SET_INITIALIZED();
     }
 
+    void addImageSubscriber( std::string const & topic_name, __QUICKDEV_FUNCTION_TYPE<void(cv_bridge::CvImageConstPtr const &)> const & callback, size_t const & cache_size = 1 )
+    {
+        QUICKDEV_GET_NODEHANDLE( nh_rel );
+
+        auto const callback_it = image_callbacks_map_.find( topic_name );
+
+        if( callback_it != image_callbacks_map_.end() ) PRINT_WARN( "Topic %s is already registered; overwriting with new callback.", topic_name.c_str() );
+
+        image_callbacks_map_[topic_name] = callback;
+
+        image_subs_.addSubscriber( nh_rel, topic_name, auto_bind( auto_bind( &ImageProcPolicy::imageCB, this ), topic_name ), quickdev::make_shared( new _SubscriberAdapterStorage( &image_transport_, cache_size ) ) );
+    }
+
+    void addImagePublisher( std::string const & topic_name, size_t const & cache_size = 1 )
+    {
+        QUICKDEV_GET_NODEHANDLE( nh_rel );
+
+        image_pubs_.addPublishers<sensor_msgs::Image>( nh_rel, { topic_name }, { quickdev::make_shared( new _PublisherAdapterStorage( &image_transport_, cache_size ) ) } );
+    }
+
+/*
     virtual IMAGE_PROC_PROCESS_IMAGE( image_ptr )
     {
-        /*
-         * Usual behavior: grab an IplImage * or a cvMat from image_ptr and do your thing
-         * When done, if applicable, publish a debug image on the given topic
-         *
-         * IplImage * image = &IplImage( image_ptr->image );
-         * image_pubs_.publish( "output_image", image_ptr->toImageMsg() );
-         */
-    }
 
-    // provided in case a derived class wants to be notified when the
-    // raw image comes in, before it's converted
-    virtual void imageCB( sensor_msgs::Image::ConstPtr const & image_msg )
-    {
+        // Usual behavior: grab an IplImage * or a cvMat from image_ptr and do your thing
+        // When done, if applicable, publish a debug image on the given topic
         //
+        // IplImage * image = &IplImage( image_ptr->image );
+        // image_pubs_.publish( "output_image", image_ptr->toImageMsg() );
+
     }
-
-    void imageCB_0( sensor_msgs::Image::ConstPtr const & image_msg )
+*/
+    void imageCB( sensor_msgs::Image::ConstPtr const & image_msg, std::string const & topic_name )
     {
-        imageCB( image_msg );
+        auto callback_it = image_callbacks_map_.find( topic_name );
 
-        cv_bridge::CvImageConstPtr cv_image_ptr = opencv_conversion::fromImageMsg( image_msg );
-
-        processImage( cv_image_ptr );
+        if( callback_it != image_callbacks_map_.end() ) callback_it->second( opencv_conversion::fromImageMsg( image_msg ) );
+        else PRINT_WARN( "Topic %s is not registered.", topic_name.c_str() );
     }
 
     // publish specializaiton for sensor_msgs::Image::Ptr

@@ -61,6 +61,9 @@ struct PublisherAdapterStorage {};
 template<>
 struct PublisherAdapterStorage<ros::Publisher>
 {
+    typedef PublisherAdapterStorage<ros::Publisher> _PublisherAdapterStorage;
+    typedef boost::shared_ptr<_PublisherAdapterStorage> _Ptr;
+
     unsigned int cache_size_;
 
     PublisherAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
@@ -70,24 +73,39 @@ struct PublisherAdapterStorage<ros::Publisher>
 };
 
 // ## PublisherAdapter #################################################
-template<class __Publisher, class __Message>
+template<class __Publisher>
 class PublisherAdapter {};
 
 // ## PublisherAdapter for ros::Publisher ##############################
-template<class __Message>
-class PublisherAdapter<ros::Publisher, __Message>
+template<>
+class PublisherAdapter<ros::Publisher>
 {
 public:
     typedef ros::Publisher _Publisher;
+    typedef PublisherAdapterStorage<_Publisher> _Storage;
+    typedef _Storage::_Ptr _StoragePtr;
 
-    static _Publisher createPublisher(
-        ros::NodeHandle & nh,
-        std::string const & topic,
-        PublisherAdapterStorage<_Publisher> & storage )
+    _StoragePtr storage_;
+    _Publisher publisher_;
+
+    PublisherAdapter( _StoragePtr storage = _StoragePtr() )
+    :
+        storage_( storage )
     {
-        return nh.advertise<__Message>(
+        //
+    }
+
+    template<class __Message>
+    _Publisher & createPublisher(
+        ros::NodeHandle & nh,
+        std::string const & topic )
+    {
+        if( !storage_ ) storage_ = quickdev::make_shared( new _Storage() );
+        publisher_ = nh.advertise<__Message>(
             topic,
-            storage.cache_size_ );
+            storage_->cache_size_ );
+
+        return publisher_;
     }
 };
 
@@ -101,8 +119,9 @@ public:
     typedef std::string _Topic;
     typedef std::vector<_Topic> _TopicArray;
     typedef __Publisher _Publisher;
-    typedef PublisherAdapterStorage<__Publisher> _PublisherAdapterStorage;
-    typedef std::map<_Topic, __Publisher> _PublisherMap;
+    typedef PublisherAdapter<__Publisher> _PublisherAdapter;
+    typedef typename _PublisherAdapter::_StoragePtr _PublisherAdapterStoragePtr;
+    typedef std::map<_Topic, _PublisherAdapter> _PublisherMap;
 
 protected:
     _PublisherMap publishers_;
@@ -115,46 +134,62 @@ public:
     }
 
     template<class... __Messages>
-    MultiPublisher & addPublishers( ros::NodeHandle & nh, std::initializer_list<_Topic> const & topic_names_init, _PublisherAdapterStorage storage = _PublisherAdapterStorage() )
+    MultiPublisher & addPublishers( ros::NodeHandle & nh, std::initializer_list<_Topic> const & topic_names_init, std::initializer_list<_PublisherAdapterStoragePtr> storage_init = std::initializer_list<_PublisherAdapterStoragePtr>() )
     {
-        _TopicArray topic_names( topic_names_init.size() );
-        std::copy( topic_names_init.begin(), topic_names_init.end(), topic_names.begin() );
+        std::vector<_PublisherAdapterStoragePtr> storage( topic_names_init.size() );
+        std::copy( storage_init.begin(), storage_init.end(), storage.begin() );
 
-        PRINT_INFO( "Attempting to add [ %zu ] publishers...", topic_names.size() );
-        createPublishers<quickdev::SimpleContainer<__Messages...> >( nh, topic_names.begin(), topic_names.end(), storage );
+        PRINT_INFO( "Attempting to add [ %zu ] publishers...", topic_names_init.size() );
+
+        createPublishers<quickdev::SimpleContainer<__Messages...> >( nh, topic_names_init.begin(), topic_names_init.end(), storage.begin(), storage.end() );
 
         return *this;
     }
-
+/*
+    template<class... __Messages>
+    MultiPublisher & addPublishers( ros::NodeHandle & nh, std::initializer_list<_Topic> const & topic_names_init )
+    {
+        return addPublishers<__Messages...>( nh, topic_names_init, {} );
+    }
+*/
     // recursively process the message types in __MessagesSubset and
     // create a publisher for each
     template
     <
         class __MessagesSubset,
+        class __TopicIterator,
+        class __StorageIterator,
         typename std::enable_if<(__MessagesSubset::size_ > 0), int>::type = 0,
         typename std::enable_if<(!std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value), int>::type = 0
     >
-    void createPublishers( ros::NodeHandle & nh, typename _TopicArray::iterator const & current_topic, typename _TopicArray::iterator const last_topic, _PublisherAdapterStorage & storage )
+    void createPublishers( ros::NodeHandle & nh, __TopicIterator const & current_topic, __TopicIterator const & last_topic, __StorageIterator current_storage, __StorageIterator last_storage )
     {
         typedef typename container::traits<__MessagesSubset>::_Front _CurrentMessageType;
 
         const ros::NodeHandle topic_nh( nh, *current_topic );
         PRINT_INFO( ">>> Creating publisher [ %s ] on topic [ %s ]", QUICKDEV_GET_MESSAGE_NAME( _CurrentMessageType ).c_str(), topic_nh.getNamespace().c_str() );
 
-        publishers_[*current_topic] = PublisherAdapter<__Publisher, _CurrentMessageType>::createPublisher( nh, *current_topic, storage );
-        createPublishers<typename container::traits<__MessagesSubset>::_Tail>( nh, current_topic + 1, last_topic, storage );
+        PublisherAdapter<__Publisher> new_publisher_adapter( *current_storage );
+        new_publisher_adapter.template createPublisher<_CurrentMessageType>( nh, *current_topic );
+
+        publishers_[*current_topic] = new_publisher_adapter;
+
+        createPublishers<typename container::traits<__MessagesSubset>::_Tail>( nh, current_topic + 1, last_topic, current_storage + 1, last_storage );
     }
 
     // ignore void types
     template
     <
         class __MessagesSubset,
+        class __TopicIterator,
+        class __StorageIterator,
         typename std::enable_if<(__MessagesSubset::size_ > 0), int>::type = 0,
         typename std::enable_if<(std::is_same<typename container::traits<__MessagesSubset>::_Front, void>::value), int>::type = 0
     >
-    void createPublishers( ros::NodeHandle & nh, typename _TopicArray::iterator const & current_topic, typename _TopicArray::iterator const last_topic, _PublisherAdapterStorage & storage )
+    void createPublishers( ros::NodeHandle & nh, __TopicIterator const & current_topic, __TopicIterator const & last_topic, __StorageIterator current_storage, __StorageIterator last_storage )
     {
-        createPublishers<typename container::traits<__MessagesSubset>::_Tail>( nh, current_topic + 1, last_topic, storage );
+        PRINT_WARN( ">>> Ignoring void type for topic [ %s ]", current_topic->c_str() );
+        createPublishers<typename container::traits<__MessagesSubset>::_Tail>( nh, current_topic + 1, last_topic, current_storage + 1, last_storage );
     }
 
     // bottom-level in the createPublishers recursive algorithm
@@ -163,11 +198,13 @@ public:
     template
     <
         class __MessagesSubset,
+        class __TopicIterator,
+        class __StorageIterator,
         typename std::enable_if<(__MessagesSubset::size_ == 0), int>::type = 0
     >
-    void createPublishers( ros::NodeHandle & nh, typename _TopicArray::iterator const & current_topic, typename _TopicArray::iterator const last_topic, _PublisherAdapterStorage & storage )
+    void createPublishers( ros::NodeHandle & nh, __TopicIterator const & current_topic, __TopicIterator const & last_topic, __StorageIterator current_storage, __StorageIterator last_storage )
     {
-        //PRINT_INFO( "Finished creating topics." );
+//        PRINT_INFO( "Finished creating topics." );
     }
 
     // check to see if a topic exists in the list of publishers
@@ -180,7 +217,7 @@ public:
     const __Publisher & operator[]( _Topic const & topic ) const
     {
         const auto & publisher( publishers_.find( topic ) );
-        if( publisher != publishers_.end() ) return publisher->second;
+        if( publisher != publishers_.end() ) return publisher->second.publisher_;
         return __Publisher();
     }
 
@@ -190,7 +227,7 @@ public:
         static __Publisher default_return = __Publisher();
 
         auto publisher( publishers_.find( topic ) );
-        if( publisher != publishers_.end() ) return publisher->second;
+        if( publisher != publishers_.end() ) return publisher->second.publisher_;
         return default_return;
     }
 
@@ -200,7 +237,7 @@ public:
     void publish( _Topic const & topic, __Message const & msg, __Args&&... args ) const
     {
         const auto & publisher( publishers_.find( topic ) );
-        if( publisher != publishers_.end() ) publisher->second.publish( msg );
+        if( publisher != publishers_.end() ) publisher->second.publisher_.publish( msg );
         else PRINT_WARN( "Cannot publish to topic [ %s ]; topic is not managed by this multi-publisher", topic.c_str() );
         publish( std::forward<__Args>( args )... );
     }

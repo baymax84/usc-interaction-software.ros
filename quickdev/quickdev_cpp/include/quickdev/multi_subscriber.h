@@ -58,6 +58,9 @@ struct SubscriberAdapterStorage {};
 template<>
 struct SubscriberAdapterStorage<ros::Subscriber>
 {
+    typedef SubscriberAdapterStorage<ros::Subscriber> _SubscriberAdapterStorage;
+    typedef boost::shared_ptr<_SubscriberAdapterStorage> _Ptr;
+
     unsigned int cache_size_;
 
     SubscriberAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
@@ -76,18 +79,32 @@ class SubscriberAdapter<ros::Subscriber>
 {
 public:
     typedef ros::Subscriber _Subscriber;
+    typedef SubscriberAdapterStorage<_Subscriber> _Storage;
+    typedef _Storage::_Ptr _StoragePtr;
+
+    _StoragePtr storage_;
+    _Subscriber subscriber_;
+
+    SubscriberAdapter( _StoragePtr storage = _StoragePtr() )
+    :
+        storage_( storage )
+    {
+        //
+    }
 
     template<class __Message>
-    static _Subscriber createSubscriber(
+    _Subscriber & createSubscriber(
         ros::NodeHandle & nh,
         std::string const & topic,
-        const std::function<void( boost::shared_ptr<__Message const> const & )> & callback,
-        SubscriberAdapterStorage<_Subscriber> & storage )
+        std::function<void( boost::shared_ptr<__Message const> const & )> const & callback )
     {
-        return nh.subscribe(
+        if( !storage_ ) storage_ = quickdev::make_shared( new _Storage() );
+        subscriber_ = nh.subscribe(
             topic,
-            storage.cache_size_,
+            storage_->cache_size_,
             boost::function< void( boost::shared_ptr< __Message const> const & )>( callback ) );
+
+        return subscriber_;
     }
 };
 
@@ -103,8 +120,10 @@ public:
     typedef std::vector<_Topic> _TopicArray;
     typedef __Subscriber _Subscriber;
     //typedef SubscriberAdapter<__Subscriber> _SubscriberAdapter;
-    typedef SubscriberAdapterStorage<__Subscriber> _SubscriberAdapterStorage;
-    typedef std::map<_Topic, __Subscriber> _SubscriberMap;
+    typedef SubscriberAdapter<__Subscriber> _SubscriberAdapter;
+    //typedef typename _SubscriberAdapter::_Storage _SubscriberAdapterStorage;
+    typedef typename _SubscriberAdapter::_StoragePtr _SubscriberAdapterStoragePtr;
+    typedef std::map<_Topic, _SubscriberAdapter> _SubscriberMap;
 
 protected:
     _SubscriberMap subscribers_;
@@ -118,18 +137,21 @@ public:
 
     // here, we only support adding one callback at a time, either through a standard or member function pointer
     template<class __Message, class __CallerBase, class __Caller>
-    MultiSubscriber & addSubscriber( ros::NodeHandle & nh, _Topic const & topic_name, void( __CallerBase::*function_ptr )( __Message const & ), __Caller * const caller, _SubscriberAdapterStorage storage = _SubscriberAdapterStorage() )
+    MultiSubscriber & addSubscriber( ros::NodeHandle & nh, _Topic const & topic_name, void( __CallerBase::*function_ptr )( __Message const & ), __Caller * const caller, _SubscriberAdapterStoragePtr storage = _SubscriberAdapterStoragePtr() )
     {
         return addSubscriber( nh, topic_name, quickdev::auto_bind( function_ptr, caller ), storage );
     }
 
     template<class __Message>
-    MultiSubscriber & addSubscriber( ros::NodeHandle & nh, _Topic const & topic_name, const std::function< void(boost::shared_ptr< __Message const > const &)> & callback, _SubscriberAdapterStorage & storage )
+    MultiSubscriber & addSubscriber( ros::NodeHandle & nh, _Topic const & topic_name, __QUICKDEV_FUNCTION_TYPE< void(boost::shared_ptr< __Message const > const &)> const & callback, _SubscriberAdapterStoragePtr storage )
     {
         const ros::NodeHandle topic_nh( nh, topic_name );
         PRINT_INFO( ">>> Creating subscriber [ %s ] on topic [ %s ]", QUICKDEV_GET_MESSAGE_NAME( __Message ).c_str(), topic_nh.getNamespace().c_str() );
 
-        subscribers_[topic_name] = SubscriberAdapter<__Subscriber>::createSubscriber( nh, topic_name, callback, storage );
+        SubscriberAdapter<__Subscriber> new_subscriber_adapter( storage );
+        new_subscriber_adapter.createSubscriber( nh, topic_name, callback );
+
+        subscribers_[topic_name] = new_subscriber_adapter;
 
         return *this;
     }
@@ -144,7 +166,7 @@ public:
     const __Subscriber & operator[]( _Topic const & topic ) const
     {
         const auto & subscriber( subscribers_.find( topic ) );
-        if( subscriber != subscribers_.end() ) return subscriber->second;
+        if( subscriber != subscribers_.end() ) return subscriber->second.subscriber_;
         return __Subscriber();
     }
 };
