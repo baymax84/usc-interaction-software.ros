@@ -348,6 +348,13 @@ QUICKDEV_DECLARE_ACTION_DONE_CALLBACK2( callbackName, __ActionType, state, resul
 /*! \details All the actual processing work is triggered from within this callback */ \
 void processImage( cv_bridge::CvImageConstPtr & image_ptr_name )
 
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_IMAGE_CALLBACK2( callbackName, image_msg_name ) \
+void callbackName( cv_bridge::CvImageConstPtr const & image_msg_name )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_IMAGE_CALLBACK( callbackName ) \
+QUICKDEV_DECLARE_IMAGE_CALLBACK2( callbackName, image_msg )
+
 // ########## Runable Policy Macros ####################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_SPIN_FIRST() \

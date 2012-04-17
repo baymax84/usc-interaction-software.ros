@@ -73,7 +73,7 @@ public:
 
     QUICKDEV_ENABLE_INIT()
     {
-        auto & nh_rel = NodeHandlePolicy::getNodeHandle();
+        QUICKDEV_GET_NODEHANDLE( nh_rel );
 
         auto const reconfigure_namespace = policy::readPolicyParam<std::string>( nh_rel, "reconfigure_namespace_param", "reconfigure_namespace", "reconfigure", std::forward<__Args>( args )... );
 
