@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/service_client_policy.h
+ *  include/quickdev_examples/service_server_policy_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,56 +33,48 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_SERVICECLIENTPOLICY_H_
-#define QUICKDEV_QUICKDEVTESTS_SERVICECLIENTPOLICY_H_
+#ifndef QUICKDEV_QUICKDEVTESTS_SERVICESERVERPOLICYNODE_H_
+#define QUICKDEV_QUICKDEVTESTS_SERVICESERVERPOLICYNODE_H_
 
 #include <quickdev/node.h>
-#include <quickdev/service_client_policy.h>
+#include <quickdev/service_server_policy.h>
 #include <quickdev_examples/TestService1.h>
 #include <quickdev_examples/TestService2.h>
 
 typedef quickdev_examples::TestService1 _Service1;
-typedef quickdev::ServiceClientPolicy<_Service1> _ServiceClientPolicy1;
+typedef quickdev::ServiceServerPolicy<_Service1> _ServiceServerPolicy1;
 typedef quickdev_examples::TestService2 _Service2;
-typedef quickdev::ServiceClientPolicy<_Service2> _ServiceClientPolicy2;
+typedef quickdev::ServiceServerPolicy<_Service2> _ServiceServerPolicy2;
 
-QUICKDEV_DECLARE_NODE( ServiceClientPolicy, _ServiceClientPolicy1, _ServiceClientPolicy2 )
+QUICKDEV_DECLARE_NODE( ServiceServerPolicy, _ServiceServerPolicy1, _ServiceServerPolicy2 )
 
-QUICKDEV_DECLARE_NODE_CLASS( ServiceClientPolicy )
+QUICKDEV_DECLARE_NODE_CLASS( ServiceServerPolicy )
 {
-private:
-	bool mode_;
-
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ServiceClientPolicy ),
-		mode_( false )
-	{}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ServiceServerPolicy ){}
 
 public:
-	QUICKDEV_SPIN_FIRST()
-	{
-		//initAll();
+    QUICKDEV_SPIN_FIRST()
+    {
+        //initAll();
 
-		_ServiceClientPolicy1::init( "service_name_param", std::string( "service1_name" ) );
-		_ServiceClientPolicy2::init( "service_name_param", std::string( "service2_name" ) );
-	}
+        _ServiceServerPolicy1::init( "service_name_param", std::string( "service1_name" ) );
+        _ServiceServerPolicy1::registerCallback( quickdev::auto_bind( &ServiceServerPolicyNode::service1CB, this ) );
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		PRINT_INFO( "Spinning..." );
+        _ServiceServerPolicy2::init( "service_name_param", std::string( "service2_name" ) );
+        _ServiceServerPolicy2::registerCallback( quickdev::auto_bind( &ServiceServerPolicyNode::service2CB, this ) );
+    }
 
-		if( mode_ )
-		{
-			_Service1 service;
-			_ServiceClientPolicy1::callService( service );
-		}
-		else
-		{
-			_Service2 service;
-			_ServiceClientPolicy2::callService( service, ros::Duration( 2.0 ), 2 );
-		}
+    QUICKDEV_DECLARE_SERVICE_CALLBACK( service1CB, _Service1 )
+    {
+        PRINT_INFO( "Got service1CB" );
+        return true;
+    }
 
-		mode_ = !mode_;
-	}
+    QUICKDEV_DECLARE_SERVICE_CALLBACK( service2CB, _Service2 )
+    {
+        PRINT_INFO( "Got service2CB" );
+        return true;
+    }
 };
 
-#endif // QUICKDEV_QUICKDEVTESTS_SERVICECLIENTPOLICY_H_
+#endif // QUICKDEV_QUICKDEVTESTS_SERVICESERVERPOLICYNODE_H_

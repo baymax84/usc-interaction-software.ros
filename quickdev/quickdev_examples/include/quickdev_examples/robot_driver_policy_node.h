@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/image_proc_policy.h
+ *  include/quickdev_examples/robot_driver_policy_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,31 +33,24 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICY_H_
-#define QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICY_H_
+#ifndef QUICKDEV_QUICKDEVTESTS_ROBOTDRIVERPOLICYNODE_H_
+#define QUICKDEV_QUICKDEVTESTS_ROBOTDRIVERPOLICYNODE_H_
 
 #include <quickdev/node.h>
-#include <quickdev/image_proc_policy.h>
+#include <quickdev/robot_driver_policy.h>
+#include <std_msgs/Empty.h>
 
-QUICKDEV_DECLARE_NODE( ImageProcPolicy, quickdev::ImageProcPolicy )
+typedef quickdev::RobotDriverPolicy<std_msgs::Empty> _RobotDriverPolicy;
+QUICKDEV_DECLARE_NODE( RobotDriverPolicy, _RobotDriverPolicy )
 
-QUICKDEV_DECLARE_NODE_CLASS( ImageProcPolicy )
+QUICKDEV_DECLARE_NODE_CLASS( RobotDriverPolicy )
 {
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ImageProcPolicy )
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( RobotDriverPolicy ){}
+
+public:
+    QUICKDEV_SPIN_FIRST()
     {
-
-    }
-
-    IMAGE_PROC_PROCESS_IMAGE( image_ptr )
-    {
-        cv::Mat image = image_ptr->image;
-
-        // detect edges with cv::Canny and publish the resulting single-channel 8-bit image (need to specify mono8 encoding in fromMat() )
-        cv::Mat bw_image;
-        cv::cvtColor( image, bw_image, CV_BGR2GRAY );
-        cv::Canny( bw_image, bw_image, 0.2, 0.4 );
-
-        publishImages( "output_image", quickdev::opencv_conversion::fromMat( bw_image, "", "mono8" ) );
+        initAll();
     }
 
     QUICKDEV_SPIN_ONCE()
@@ -66,4 +59,4 @@ QUICKDEV_DECLARE_NODE_CLASS( ImageProcPolicy )
     }
 };
 
-#endif // QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICY_H_
+#endif // QUICKDEV_QUICKDEVTESTS_ROBOTDRIVERPOLICYNODE_H_

@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/joystick_policy.h>
+#include <quickdev_examples/joystick_policy_node.h>
 QUICKDEV_INST_NODE( JoystickPolicyNode, "joystick_policy" )

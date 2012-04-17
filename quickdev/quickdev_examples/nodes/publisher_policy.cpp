@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/publisher_policy.h>
+#include <quickdev_examples/publisher_policy_node.h>
 QUICKDEV_INST_NODE( PublisherPolicyNode, "publisher_policy" )

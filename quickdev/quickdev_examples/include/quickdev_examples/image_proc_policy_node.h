@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/robot_controller_policy.h
+ *  include/quickdev_examples/image_proc_policy_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,30 +33,45 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_ROBOTCONTROLLERPOLICY_H_
-#define QUICKDEV_QUICKDEVTESTS_ROBOTCONTROLLERPOLICY_H_
+#ifndef QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICYNODE_H_
+#define QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICYNODE_H_
 
 #include <quickdev/node.h>
-#include <quickdev/robot_controller_policy.h>
-#include <std_msgs/Empty.h>
+#include <quickdev/image_proc_policy.h>
 
-typedef quickdev::RobotControllerPolicy<std_msgs::Empty> _RobotControllerPolicy;
-QUICKDEV_DECLARE_NODE( RobotControllerPolicy, _RobotControllerPolicy )
+typedef quickdev::ImageProcPolicy _ImageProcPolicy;
 
-QUICKDEV_DECLARE_NODE_CLASS( RobotControllerPolicy )
+QUICKDEV_DECLARE_NODE( ImageProcPolicy, _ImageProcPolicy )
+
+QUICKDEV_DECLARE_NODE_CLASS( ImageProcPolicy )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( RobotControllerPolicy ){}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ImageProcPolicy )
+    {
 
-public:
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-	}
+    }
 
-	QUICKDEV_SPIN_ONCE()
-	{
-		_RobotControllerPolicy::update( std_msgs::Empty() );
-	}
+    QUICKDEV_SPIN_FIRST()
+    {
+        initPolicies<_ImageProcPolicy>( "image_callback_param", quickdev::auto_bind( &ImageProcPolicyNode::imageCB, this ) );
+        initPolicies<quickdev::policy::ALL>();
+    }
+
+    QUICKDEV_DECLARE_IMAGE_CALLBACK( imageCB )
+    {
+        cv::Mat image = image_msg->image;
+
+        // detect edges with cv::Canny and publish the resulting single-channel 8-bit image (need to specify mono8 encoding in fromMat() )
+        cv::Mat bw_image;
+        cv::cvtColor( image, bw_image, CV_BGR2GRAY );
+        cv::Canny( bw_image, bw_image, 0.2, 0.4 );
+
+        publishImages( "output_image", quickdev::opencv_conversion::fromMat( bw_image, "", "mono8" ) );
+    }
+
+    QUICKDEV_SPIN_ONCE()
+    {
+        //
+    }
 };
 
-#endif // QUICKDEV_QUICKDEVTESTS_ROBOTCONTROLLERPOLICY_H_
+#endif // QUICKDEV_QUICKDEVTESTS_IMAGEPROCPOLICYNODE_H_

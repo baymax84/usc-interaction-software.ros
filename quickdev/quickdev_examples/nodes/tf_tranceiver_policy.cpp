@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/tf_tranceiver_policy.h>
+#include <quickdev_examples/tf_tranceiver_policy_node.h>
 QUICKDEV_INST_NODE( TfTranceiverPolicyNode, "tf_tranceiver_policy" )

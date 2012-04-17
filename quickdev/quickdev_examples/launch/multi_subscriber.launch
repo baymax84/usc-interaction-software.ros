@@ -1,7 +1,7 @@
 <launch>
     <arg name="pkg" value="quickdev_examples" />
-    <arg name="type" value="multi_subscriber" />
-    <arg name="name" default="$(arg type)" />
+    <arg name="name" value="multi_subscriber" />
+    <arg name="type" value="$(arg name)_node" />
     <arg name="rate" default="30" />
     <arg name="args" value="_loop_rate:=$(arg rate) ~string:=/multi_publisher/string ~point:=/multi_publisher/point" />
     <node

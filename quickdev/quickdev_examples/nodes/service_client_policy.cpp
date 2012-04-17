@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/service_client_policy.h>
+#include <quickdev_examples/service_client_policy_node.h>
 QUICKDEV_INST_NODE( ServiceClientPolicyNode, "service_client_policy" )
