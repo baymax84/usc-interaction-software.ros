@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/robot_driver_policy.h>
+#include <quickdev_examples/robot_driver_policy_node.h>
 QUICKDEV_INST_NODE( RobotDriverPolicyNode, "robot_driver_policy" )

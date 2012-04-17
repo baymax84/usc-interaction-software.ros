@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/reconfigure_policy.h>
+#include <quickdev_examples/reconfigure_policy_node.h>
 QUICKDEV_INST_NODE( ReconfigurePolicyNode, "reconfigure_policy" )

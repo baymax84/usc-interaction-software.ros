@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/image_proc_policy.h>
+#include <quickdev_examples/image_proc_policy_node.h>
 QUICKDEV_INST_NODE( ImageProcPolicyNode, "image_proc_policy" )

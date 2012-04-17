@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/service_server_policy.h>
+#include <quickdev_examples/service_server_policy_node.h>
 QUICKDEV_INST_NODE( ServiceServerPolicyNode, "service_server_policy" )

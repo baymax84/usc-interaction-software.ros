@@ -33,5 +33,5 @@
  *
  **************************************************************************/
 
-#include <quickdev_examples/robot_controller_policy.h>
+#include <quickdev_examples/robot_controller_policy_node.h>
 QUICKDEV_INST_NODE( RobotControllerPolicyNode, "robot_controller_policy" )

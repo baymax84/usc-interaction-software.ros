@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/quickdev_examples/robot_driver_policy.h
+ *  include/quickdev_examples/joystick_policy_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,30 +33,17 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEV_QUICKDEVTESTS_ROBOTDRIVERPOLICY_H_
-#define QUICKDEV_QUICKDEVTESTS_ROBOTDRIVERPOLICY_H_
+#ifndef QUICKDEV_QUICKDEVTESTS_JOYSTICKPOLICYNODE_H_
+#define QUICKDEV_QUICKDEVTESTS_JOYSTICKPOLICYNODE_H_
 
 #include <quickdev/node.h>
-#include <quickdev/robot_driver_policy.h>
-#include <std_msgs/Empty.h>
+#include <quickdev/joystick_policy.h>
 
-typedef quickdev::RobotDriverPolicy<std_msgs::Empty> _RobotDriverPolicy;
-QUICKDEV_DECLARE_NODE( RobotDriverPolicy, _RobotDriverPolicy )
+QUICKDEV_DECLARE_NODE( JoystickPolicy, quickdev::JoystickPolicy )
 
-QUICKDEV_DECLARE_NODE_CLASS( RobotDriverPolicy )
+QUICKDEV_DECLARE_NODE_CLASS( JoystickPolicy )
 {
-	QUICKDEV_DECLARE_NODE_CONSTRUCTOR( RobotDriverPolicy ){}
-
-public:
-	QUICKDEV_SPIN_FIRST()
-	{
-		initAll();
-	}
-
-	QUICKDEV_SPIN_ONCE()
-	{
-		//
-	}
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JoystickPolicy ){}
 };
 
-#endif // QUICKDEV_QUICKDEVTESTS_ROBOTDRIVERPOLICY_H_
+#endif // QUICKDEV_QUICKDEVTESTS_JOYSTICKPOLICYNODE_H_

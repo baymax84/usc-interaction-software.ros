@@ -34,7 +34,7 @@
  **************************************************************************/
 
 #include <quickdev/nodelet.h>
-#include <quickdev_examples/publisher_policy.h>
+#include <quickdev_examples/publisher_policy_node.h>
 
 QUICKDEV_DECLARE_NODELET( quickdev_examples, PublisherPolicy )
 
