@@ -38,14 +38,13 @@
 
 #include <quickdev/node.h>
 
-// policies
-#include <quickdev/tf_tranceiver_policy.h>
-
 // objects
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
 #include <bandit/bandit.h>
-#include <urdf/model.h>
+//#include <urdf/model.h>
+#include <robot_state_publisher/robot_state_publisher.h>
+
 
 // messages
 #include <bandit_msgs/JointArray.h>
@@ -53,11 +52,10 @@
 
 // others
 #include <quickdev/geometry_message_conversions.h>
+#include <kdl_parser/kdl_parser.hpp>
 
 typedef bandit_msgs::JointArray _BanditJointArrayMsg;
 typedef sensor_msgs::JointState _JointStateMsg;
-
-typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
 
 // Declare a node called BanditDriverNode.
 // A quickdev::RunablePolicy is automatically prepended to the list of policies our node will use.
@@ -65,17 +63,21 @@ typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
 //
 // QUICKDEV_DECLARE_NODE( BanditDriver, SomePolicy1, SomePolicy2 )
 //
-QUICKDEV_DECLARE_NODE( BanditDriver, _TfTranceiverPolicy )
+QUICKDEV_DECLARE_NODE( BanditDriver )
 
 // Declare a class called BanditDriverNode
 //
 QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
 {
+    typedef robot_state_publisher::RobotStatePublisher _RobotStatePublisher;
+
     ros::MultiPublisher<> multi_pub_;
     ros::MultiSubscriber<> multi_sub_;
 
     bandit::Bandit bandit_driver_;
-    urdf::Model bandit_model_;
+    KDL::Tree bandit_model_;
+    boost::shared_ptr<_RobotStatePublisher> bandit_state_pub_ptr_;
+
     // Variable initializations can be appended to this constructor as a comma-separated list:
     //
     // QUICKDEV_DECLARE_NODE_CONSTRUCTOR( BanditDriver ), member1_( some_value ), member2_( some_other_value ){}
@@ -112,7 +114,15 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
 
         auto const urdf_filename = ros::ParamReader<std::string, 1>::readParam( nh_rel, "urdf_filename", "" );
 
-        bandit_model_.initFile( urdf_filename );
+//        bandit_model_.initFile( urdf_filename );
+
+        if( !kdl_parser::treeFromFile( urdf_filename, bandit_model_ ) )
+        {
+            ROS_ERROR( "Failed to construct kdl tree" );
+            QUICKDEV_GET_RUNABLE_POLICY()::interrupt();
+        }
+
+        bandit_state_pub_ptr_ = quickdev::make_shared( new _RobotStatePublisher( bandit_model_ ) );
 
         auto const port = ros::ParamReader<std::string, 1>::readParam( nh_rel, "port", "/dev/ttyUSB0" );
 
@@ -148,24 +158,30 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
         joint_state_msg.header.stamp = ros::Time::now();
         joint_state_msg.header.frame_id = "bandit_torso_link";
 
+        std::map<std::string, double> joints_map;
+
         for ( size_t i = 0; i < num_joints; ++i )
         {
+            auto const joint_name = bandit_driver_.getJointRosName( i );
+            auto const joint_pos = bandit_driver_.getJointPos( i );
             // the eyebrows are really two joints as far as robot_state_publisher is concerned
             if ( i == eyebrows_joint_index )
             {
                 joint_state_msg.name.push_back( std::string( "bandit_head_left_brow_joint" ) );
-                joint_state_msg.position.push_back( -3 * bandit_driver_.getJointPos( i ) );
+                joint_state_msg.position.push_back( -3 * joint_pos );
                 joint_state_msg.name.push_back( std::string( "bandit_head_right_brow_joint" ) );
-                joint_state_msg.position.push_back( -3 * bandit_driver_.getJointPos( i ) );
+                joint_state_msg.position.push_back( -3 * joint_pos );
             }
             else
             {
-                joint_state_msg.name.push_back( bandit_driver_.getJointRosName( i ) );
-                joint_state_msg.position.push_back( bandit_driver_.getJointPos( i ) );
+                joint_state_msg.name.push_back( joint_name );
+                joint_state_msg.position.push_back( joint_pos );
             }
 
-            // publish tf info here
+            joints_map[joint_name] = joint_pos;
         }
+
+        bandit_state_pub_ptr_->publishTransforms( joints_map, ros::Time::now() );
 
         multi_pub_.publish( "joint_state", quickdev::make_const_shared( joint_state_msg ) );
     }
