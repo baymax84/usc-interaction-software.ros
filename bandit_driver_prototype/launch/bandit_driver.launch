@@ -1,7 +1,9 @@
 <launch>
+    <arg name="urdf_filename" default="$(find bandit_urdf)/defs/bandit_defs.xml"/>
+
     <arg name="pkg" value="bandit_driver_prototype" />
     <arg name="name" default="bandit_driver" />
-    <arg name="type" default="$(arg name)_node" />
+    <arg name="type" default="$(arg name)_node _urdf_filename:=$(arg urdf_filename)" />
     <arg name="rate" default="30" />
     <arg name="args" value="_loop_rate:=$(arg rate)" />
     <arg name="manager" default="manager" />

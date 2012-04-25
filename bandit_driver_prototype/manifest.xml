@@ -12,6 +12,7 @@
   <depend package="nodelet"/>
   <depend package="libbandit"/>
   <depend package="bandit_msgs"/>
+  <depend package="robot_state_publisher"/>
   <export>
     <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
   </export>
