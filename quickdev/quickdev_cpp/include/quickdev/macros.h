@@ -465,8 +465,11 @@ std::string( ros::service_traits::DataType<__Service>::value() )
 
 // ########## General Utility Macros ###################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_GET_RUNABLE_POLICY() \
+QUICKDEV_GET_INTERNAL_NAMESPACE()::RunablePolicy
+// ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_name ) \
-auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE()::RunablePolicy::getNodeHandle()
+auto & nh_name = QUICKDEV_GET_RUNABLE_POLICY()::getNodeHandle()
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_GET_NODEHANDLE( nh_name ) \
 auto & nh_name = QUICKDEV_GET_INTERNAL_NAMESPACE()::NodeHandlePolicy::getNodeHandle()
