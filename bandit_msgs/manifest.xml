@@ -7,8 +7,5 @@
   <review status="experimental" notes=""/>
   <url></url>
   <depend package="std_msgs"/>
-  <export>
-    <cpp cflags="-I${prefix}/msg_gen/cpp/include -I${prefix}/srv_gen/cpp/include"/>
-  </export>
 </package>
 
