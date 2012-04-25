@@ -40,16 +40,31 @@
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Point.h>
 #include <LinearMath/btTransform.h>
+
+// we have to include this header because urdf/pose.h doesn't include it ಠ_ಠ
+#include <tinyxml/tinyxml.h>
+#include <urdf/pose.h>
+
 #include <quickdev/unit.h>
 
 typedef btVector3 _Vector3;
 typedef btQuaternion _Quaternion;
 typedef btTransform _Transform;
+typedef urdf::Vector3 _UrdfVector3;
+typedef urdf::Rotation _UrdfRotation;
+typedef urdf::Pose _UrdfPose;
 
 typedef geometry_msgs::Point _PointMsg;
 typedef geometry_msgs::Vector3 _Vector3Msg;
 typedef geometry_msgs::Twist _TwistMsg;
 typedef geometry_msgs::Quaternion _QuaternionMsg;
+
+// UrdfVector3 -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfVector3, _Vector3, vec, return _Vector3( vec.x, vec.y, vec.z ); )
+
+// UrdfRotation -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfRotation, _Quaternion, rot, return _Quaternion( rot.x, rot.y, rot.z, rot.w ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfRotation, _Vector3, rot, double r, p, y; rot.getRPY( r, p, y ); return _Vector3( r, p, y ); )
 
 // Vector3Msg -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Vector3, msg, return _Vector3( msg.x, msg.y, msg.z ); )
@@ -60,6 +75,8 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Quaternion, msg, return _Quaternio
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _PointMsg, vec, _PointMsg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Quaternion, vec, return _Quaternion( vec.getX(), vec.getY(), vec.getZ() ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _UrdfVector3, vec, return _UrdfVector3( vec.getX(), vec.getY(), vec.getZ() ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _UrdfRotation, vec, _UrdfRotation rot; rot.setFromRPY( vec.getX(), vec.getY(), vec.getZ() ); return rot; )
 
 // PointMsg -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _PointMsg, _Vector3Msg, point, _Vector3Msg msg; msg.x = point.x; msg.y = point.y; msg.z = point.z; return msg; )
@@ -75,9 +92,13 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quater
 
 // Transform -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, _TwistMsg res; res.angular = unit::make_unit( tf.getRotation() ); res.linear = unit::make_unit( tf.getOrigin() ); return res; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _UrdfPose, tf, _UrdfPose res; res.rotation = unit::make_unit( tf.getRotation() ); res.position = unit::make_unit( tf.getOrigin() ); return res; )
 
 // TwistMsg -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); _Vector3 const vec = unit::make_unit( twist.linear ); return _Transform( quat, vec ); )
+
+// UrdfPose -> *
+DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfPose, _Transform, pose, return _Transform( unit::convert<_Quaternion>( pose.rotation ), unit::convert<_Vector3>( pose.position ) ); )
 
 // Transform *= Scalar
 static void operator*=( _Transform & transform, double const & scale )

@@ -2,6 +2,7 @@
   <description brief="quickdev_cpp">
 
      A toolbox designed to speed up the development time of code by providing generic implementations and utilities.
+     Diamondback: supported; Electric: technically supported; Fuerte: experimental.
 
   </description>
   <author>Edward T. Kaszubski (ekaszubski@gmail.com)</author>
@@ -27,6 +28,7 @@
   <depend package="pluginlib"/>
   <depend package="joy"/>
   <depend package="actionlib"/>
+  <depend package="urdf"/>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
