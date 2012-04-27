@@ -446,6 +446,16 @@ Usage:
         return std::initializer_list<__Front>( { std::forward<__Front>( front ), std::forward<__Args>( args )... } );
     }
 
+    template
+    <
+        int __Index__,
+        class... __Args
+    >
+    static typename variadic::element<__Index__, __Args...>::type &&
+    getArgAt( __Args&&... args )
+    {
+        return variadic::at<__Index__>( std::forward<__Args>( args )... );
+    }
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_

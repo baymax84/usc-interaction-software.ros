@@ -171,9 +171,9 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
         class __FuncReturn,
         class... __FuncArgs
     >
-    auto tryFunc( __QUICKDEV_FUNCTION_TYPE<__FuncReturn( __FuncArgs&&... )> func, size_t const & max_attempts ) -> decltype( tryFunc( func, max_attempts, 1000 ) )
+    auto tryFunc( __QUICKDEV_FUNCTION_TYPE<__FuncReturn( __FuncArgs&&... )> func, size_t const & max_attempts ) -> decltype( tryFunc( func, max_attempts, 1000000 ) )
     {
-        return tryFunc( func, max_attempts, 1000 );
+        return tryFunc( func, max_attempts, 1000000 );
     }
 
     // =========================================================================================================================================
