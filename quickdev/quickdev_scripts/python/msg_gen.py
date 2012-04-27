@@ -263,17 +263,20 @@ def write_initializer_list(s, spec, container_gets_allocator):
         if (field.is_array):
             if (field.array_len is None and container_gets_allocator):
                 s.write('%s(_alloc)\n'%(field.name))
+            elif(not container_gets_allocator):
+                s.write('%s(_%s)\n'%(field.name, field.name))
             else:
-                s.write('%s(%s_)\n'%(field.name, field.name))
+                s.write('%s()\n'%(field.name))
         else:
-            if (container_gets_allocator and use_alloc):
-                s.write('%s(_alloc)\n'%(field.name))
-            elif (container_gets_allocator):
-                s.write('%s(%s)\n'%(field.name, val))
+            if (container_gets_allocator):
+                if(use_alloc):
+                    s.write('%s(_alloc)\n'%(field.name))
+                else:
+                    s.write('%s()\n'%(field.name))
             elif (field.type == 'string'):
-                s.write('%s(%s_)\n'%(field.name, field.name))
+                s.write('%s(_%s)\n'%(field.name, field.name))
             else:
-                s.write('%s{%s_}\n'%(field.name, field.name))
+                s.write('%s{_%s}\n'%(field.name, field.name))
         i = i + 1
 
 def write_fixed_length_assigns(s, spec, container_gets_allocator, cpp_name_prefix):
@@ -329,7 +332,7 @@ def write_constructors(s, spec, cpp_name_prefix):
 
         if( i > 0 ):
             s.write(', ')
-        s.write('%s const & %s_ = %s(%s)'%(cpp_type, field.name, cpp_type, default_value(field.type)))
+        s.write('%s const & _%s = %s(%s)'%(cpp_type, field.name, cpp_type, default_value(field.type)))
         i = i + 1
 
 
