@@ -50,18 +50,45 @@ struct element<0, __Head, __Tail...>
 // #############################################################################################################################################
 
 // =============================================================================================================================================
-template<unsigned int __Index__, class __Type, class... __Types>
-static typename std::enable_if<(__Index__ == 0), typename variadic::element<__Index__, __Type, __Types...>::type>::type &
-at_rec( __Type & type, __Types&&... types );
+template
+<
+    unsigned int __Index__,
+    class __Type,
+    class... __Types,
+    typename std::enable_if<(__Index__ == 0), int>::type = 0
+>
+static typename variadic::element<__Index__, __Type, __Types...>::type &&
+at_rec( __Type && type, __Types&&... types );
 
 // =============================================================================================================================================
-template<unsigned int __Index__, class __Type, class... __Types>
-static typename std::enable_if<(__Index__ > 0), typename variadic::element<__Index__, __Type, __Types...>::type>::type &
-at_rec( __Type & type, __Types&&... types );
+template
+<
+    unsigned int __Index__,
+    class __Type,
+    class... __Types,
+    typename std::enable_if<(__Index__ > 0), int>::type = 0
+>
+static typename variadic::element<__Index__, __Type, __Types...>::type &&
+at_rec( __Type && type, __Types&&... types );
 
 // =============================================================================================================================================
-template<unsigned int __Index__, class... __Types>
-static typename variadic::element<__Index__, __Types...>::type &
+template
+<
+    int __Index__,
+    class... __Types,
+    typename std::enable_if<(__Index__ >= 0), int>::type = 0
+>
+static typename variadic::element<__Index__, __Types...>::type &&
+at( __Types&&... types );
+
+// =============================================================================================================================================
+template
+<
+    int __Index__,
+    class... __Types,
+    typename std::enable_if<(__Index__ < 0), int>::type = 0
+>
+static typename variadic::element<sizeof...(__Types)+__Index__, __Types...>::type &&
 at( __Types&&... types );
 
 // #############################################################################################################################################

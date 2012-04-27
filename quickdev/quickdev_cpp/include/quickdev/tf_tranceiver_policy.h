@@ -70,14 +70,14 @@ public:
         std::string target_frame_name = "desired_frame";
     }
 
-    void publishTransform( tf::StampedTransform const & transform, ros::Time const & frame_time )
+    void publishTransform( _StampedTransform const & transform, ros::Time const & frame_time )
     {
         auto new_transform( transform );
         new_transform.stamp_ = frame_time;
         publishTransform( new_transform );
     }
 
-    void publishTransform( tf::StampedTransform const & transform, bool const & fix_timestamp = true )
+    void publishTransform( _StampedTransform const & transform, bool const & fix_timestamp = true )
     {
         if( transform.frame_id_.size() == 0 || transform.child_frame_id_.size() == 0 )
         {
@@ -117,14 +117,14 @@ public:
         ros::Time const & frame_time )
     {
         publishTransform(
-            tf::StampedTransform(
+            _StampedTransform(
                 transform,
                 frame_time,
                 from_frame_id,
                 to_frame_id ) );
     }
 
-    tf::StampedTransform lookupTransform(
+    _StampedTransform lookupTransform(
         _TfFrameId const & from_frame_id,
         ros::Time const & from_frame_time,
         _TfFrameId const & to_frame_id,
@@ -143,7 +143,7 @@ public:
             default_to_latest );
     }
 
-    tf::StampedTransform lookupTransform(
+    _StampedTransform lookupTransform(
         _TfFrameId const & from_frame_id,
         ros::Time const & from_frame_time,
         _TfFrameId const & to_frame_id,
@@ -153,7 +153,7 @@ public:
         bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f -> %f )...", from_frame_id.c_str(), to_frame_id.c_str(), from_frame_time.toSec(), to_frame_time.toSec() );
-        tf::StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( transformExists(
             from_frame_id,
@@ -203,7 +203,7 @@ public:
         return transform;
     }
 
-    tf::StampedTransform lookupTransform(
+    _StampedTransform lookupTransform(
         _TfFrameId const & from_frame_id,
         _TfFrameId const & to_frame_id,
         double const & wait_time = 0.05,
@@ -217,7 +217,7 @@ public:
             default_to_latest );
     }
 
-    tf::StampedTransform lookupTransform(
+    _StampedTransform lookupTransform(
         _TfFrameId const & from_frame_id,
         _TfFrameId const & to_frame_id,
         ros::Time const & frame_time,
@@ -232,7 +232,7 @@ public:
             default_to_latest );
     }
 
-    tf::StampedTransform lookupTransform(
+    _StampedTransform lookupTransform(
         _TfFrameId const & from_frame_id,
         _TfFrameId const & to_frame_id,
         ros::Time const & frame_time,
@@ -240,7 +240,7 @@ public:
         bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f )...", from_frame_id.c_str(), to_frame_id.c_str(), frame_time.toSec() );
-        tf::StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( transformExists(
             from_frame_id,
@@ -320,6 +320,74 @@ public:
             from_frame_id,
             from_frame_time,
             fixed_frame_id );
+    }
+
+    template<class... __Args>
+    _StampedTransform tryLookupTransform( __Args&&... args )
+    {
+        auto const & from_frame_id = QUICKDEV_GET_ARG( 0, __Args, args );
+        auto const & to_frame_id = QUICKDEV_GET_ARG( 1, __Args, args );
+
+        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+
+        try
+        {
+            transform = lookupTransform( std::forward<__Args>( args )... );
+        }
+        catch( std::exception const & e )
+        {
+            PRINT_ERROR( "%s", e.what() );
+        }
+        return transform;
+    }
+
+    template<class... __Args>
+    _StampedTransform waitForAndLookupTransform( __Args&&... args )
+    {
+        auto const & from_frame_id = quickdev::getArgAt<0>( std::forward<__Args>( args )... ); //QUICKDEV_GET_ARG( 0, __Args, args );
+        auto const & to_frame_id = QUICKDEV_GET_ARG( 1, __Args, args );
+        auto const check_rate = QUICKDEV_GET_ARG( 2, __Args, args );
+        auto const max_attempts = QUICKDEV_GET_ARG( 3, __Args, args );
+
+        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+
+        waitForTransform( from_frame_id, to_frame_id, check_rate, max_attempts );
+        try
+        {
+            transform = lookupTransform( std::forward<__Args>( args )... );
+        }
+        catch( std::exception const & e )
+        {
+            PRINT_ERROR( "%s", e.what() );
+        }
+        return transform;
+    }
+
+    void waitForTransform( _TfFrameId const & from_frame_id, _TfFrameId const & to_frame_id, double const & check_rate_hz = 10, long unsigned int const & max_attempts = 0 )
+    {
+        PRINT_DEBUG( "Checking for transform %s -> %s", from_frame_id.c_str(), to_frame_id.c_str() );
+
+        long unsigned int num_attempts = 0;
+        ros::Rate check_rate( check_rate_hz );
+
+        ros::spinOnce();
+
+        while( ( max_attempts == 0 || num_attempts < max_attempts ) && !transformExists( from_frame_id, to_frame_id ) )
+        {
+            std::string attempts_info;
+            if( max_attempts != 0 )
+            {
+                num_attempts ++;
+                std::stringstream attempts_info_ss;
+                attempts_info_ss << "( attempt " << num_attempts << " / " << max_attempts << " )";
+                attempts_info = attempts_info_ss.str();
+            }
+
+            PRINT_WARN( "Waiting for transform %s -> %s%s...", from_frame_id.c_str(), to_frame_id.c_str(), attempts_info.c_str() );
+
+            check_rate.sleep();
+            ros::spinOnce();
+        }
     }
 
 };
