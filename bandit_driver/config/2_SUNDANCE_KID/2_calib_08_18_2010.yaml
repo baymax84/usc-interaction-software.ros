@@ -5,7 +5,7 @@ JointCalibrations:
   MaxAngle: 52.2949
   MinAngle: -24.6973
   TrueZero: 2.30273
-  Offset: -27
+  Offset: -10
 -
   JointID: 1
   Direction: -1
@@ -25,7 +25,7 @@ JointCalibrations:
   Direction: 1
   MaxAngle: 85.4297
   MinAngle: -84.1992
-  TrueZero: -89.5703
+  TrueZero: -69.5703
   Offset: 175
 -
   JointID: 4
@@ -74,8 +74,8 @@ JointCalibrations:
   Direction: -1
   MaxAngle: 94.9219
   MinAngle: -81.8262
-  TrueZero: 88.0781
-  Offset: 170
+  TrueZero: 62.0781
+  Offset: 175
 -
   JointID: 11
   Direction: -1
@@ -110,4 +110,22 @@ JointCalibrations:
   MaxAngle: -0
   MinAngle: -57.2958
   TrueZero: 0.5
+  Offset: 0
+
+-
+  JointID: 17
+  Direction: 1
+  MaxAngle: 5
+  MinAngle: 0
+  TrueZero: 0
+#  TrueZero: 7.65
+  Offset: 0
+
+-
+  JointID: 18
+  Direction: 1
+  MaxAngle: 40
+  MinAngle: 26
+  TrueZero: 0
+#  TrueZero: 5.7
   Offset: 0
