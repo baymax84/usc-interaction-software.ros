@@ -113,7 +113,7 @@ void __ActionServerPolicy::setAborted( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    action_server_->setSucceeded( std::forward<__Args>( args )... );
+    action_server_->setAborted( std::forward<__Args>( args )... );
 }
 
 // =========================================================================================================================================
@@ -135,7 +135,7 @@ void __ActionServerPolicy::completeAction( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    setSuccessful( std::forward<__Args>( args )... );
+//    setSuccessful( std::forward<__Args>( args )... );
 
     action_mutex_.unlock();
 }
