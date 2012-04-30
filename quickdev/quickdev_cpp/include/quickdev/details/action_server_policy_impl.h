@@ -37,7 +37,31 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
         return;
     }
 
-    _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
+    // lock the goal mutex; the execute callback can freeze itself by locking this again
+    {
+        auto action_lock = quickdev::make_unique_lock( action_mutex_ );
+
+        goal_ = *msg;
+
+        preempt_accepted_ = false;
+
+        // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
+        _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
+    }
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionServerPolicy::preemptCB()
+{
+    if( preempt_callback_ ) preempt_callback_( action_server_ );
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionServerPolicy::goalCB()
+{
+    if( goal_callback_ ) goal_callback_( action_server_ );
 }
 
 // =========================================================================================================================================
@@ -49,16 +73,19 @@ void __ActionServerPolicy::registerExecuteCB( __Args&&... args )
 }
 
 // =========================================================================================================================================
-/*
 template<class __Action, unsigned int __Id__>
-template<class... __Args>
-void __ActionServerPolicy::interruptAction( __Args&&... args )
+void __ActionServerPolicy::registerPreemptCB( _PreemptCallback const & callback )
 {
-    QUICKDEV_ASSERT_INITIALIZED();
-
-    action_server_->setPreempted( std::forward<__Args>( args )... );
+    preempt_callback_ = callback;
 }
-*/
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+void __ActionServerPolicy::registerGoalCB( _GoalCallback const & callback )
+{
+    goal_callback_ = callback;
+}
+
 // =========================================================================================================================================
 template<class __Action, unsigned int __Id__>
 template<class... __Args>
@@ -72,7 +99,7 @@ void __ActionServerPolicy::sendFeedback( __Args&&... args )
 // =========================================================================================================================================
 template<class __Action, unsigned int __Id__>
 template<class... __Args>
-void __ActionServerPolicy::setCompleted( __Args&&... args )
+void __ActionServerPolicy::setSuccessful( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
@@ -82,11 +109,99 @@ void __ActionServerPolicy::setCompleted( __Args&&... args )
 // =========================================================================================================================================
 template<class __Action, unsigned int __Id__>
 template<class... __Args>
+void __ActionServerPolicy::setAborted( __Args&&... args )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    action_server_->setSucceeded( std::forward<__Args>( args )... );
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+template<class... __Args>
+void __ActionServerPolicy::setPreempted( __Args&&... args )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    preempt_accepted_ = true;
+
+    action_server_->setPreempted( std::forward<__Args>( args )... );
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+template<class... __Args>
+void __ActionServerPolicy::completeAction( __Args&&... args )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    setSuccessful( std::forward<__Args>( args )... );
+
+    action_mutex_.unlock();
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+template<class... __Args>
 void __ActionServerPolicy::abortAction( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    action_server_->setAborted( std::forward<__Args>( args )... );
+    setAborted( std::forward<__Args>( args )... );
+
+    action_mutex_.unlock();
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+template<class... __Args>
+void __ActionServerPolicy::preemptAction( __Args&&... args )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    setPreempted( std::forward<__Args>( args )... );
+
+    action_mutex_.unlock();
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionServerPolicy::waitOnAction( double const & wait_time )
+{
+    QUICKDEV_ASSERT_INITIALIZED( false );
+
+    if( wait_time > 0 )
+    {
+        auto action_timed_lock = quickdev::make_unique_lock( action_mutex_, quickdev::Duration( wait_time ) );
+    }
+    else action_mutex_.lock();
+
+    return !preemptAccepted();
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionServerPolicy::preemptRequested()
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    return action_server_->isPreemptRequested();
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool const & __ActionServerPolicy::preemptAccepted() const
+{
+    return preempt_accepted_;
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionServerPolicy::active()
+{
+    QUICKDEV_ASSERT_INITIALIZED( false );
+
+    return action_server_->isActive();
 }
 
 #undef __ActionServerPolicy

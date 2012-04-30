@@ -315,6 +315,26 @@ void callbackName( __ActionType::_action_goal_type::_goal_type::ConstPtr const &
 QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK2( callbackName, __ActionType, goal, action_server )
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_PREEMPT_CALLBACK2( callbackName, __ActionType, action_server_name ) \
+/*! \brief Callback for an ActionServerPolicy<__ActionType>; called when a preempt is requested */ \
+/*! \param action_server_name a const pointer to an SimpleActionServer<__ActionType> (the action server which is triggering this event) */ \
+/*! \return nothing */ \
+void callbackName( actionlib::SimpleActionServer<__ActionType> * const action_server_name )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_PREEMPT_CALLBACK( callbackName, __ActionType ) \
+QUICKDEV_DECLARE_ACTION_PREEMPT_CALLBACK2( callbackName, __ActionType, action_server )
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_GOAL_CALLBACK2( callbackName, __ActionType, action_server_name ) \
+/*! \brief Callback for an ActionServerPolicy<__ActionType>; called when a new goal is available */ \
+/*! \param action_server_name a const pointer to an SimpleActionServer<__ActionType> (the action server which is triggering this event) */ \
+/*! \return nothing */ \
+void callbackName( actionlib::SimpleActionServer<__ActionType> * const action_server_name )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_DECLARE_ACTION_GOAL_CALLBACK( callbackName, __ActionType ) \
+QUICKDEV_DECLARE_ACTION_GOAL_CALLBACK2( callbackName, __ActionType, action_server )
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( callbackName ) \
 /*! \brief Callback for an ActionClientPolicy; called when the action starts */ \
 /*! \return nothing */ \
