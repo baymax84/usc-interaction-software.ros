@@ -351,19 +351,21 @@ public:
 
         _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
 
-        waitForTransform( from_frame_id, to_frame_id, check_rate, max_attempts );
-        try
+        if( waitForTransform( from_frame_id, to_frame_id, check_rate, max_attempts ) )
         {
-            transform = lookupTransform( std::forward<__Args>( args )... );
-        }
-        catch( std::exception const & e )
-        {
-            PRINT_ERROR( "%s", e.what() );
+            try
+            {
+                transform = lookupTransform( std::forward<__Args>( args )... );
+            }
+            catch( std::exception const & e )
+            {
+                PRINT_ERROR( "%s", e.what() );
+            }
         }
         return transform;
     }
 
-    void waitForTransform( _TfFrameId const & from_frame_id, _TfFrameId const & to_frame_id, double const & check_rate_hz = 10, long unsigned int const & max_attempts = 0 )
+    bool waitForTransform( _TfFrameId const & from_frame_id, _TfFrameId const & to_frame_id, double const & check_rate_hz = 10, long unsigned int const & max_attempts = 0 )
     {
         PRINT_DEBUG( "Checking for transform %s -> %s", from_frame_id.c_str(), to_frame_id.c_str() );
 
@@ -388,6 +390,8 @@ public:
             check_rate.sleep();
             ros::spinOnce();
         }
+
+        return max_attempts == 0 || num_attempts < max_attempts;
     }
 
 };
