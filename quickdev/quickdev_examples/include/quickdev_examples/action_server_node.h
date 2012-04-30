@@ -55,26 +55,27 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
 
     QUICKDEV_SPIN_FIRST()
     {
-        _TestActionServerPolicy::registerCallback( quickdev::auto_bind( &ActionServerNode::testActionExecuteCB, this ) );
+        _TestActionServerPolicy::registerExecuteCB( quickdev::auto_bind( &ActionServerNode::testActionExecuteCB, this ) );
         initPolicies<quickdev::policy::ALL>();
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        PRINT_INFO( "spinning!" );
+        PRINT_INFO( "main loop spinning!" );
     }
 
     QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( testActionExecuteCB, _TestAction )
     {
         _TestActionServerPolicy::_FeedbackMsg feedback_msg;
-        //action_server->publishFeedback( feedback_msg );
         _TestActionServerPolicy::sendFeedback( feedback_msg );
 
-        sleep( 3 );
+        PRINT_INFO( "blocking for ten seconds" );
+        sleep( 10 );
+        PRINT_INFO( "done; sending result" );
 
         _TestActionServerPolicy::_ResultMsg result_msg;
         //action_server->setSucceeded( result_msg );
-        _TestActionServerPolicy::setCompleted( result_msg );
+        _TestActionServerPolicy::setSuccessful( result_msg );
     }
 };
 
