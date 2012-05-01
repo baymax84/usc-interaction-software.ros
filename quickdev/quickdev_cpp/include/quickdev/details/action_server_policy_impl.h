@@ -103,6 +103,8 @@ void __ActionServerPolicy::setSuccessful( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
+    PRINT_INFO( "Set goal [%s] on topic [%s] to successful", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
+
     action_server_->setSucceeded( std::forward<__Args>( args )... );
 }
 
@@ -113,6 +115,8 @@ void __ActionServerPolicy::setAborted( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
+    PRINT_INFO( "Set goal [%s] on topic [%s] to aborted", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
+
     action_server_->setAborted( std::forward<__Args>( args )... );
 }
 
@@ -122,6 +126,8 @@ template<class... __Args>
 void __ActionServerPolicy::setPreempted( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
+
+    PRINT_INFO( "Set goal [%s] on topic [%s] to preempted", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
     preempt_accepted_ = true;
 

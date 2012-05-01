@@ -65,9 +65,6 @@ public:
     {
         printPolicyActionStart( "create", this );
         printPolicyActionDone( "create", this );
-
-        std::string robot_frame_name_ = "seabee";
-        std::string target_frame_name = "desired_frame";
     }
 
     void publishTransform( _StampedTransform const & transform, ros::Time const & frame_time )
