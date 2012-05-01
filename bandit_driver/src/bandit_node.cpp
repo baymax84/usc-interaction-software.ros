@@ -201,11 +201,14 @@ public:
 
                     //set joint offsets and directions
                     bandit_driver_.setJointDirection( id, joint_calibration.direction );
+                    bandit_driver_.setJointOffset( id, degToRad( joint_calibration.true_zero ) );
+                    /*
                     //bandit_driver_.setJointOffset(i, DTOR(home[i]));
                     if ( bandit_driver_.getJointType( id ) == smartservo::SMART_SERVO ) bandit_driver_.setJointOffset( id, degToRad( joint_calibration.true_zero ) );
                     //g_bandit_.setJointOffset(i, DTOR(home[i]));
                     else bandit_driver_.setJointOffset( id, joint_calibration.true_zero );
                     //bandit_driver_.setJointOffset(i, home[i]);
+                    */
                 }
 
                 fin.close();
