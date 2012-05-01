@@ -113,6 +113,14 @@ JointCalibrations:
   Offset: 0
 
 -
+  JointID: 16
+  Direction: 1
+  MaxAngle: 0
+  MinAngle: 20
+  TrueZero: 0
+  Offset: 0.5
+
+-
   JointID: 17
   Direction: 1
   MaxAngle: 5
