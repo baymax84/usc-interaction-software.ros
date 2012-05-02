@@ -25,7 +25,7 @@ template<class... __Types>
 static Container<__Types...>
 make_container( __Types&&... types )
 {
-    return quickdev::Container<__Types...>( std::forward<__Types>( types )... );
+    return quickdev::Container<__Types...>( types... );
 }
 
 // =============================================================================================================================================

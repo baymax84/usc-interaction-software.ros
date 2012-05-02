@@ -227,7 +227,7 @@ template
     class __Container
 >
 static typename container::element<__Index__, __Container>::type
-at( __Container const & container );
+at( __Container && container );
 
 // =============================================================================================================================================
 //! Access Container contents
@@ -235,7 +235,7 @@ at( __Container const & container );
  *  \return the item at the front index */
 template<class __Container>
 static typename container::elem_traits<__Container>::_Front
-front( __Container const & container );
+front( __Container && container );
 
 // =============================================================================================================================================
 //! Access Container contents
@@ -243,7 +243,7 @@ front( __Container const & container );
  *  \return the item at the back index */
 template<class __Container>
 static typename container::elem_traits<__Container>::_Back
-back( __Container const & container );
+back( __Container && container );
 
 // #############################################################################################################################################
 
@@ -361,7 +361,7 @@ template
     class... __Types
 >
 static typename std::enable_if<(__CurrentIndex__ == sizeof...( __Types ) - 1 ), void>::type
-print_rec( const quickdev::Container<__Types...> & container );
+print_rec( quickdev::Container<__Types...> && container );
 
 // =============================================================================================================================================
 //! Print the contents of a Container
@@ -373,7 +373,7 @@ template
     class... __Types
 >
 static typename std::enable_if<(__CurrentIndex__ < sizeof...( __Types ) - 1 ), void>::type
-print_rec( const quickdev::Container<__Types...> & container );
+print_rec( quickdev::Container<__Types...> && container );
 
 // =============================================================================================================================================
 //! Print the contents of a Container
@@ -381,7 +381,7 @@ print_rec( const quickdev::Container<__Types...> & container );
  *  \param container the container to print */
 template<class... __Types>
 static typename std::enable_if<(sizeof...(__Types) > 0), void>::type
-print( const quickdev::Container<__Types...> & container );
+print( quickdev::Container<__Types...> && container );
 
 // =============================================================================================================================================
 //! Print the contents of a Container
@@ -389,7 +389,7 @@ print( const quickdev::Container<__Types...> & container );
  *  \param container the container to print */
 template<class... __Types>
 static typename std::enable_if<(sizeof...(__Types) == 0), void>::type
-print( const quickdev::Container<__Types...> & container );
+print( quickdev::Container<__Types...> && container );
 
 // #############################################################################################################################################
 
@@ -421,7 +421,7 @@ struct subset_rec
         class... __Types
     >
     static typename container::subtype_rec<__EndIndex__, __StartIndex__, __Container, __Types...>::type
-    exec( __Container const & container, __Types&&... types );
+    exec( __Container && container, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -441,7 +441,7 @@ struct subset_rec<__StartIndex__, __StartIndex__>
         class... __Types
     >
     static quickdev::Container<typename container::element<__StartIndex__, __Container>::type, __Types...>
-    exec( __Container const & container, __Types&&... types );
+    exec( __Container && container, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -457,7 +457,7 @@ template
     class __Container
 >
 static typename container::subtype<__StartIndex__, __NumItems__, __Container>::type
-subset( __Container const & container );
+subset( __Container && container );
 
 // #############################################################################################################################################
 
@@ -467,7 +467,7 @@ subset( __Container const & container );
  *  \return a copy of the container with the first type popped off */
 template<class __Container>
 static typename container::subtype<1, __Container::back_, __Container>::type
-pop_front( __Container const & container );
+pop_front( __Container && container );
 
 // #############################################################################################################################################
 
@@ -477,7 +477,7 @@ pop_front( __Container const & container );
  *  \return a copy of the container with the last type popped off */
 template<class __Container>
 static typename container::subtype<0, __Container::back_, __Container>::type
-pop_back( __Container const & container );
+pop_back( __Container && container );
 
 // #############################################################################################################################################
 
@@ -487,7 +487,7 @@ pop_back( __Container const & container );
  *  \return the head of the container */
 template<class __Container>
 static typename container::traits<__Container>::_Head
-head( __Container const & container );
+head( __Container && container );
 
 // #############################################################################################################################################
 
@@ -497,7 +497,7 @@ head( __Container const & container );
  *  \return the tail of the container */
 template<class __Container>
 static typename container::traits<__Container>::_Tail
-tail( __Container const & container );
+tail( __Container && container );
 
 // #############################################################################################################################################
 
@@ -557,7 +557,7 @@ struct push_back_rec
         class... __Types
     >
     static typename container::push_back_type<__Container, typename container::elem_traits<quickdev::Container<__Types...> >::_Back>::type
-    exec( __Container const & container, __Types&&... types );
+    exec( __Container && container, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -570,7 +570,7 @@ struct push_back_rec<1>
         class... __Types
     >
     static quickdev::Container<__Types...>
-    exec( __Container const & container, __Types&&... types );
+    exec( __Container && container, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -584,7 +584,7 @@ template
     class __Type
 >
 static typename container::push_back_type<__Container, __Type>::type
-push_back( __Container const & container, __Type const & type );
+push_back( __Container && container, __Type const & type );
 
 // #############################################################################################################################################
 
@@ -599,7 +599,7 @@ struct push_front_rec
         class... __Types
     >
     static typename container::push_front_type<__Container, __Type>::type
-    exec( __Container const & container, __Type const & type, __Types&&... types );
+    exec( __Container && container, __Type const & type, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -613,7 +613,7 @@ struct push_front_rec<1>
         class... __Types
     >
     static quickdev::Container<__Type, __Types...>
-    exec( __Container const & container, __Type const & type, __Types&&... types );
+    exec( __Container && container, __Type const & type, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -627,7 +627,7 @@ template
     class __Type
 >
 static typename container::push_front_type<__Container, __Type>::type
-push_front( __Container const & container, __Type const & type );
+push_front( __Container && container, __Type const & type );
 
 // #############################################################################################################################################
 
@@ -665,7 +665,7 @@ struct combine_rec
         class... __Types
     >
     static typename std::enable_if<(__Index__ > __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
-    exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types );
+    exec( __Container1 && container1, __Container2 && container2, __Types&&... types );
 
     template
     <
@@ -674,7 +674,7 @@ struct combine_rec
         class... __Types
     >
     static typename std::enable_if<(__Index__ <= __Container1::size_), typename container::combine_type<__Container1, __Container2>::type>::type
-    exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types );
+    exec( __Container1 && container1, __Container2 && container2, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -688,7 +688,7 @@ struct combine_rec<0>
         class... __Types
     >
     static typename container::combine_type<__Container1, __Container2>::type
-    exec( __Container1 const & container1, __Container2 const & container2, __Types&&... types );
+    exec( __Container1 && container1, __Container2 && container2, __Types&&... types );
 };
 
 // =============================================================================================================================================
@@ -702,7 +702,7 @@ template
     class __Container2
 >
 static typename container::combine_type<__Container1, __Container2>::type
-combine( __Container1 const & container1, __Container2 const & container2 );
+combine( __Container1 && container1, __Container2 && container2 );
 
 // #############################################################################################################################################
 

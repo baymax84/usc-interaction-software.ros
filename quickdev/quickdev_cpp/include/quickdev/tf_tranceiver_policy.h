@@ -341,7 +341,7 @@ public:
     template<class... __Args>
     _StampedTransform waitForAndLookupTransform( __Args&&... args )
     {
-        auto const & from_frame_id = quickdev::getArgAt<0>( std::forward<__Args>( args )... ); //QUICKDEV_GET_ARG( 0, __Args, args );
+        auto const & from_frame_id = QUICKDEV_GET_ARG( 0, __Args, args );
         auto const & to_frame_id = QUICKDEV_GET_ARG( 1, __Args, args );
         auto const check_rate = QUICKDEV_GET_ARG( 2, __Args, args );
         auto const max_attempts = QUICKDEV_GET_ARG( 3, __Args, args );

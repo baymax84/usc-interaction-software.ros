@@ -63,6 +63,8 @@ class ActionServerPolicy
 public:
     typedef type_utils::_TimedMutex _Mutex;
 
+    typedef actionlib_msgs::GoalStatus _GoalStatusMsg;
+
     typedef actionlib::SimpleActionServer<__Action> _ActionServer;
 
     typedef typename __Action::_action_goal_type::_goal_type _GoalMsg;
@@ -81,15 +83,18 @@ private:
     _ActionServer * action_server_;
 
     bool preempt_accepted_;
+    bool goal_initialized_;
 
     _PreemptCallback preempt_callback_;
     _GoalCallback goal_callback_;
 
     _Mutex action_mutex_;
 
-    _GoalMsg goal_;
+    _GoalMsg goal_msg_;
 
-    _ResultMsg result_;
+    _ResultMsg result_msg_;
+    size_t result_type_;
+    std::string result_info_;
 
     std::string action_topic_name_;
 
@@ -102,6 +107,7 @@ public:
         _PolicyAdapter( std::forward<__Args>( args )... ),
         action_server_( NULL ),
         preempt_accepted_( false ),
+        goal_initialized_( false ),
         initialized_( false )
     {
         printPolicyActionStart( "create", this );
@@ -110,9 +116,13 @@ public:
 
     // =========================================================================================================================================
 
+private:
+    void updateResult( _ResultMsg && result = _ResultMsg(), std::string && result_info = "" );
+
+public:
     QUICKDEV_ENABLE_INIT();
 
-    QUICKDEV_DECLARE_CONST_ACCESSOR( goal_, Goal );
+    QUICKDEV_DECLARE_CONST_ACCESSOR( goal_msg_, Goal );
 
     //! Callback for execute requests from action server
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( executeActionCB, typename _GoalMsg );
@@ -172,6 +182,9 @@ public:
 
     //! Whether there's an active goal
     bool active();
+
+    //! Whether the action server has received any goal yet
+    bool initialized();
 };
 
 // #############################################################################################################################################
