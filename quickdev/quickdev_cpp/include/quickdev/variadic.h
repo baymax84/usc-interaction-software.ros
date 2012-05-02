@@ -57,7 +57,7 @@ template
     class... __Types,
     typename std::enable_if<(__Index__ == 0), int>::type = 0
 >
-static typename variadic::element<__Index__, __Type, __Types...>::type &&
+static typename variadic::element<__Index__, __Type, __Types...>::type
 at_rec( __Type && type, __Types&&... types );
 
 // =============================================================================================================================================
@@ -68,7 +68,7 @@ template
     class... __Types,
     typename std::enable_if<(__Index__ > 0), int>::type = 0
 >
-static typename variadic::element<__Index__, __Type, __Types...>::type &&
+static typename variadic::element<__Index__, __Type, __Types...>::type
 at_rec( __Type && type, __Types&&... types );
 
 // =============================================================================================================================================
@@ -78,7 +78,7 @@ template
     class... __Types,
     typename std::enable_if<(__Index__ >= 0), int>::type = 0
 >
-static typename variadic::element<__Index__, __Types...>::type &&
+static typename variadic::element<__Index__, __Types...>::type
 at( __Types&&... types );
 
 // =============================================================================================================================================
@@ -88,7 +88,7 @@ template
     class... __Types,
     typename std::enable_if<(__Index__ < 0), int>::type = 0
 >
-static typename variadic::element<sizeof...(__Types)+__Index__, __Types...>::type &&
+static typename variadic::element<sizeof...(__Types)+__Index__, __Types...>::type
 at( __Types&&... types );
 
 // #############################################################################################################################################

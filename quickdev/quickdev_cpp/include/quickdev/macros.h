@@ -486,7 +486,7 @@ std::string( ros::service_traits::DataType<__Service>::value() )
 // ########## General Utility Macros ###################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_GET_ARG( index, __Types, name ) \
-quickdev::getArgAt<index>( std::forward<__Types>( name )... )
+quickdev::get_arg_at<index>( std::forward<__Types>( name )... )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_GET_RUNABLE_POLICY() \
 QUICKDEV_GET_INTERNAL_NAMESPACE()::RunablePolicy

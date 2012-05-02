@@ -41,12 +41,29 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
     {
         auto action_lock = quickdev::make_unique_lock( action_mutex_ );
 
-        goal_ = *msg;
+        goal_msg_ = *msg;
 
         preempt_accepted_ = false;
+        goal_initialized_ = true;
+        result_msg_ = _ResultMsg();
+        result_type_ = _GoalStatusMsg::SUCCEEDED;
+        result_info_ = "";
 
         // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
         _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
+
+        switch( result_type_ )
+        {
+        case _GoalStatusMsg::SUCCEEDED:
+            action_server_->setSucceeded( result_msg_, result_info_ );
+            break;
+        case _GoalStatusMsg::ABORTED:
+            action_server_->setAborted( result_msg_, result_info_ );
+            break;
+        case _GoalStatusMsg::PREEMPTED:
+            action_server_->setPreempted( result_msg_, result_info_ );
+            break;
+        }
     }
 }
 
@@ -98,6 +115,14 @@ void __ActionServerPolicy::sendFeedback( __Args&&... args )
 
 // =========================================================================================================================================
 template<class __Action, unsigned int __Id__>
+void __ActionServerPolicy::updateResult( __ActionServerPolicy::_ResultMsg && result, std::string && result_info )
+{
+    result_msg_ = std::forward<__ActionServerPolicy::_ResultMsg>( result );
+    result_info_ = std::forward<std::string>( result_info );
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
 template<class... __Args>
 void __ActionServerPolicy::setSuccessful( __Args&&... args )
 {
@@ -105,7 +130,9 @@ void __ActionServerPolicy::setSuccessful( __Args&&... args )
 
     PRINT_INFO( "Set goal [%s] on topic [%s] to successful", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    action_server_->setSucceeded( std::forward<__Args>( args )... );
+    result_type_ = _GoalStatusMsg::SUCCEEDED;
+
+    updateResult( std::forward<__Args>( args )... );
 }
 
 // =========================================================================================================================================
@@ -117,7 +144,9 @@ void __ActionServerPolicy::setAborted( __Args&&... args )
 
     PRINT_INFO( "Set goal [%s] on topic [%s] to aborted", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    action_server_->setAborted( std::forward<__Args>( args )... );
+    result_type_ = _GoalStatusMsg::ABORTED;
+
+    updateResult( std::forward<__Args>( args )... );
 }
 
 // =========================================================================================================================================
@@ -129,9 +158,11 @@ void __ActionServerPolicy::setPreempted( __Args&&... args )
 
     PRINT_INFO( "Set goal [%s] on topic [%s] to preempted", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    preempt_accepted_ = true;
+    result_type_ = _GoalStatusMsg::PREEMPTED;
 
-    action_server_->setPreempted( std::forward<__Args>( args )... );
+    updateResult( std::forward<__Args>( args )... );
+
+    preempt_accepted_ = true;
 }
 
 // =========================================================================================================================================
@@ -141,7 +172,7 @@ void __ActionServerPolicy::completeAction( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-//    setSuccessful( std::forward<__Args>( args )... );
+    setSuccessful( std::forward<__Args>( args )... );
 
     action_mutex_.unlock();
 }
@@ -208,6 +239,15 @@ bool __ActionServerPolicy::active()
     QUICKDEV_ASSERT_INITIALIZED( false );
 
     return action_server_->isActive();
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionServerPolicy::initialized()
+{
+    QUICKDEV_ASSERT_INITIALIZED( false );
+
+    return goal_initialized_;
 }
 
 #undef __ActionServerPolicy

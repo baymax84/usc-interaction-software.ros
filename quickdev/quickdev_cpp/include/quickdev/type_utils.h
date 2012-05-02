@@ -460,8 +460,8 @@ Usage:
         int __Index__,
         class... __Args
     >
-    static typename variadic::element<__Index__, __Args...>::type &&
-    getArgAt( __Args&&... args )
+    static typename variadic::element<__Index__, __Args...>::type
+    get_arg_at( __Args&&... args )
     {
         return variadic::at<__Index__>( std::forward<__Args>( args )... );
     }
