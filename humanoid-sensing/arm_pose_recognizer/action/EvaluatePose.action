@@ -1,10 +1,16 @@
-#goal
+# goal
+# desired pose component names
+string[] desired_pose_frame_names
+# candidate pose component names
+string[] candidate_pose_frame_names
+# variance along each axis
 geometry_msgs/Vector3 variance
 ---
-#result
+# result
+# quality here is the number of standard deviations from the mean
 float64 l_hand_match_quality
 float64 l_elbow_match_quality
 float64 r_hand_match_quality
 float64 r_elbow_match_quality
 ---
-#feedback
+# feedback
