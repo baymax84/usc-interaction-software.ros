@@ -180,6 +180,9 @@ public:
     //! Whether we've received a request to preempt the current action and accepted that request
     bool const & preemptAccepted() const;
 
+    //! The negation of preemptAccepted(); whether or not our goal was interrupted
+    bool successful() const;
+
     //! Whether there's an active goal
     bool active();
 
