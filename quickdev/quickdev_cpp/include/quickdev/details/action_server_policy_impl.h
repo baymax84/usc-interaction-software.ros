@@ -17,6 +17,8 @@ QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__>:: )
     PRINT_INFO( "Creating action server [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
     action_server_ = new _ActionServer( nh_rel, action_name, auto_bind( &ActionServerPolicy::executeActionCB, this ), false );
+    action_server_->registerPreemptCallback( auto_bind( &ActionServerPolicy::preemptCB, this ) );
+    action_server_->registerGoalCallback( auto_bind( &ActionServerPolicy::goalCB, this ) );
 
     action_server_->start();
 
@@ -46,7 +48,7 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
         preempt_accepted_ = false;
         goal_initialized_ = true;
         result_msg_ = _ResultMsg();
-        result_type_ = _GoalStatusMsg::SUCCEEDED;
+        result_type_ = _GoalStatusMsg::ABORTED;
         result_info_ = "";
 
         // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
@@ -230,6 +232,13 @@ template<class __Action, unsigned int __Id__>
 bool const & __ActionServerPolicy::preemptAccepted() const
 {
     return preempt_accepted_;
+}
+
+// =========================================================================================================================================
+template<class __Action, unsigned int __Id__>
+bool __ActionServerPolicy::successful() const
+{
+    return !preemptAccepted();
 }
 
 // =========================================================================================================================================
