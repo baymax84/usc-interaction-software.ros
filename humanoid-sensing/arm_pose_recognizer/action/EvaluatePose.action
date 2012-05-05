@@ -1,0 +1,10 @@
+#goal
+geometry_msgs/Vector3 variance
+---
+#result
+float64 l_hand_match_quality
+float64 l_elbow_match_quality
+float64 r_hand_match_quality
+float64 r_elbow_match_quality
+---
+#feedback

@@ -1,0 +1,12 @@
+<package>
+  <description brief="arm_pose_recognizer">
+
+     arm_pose_recognizer
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/arm_pose_recognizer</url>
+  <depend package="quickdev_cpp"/>
+</package>
