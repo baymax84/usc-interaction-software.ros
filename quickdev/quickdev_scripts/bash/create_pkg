@@ -545,7 +545,7 @@ QUICKDEV_DECLARE_NODE_CLASS( $node )
         initPolicies<quickdev::policy::ALL>();
     }
 
-    // This opitonal function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
+    // This optional function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
     // Most updateable policies should have their update( ... ) functions called within this context.
     //
     QUICKDEV_SPIN_ONCE()
