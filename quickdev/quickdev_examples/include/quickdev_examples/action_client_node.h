@@ -60,6 +60,10 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
         _TestActionClientPolicy::registerDoneCB( quickdev::auto_bind( &ActionClientNode::testActionDoneCB, this ) );
         initPolicies<quickdev::policy::ALL>();
 
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+
+        if( !ros::ParamReader<bool, 1 >::readParam( nh_rel, "enable_goal", true ) ) return;
+
         _TestActionClientPolicy::_GoalMsg goal;
         _TestActionClientPolicy::sendGoal( goal );
     }
@@ -67,7 +71,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
     QUICKDEV_SPIN_ONCE()
     {
         PRINT_INFO( "spinning!" );
-        _TestActionClientPolicy::update();
+        PRINT_INFO( "server state: %s", _TestActionClientPolicy::getState().toString().c_str() );
     }
 
     QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( testActionActiveCB )
@@ -83,6 +87,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
     QUICKDEV_DECLARE_ACTION_DONE_CALLBACK( testActionDoneCB, _TestAction )
     {
         PRINT_INFO( "client got goal result" );
+
+        QUICKDEV_GET_RUNABLE_POLICY()::interrupt();
     }
 
 };

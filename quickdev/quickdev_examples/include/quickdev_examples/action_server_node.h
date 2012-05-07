@@ -37,6 +37,7 @@
 #define QUICKDEVEXAMPLES_ACTIONSERVERNODE_H_
 
 #include <quickdev/node.h>
+
 #include <quickdev/action_server_policy.h>
 
 #include <quickdev_examples/TestAction.h>
@@ -48,7 +49,12 @@ QUICKDEV_DECLARE_NODE( ActionServer, _TestActionServerPolicy )
 
 QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
 {
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ActionServer )
+    bool enable_preempt_;
+
+    long int count_;
+
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ActionServer ),
+        count_( 0 )
     {
         //
     }
@@ -56,25 +62,51 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
     QUICKDEV_SPIN_FIRST()
     {
         _TestActionServerPolicy::registerExecuteCB( quickdev::auto_bind( &ActionServerNode::testActionExecuteCB, this ) );
+        _TestActionServerPolicy::registerPreemptCB( quickdev::auto_bind( &ActionServerNode::testActionPreemptCB, this ) );
         initPolicies<quickdev::policy::ALL>();
+
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+
+        enable_preempt_ = ros::ParamReader<bool, 1>::readParam( nh_rel, "enable_preempt", true );
     }
 
     QUICKDEV_SPIN_ONCE()
     {
         PRINT_INFO( "main loop spinning!" );
+
+        if( !_TestActionServerPolicy::active() ) return;
+
+        count_ ++;
+
+        _TestActionServerPolicy::_FeedbackMsg feedback_msg( count_ );
+        _TestActionServerPolicy::sendFeedback( feedback_msg );
+    }
+
+    QUICKDEV_DECLARE_ACTION_PREEMPT_CALLBACK( testActionPreemptCB, _TestAction )
+    {
+        PRINT_INFO( "got preempt callback" );
+        if( enable_preempt_ )
+        {
+            PRINT_INFO( "preempting current goal" );
+            _TestActionServerPolicy::preemptAction( _TestActionServerPolicy::_ResultMsg( count_ ) );
+        }
+        else PRINT_INFO( "ignoring preempt request" );
     }
 
     QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( testActionExecuteCB, _TestAction )
     {
-        _TestActionServerPolicy::_FeedbackMsg feedback_msg;
+        count_ = 0;
+
+        _TestActionServerPolicy::_FeedbackMsg feedback_msg( count_ );
         _TestActionServerPolicy::sendFeedback( feedback_msg );
 
         PRINT_INFO( "blocking for ten seconds" );
-        sleep( 10 );
+
+        if( !_TestActionServerPolicy::waitOnAction( 10 ) ) return;
+
         PRINT_INFO( "done; sending result" );
 
-        _TestActionServerPolicy::_ResultMsg result_msg;
-        //action_server->setSucceeded( result_msg );
+        _TestActionServerPolicy::_ResultMsg result_msg( count_ );
         _TestActionServerPolicy::setSuccessful( result_msg );
     }
 };
