@@ -41,6 +41,8 @@
 #include <quickdev/action_server_policy.h>
 #include <quickdev/tf_tranceiver_policy.h>
 
+#include <arm_pose_recognizer/pose.h>
+
 #include <arm_pose_recognizer/EvaluatePoseAction.h>
 
 typedef arm_pose_recognizer::EvaluatePoseAction _EvaluatePoseAction;
@@ -60,6 +62,8 @@ QUICKDEV_DECLARE_NODE( ArmPoseRecognizer, _EvaluatePoseActionServerPolicy, _TfTr
 //
 QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 {
+    typedef Pose<btVector3> _Pose;
+
     // Variable initializations can be appended to this constructor as a comma-separated list:
     //
     // QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ArmPoseRecognizer ), member1_( some_value ), member2_( some_other_value ){}
@@ -108,20 +112,61 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 
         // look up tf frames
 
-        // /nao/neck_link -> /nao/l_hand_link
-        // /nao/neck_link -> /nao/r_hand_link
-        // /nao/neck_link -> /nao/l_elbow_link
-        // /nao/neck_link -> /nao/r_elbow_link
+        auto const & goal = _EvaluatePoseActionServerPolicy::getGoal();
 
-        // /user#/neck -> /user#/l_hand
-        // /user#/neck -> /user#/r_hand
-        // /user#/neck -> /user#/l_elbow
-        // /user#/neck -> /user#/r_elbow
+        auto const & variance = goal.variance;
+        auto const & desired_frame_names = goal.desired_pose_frame_names;
+        auto const & observed_frame_names = goal.observed_pose_frame_names;
+
+        if( desired_frame_names.size() != observed_frame_names.size() )
+        {
+            PRINT_ERROR( "The number of desired frame names must be the same as the number of observed frame names; aborting action." );
+            return abortAction();
+        }
+
+        auto desired_frame_name_it = desired_frame_names.cbegin() + 1;
+        auto observed_frame_name_it = observed_frame_names.cbegin() + 1;
+
+        _Pose desired_pose;
+        _Pose observed_pose;
+
+        auto desired_pose_it = desired_pose.begin();
+        auto observed_pose_it = observed_pose.begin();
+
+        for( ; desired_frame_name_it != desired_frame_names.cend(); ++desired_frame_name_it, ++observed_frame_name_it, ++desired_pose_it, ++observed_pose_it )
+        {
+            auto const desired_tf = _TfTranceiverPolicy::lookupTransform( *desired_frame_names.cbegin(), *desired_frame_name_it );
+            auto const observed_tf = _TfTranceiverPolicy::lookupTransform( *observed_frame_names.cbegin(), *observed_frame_name_it );
+
+            *desired_pose_it = desired_tf.getOrigin();
+            *observed_pose_it = observed_tf.getOrigin();
+        }
+
+        desired_pose.normalize();
+        observed_pose.normalize();
 
         // perform distance calculation
+        auto pose_error = observed_pose - desired_pose;
+
+        _EvaluatePoseActionServerPolicy::_ResultMsg result_msg;
+        result_msg.l_hand_match_quality.x = pose_error.l_hand.getX() / variance.x;
+        result_msg.l_hand_match_quality.y = pose_error.l_hand.getY() / variance.y;
+        result_msg.l_hand_match_quality.z = pose_error.l_hand.getZ() / variance.z;
+
+        result_msg.r_hand_match_quality.x = pose_error.r_hand.getX() / variance.x;
+        result_msg.r_hand_match_quality.y = pose_error.r_hand.getY() / variance.y;
+        result_msg.r_hand_match_quality.z = pose_error.r_hand.getZ() / variance.z;
+
+        result_msg.l_elbow_match_quality.x = pose_error.l_elbow.getX() / variance.x;
+        result_msg.l_elbow_match_quality.y = pose_error.l_elbow.getY() / variance.y;
+        result_msg.l_elbow_match_quality.z = pose_error.l_elbow.getZ() / variance.z;
+
+        result_msg.r_elbow_match_quality.x = pose_error.r_elbow.getX() / variance.x;
+        result_msg.r_elbow_match_quality.y = pose_error.r_elbow.getY() / variance.y;
+        result_msg.r_elbow_match_quality.z = pose_error.r_elbow.getZ() / variance.z;
 
         // complete action
-        _EvaluatePoseActionServerPolicy::completeAction( _EvaluatePoseActionServerPolicy::_ResultMsg( 0, 0, 0, 0 ) );
+        _EvaluatePoseActionServerPolicy::completeAction( result_msg );
     }
 
     QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( evaluatePoseActionExecuteCB, _EvaluatePoseAction )

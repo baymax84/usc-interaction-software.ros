@@ -14,7 +14,7 @@ include( ${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake )
 genaction()
 
 rosbuild_init()
-
+rosbuild_include( quickdev_build add_library_auto )
 
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -29,4 +29,5 @@ rosbuild_genmsg()
 # Note: requires "rosbuild_include( quickdev_build dynamic_reconfigure )"
 #quickdev_gencfg()
 
+add_subdirectory( src )
 add_subdirectory( nodes )
