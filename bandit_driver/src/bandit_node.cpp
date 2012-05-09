@@ -62,7 +62,8 @@ struct JointPID
 {
     _DataType id, p, i, d, i_min, i_max, e_min, offset;
 
-    JointPID() :
+    JointPID()
+    :
         id( -1 ), p( 100 ), i( 0 ), d( 0 ), i_min( -4000 ), i_max( 4000 ), e_min( 50 ), offset( 0 )
     {
         //
@@ -161,7 +162,7 @@ public:
             ROS_INFO( "connecting to bandit on port: [%s]...", port.c_str() );
 
             // Open the port
-            bandit_driver_.openPort( port.c_str() );
+            bandit_driver_.openPort( port );
 
             ROS_INFO( "Success." );
 
@@ -170,7 +171,7 @@ public:
             // gains online as well.
 
             // load and parse calibration info
-            fin.open( calibration_filename_.c_str() );
+            fin.open( calibration_filename_ );
             if ( fin.fail() )
             {
                 ROS_WARN( "Failed to find calibration file [%s], running uncalibrated", calibration_filename_.c_str() );
@@ -225,7 +226,7 @@ public:
             for ( size_t i = 0; i < bandit_driver_.getNumJoints(); ++i )
             {
                 param_response_.id.push_back( i );
-                param_response_.name.push_back( bandit_driver_.getJointRosName( i ) );
+                param_response_.name.push_back( bandit_driver_.getJointName( i ) );
                 param_response_.min.push_back( radToDeg( bandit_driver_.getJointMin( i ) ) );
                 param_response_.max.push_back( radToDeg( bandit_driver_.getJointMax( i ) ) );
                 param_response_.pos.push_back( radToDeg( bandit_driver_.getJointPos( i ) ) );
@@ -331,7 +332,7 @@ public:
             ROS_INFO( "setting joint %u to angle: %f\n", joint_it->id, radToDeg( joint_it->angle ) );
 
             // Set the joint position; if this index doesn't exist, Bandit will throw an error so make sure to account for this
-            bandit_driver_.setJointPos( joint_it->id, joint_it->angle );
+            bandit_driver_.setJointPos( (int16_t)joint_it->id, joint_it->angle );
         }
         // Push out positions to bandit
 
@@ -340,18 +341,14 @@ public:
 
     void targetCB( const sensor_msgs::JointStateConstPtr & target_joint_state )
     {
-        std::vector<std::string>::const_iterator joint_name_it = target_joint_state->name.begin();
-        std::vector<double>::const_iterator joint_position_it = target_joint_state->position.begin();
-        for ( ; joint_name_it != target_joint_state->name.end(); ++joint_name_it, ++joint_position_it )
+        auto joint_name_it = target_joint_state->name.cbegin();
+        auto joint_position_it = target_joint_state->position.cbegin();
+        for ( ; joint_name_it != target_joint_state->name.cend(); ++joint_name_it, ++joint_position_it )
         {
-            for ( size_t joint_index = 0; joint_index < bandit_driver_.getNumJoints(); ++joint_index )
-            {
-                if ( bandit_driver_.getJointRosName( joint_index ) == *joint_name_it )
-                {
-                    ROS_INFO( "setting joint %zu to angle: %f\n", joint_index, radToDeg( *joint_position_it ) );
-                    bandit_driver_.setJointPos( joint_index, *joint_position_it );
-                }
-            }
+            bandit::JointName joint_name( *joint_name_it );
+
+            ROS_INFO( "setting joint %i to angle: %f\n", joint_name.id_, radToDeg( *joint_position_it ) );
+            bandit_driver_.setJointPos( joint_name, *joint_position_it );
         }
 
         bandit_driver_.sendAllJointPos();
@@ -360,10 +357,10 @@ public:
     // This callback is invoked when we get new state from bandit
     void stateCB( diagnostic_updater::DiagnosedPublisher<sensor_msgs::JointState>& joint_state_pub )
     {
-        // let's assume we're not going to change the number of joints or their name mappings after initialization
-        const static size_t num_joints = bandit_driver_.getNumJoints();
-        // lookup the eyebrow joint to prevent doing this for every joint every function call
-        const static size_t eyebrows_joint_index = bandit_driver_.getJointIndexByROSName( "eyebrows_joint" );
+        auto const now = ros::Time::now();
+
+        auto const num_joints = bandit_driver_.getNumJoints();
+        auto const eyebrows_joint_index = bandit_driver_.getJointId( std::string( "eyebrows_joint" ) );
         sensor_msgs::JointState joint_state;
 
         // reserve memory now to make push_back operations less costly
@@ -372,8 +369,8 @@ public:
         joint_state.velocity.reserve( num_joints );
         joint_state.effort.reserve( num_joints );
 
-        joint_state.header.stamp = ros::Time::now();
-        joint_state.header.frame_id = "bandit_torso_link";
+        joint_state.header.stamp = now;
+        joint_state.header.frame_id = "torso_link";
 
         // For every joint
         for ( size_t i = 0; i < num_joints; ++i )
@@ -382,11 +379,11 @@ public:
             {
                 // the eyebrows are really two joints as far as robot_state_publisher is concerned
 
-                joint_state.name.push_back( std::string( "bandit_head_left_brow_joint" ) );
+                joint_state.name.push_back( std::string( "head_left_brow_joint" ) );
                 joint_state.position.push_back( -3 * bandit_driver_.getJointPos( i ) );
                 joint_state.velocity.push_back( 0 );
                 joint_state.effort.push_back( 0 );
-                joint_state.name.push_back( std::string( "bandit_head_right_brow_joint" ) );
+                joint_state.name.push_back( std::string( "head_right_brow_joint" ) );
                 joint_state.position.push_back( -3 * bandit_driver_.getJointPos( i ) );
                 joint_state.velocity.push_back( 0 );
                 joint_state.effort.push_back( 0 );
@@ -394,7 +391,7 @@ public:
             }
             else
             {
-                joint_state.name.push_back( bandit_driver_.getJointRosName( i ) );
+                joint_state.name.push_back( bandit_driver_.getJointName( i ) );
                 if ( i > 16 ) joint_state.position.push_back( 2 * bandit_driver_.getJointPos( i ) );
                 else
                 {

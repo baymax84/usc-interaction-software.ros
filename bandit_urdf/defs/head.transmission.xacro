@@ -6,18 +6,18 @@
        xmlns:xacro="http://ros.org/wiki/xacro">
 
 
-  <xacro:macro name="bandit_head_pan_transmission" params="name">
+  <xacro:macro name="head_pan_transmission" params="name">
     <transmission type="SimpleTransmission" name="${name}_trans">
       <actuator name="${name}_motor" />
-      <joint name="${name}_joint" />
+      <joint name="head_pan_joint" />
       <mechanicalReduction>1.0</mechanicalReduction>
     </transmission>
   </xacro:macro>
 
-  <xacro:macro name="bandit_head_tilt_transmission" params="name">
+  <xacro:macro name="head_tilt_transmission" params="name">
     <transmission type="SimpleTransmission" name="${name}_trans">
       <actuator name="${name}_motor" />
-      <joint name="${name}_joint" />
+      <joint name="head_tilt_joint" />
       <mechanicalReduction>1.0</mechanicalReduction>
     </transmission>
   </xacro:macro>

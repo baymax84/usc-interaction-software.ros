@@ -1,258 +1,293 @@
 
 #include <math.h>
 #include <cstdio>
-#include "bandit/bandit.h"
+#include <bandit/bandit.h>
 #include <string>
 
-using namespace bandit;
-
 #define DTOR( a ) ( ( a ) * M_PI / 180.0f )
+
+namespace bandit
+{
 
 //#define DEBUG
 //#define HIDE_ERRORS
 
-#define BANDIT_EXCEPT(except, msg, ...) \
-  { \
-    char buf[256]; \
-    snprintf(buf, 256, "%s::%s: " msg, __CLASS__, __FUNCTION__,##__VA_ARGS__); \
-    throw except(buf); \
-  }
-
-#define __CLASS__ "bandit::Bandit"
-
-Bandit::Bandit() : master_(7)
+// =============================================================================================================================================
+JointName::JointName()
+:
+    id_( -1 ),
+    name_( "" )
 {
-  addJoint(0, "head pitch","bandit_head_tilt_joint",          6, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-20.0f), DTOR( 30.0f));
-  addJoint(1, "head pan", "bandit_head_pan_joint",            2, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
-  addJoint(2, "left shoulder F/B","left_torso_shoulder_mounting_joint",   5, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-30.0f), DTOR(180.0f));
-  addJoint(3, "left shoulder I/O","left_shoulder_mounting_shoulder_joint",   4, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f), DTOR(150.0f));
-  addJoint(4, "left elbow twist","left_shoulder_bicep_joint",    4, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
-  addJoint(5, "left elbow","left_bicep_forearm_joint",          3, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f), DTOR(110.0f));
-  addJoint(6, "left wrist twist","left_forearm_wrist_joint",    3, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
-  //addJoint(7, "left wrist tilt","left_wrist_hand_joint",     3, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.5);
-  addJoint(7, "left wrist tilt","left_wrist_hand_joint",     3, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, DTOR(-90.0f),DTOR(90.0f));
-  addJoint(8, "left hand grab","left_hand_thumb_joint",      3, smartservo::JOINT_A, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.0);
-  addJoint(9, "right shoulder F/B","right_torso_shoulder_mounting_joint",  2, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-30.0f), DTOR(180.0f));
-  addJoint(10, "right shoulder I/O","right_shoulder_mounting_shoulder_joint", 1, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f), DTOR(150.0f));
-  addJoint(11, "right elbow twist","right_shoulder_bicep_joint",  1, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
-  addJoint(12, "right elbow","right_bicep_forearm_joint", 0, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f), DTOR(110.0f));
-  addJoint(13, "right wrist twist","right_forearm_wrist_joint",  0, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(-90.0f), DTOR( 90.0f));
-  addJoint(14, "right wrist tilt", "right_wrist_hand_joint",  0, smartservo::JOINT_B, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.5);
-  addJoint(15, "right hand grab","right_hand_thumb_joint",    0, smartservo::JOINT_A, smartservo::V1_SERVO, 1, 1/255.0, 0.0, -0.5, 0.0);
-  addJoint(16, "eyebrows_joint", "eyebrows_joint",          5, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.1, 0.4);
-  addJoint(17, "mouth top_joint","mouth_top_joint",        6, smartservo::JOINT_A, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
-  addJoint(18, "mouth bottom_joint","mouth_bottom_joint",       6, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0, 0.0, -0.25, 0.25);
+    //
 }
-    
+
+// =============================================================================================================================================
+JointName::JointName( int16_t const & id )
+:
+    id_( id ),
+    name_( getJointNamesMap().find( id )->second )
+{
+    //
+}
+
+// =============================================================================================================================================
+JointName::JointName( std::string const & name )
+:
+    id_( getJointIdsMap().find( name )->second ),
+    name_( name )
+{
+    //
+}
+
+// =============================================================================================================================================
+JointName::operator int16_t() const
+{
+    return id_;
+}
+
+// =============================================================================================================================================
+JointName::operator std::string() const
+{
+    return name_;
+}
+
+// =============================================================================================================================================
+// =============================================================================================================================================
+
+// =============================================================================================================================================
+Joint::Joint
+(
+    JointName && name_,
+    int16_t const & mod_id_,
+    smartservo::WhichJoint const & which_,
+    smartservo::JointType const & type_,
+    int8_t const & direction_,
+    double const & scale_,
+    double const & offset_,
+    double const & min_,
+    double const & max_
+)
+:
+    name( name_ ),
+    mod_id( mod_id_ ),
+    which( which_ ),
+    type( type_ ),
+    direction( direction_ ),
+    scale( scale_ ),
+    offset( offset_ ),
+    min( min_ ),
+    max( max_ )
+{
+    //
+}
+
+// =============================================================================================================================================
+// =============================================================================================================================================
+
+// =============================================================================================================================================
+Bandit::Bandit()
+:
+    master_( 7 )
+{
+    addJoint( 0,  6, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -20.0f ), DTOR( 30.0f ) );  // "head pitch"
+    addJoint( 1,  2, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -90.0f ), DTOR( 90.0f ) );  // "head pan"
+    addJoint( 2,  5, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -30.0f ), DTOR( 180.0f ) ); // "left shoulder F/B"
+    addJoint( 3,  4, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f ),  DTOR( 150.0f ) ); // "left shoulder I/O"
+    addJoint( 4,  4, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -90.0f ), DTOR( 90.0f ) );  // "left elbow twist"
+    addJoint( 5,  3, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f ),  DTOR( 110.0f ) ); // "left elbow"
+    addJoint( 6,  3, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -90.0f ), DTOR( 90.0f ) );  // "left wrist twist"
+    addJoint( 7,  3, smartservo::JOINT_B, smartservo::V1_SERVO,    1, 1/255.0,       0.0,  DTOR( -90.0f ), DTOR( 90.0f ) );  // "left wrist tilt"
+    addJoint( 8,  3, smartservo::JOINT_A, smartservo::V1_SERVO,    1, 1/255.0,       0.0,  -0.5,           0.0 );            // "left hand grab"
+    addJoint( 9,  2, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -30.0f ), DTOR( 180.0f ) ); // "right shoulder F/B"
+    addJoint( 10, 1, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f ),  DTOR( 150.0f ) ); // "right shoulder I/O"
+    addJoint( 11, 1, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -90.0f ), DTOR( 90.0f ) );  // "right elbow twist"
+    addJoint( 12, 0, smartservo::JOINT_A, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR(  0.0f ),  DTOR( 110.0f ) ); // "right elbow"
+    addJoint( 13, 0, smartservo::JOINT_B, smartservo::SMART_SERVO, 1, 2*M_PI/4096.0, M_PI, DTOR( -90.0f ), DTOR( 90.0f ) );  // "right wrist twist"
+    addJoint( 14, 0, smartservo::JOINT_B, smartservo::V1_SERVO,    1, 1/255.0,       0.0, -0.5,            0.5 );            // "right wrist tilt"
+    addJoint( 15, 0, smartservo::JOINT_A, smartservo::V1_SERVO,    1, 1/255.0,       0.0, -0.5,            0.0 );            // "right hand grab"
+    addJoint( 16, 5, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0,       0.0, -0.1,            0.4 );            // "eyebrows_joint"
+    addJoint( 17, 6, smartservo::JOINT_A, smartservo::HOBBY_SERVO, 1, 1/255.0,       0.0, -0.25,           0.25 );           // "mouth top_joint"
+    addJoint( 18, 6, smartservo::JOINT_B, smartservo::HOBBY_SERVO, 1, 1/255.0,       0.0, -0.25,           0.25 );           // "mouth bottom_joint"
+}
+
+// =============================================================================================================================================
 Bandit::~Bandit()
 {
 
 }
 
-void Bandit::addJoint(int id, std::string name, std::string rname, int mod_id, smartservo::WhichJoint which, smartservo::JointType type,
-                      int8_t direction, double scale, double offset, double min, double max)
+// =============================================================================================================================================
+void Bandit::useJointLimits( bool const & use_limits )
 {
-  Joint joint;
-  joint.mod_id = mod_id;
-  joint.name = name;
-  joint.ros_name = rname;
-  joint.which = which;
-  joint.type = type;
-  joint.direction = direction;
-  joint.scale = scale;
-  joint.offset = offset;
-  joint.min = min;
-  joint.max = max;
-
-  joints_[id] = joint;
-
-  master_.setJointType(mod_id, type);
-  
+    joint_limits_ = use_limits;
 }
 
-void Bandit::useJointLimits( bool use_limits )
+// =============================================================================================================================================
+Bandit::_JointsMap::iterator Bandit::getJoint( JointName && name )
 {
-  joint_limits_ = use_limits;
+    auto joint_it = joints_map_.find( name );
+
+    if( joint_it == joints_map_.end() ) BANDIT_EXCEPT<BanditException>( "No joint with id %d", name.id_ );
+
+    return joint_it;
 }
 
-void Bandit::registerStateCB(boost::function<void()> callback)
+// =============================================================================================================================================
+smartservo::JointType Bandit::getJointType( JointName && name )
 {
-  master_.registerStateCB(callback);
-}
-    
-void Bandit::setJointPIDConfig(int16_t id,
-                               int16_t p, int16_t i, int16_t d,
-                               int16_t i_min, int16_t i_max,
-                               uint8_t e_min, int16_t offset)
-
-{
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  if (joint->second.type != smartservo::SMART_SERVO)
-    BANDIT_EXCEPT(BanditException, "Tried to set PID gains on: %s, which is not a SMART_SERVO\n", joint->second.name.c_str());
-
-  master_.setJointPIDConfig(joint->second.mod_id, joint->second.which,
-                            p, i, d,
-                            i_min, i_max,
-                            e_min, offset);
+    return getJoint( name )->second.type;
 }
 
-
-void Bandit::setJointDirection(uint16_t id, int8_t direction)
+// =============================================================================================================================================
+std::string Bandit::getJointName( JointName && name )
 {
-  std::map<uint16_t, Joint>::iterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  if ((direction != -1) && (direction != 1))
-  { // if you remove these {}'s, this will not compile!?!
-    BANDIT_EXCEPT(BanditException, "Tried to set joint direction with invalid value");
-  }
-  else
-    joint->second.direction = direction;
+    return name;
 }
 
-
-void Bandit::setJointOffset(uint16_t id, double offset)
+// =============================================================================================================================================
+int16_t Bandit::getJointId( JointName && name )
 {
-  _JointMapIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  if (joint->second.type == smartservo::SMART_SERVO)
-    joint->second.offset = offset + joint->second.direction * M_PI;
-  else
-    joint->second.offset = offset;
+    return name;
 }
 
-
-void Bandit::setJointPos(uint16_t id, double angle)
-{
-  _JointMapIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-  
-  if( joint_limits_ )
-  {
-    if (angle > joint->second.max)
-      angle = joint->second.max;
-  
-    if (angle < joint->second.min)
-      angle = joint->second.min;
-  }
-  int16_t pos = (joint->second.direction * angle + joint->second.offset) / joint->second.scale;
-  
-  switch (joint->second.type)
-  {
-  case smartservo::SMART_SERVO:
-    master_.setJointPos(joint->second.mod_id, joint->second.which, pos);
-    break;
-  case smartservo::HOBBY_SERVO:
-  case smartservo::V1_SERVO:
-    printf( "setting hobby servo to: %d\n", pos );
-    if (pos > 255)
-      pos = 255;
-    if (pos < 0)
-      pos = 0;
-    master_.setJointServoPos(joint->second.mod_id, joint->second.which, pos);
-    break;
-  default:
-    BANDIT_EXCEPT(BanditException, "Tried to set a joint position for a joint with unspecified type");
-  }
-}
-
-double Bandit::getJointPos(uint16_t id)
-{
-  _JointMapConstIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  int16_t pos = 0;
-
-  switch (joint->second.type)
-  {
-  case smartservo::SMART_SERVO:
-    pos = master_.getJointPos(joint->second.mod_id, joint->second.which);
-    break;
-  case smartservo::HOBBY_SERVO:
-  case smartservo::V1_SERVO:
-    pos = master_.getJointServoPos(joint->second.mod_id, joint->second.which);
-    break;
-  default:
-    BANDIT_EXCEPT(BanditException, "Tried to get a joint position for a joint with unspecified type");
-  }
-
-  return joint->second.direction * (joint->second.scale * (double)(pos) - joint->second.offset);
-}
-
-
-smartservo::JointType Bandit::getJointType(int id)
-{
-  _JointMapConstIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  return joint->second.type;
-}
-
-std::string Bandit::getJointName(int id)
-{
-  _JointMapConstIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  return joint->second.name;
-}
-
-std::string Bandit::getJointRosName(int id)
-{
-  _JointMapConstIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  return joint->second.ros_name;
-}
-
+// =============================================================================================================================================
 size_t Bandit::getNumJoints()
 {
-	return joints_.size();
+    return joints_map_.size();
 }
 
-size_t Bandit::getJointIndexByROSName( std::string name )
+// =============================================================================================================================================
+double Bandit::getJointMin( JointName && name )
 {
-	_JointMapConstIterator joint_it = joints_.begin();
-	for( size_t i = 0; joint_it != joints_.end(); ++joint_it, ++i )
-	{
-		if( joint_it->second.name == name ) return i;
-	}
+    return getJoint( name )->second.min;
 }
 
-double Bandit::getJointMin(int id)
+// =============================================================================================================================================
+double Bandit::getJointMax( JointName && name )
 {
-  _JointMapConstIterator joint = joints_.find(id);
-
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
-
-  return joint->second.min;
+    return getJoint( name )->second.max;
 }
 
-double Bandit::getJointMax(int id)
+// =============================================================================================================================================
+double Bandit::getJointPos( JointName && name )
 {
-  _JointMapConstIterator joint = joints_.find(id);
+    auto joint_it = getJoint( name );
 
-  if (joint == joints_.end())
-    BANDIT_EXCEPT(BanditException, "No joint with id %d", id);
+    int16_t pos = 0;
 
-  return joint->second.max;
+    switch ( joint_it->second.type )
+    {
+    case smartservo::SMART_SERVO:
+        pos = master_.getJointPos( joint_it->second.mod_id, joint_it->second.which );
+        break;
+    case smartservo::HOBBY_SERVO:
+    case smartservo::V1_SERVO:
+        pos = master_.getJointServoPos( joint_it->second.mod_id, joint_it->second.which );
+        break;
+    default:
+        BANDIT_EXCEPT<BanditException>( "Tried to get a joint position for a joint with unspecified type" );
+    }
+
+    return joint_it->second.direction * ( joint_it->second.scale * ( double )( pos ) - joint_it->second.offset );
 }
+
+
+// =============================================================================================================================================
+void Bandit::setJointDirection( JointName && name, int8_t const & direction )
+{
+    if( direction != -1 && direction != 1 ) BANDIT_EXCEPT<BanditException>( "Tried to set joint direction with invalid value" );
+
+    getJoint( name )->second.direction = direction;
+}
+
+// =============================================================================================================================================
+void Bandit::setJointOffset( JointName && name, double const & offset )
+{
+    auto joint_it = getJoint( name );
+
+    if( joint_it->second.type == smartservo::SMART_SERVO ) joint_it->second.offset = offset + joint_it->second.direction * M_PI;
+    else joint_it->second.offset = offset;
+}
+
+// =============================================================================================================================================
+void Bandit::setJointPos( JointName && name, double const & raw_angle )
+{
+    auto joint_it = getJoint( name );
+
+    double angle = raw_angle;
+
+    if( joint_limits_ )
+    {
+        if( angle > joint_it->second.max ) angle = joint_it->second.max;
+        if( angle < joint_it->second.min ) angle = joint_it->second.min;
+    }
+
+    int16_t pos = ( joint_it->second.direction * angle + joint_it->second.offset ) / joint_it->second.scale;
+
+    switch ( joint_it->second.type )
+    {
+    case smartservo::SMART_SERVO:
+        master_.setJointPos( joint_it->second.mod_id, joint_it->second.which, pos );
+        break;
+    case smartservo::HOBBY_SERVO:
+    case smartservo::V1_SERVO:
+        printf( "setting hobby servo to: %d\n", pos );
+        if( pos > 255 ) pos = 255;
+        if( pos < 0 ) pos = 0;
+        master_.setJointServoPos( joint_it->second.mod_id, joint_it->second.which, pos );
+        break;
+    default:
+        BANDIT_EXCEPT<BanditException>( "Tried to set a joint position for a joint with unspecified type" );
+    }
+}
+
+// =============================================================================================================================================
+void Bandit::openPort( std::string && port_name )
+{
+    master_.openPort( port_name.c_str() );
+}
+
+// =============================================================================================================================================
+void Bandit::closePort()
+{
+    master_.closePort();
+}
+
+// =============================================================================================================================================
+void Bandit::registerStateCB( Bandit::_StateCallback && callback )
+{
+    master_.registerStateCB( callback );
+}
+
+// =============================================================================================================================================
+void Bandit::processIO( uint32_t const & timeout )
+{
+    master_.processIO( timeout );
+}
+
+// =============================================================================================================================================
+void Bandit::processPackets( bool const & wait )
+{
+    master_.processPackets( wait );
+}
+
+// =============================================================================================================================================
+void Bandit::sendAllJointPos()
+{
+    master_.sendAllJointPos();
+    master_.sendAllJointServoPos();
+}
+
+// =============================================================================================================================================
+void Bandit::sendAllPIDConfigs()
+{
+    master_.sendAllPIDConfigs();
+}
+
+// =============================================================================================================================================
+bool Bandit::checkAllPIDConfigs( bool const & verbose )
+{
+    return master_.checkAllPIDConfigs( verbose );
+}
+
+} // bandit
