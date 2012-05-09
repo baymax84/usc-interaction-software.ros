@@ -3,10 +3,12 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 
+#set the default path for built executables to the "bin" directory
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
 FIND_PACKAGE(Boost COMPONENTS thread)
 
-add_library(bandit src/bandit.cpp src/smartservo.cpp)
-add_executable(testbandit src/testbandit.cpp)
-target_link_libraries(testbandit bandit ${Boost_LIBRARIES})
-add_executable(servohold src/servohold.cpp)
-target_link_libraries(servohold bandit ${Boost_LIBRARIES})
+add_definitions( "-std=c++0x" )
+
+add_subdirectory( src )
+add_subdirectory( tests )

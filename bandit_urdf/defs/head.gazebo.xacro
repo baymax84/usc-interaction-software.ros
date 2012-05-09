@@ -5,12 +5,12 @@
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:macro name="bandit_head_pan_gazebo" params="name">
+  <xacro:macro name="head_pan_gazebo" params="name">
     <gazebo reference="${name}_link">
       <material value="PR2/Blue" />
     </gazebo>
   </xacro:macro>
-  <xacro:macro name="bandit_head_tilt_gazebo" params="name">
+  <xacro:macro name="head_tilt_gazebo" params="name">
     <gazebo reference="${name}_link">
       <material value="PR2/Grey" />
     </gazebo>
