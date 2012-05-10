@@ -211,6 +211,11 @@ public:
             default_value_ );
     }
 
+    template
+    <
+        class __MStorage,
+        typename std::enable_if<!std::is_same<__MStorage, XmlRpc::XmlRpcValue>::value, int>::type = 0
+    >
     static __Storage
         readParam(
             ros::NodeHandle & nh,
@@ -234,6 +239,39 @@ public:
         }
 
         return  param_value;
+    }
+
+    template
+    <
+        class __MStorage,
+        typename std::enable_if<std::is_same<__MStorage, XmlRpc::XmlRpcValue>::value, int>::type = 0
+    >
+    static __Storage
+        readParam(
+            ros::NodeHandle & nh,
+            std::string const & param_name,
+            __Storage const & default_value = __Storage() )
+    {
+        __Storage param_value( default_value );
+
+        const bool param_found( tryReadParam( nh, param_name, param_value ) );
+
+        if( param_found )
+        {
+            PRINT_INFO( ">>> Found paramter" );
+        }
+        else
+        {
+            PRINT_WARN( ">>> Using default value" );
+        }
+
+        return  param_value;
+    }
+
+    template<class... __Args>
+    static __Storage readParam( __Args&&... args )
+    {
+        return readParam<__Storage>( args... );
     }
 
     static bool tryReadParam(
