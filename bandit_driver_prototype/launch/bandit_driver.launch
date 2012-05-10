@@ -8,6 +8,10 @@
     <arg name="args" value="_loop_rate:=$(arg rate)" />
     <arg name="manager" default="manager" />
     <arg name="nodelet" default="false" />
+
+    <rosparam param="/$(arg name)/pids" command="load" file="$(find bandit_driver_prototype)/params/pids.yaml" />
+    <rosparam param="/$(arg name)/joints" command="load" file="$(find bandit_driver_prototype)/params/joints.yaml" />
+
     <node
         if="$(arg nodelet)"
         pkg="nodelet"
