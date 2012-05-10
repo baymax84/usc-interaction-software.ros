@@ -66,7 +66,7 @@ MasterModule::MasterModule(int num_modules) : outgoing_packet_(NULL, 0)
   s_transmits_ = 0;
 
 }
- 
+
 MasterModule::~MasterModule()
 {
   delete modules_;
@@ -89,7 +89,7 @@ void MasterModule::openPort(const char* port_name)
   newtio.c_oflag = 0;
   newtio.c_lflag &= ~(ICANON | ECHO);
   newtio.c_cc[VMIN]=0;
-  newtio.c_cc[VTIME]=0; 
+  newtio.c_cc[VTIME]=0;
 
   if (cfsetspeed(&newtio, B115200) < 0)
     SMARTSERVO_EXCEPT(SmartServoException, "Could not set port speed -- %s", strerror(errno));
@@ -110,7 +110,7 @@ void MasterModule::closePort()
 {
   close(fd_);
 }
-    
+
 void MasterModule::registerStateCB(boost::function<void()> state_callback)
 {
   state_callback_ = state_callback;
@@ -173,7 +173,7 @@ void MasterModule::processIO(uint32_t timeout)
     // If retval < 0 an error occured
     if (retval < 0)
       SMARTSERVO_EXCEPT(SmartServoException, "select failed   --  error = %d: %s", errno, strerror(errno));
-  
+
     // If retval > 0 we have something to do
     if (retval > 0)
     {
@@ -192,23 +192,23 @@ void MasterModule::processIO(uint32_t timeout)
         default:
 
 #ifdef DEBUG2
-	for (int k = incoming_pos_; k < incoming_pos_ + num_read; k++)
-	  {
-	    if (incoming_buf_[k] == '<')
-	      {
-		fprintf("< ");
-		read_count_ = 0;
-	      }
-	    else if (incoming_buf_[k] == '>')
-	      {
-		fprintf("> ");
-		read_count_++;
-	      }
-	    else
-	      fprintf("%2d ",read_count_++);
-	  }
-	
-	printf("\n");
+    for (int k = incoming_pos_; k < incoming_pos_ + num_read; k++)
+      {
+        if (incoming_buf_[k] == '<')
+          {
+        fprintf("< ");
+        read_count_ = 0;
+          }
+        else if (incoming_buf_[k] == '>')
+          {
+        fprintf("> ");
+        read_count_++;
+          }
+        else
+          fprintf("%2d ",read_count_++);
+      }
+
+    printf("\n");
 #endif
 
           incoming_pos_ += num_read;
@@ -278,13 +278,13 @@ void MasterModule::processIO(uint32_t timeout)
 
       // Push the contents into an IOPacket
       {
-        boost::mutex::scoped_lock(outgoing_mutex_);  
+        boost::mutex::scoped_lock(outgoing_mutex_);
         incoming_queue_.push(IOPacket(&incoming_buf_[i], j-i+1));
       }
       incoming_queue_condition_.notify_one();
       // Shift i up to meet j
       i = j;
-  
+
       // add timeout to for loop
       gettimeofday(&checktime, NULL);
       //fprintf(stderr, "timeout: %ld\n", stoptime-timeval_to_usec(&checktime) );
@@ -436,8 +436,8 @@ void MasterModule::processState(char* buf, uint32_t size)
 
   if ( num_modules_ != buf[2]/8)
     SMARTSERVO_EXCEPT(SmartServoException, "Incompatible number of module.");
-        
-  for (int index = 0; index < buf[2]/8; index++) 
+
+  for (int index = 0; index < buf[2]/8; index++)
   {
     modules_[index].joint[JOINT_A].cur_pos = *(int16_t*)(&buf[3 + index*8 + 0]);
     modules_[index].joint[JOINT_A].speed   =  *(int8_t*)(&buf[3 + index*8 + 2]);
@@ -462,7 +462,7 @@ void MasterModule::setJointPIDConfig(uint16_t mod_id, WhichJoint which,
 
   if (which == NO_JOINT)
     SMARTSERVO_EXCEPT(SmartServoException, "Which joint to use for module not specified");
-  
+
   // Put PID values into the data structure
   modules_[mod_id].joint[which].p      = p;
   modules_[mod_id].joint[which].i      = i;
@@ -499,7 +499,7 @@ void MasterModule::sendPIDConfig(uint16_t mod_id)
   *(int16_t*)(&pid_msg[len]) = modules_[mod_id].twi_addr; len += 2;
 
   for (int joint = 0; joint < 2 ; joint++)
-  { 
+  {
     if (modules_[mod_id].joint[joint].pid_update == PID_NONE)
       fprintf(stderr,"WARNING: Sending PID for module %d but joint %d has not had PID values set.\n", mod_id, joint);
 
@@ -512,13 +512,13 @@ void MasterModule::sendPIDConfig(uint16_t mod_id)
     *(int16_t*)(&pid_msg[len]) = modules_[mod_id].joint[joint].e_min;  len += 2;
     *(int16_t*)(&pid_msg[len]) = modules_[mod_id].joint[joint].offset; len += 2;
   }
-  
+
   pid_msg[len++] = '>';
   pid_msg[len++] = '\n';
   pid_msg[len] = '\0';
 
   {
-    boost::mutex::scoped_lock(outgoing_mutex_);  
+    boost::mutex::scoped_lock(outgoing_mutex_);
     outgoing_queue_.push(IOPacket(pid_msg, len));
   }
 
@@ -571,7 +571,7 @@ void MasterModule::sendAllJointPos()
   pos_msg[len++] = num_modules_*4;
 
   for (int n = 0; n < num_modules_ ; n++)
-    { 
+    {
       int pos_A = (modules_[n].joint[JOINT_A].des_pos+4095)%4095;
       int pos_B = (modules_[n].joint[JOINT_B].des_pos+4095)%4095;
 
@@ -580,19 +580,19 @@ void MasterModule::sendAllJointPos()
       pos_msg[len++] = (char)((pos_B)&0x00ff);
       pos_msg[len++] = (char)((pos_B)>>8);
     }
-  
+
   pos_msg[len++] = '>';
   pos_msg[len++] - '\n';
   pos_msg[len] = '\0';
 
   {
-    boost::mutex::scoped_lock(outgoing_mutex_);  
+    boost::mutex::scoped_lock(outgoing_mutex_);
     outgoing_queue_.push(IOPacket(pos_msg, len));
   }
 
 }
 
-int16_t MasterModule::getJointPos(uint16_t mod_id, WhichJoint which)
+int16_t MasterModule::getJointPos(uint16_t mod_id, WhichJoint which) const
 {
   if (mod_id >= num_modules_)
     SMARTSERVO_EXCEPT(SmartServoException, "Specified module exceeded bounds");
@@ -621,7 +621,7 @@ void MasterModule::setJointType(uint16_t mod_id, JointType type)
       modules_[mod_id].joint_type = type;
       return;
     }
-      
+
     // This is ok since SMART_SERVO always applicable
     if (type == SMART_SERVO)
       return;
@@ -642,7 +642,7 @@ void MasterModule::setJointServoPos(uint16_t mod_id, WhichJoint which, uint8_t p
     modules_[mod_id].servo[which].servo_update = SERVO_NEW;
 }
 
-uint8_t MasterModule::getJointServoPos(uint16_t mod_id, WhichJoint which)
+uint8_t MasterModule::getJointServoPos(uint16_t mod_id, WhichJoint which) const
 {
     if (mod_id >= num_modules_)
       SMARTSERVO_EXCEPT(SmartServoException, "Specified module exceeded bounds");
@@ -695,13 +695,13 @@ void MasterModule::sendJointServoPos(uint16_t mod_id)
 
   servo_msg[len++] = modules_[mod_id].servo[JOINT_A].des_pos;
   servo_msg[len++] = modules_[mod_id].servo[JOINT_B].des_pos;
-        
+
   servo_msg[len++] = '>';
   servo_msg[len++] = '\n';
   servo_msg[len] = '\0';
 
   {
-    boost::mutex::scoped_lock(outgoing_mutex_);  
+    boost::mutex::scoped_lock(outgoing_mutex_);
     outgoing_queue_.push(IOPacket(servo_msg, len));
   }
 
@@ -722,7 +722,7 @@ void MasterModule::sendJointServoPos(uint16_t mod_id)
 void  MasterModule::sendAllJointServoPos()
 {
   VERIFY_PORT_OPENED();
-    
+
   if (v_confirmations_ != v_transmits_)
     fprintf(stderr,"WARNING: V servo confirmation/transmit disparity: %d/%d\n", v_confirmations_, v_transmits_);
 
@@ -733,5 +733,5 @@ void  MasterModule::sendAllJointServoPos()
   {
     if (modules_[i].joint_type == HOBBY_SERVO || modules_[i].joint_type == V1_SERVO)
       sendJointServoPos(i);
-  }  
+  }
 }

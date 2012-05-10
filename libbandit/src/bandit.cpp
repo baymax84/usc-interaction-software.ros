@@ -81,6 +81,23 @@ Joint::Joint
     //
 }
 
+void Joint::setHandle( Bandit * handle )
+{
+    bandit_handle_ = handle;
+}
+
+double Joint::getPos() const
+{
+    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
+    return bandit_handle_->getJointPos( name );
+}
+
+void Joint::setPos( double const & position )
+{
+    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
+    bandit_handle_->setJointPos( name, position );
+}
+
 // =============================================================================================================================================
 // =============================================================================================================================================
 
@@ -123,7 +140,7 @@ void Bandit::useJointLimits( bool const & use_limits )
 }
 
 // =============================================================================================================================================
-Bandit::_JointsMap::iterator Bandit::getJoint( JointName && name )
+Bandit::_JointsMap::iterator Bandit::getJoint( JointName const & name )
 {
     auto joint_it = joints_map_.find( name );
 
@@ -133,19 +150,35 @@ Bandit::_JointsMap::iterator Bandit::getJoint( JointName && name )
 }
 
 // =============================================================================================================================================
-smartservo::JointType Bandit::getJointType( JointName && name )
+Bandit::_JointsMap::const_iterator Bandit::getJoint( JointName const & name ) const
+{
+    auto joint_it = joints_map_.find( name );
+
+    if( joint_it == joints_map_.end() ) BANDIT_EXCEPT<BanditException>( "No joint with id %d", name.id_ );
+
+    return joint_it;
+}
+
+// =============================================================================================================================================
+Bandit::_JointsMap const & Bandit::getJoints() const
+{
+    return joints_map_;
+}
+
+// =============================================================================================================================================
+smartservo::JointType Bandit::getJointType( JointName const & name )
 {
     return getJoint( name )->second.type;
 }
 
 // =============================================================================================================================================
-std::string Bandit::getJointName( JointName && name )
+std::string Bandit::getJointName( JointName const & name )
 {
     return name;
 }
 
 // =============================================================================================================================================
-int16_t Bandit::getJointId( JointName && name )
+int16_t Bandit::getJointId( JointName const & name )
 {
     return name;
 }
@@ -157,19 +190,19 @@ size_t Bandit::getNumJoints()
 }
 
 // =============================================================================================================================================
-double Bandit::getJointMin( JointName && name )
+double Bandit::getJointMin( JointName const & name )
 {
     return getJoint( name )->second.min;
 }
 
 // =============================================================================================================================================
-double Bandit::getJointMax( JointName && name )
+double Bandit::getJointMax( JointName const & name )
 {
     return getJoint( name )->second.max;
 }
 
 // =============================================================================================================================================
-double Bandit::getJointPos( JointName && name )
+double Bandit::getJointPos( JointName const & name ) const
 {
     auto joint_it = getJoint( name );
 
@@ -193,7 +226,7 @@ double Bandit::getJointPos( JointName && name )
 
 
 // =============================================================================================================================================
-void Bandit::setJointDirection( JointName && name, int8_t const & direction )
+void Bandit::setJointDirection( JointName const & name, int8_t const & direction )
 {
     if( direction != -1 && direction != 1 ) BANDIT_EXCEPT<BanditException>( "Tried to set joint direction with invalid value" );
 
@@ -201,7 +234,7 @@ void Bandit::setJointDirection( JointName && name, int8_t const & direction )
 }
 
 // =============================================================================================================================================
-void Bandit::setJointOffset( JointName && name, double const & offset )
+void Bandit::setJointOffset( JointName const & name, double const & offset )
 {
     auto joint_it = getJoint( name );
 
@@ -210,7 +243,7 @@ void Bandit::setJointOffset( JointName && name, double const & offset )
 }
 
 // =============================================================================================================================================
-void Bandit::setJointPos( JointName && name, double const & raw_angle )
+void Bandit::setJointPos( JointName const & name, double const & raw_angle )
 {
     auto joint_it = getJoint( name );
 
@@ -242,7 +275,7 @@ void Bandit::setJointPos( JointName && name, double const & raw_angle )
 }
 
 // =============================================================================================================================================
-void Bandit::openPort( std::string && port_name )
+void Bandit::openPort( std::string const & port_name )
 {
     master_.openPort( port_name.c_str() );
 }

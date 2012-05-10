@@ -1,5 +1,40 @@
-#ifndef BANDIT_H
-#define BANDIT_H
+/***************************************************************************
+ *  include/bandit/bandit.h
+ *  --------------------
+ *
+ *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following disclaimer
+ *    in the documentation and/or other materials provided with the
+ *    distribution.
+ *  * Neither the name of interaction-ros-pkg nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ **************************************************************************/
+
+#ifndef LIBBANDIT_BANDIT_H_
+#define LIBBANDIT_BANDIT_H_
 
 #include <stdexcept>
 #include <termios.h>
@@ -10,18 +45,19 @@
 
 #include <map>
 
-#include "bandit/smartservo.h"
+#include <bandit/smartservo.h>
 
 //! A namespace containing the bluesky bandit device driver
 namespace bandit
 {
 
 // =============================================================================================================================================
+//! Throw the given type of exception, with a printf-style message and args
 template<class __Exception, class... __Args>
-static void BANDIT_EXCEPT( std::string && msg, __Args&&... args );
+static void BANDIT_EXCEPT( std::string const & msg, __Args&&... args );
 
 // =============================================================================================================================================
-//! Macro for defining an exception with a given parent ( std::runtime_error should be top parent )
+// Macro for defining an exception with a given parent ( std::runtime_error should be top parent )
 #define DEF_EXCEPTION( name, parent ) \
     class name  : public parent { \
     public: \
@@ -34,6 +70,9 @@ static void BANDIT_EXCEPT( std::string && msg, __Args&&... args );
 
 // =============================================================================================================================================
 // =============================================================================================================================================
+
+// =============================================================================================================================================
+//! Build a vectir if all known id-name pairs
 static std::vector<std::pair<uint16_t, std::string> > const & getJointNamePairs()
 {
     static const std::vector<std::pair<uint16_t, std::string> > joint_name_pairs
@@ -63,6 +102,7 @@ static std::vector<std::pair<uint16_t, std::string> > const & getJointNamePairs(
 }
 
 // =============================================================================================================================================
+//! Build a map from joint names to joint ids
 static std::map<std::string, uint16_t> const & getJointIdsMap()
 {
     static bool initialized = false;
@@ -82,6 +122,7 @@ static std::map<std::string, uint16_t> const & getJointIdsMap()
 }
 
 // =============================================================================================================================================
+//! Build a map from joint ids to joint names
 static std::map<uint16_t, std::string> const & getJointNamesMap()
 {
     static bool initialized = false;
@@ -101,6 +142,10 @@ static std::map<uint16_t, std::string> const & getJointNamesMap()
 }
 
 // =============================================================================================================================================
+// =============================================================================================================================================
+
+// =============================================================================================================================================
+//! A convenient data structure to automatically convert between joint names and joint ids
 class JointName
 {
 public:
@@ -116,12 +161,20 @@ public:
 };
 
 // =============================================================================================================================================
+// =============================================================================================================================================
+
+class Bandit;
+
+// =============================================================================================================================================
 //! Generic bandit joint
 /*!
  *  This joint may represent a bandit joint or servo
  */
 class Joint
 {
+private:
+    Bandit * bandit_handle_;
+
 public:
     JointName               name;
     int16_t                 mod_id;
@@ -145,7 +198,16 @@ public:
         double const & min_ = 0,
         double const & max_ = 0
     );
+
+    void setHandle( Bandit * handle );
+
+    double getPos() const;
+
+    void setPos( double const & position );
 };
+
+// =============================================================================================================================================
+// =============================================================================================================================================
 
 // =============================================================================================================================================
 //! A minimal driver class for communicating with bandit via serial
@@ -156,7 +218,9 @@ public:
 class Bandit
 {
 public:
+    //! The type of callback required for state updates
     typedef boost::function<void()> _StateCallback;
+    //! A map from joint ids to Joints
     typedef std::map<uint16_t, Joint> _JointsMap;
 
 private:
@@ -166,6 +230,7 @@ private:
     //! use software joint limits?
     bool                    joint_limits_;
 
+    //! Map from joint ids to Joints
     _JointsMap joints_map_;
 
 public:
@@ -175,6 +240,7 @@ public:
     //! Destructor;
     ~Bandit();
 
+    //! Add a new joint definition
     template<class... __Args>
     void addJoint( __Args&&... args );
 
@@ -183,46 +249,52 @@ public:
 
     // -----------------------------------------------------------------------------------------------------------------------------------------
 
-    _JointsMap::iterator getJoint( JointName && joint_name );
+    //! Return an iterator to a joint
+    _JointsMap::iterator getJoint( JointName const & joint_name );
+
+    _JointsMap::const_iterator getJoint( JointName const & joint_name ) const;
+
+    _JointsMap const & getJoints() const;
 
     //! Return the type of a joint
-    smartservo::JointType getJointType( JointName && joint_name );
+    smartservo::JointType getJointType( JointName const & joint_name );
 
     //! Return the name of a joint
-    std::string getJointName( JointName && name );
-    int16_t getJointId( JointName && name );
+    std::string getJointName( JointName const & name );
+    //! Return the id of a joint
+    int16_t getJointId( JointName const & name );
 
-    // return the number of joints
+    //! return the number of joints
     size_t getNumJoints();
 
     //! Return the minimum position of a joint
-    double getJointMin( JointName && name );
+    double getJointMin( JointName const & name );
 
     //! Return the maximum position of a joint
-    double getJointMax( JointName && name );
+    double getJointMax( JointName const & name );
 
     //! Get the value of a joint position
-    double getJointPos( JointName && name );
+    double getJointPos( JointName const & name ) const;
 
     // -----------------------------------------------------------------------------------------------------------------------------------------
 
     //! Set the PID configuations for a particular joint.
     template<class... __Args>
-    void setJointPIDConfig( JointName && name, __Args&&... args );
+    void setJointPIDConfig( JointName const & name, __Args&&... args );
 
     //! Set the joint direction of a particular joint
-    void setJointDirection( JointName && name, int8_t const & direction );
+    void setJointDirection( JointName const & name, int8_t const & direction );
 
     //! Set the joint offset of a particular joint
-    void setJointOffset( JointName && name, double const & offset );
+    void setJointOffset( JointName const & name, double const & offset );
 
     //! Set the joint position of a particular joint
-    void setJointPos( JointName && name, double const & angle );
+    void setJointPos( JointName const & name, double const & angle );
 
     // -----------------------------------------------------------------------------------------------------------------------------------------
 
     //! Open the port
-    void openPort( std::string && port_name );
+    void openPort( std::string const & port_name );
 
     //! Close the port
     void closePort();
@@ -255,4 +327,4 @@ public:
 
 } // bandit
 
-#endif
+#endif // LIBBANDIT_BANDIT_H_

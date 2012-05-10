@@ -24,7 +24,7 @@ namespace smartservo
   public: \
     name(const char* msg) : parent(msg) {} \
   }
-  
+
   //! A standard SmartServo exception
   DEF_EXCEPTION(SmartServoException, std::runtime_error);
 
@@ -37,11 +37,11 @@ namespace smartservo
   enum ServoUpdate   { SERVO_NONE, SERVO_NEW, SERVO_SENT };
 
   //! A class representing the master module
-  /*! 
+  /*!
    *  This class represents the bridge for communicating with the joint modules
    *  It bridges the communication between serial port and the CAN bus.  This class
    *  is intended to directly represent the real data structures and communication
-   *  and is expected to be wrapped by another class which handles the more 
+   *  and is expected to be wrapped by another class which handles the more
    *  robot-specific details.
    *
    * NOTE: This is not "bandit-specific" and can be pulled from this library if/when
@@ -50,17 +50,17 @@ namespace smartservo
   class MasterModule
   {
   private:
-    
+
     //! A class representing a smart servo joint
-    /*! 
+    /*!
      *  There are two joints per joint module.  Each is responsible
-     *  for running a PID control loop on the particular joint.  
+     *  for running a PID control loop on the particular joint.
      */
     class SmartServoJoint
     {
     public:
       int16_t                des_pos;
-      int16_t                cur_pos; 
+      int16_t                cur_pos;
       int8_t                 speed;
       uint8_t                current;
       int16_t                p;
@@ -89,8 +89,8 @@ namespace smartservo
     };
 
     //! A class representing the JointModules
-    /*! 
-     *  This represents the low-level motor control, each of which can control up to 
+    /*!
+     *  This represents the low-level motor control, each of which can control up to
      *  2 motors and 2 servos.  This is mostly just used for book-keeping of state.
      */
     class JointModule
@@ -145,7 +145,7 @@ namespace smartservo
     fd_set select_fds_;
     int max_fd_;
 
-    char incoming_buf_[MAX_BUF_SIZE];    
+    char incoming_buf_[MAX_BUF_SIZE];
     int32_t incoming_pos_;
     boost::mutex incoming_queue_mutex_;
     boost::condition_variable incoming_queue_condition_;
@@ -161,7 +161,7 @@ namespace smartservo
   public:
     //! Constructor
     MasterModule(int joints);
- 
+
     //! Destructor
     ~MasterModule();
 
@@ -172,14 +172,14 @@ namespace smartservo
     void closePort();
 
 
-    
+
     //! State Callback which will be triggered whenever a state update is received
     void registerStateCB(boost::function<void()> state_callback);
 
 
 
     //! Process incoming and outgoing serial communication
-    /*! 
+    /*!
      *  Processes pending incoming and outgoing serial messages from
      *  the master module.  This may invoke your state callback
      *  several several times.
@@ -188,7 +188,7 @@ namespace smartservo
      */
     void processIO(uint32_t timeout);
 
-    
+
     void processPackets(bool wait);
 
 
@@ -236,10 +236,10 @@ namespace smartservo
 
 
     //! Get the value of a joint position
-    int16_t getJointPos(uint16_t mod_id, WhichJoint which);
+    int16_t getJointPos(uint16_t mod_id, WhichJoint which) const;
 
     //! Set the joint servo position of a particular joint
-    uint8_t getJointServoPos(uint16_t mod_id, WhichJoint which);
+    uint8_t getJointServoPos(uint16_t mod_id, WhichJoint which) const;
 
 
   private:
