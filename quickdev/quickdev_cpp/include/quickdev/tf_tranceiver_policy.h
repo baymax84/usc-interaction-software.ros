@@ -371,7 +371,7 @@ public:
 
         ros::spinOnce();
 
-        while( ( max_attempts == 0 || num_attempts < max_attempts ) && !transformExists( from_frame_id, to_frame_id ) )
+        while( ros::ok() && ( max_attempts == 0 || num_attempts < max_attempts ) && !transformExists( from_frame_id, to_frame_id ) )
         {
             std::string attempts_info;
             if( max_attempts != 0 )
@@ -388,7 +388,7 @@ public:
             ros::spinOnce();
         }
 
-        return max_attempts == 0 || num_attempts < max_attempts;
+        return ros::ok() && ( max_attempts == 0 || num_attempts < max_attempts );
     }
 
 };
