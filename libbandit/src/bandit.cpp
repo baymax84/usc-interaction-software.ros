@@ -92,12 +92,6 @@ double Joint::getPos() const
     return bandit_handle_->getJointPos( name );
 }
 
-void Joint::setPos( double const & position )
-{
-    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
-    bandit_handle_->setJointPos( name, position );
-}
-
 // =============================================================================================================================================
 // =============================================================================================================================================
 
@@ -157,6 +151,12 @@ Bandit::_JointsMap::const_iterator Bandit::getJoint( JointName const & name ) co
     if( joint_it == joints_map_.end() ) BANDIT_EXCEPT<BanditException>( "No joint with id %d", name.id_ );
 
     return joint_it;
+}
+
+// =============================================================================================================================================
+Bandit::_JointsMap & Bandit::getJoints()
+{
+    return joints_map_;
 }
 
 // =============================================================================================================================================

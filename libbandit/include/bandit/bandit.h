@@ -203,7 +203,20 @@ public:
 
     double getPos() const;
 
-    void setPos( double const & position );
+    template<class... __Args>
+    void setPos( __Args&&... args );
+
+    //! Set the PID configuations for this joint
+    template<class... __Args>
+    void setPIDConfig( __Args&&... args );
+
+    //! Set the joint direction of this joint
+    template<class... __Args>
+    void setDirection( __Args&&... args );
+
+    //! Set the joint offset of this joint
+    template<class... __Args>
+    void setOffset( __Args&&... args );
 };
 
 // =============================================================================================================================================
@@ -253,6 +266,8 @@ public:
     _JointsMap::iterator getJoint( JointName const & joint_name );
 
     _JointsMap::const_iterator getJoint( JointName const & joint_name ) const;
+
+    _JointsMap & getJoints();
 
     _JointsMap const & getJoints() const;
 

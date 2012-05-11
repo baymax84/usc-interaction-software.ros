@@ -45,6 +45,34 @@ static void BANDIT_EXCEPT( std::string const & msg, __Args&&... args )
     throw __Exception( buf );
 }
 
+template<class... __Args>
+void Joint::setPos( __Args&&... args )
+{
+    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
+    bandit_handle_->setJointPos( name, args... );
+}
+
+template<class... __Args>
+void Joint::setPIDConfig( __Args&&... args )
+{
+    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
+    bandit_handle_->setJointPIDConfig( name, args... );
+}
+
+template<class... __Args>
+void Joint::setDirection( __Args&&... args )
+{
+    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
+    bandit_handle_->setJointDirection( name, args... );
+}
+
+template<class... __Args>
+void Joint::setOffset( __Args&&... args )
+{
+    if( !bandit_handle_ ) BANDIT_EXCEPT<BanditException>( "Joint has an invalid handle." );
+    bandit_handle_->setJointOffset( name, args... );
+}
+
 // =============================================================================================================================================
 template<class... __Args>
 void Bandit::addJoint( __Args&&... args )
