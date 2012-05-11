@@ -1,7 +1,4 @@
 <launch>
-  <!-- send table.xml to param server -->
-  <!--param name="robot_description" command="$(find xacro)/xacro.py $(find bandit_urdf)/urdf/bandit_defs.xacro" /-->
   <rosparam param="robot_description" command="load" file="$(find bandit_urdf)/urdf/bandit_defs.urdf" />
-
 </launch>
 
