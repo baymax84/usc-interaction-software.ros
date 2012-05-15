@@ -45,6 +45,7 @@
 
 #include <map>
 
+#include <bandit/joint_name.h>
 #include <bandit/smartservo.h>
 
 //! A namespace containing the bluesky bandit device driver
@@ -67,98 +68,6 @@ static void BANDIT_EXCEPT( std::string const & msg, __Args&&... args );
     //! A standard Bandit exception
     DEF_EXCEPTION( BanditException, smartservo::SmartServoException );
 #undef DEF_EXCEPTION
-
-// =============================================================================================================================================
-// =============================================================================================================================================
-
-// =============================================================================================================================================
-//! Build a vectir if all known id-name pairs
-static std::vector<std::pair<uint16_t, std::string> > const & getJointNamePairs()
-{
-    static const std::vector<std::pair<uint16_t, std::string> > joint_name_pairs
-    {
-        std::make_pair( (uint16_t) 0 , std::string( "head_tilt_joint"                        ) ),
-        std::make_pair( (uint16_t) 1 , std::string( "head_pan_joint"                         ) ),
-        std::make_pair( (uint16_t) 2 , std::string( "left_torso_shoulder_mounting_joint"     ) ),
-        std::make_pair( (uint16_t) 3 , std::string( "left_shoulder_mounting_shoulder_joint"  ) ),
-        std::make_pair( (uint16_t) 4 , std::string( "left_shoulder_bicep_joint"              ) ),
-        std::make_pair( (uint16_t) 5 , std::string( "left_bicep_forearm_joint"               ) ),
-        std::make_pair( (uint16_t) 6 , std::string( "left_forearm_wrist_joint"               ) ),
-        std::make_pair( (uint16_t) 7 , std::string( "left_wrist_hand_joint"                  ) ),
-        std::make_pair( (uint16_t) 8 , std::string( "left_hand_thumb_joint"                  ) ),
-        std::make_pair( (uint16_t) 9 , std::string( "right_torso_shoulder_mounting_joint"    ) ),
-        std::make_pair( (uint16_t) 10, std::string( "right_shoulder_mounting_shoulder_joint" ) ),
-        std::make_pair( (uint16_t) 11, std::string( "right_shoulder_bicep_joint"             ) ),
-        std::make_pair( (uint16_t) 12, std::string( "right_bicep_forearm_joint"              ) ),
-        std::make_pair( (uint16_t) 13, std::string( "right_forearm_wrist_joint"              ) ),
-        std::make_pair( (uint16_t) 14, std::string( "right_wrist_hand_joint"                 ) ),
-        std::make_pair( (uint16_t) 15, std::string( "right_hand_thumb_joint"                 ) ),
-        std::make_pair( (uint16_t) 16, std::string( "eyebrows_joint"                         ) ),
-        std::make_pair( (uint16_t) 17, std::string( "mouth_top_joint"                        ) ),
-        std::make_pair( (uint16_t) 18, std::string( "mouth_bottom_joint"                     ) )
-    };
-
-    return joint_name_pairs;
-}
-
-// =============================================================================================================================================
-//! Build a map from joint names to joint ids
-static std::map<std::string, uint16_t> const & getJointIdsMap()
-{
-    static bool initialized = false;
-    static std::map<std::string, uint16_t> joint_ids_map;
-
-    if( !initialized )
-    {
-        auto joint_name_pairs = getJointNamePairs();
-        for( auto joint_name_it = joint_name_pairs.cbegin(); joint_name_it != joint_name_pairs.cend(); ++joint_name_it )
-        {
-            joint_ids_map[joint_name_it->second] = joint_name_it->first;
-        }
-        initialized = true;
-    }
-
-    return joint_ids_map;
-}
-
-// =============================================================================================================================================
-//! Build a map from joint ids to joint names
-static std::map<uint16_t, std::string> const & getJointNamesMap()
-{
-    static bool initialized = false;
-    static std::map<uint16_t, std::string> joint_names_map;
-
-    if( !initialized )
-    {
-        auto joint_name_pairs = getJointNamePairs();
-        for( auto joint_name_it = joint_name_pairs.cbegin(); joint_name_it != joint_name_pairs.cend(); ++joint_name_it )
-        {
-            joint_names_map[joint_name_it->first] = joint_name_it->second;
-        }
-        initialized = true;
-    }
-
-    return joint_names_map;
-}
-
-// =============================================================================================================================================
-// =============================================================================================================================================
-
-// =============================================================================================================================================
-//! A convenient data structure to automatically convert between joint names and joint ids
-class JointName
-{
-public:
-    int16_t id_;
-    std::string name_;
-
-    JointName();
-    JointName( int16_t const & id );
-    JointName( std::string const & name );
-
-    operator int16_t() const;
-    operator std::string() const;
-};
 
 // =============================================================================================================================================
 // =============================================================================================================================================

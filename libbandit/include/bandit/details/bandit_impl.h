@@ -89,6 +89,8 @@ void Bandit::addJoint( __Args&&... args )
 template<class... __Args>
 void Bandit::setJointPIDConfig( JointName const & name, __Args&&... args )
 {
+    printf( "Setting PID config for joint %s\n", name.name_.c_str() );
+
     auto joint_it = getJoint( name );
 
     if( joint_it->second.type != smartservo::SMART_SERVO ) BANDIT_EXCEPT<BanditException>( "Tried to set PID gains on: %s, which is not a SMART_SERVO\n", name.name_.c_str() );
