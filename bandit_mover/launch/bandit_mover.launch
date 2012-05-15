@@ -2,7 +2,7 @@
     <arg name="pkg" value="bandit_mover" />
     <arg name="name" default="bandit_mover" />
     <arg name="type" default="$(arg name)" />
-    <arg name="args" value="joint_cmd:=/bandit_driver/bandit_joint_array_cmd" />
+    <arg name="args" value="joint_cmd:=/bandit_driver/joint_array_command params:=/bandit_driver/get_joint_properties" />
     <node
         pkg="$(arg pkg)"
         type="$(arg type)"
