@@ -57,6 +57,7 @@
 // others
 #include <quickdev/geometry_message_conversions.h>
 #include <quickdev/numeric_unit_conversions.h>
+#include <quickdev/math.h>
 #include <kdl_parser/kdl_parser.hpp>
 
 typedef bandit_msgs::JointArray _BanditJointArrayMsg;
@@ -121,18 +122,35 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
         {
             auto & joint = joints_it->second;
 
-            std::string joint_name = joint.name;
+            std::string const & joint_name = joint.name;
 
-            auto & joint_pid_values = joints_pid_values[joint_name];
-            auto & joint_config_values = joints_config_values[joint_name];
+            auto joint_pid_values =    ros::ParamReader<XmlRpc::XmlRpcValue, 1>::getXmlRpcValue( joints_pid_values,    joint_name );
+            auto joint_config_values = ros::ParamReader<XmlRpc::XmlRpcValue, 1>::getXmlRpcValue( joints_config_values, joint_name );
+
+            PRINT_INFO( "%s", joint_config_values.toXml().c_str() );
 
             if( joint.type == smartservo::SMART_SERVO )
             {
-                joint.setPIDConfig( (int) joint_pid_values["p"], (int) joint_pid_values["i"], (int) joint_pid_values["d"], (int) joint_pid_values["i_min"], (int) joint_pid_values["i_max"], (int) joint_pid_values["e_min"], (int) joint_pid_values["offset"] );
+                auto const p =      ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "p"     , 100   );
+                auto const i =      ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "i"     , 0     );
+                auto const d =      ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "d"     , 0     );
+                auto const i_min =  ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "i_min" , -4000 );
+                auto const i_max =  ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "i_max" , 4001  );
+                auto const e_min =  ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "e_min" , 50    );
+                auto const offset = ros::ParamReader<int, 1>::getXmlRpcValue( joint_pid_values, "offset", 0     );
+
+                joint.setPIDConfig( p, i, d, i_min, i_max, e_min, offset );
             }
 
-            joint.setDirection( (int) joint_config_values["direction"] );
-            joint.setOffset( (double) joint_config_values["true_zero"] );
+            PRINT_INFO( "Getting joint direction" );
+            auto const direction = ros::ParamReader<int   , 1>::getXmlRpcValue( joint_config_values, "direction", 1 );
+            PRINT_INFO( "Getting joint origin" );
+            auto const origin =    ros::ParamReader<double, 1>::getXmlRpcValue( joint_config_values, "origin"   , 0 );
+
+            PRINT_INFO( "Setting joint direction and origin" );
+
+            joint.setDirection( direction );
+            joint.setOffset( Radian( Degree( origin ) ) );
         }
 
         // -------------------------------------------------------------------------------------------------------------------------------------
@@ -166,18 +184,25 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
 
         initPolicies<quickdev::policy::ALL>();
 
-        bool all_pid_configs_ok = false;
+        PRINT_INFO( "Setting and checking PID configs..." );
+
+        ros::Time target_update_time = ros::Time::now();
         do
         {
-            bandit_driver_.sendAllPIDConfigs();
-            bandit_driver_.processIO( 10000 );
+            auto const now = ros::Time::now();
+            if( now >= target_update_time )
+            {
+                PRINT_INFO( "Sending PID info to bandit..." );
+                bandit_driver_.sendAllPIDConfigs();
+                target_update_time = now + ros::Duration( 1.0 );
+            }
+
+            bandit_driver_.processIO( QUICKDEV_GET_RUNABLE_POLICY()::getLoopRateSeconds() * 1000000 );
             bandit_driver_.processPackets();
-
-            all_pid_configs_ok = !bandit_driver_.checkAllPIDConfigs();
-
-            if( !all_pid_configs_ok ) ros::Duration( 1.0 ).sleep();
         }
-        while( !all_pid_configs_ok );
+        while( !bandit_driver_.checkAllPIDConfigs() );
+
+        PRINT_INFO( "Setting initial joint positions." );
 
         for( auto joints_it = joints_map.begin(); joints_it != joints_map.cend(); ++joints_it )
         {
@@ -193,7 +218,15 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
 
     QUICKDEV_SPIN_ONCE()
     {
-        //
+        try
+        {
+            bandit_driver_.processIO( QUICKDEV_GET_RUNABLE_POLICY()::getLoopRateSeconds() * 1000000 );
+            bandit_driver_.processPackets();
+        }
+        catch( bandit::BanditException const & ex )
+        {
+            PRINT_ERROR( "%s", ex.what() );
+        }
     }
 
     void banditStateCB()
@@ -228,12 +261,12 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
             auto const & joint = joints_it->second;
 
             auto const joint_name = joint.name;
-            auto const joint_pos = joint.getPos();
+            auto const joint_pos = quickdev::normalizeEuler( joint.getPos() );
             // the eyebrows are really two joints as far as robot_state_publisher is concerned
             if ( joint.name == eyebrows_joint_index )
             {
-                auto l_brow_pos = -3 * joint_pos;
-                auto r_brow_pos = -3 * joint_pos;
+                auto l_brow_pos = -joint_pos;
+                auto r_brow_pos = -joint_pos;
 
                 std::string l_brow_name( "head_left_brow_joint" );
                 std::string r_brow_name( "head_right_brow_joint" );
