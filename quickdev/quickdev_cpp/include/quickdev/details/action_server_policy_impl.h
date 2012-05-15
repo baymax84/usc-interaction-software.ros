@@ -8,7 +8,8 @@ QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__>:: )
 
     auto const enable_key_ids( getMetaParamDef<bool>( "enable_key_ids", false, std::forward<__Args>( args )... ) );
 
-    auto const action_name = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "action_name_param", __Id__, "action_name", "action", std::forward<__Args>( args )... );
+    auto const action_name = policy::readPolicyParamAuto<std::string>( nh_rel, enable_key_ids, "action_name_param", __Id__, "action_name", "action", args... );
+    auto const use_execute_callback = policy::readPolicyParamAuto<bool>( nh_rel, enable_key_ids, "use_execute_callback_param", __Id__, "use_execute_callback", true, args... );
 
     ros::NodeHandle action_nh( nh_rel, action_name );
 
@@ -16,9 +17,14 @@ QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__>:: )
 
     PRINT_INFO( "Creating action server [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    action_server_ = new _ActionServer( nh_rel, action_name, auto_bind( &ActionServerPolicy::executeActionCB, this ), false );
+    if( use_execute_callback ) action_server_ = new _ActionServer( nh_rel, action_name, auto_bind( &ActionServerPolicy::executeActionCB, this ), false );
+    else
+    {
+        action_server_ = new _ActionServer( nh_rel, action_name, false );
+        action_server_->registerGoalCallback( auto_bind( &ActionServerPolicy::goalCB, this ) );
+    }
+
     action_server_->registerPreemptCallback( auto_bind( &ActionServerPolicy::preemptCB, this ) );
-    action_server_->registerGoalCallback( auto_bind( &ActionServerPolicy::goalCB, this ) );
 
     action_server_->start();
 
