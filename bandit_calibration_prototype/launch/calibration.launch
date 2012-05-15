@@ -1,16 +1,14 @@
 <launch>
     <arg name="bandit_id" default="2"/>
-    <arg name="urdf_filename" default="$(find bandit_urdf)/urdf/bandit_defs.urdf"/>
 
-    <arg name="pkg" value="bandit_driver_prototype" />
-    <arg name="name" default="bandit_driver" />
+    <arg name="pkg" value="bandit_calibration_prototype" />
+    <arg name="name" default="calibration" />
     <arg name="type" default="$(arg name)_node" />
     <arg name="rate" default="30" />
-    <arg name="args" value="_loop_rate:=$(arg rate) _urdf_filename:=$(arg urdf_filename)" />
+    <arg name="args" value="_loop_rate:=$(arg rate) ~joint_state_command:=/bandit_driver/joint_state_command ~joint_states:=/bandit_driver/joint_states" />
     <arg name="manager" default="manager" />
     <arg name="nodelet" default="false" />
 
-    <rosparam param="/$(arg name)/pids" command="load" file="$(find bandit_driver_prototype)/params/bandit_$(arg bandit_id)/pids.yaml" />
     <rosparam param="/$(arg name)/joints" command="load" file="$(find bandit_driver_prototype)/params/bandit_$(arg bandit_id)/joints.yaml" />
 
     <node
@@ -27,4 +25,10 @@
         name="$(arg name)"
         args="$(arg args)"
         output="screen" />
+
+    <arg name="show_reconfigure" default="true" />
+    <include file="$(find quickdev_cpp)/launch/dynamic_reconfigure.launch" >
+        <arg name="enable" value="$(arg show_reconfigure)" />
+        <arg name="name" value="$(arg name)" />
+    </include>
 </launch>
