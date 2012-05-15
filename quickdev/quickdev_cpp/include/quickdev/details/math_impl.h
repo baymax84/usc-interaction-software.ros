@@ -1,4 +1,14 @@
 // =============================================================================================================================================
+template<class __Data>
+__Data normalizeEuler( __Data const & value )
+{
+    __Data const clamp = fmod( value, 2 * M_PI );
+    if( clamp > M_PI ) return clamp - 2 * M_PI;
+    else if( clamp < -M_PI ) return clamp + 2 * M_PI;
+    return clamp;
+}
+
+// =============================================================================================================================================
 //! Get the sign of some value (result is { -1, 0, 1 }
 template<class __Data>
 inline __Data sign( __Data const & value )

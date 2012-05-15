@@ -297,6 +297,14 @@ public:
 
         return false;
     }
+
+    static __Storage getXmlRpcValue( XmlRpc::XmlRpcValue & xml_rpc_value, std::string const & member_name, __Storage const & default_value = __Storage() )
+    {
+        if( xml_rpc_value.hasMember( member_name ) ) return __Storage( xml_rpc_value[member_name] );
+
+        PRINT_WARN( "XmlRpcValue does not contain member %s; returning default", member_name.c_str() );
+        return default_value;
+    }
 };
 
 }

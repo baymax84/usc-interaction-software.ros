@@ -109,8 +109,8 @@ public:
 private:
     QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( reconfigureCB_0, __ReconfigureType )
     {
-        config_ = config;
         if( external_callback_ ) external_callback_( config, level );
+        config_ = config;
     }
 };
 

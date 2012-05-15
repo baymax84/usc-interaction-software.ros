@@ -3,9 +3,15 @@
 
 #include <quickdev/macros.h>
 #include <algorithm>
+#include <math.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
+
+// =============================================================================================================================================
+//! Put value between {-M_PI, M_PI}
+template<class __Data>
+__Data normalizeEuler( __Data const & value );
 
 // =============================================================================================================================================
 //! Get the sign of some value (result is { -1, 0, 1 }
