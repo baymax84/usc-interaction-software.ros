@@ -38,18 +38,27 @@
 
 #include <quickdev/node.h>
 
-#include <bandit/joint_name.h>
+// policies
+#include <quickdev/reconfigure_policy.h>
 
 // objects
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
+#include <bandit/joint_name.h>
 
 // msgs
 #include <sensor_msgs/JointState.h>
 
+// reconfigure
+#include <bandit_mannequin_mode/MannequinModeConfig.h>
+
 typedef sensor_msgs::JointState _JointStateMsg;
 
-QUICKDEV_DECLARE_NODE( MannequinMode )
+typedef bandit_mannequin_mode::MannequinModeConfig _MannequinModeConfig;
+
+typedef quickdev::ReconfigurePolicy<_MannequinModeConfig> _MannequinModeConfigPolicy;
+
+QUICKDEV_DECLARE_NODE( MannequinMode, _MannequinModeConfigPolicy )
 
 QUICKDEV_DECLARE_NODE_CLASS( MannequinMode )
 {
@@ -59,6 +68,9 @@ QUICKDEV_DECLARE_NODE_CLASS( MannequinMode )
     size_t const left_wrist_hand_joint_id_;
     size_t const right_torso_shoulder_mounting_joint_id_;
     size_t const right_wrist_hand_joint_id_;
+
+    _JointStateMsg last_joint_state_;
+    std::mutex last_joint_state_mutex_;
 
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( MannequinMode ),
         left_wrist_hand_joint_id_( bandit::JointName( "left_wrist_hand_joint" ).id_ ),
@@ -71,6 +83,8 @@ QUICKDEV_DECLARE_NODE_CLASS( MannequinMode )
     QUICKDEV_SPIN_FIRST()
     {
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+
+        _MannequinModeConfigPolicy::registerCallback( quickdev::auto_bind( &MannequinModeNode::reconfigureCB, this ) );
 
         multi_pub_.addPublishers<_JointStateMsg>( nh_rel, { "joint_state_command" } );
         multi_sub_.addSubscriber( nh_rel, "joint_states", &MannequinModeNode::jointStatesCB, this );
@@ -90,6 +104,14 @@ QUICKDEV_DECLARE_NODE_CLASS( MannequinMode )
 
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( jointStatesCB, _JointStateMsg )
     {
+        {
+            QUICKDEV_MAKE_LOCK( std::unique_lock, last_joint_state_mutex_ );
+
+            last_joint_state_ = *msg;
+        }
+
+        if( !config_.enable_mannequin ) return;
+
         _JointStateMsg joint_state_msg;
         joint_state_msg.header = msg->header;
         joint_state_msg.position.resize( 12 );
@@ -106,6 +128,28 @@ QUICKDEV_DECLARE_NODE_CLASS( MannequinMode )
 
         multi_pub_.publish( "joint_state_command", quickdev::make_const_shared( joint_state_msg ) );
     }
+
+    QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( reconfigureCB, _MannequinModeConfig )
+    {
+        if( config.save_pose && !config_.save_pose )
+        {
+            std::string const pose_name = config.pose_name.empty() ? "" : ( config.pose_name + "/" );
+
+            {
+                QUICKDEV_MAKE_LOCK( std::unique_lock, last_joint_state_mutex_ );
+
+                auto joint_names_it = last_joint_state_.name.cbegin();
+                auto joint_positions_it = last_joint_state_.position.cbegin();
+                QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+                for( ; joint_names_it != last_joint_state_.name.cend(); ++joint_names_it, ++joint_positions_it )
+                {
+                    nh_rel.setParam( "poses/" + pose_name + *joint_names_it, *joint_positions_it );
+                }
+
+            }
+        }
+    }
+
 };
 
 #endif // BANDITMANNEQUINMODE_MANNEQUINMODENODE_H_

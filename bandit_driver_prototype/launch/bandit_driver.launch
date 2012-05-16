@@ -1,12 +1,13 @@
 <launch>
     <arg name="bandit_id" default="2"/>
     <arg name="urdf_filename" default="$(find bandit_urdf)/urdf/bandit_defs.urdf"/>
+    <arg name="use_joint_limits" default="false" />
 
     <arg name="pkg" value="bandit_driver_prototype" />
     <arg name="name" default="bandit_driver" />
     <arg name="type" default="$(arg name)_node" />
     <arg name="rate" default="30" />
-    <arg name="args" value="_loop_rate:=$(arg rate) _urdf_filename:=$(arg urdf_filename)" />
+    <arg name="args" value="_loop_rate:=$(arg rate) _urdf_filename:=$(arg urdf_filename) _use_joint_limits:=$(arg use_joint_limits)" />
     <arg name="manager" default="manager" />
     <arg name="nodelet" default="false" />
 
