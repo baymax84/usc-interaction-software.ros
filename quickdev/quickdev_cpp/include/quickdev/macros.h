@@ -413,6 +413,12 @@ QUICKDEV_ENABLE_IF( __ReturnType, ( !std::is_same<__Type1, __Type2>::value ) )
 
 // ########## Threading Macros #########################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_MAKE_LOCK2( LockType, mutex_var, lock_var ) \
+LockType<decltype( mutex_var )> lock_var( mutex_var )
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_MAKE_LOCK( LockType, mutex_var ) \
+QUICKDEV_MAKE_LOCK2( LockType, mutex_var, mutex_var##_lock )
+// ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_TRY_LOCK_OR_WARN2( lock_var, args... ) \
 if( !lock_var ) PRINT_WARN( "Lock " #lock_var " is busy. " args )
 
