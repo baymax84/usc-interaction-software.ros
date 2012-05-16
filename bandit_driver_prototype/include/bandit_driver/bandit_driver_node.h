@@ -109,6 +109,7 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
         auto const port = ros::ParamReader<std::string, 1>::readParam( nh_rel, "port", "/dev/ttyUSB0" );
 
         bandit_driver_.openPort( port.c_str() );
+        bandit_driver_.useJointLimits( ros::ParamReader<bool, 1>::readParam( nh_rel, "use_joint_limits", false ) );
 
         // load and parse joint config
         auto & joints_map = bandit_driver_.getJoints();
