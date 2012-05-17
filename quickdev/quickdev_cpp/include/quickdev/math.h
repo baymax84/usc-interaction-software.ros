@@ -4,6 +4,8 @@
 #include <quickdev/macros.h>
 #include <algorithm>
 #include <math.h>
+#include <time.h>
+#include <stdlib.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
@@ -44,6 +46,12 @@ template<class __Data>
 inline __Data min( __Data const & value1, __Data const & value2 );
 
 // =============================================================================================================================================
+void seedRand( unsigned int const & value );
+
+// =============================================================================================================================================
+void seedRand();
+
+// =============================================================================================================================================
 //! Get the min of three or more values
 template
 <
@@ -52,6 +60,10 @@ template
     typename std::enable_if<(sizeof...(__Args) > 1), int>::type = 0
 >
 inline __Data min( __Data const & value, __Args&&... args );
+
+// =============================================================================================================================================
+template<class __Data>
+__Data rand( __Data const & min, __Data const & max );
 
 #include <quickdev/details/math_impl.h>
 
