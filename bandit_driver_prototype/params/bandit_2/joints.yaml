@@ -1,4 +1,4 @@
-eyebrows_joint: {direction: 1, origin: 0.0}
+eyebrows_joint: {direction: 1, origin: 30.0}
 head_left_brow_joint: {origin: 0.0}
 head_pan_joint: {direction: -1, origin: -11.865234375000027}
 head_right_brow_joint: {origin: 0.0}
