@@ -64,3 +64,11 @@ inline __Data min( __Data const & value, __Args&&... args )
 {
     return std::min( value, min( std::forward<__Args>( args )... ) );
 }
+
+// =============================================================================================================================================
+template<class __Data>
+__Data random( __Data const & min, __Data const & max )
+{
+    quickdev::seedRand();
+    return min + max * double( std::rand() ) / RAND_MAX;
+}
