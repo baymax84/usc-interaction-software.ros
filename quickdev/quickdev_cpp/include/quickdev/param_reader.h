@@ -39,6 +39,7 @@
 #include <quickdev/console.h>
 #include <ros/param.h>
 #include <ros/node_handle.h>
+#include <quickdev/macros.h>
 #include <type_traits>
 #include <vector>
 #include <sstream>
@@ -307,6 +308,107 @@ public:
     }
 };
 
-}
+} // ros
+
+QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
+{
+
+namespace param_reader_traits
+{
+
+typedef XmlRpc::XmlRpcValue _XmlRpcValue;
+
+template<class __Output>
+struct XmlRpcStorageAdapter
+{
+    typedef __Output _Output;
+
+    static __Output convert( _XmlRpcValue && input )
+    {
+        return __Output( input );
+    }
+};
+
+template<class __Storage>
+struct XmlRpcStorageAdapter<std::vector<__Storage> >
+{
+    typedef _XmlRpcValue::ValueArray _XmlRpcType;
+    typedef std::vector<__Storage> _Output;
+
+    static _Output convert( _XmlRpcValue && input )
+    {
+        _Output result( input.size() );
+
+        for( int i = 0; i < input.size(); ++i )
+        {
+            result[i] = __Storage( input[i] );
+        }
+
+        return result;
+    }
+};
+
+template<class __Storage>
+struct XmlRpcStorageAdapter<std::map<std::string, __Storage> >
+{
+    typedef _XmlRpcValue::ValueStruct _XmlRpcType;
+    typedef std::map<std::string, __Storage> _Output;
+
+    static _Output convert( _XmlRpcValue && input )
+    {
+        _Output result;
+
+        for( auto input_it = input.begin(); input_it != input.end(); ++input_it )
+        {
+            result[input_it->first] = __Storage( input_it->second );
+        }
+
+        return result;
+    }
+};
+
+} // param_reader_traits
+
+
+class ParamReader
+{
+public:
+    typedef param_reader_traits::_XmlRpcValue _XmlRpcValue;
+
+protected:
+    ros::NodeHandle & nh_;
+
+public:
+    ParamReader( ros::NodeHandle && nh )
+    :
+        nh_( nh )
+    {
+        //
+    }
+
+    template<class __Output>
+    static __Output readParam( ros::NodeHandle & nh, std::string const & name, __Output const & default_value = __Output() )
+    {
+        _XmlRpcValue param;
+        bool const param_found = nh.getParam( name, param );
+
+        if( param_found ) return param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+        return default_value;
+    }
+
+    template<class __Output>
+    static __Output fromXmlRpcValue( _XmlRpcValue && param )
+    {
+        return param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+    }
+
+    template<class __Output>
+    __Output readParam( std::string const & name, __Output const & default_value = __Output() )
+    {
+        return readParam<__Output>( nh_, name, default_value );
+    }
+};
+
+} // quickdev
 
 #endif // QUICKDEVCPP_QUICKDEV_PARAMREADER_H_
