@@ -39,6 +39,7 @@
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/timed_policy.h>
 #include <quickdev/callback_policy.h>
+#include <quickdev/tf_tranceiver_policy.h>
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/multi_publisher.h>
 #include <quickdev/threading.h>
@@ -48,13 +49,13 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 template<class __MotorValsMsg>
-class RobotDriverPolicy : public GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, MessageCallbackPolicy<__MotorValsMsg> >
+class RobotDriverPolicy : public GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, MessageCallbackPolicy<__MotorValsMsg>, TfTranceiverPolicy >
 {
     QUICKDEV_MAKE_POLICY_FUNCS( RobotDriver )
 
 protected:
     typedef MessageCallbackPolicy<__MotorValsMsg> _MessageCallbackPolicy;
-    typedef GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, _MessageCallbackPolicy > _PolicyAdapter;
+    typedef GenericPolicyAdapter<NodeHandlePolicy, TimedPolicy<>, _MessageCallbackPolicy, TfTranceiverPolicy > _PolicyAdapter;
     typedef void _EmptyMsg;
 
     MessageCache<__MotorValsMsg> motor_vals_msg_cache_;
