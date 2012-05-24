@@ -403,6 +403,15 @@ public:
     }
 
     template<class __Output>
+    static __Output getXmlRpcValue( XmlRpc::XmlRpcValue & xml_rpc_value, std::string const & member_name, __Output const & default_value = __Output() )
+    {
+        if( xml_rpc_value.hasMember( member_name ) ) return __Output( xml_rpc_value[member_name] );
+
+        PRINT_WARN( "XmlRpcValue does not contain member %s; returning default", member_name.c_str() );
+        return default_value;
+    }
+
+    template<class __Output>
     __Output readParam( std::string const & name, __Output const & default_value = __Output() )
     {
         return readParam<__Output>( nh_, name, default_value );
