@@ -1,8 +1,9 @@
-#define __ActionServerPolicy ActionServerPolicy<__Action, __Id__>
+#define __ActionServerPolicy ActionServerPolicy<__Action, __Id__, __Storage>
+#define __template_ACTION_SERVER_POLICY template<class __Action, unsigned int __Id__, class __Storage>
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
-QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__>:: )
+__template_ACTION_SERVER_POLICY
+QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__, __Storage>:: )
 {
     auto & nh_rel = NodeHandlePolicy::getNodeHandle();
 
@@ -32,8 +33,8 @@ QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__>:: )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
-QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::executeActionCB), typename _GoalMsg )
+__template_ACTION_SERVER_POLICY
+QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__, __Storage>::executeActionCB), typename _GoalMsg )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
@@ -57,8 +58,12 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
         result_type_ = _GoalStatusMsg::ABORTED;
         result_info_ = "";
 
+        execute_active_ = true;
+
         // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
         _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
+
+        execute_active_ = false;
 
         switch( result_type_ )
         {
@@ -76,21 +81,21 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__>::execut
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::preemptCB()
 {
     if( preempt_callback_ ) preempt_callback_( action_server_ );
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::goalCB()
 {
     if( goal_callback_ ) goal_callback_( action_server_ );
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::registerExecuteCB( __Args&&... args )
 {
@@ -98,21 +103,21 @@ void __ActionServerPolicy::registerExecuteCB( __Args&&... args )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::registerPreemptCB( _PreemptCallback const & callback )
 {
     preempt_callback_ = callback;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::registerGoalCB( _GoalCallback const & callback )
 {
     goal_callback_ = callback;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::sendFeedback( __Args&&... args )
 {
@@ -122,7 +127,7 @@ void __ActionServerPolicy::sendFeedback( __Args&&... args )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::updateResult( __ActionServerPolicy::_ResultMsg && result, std::string && result_info )
 {
     result_msg_ = std::forward<__ActionServerPolicy::_ResultMsg>( result );
@@ -130,7 +135,7 @@ void __ActionServerPolicy::updateResult( __ActionServerPolicy::_ResultMsg && res
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::setSuccessful( __Args&&... args )
 {
@@ -141,10 +146,12 @@ void __ActionServerPolicy::setSuccessful( __Args&&... args )
     result_type_ = _GoalStatusMsg::SUCCEEDED;
 
     updateResult( std::forward<__Args>( args )... );
+
+    execute_active_ = false;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::setAborted( __Args&&... args )
 {
@@ -155,10 +162,12 @@ void __ActionServerPolicy::setAborted( __Args&&... args )
     result_type_ = _GoalStatusMsg::ABORTED;
 
     updateResult( std::forward<__Args>( args )... );
+
+    execute_active_ = false;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::setPreempted( __Args&&... args )
 {
@@ -171,10 +180,11 @@ void __ActionServerPolicy::setPreempted( __Args&&... args )
     updateResult( std::forward<__Args>( args )... );
 
     preempt_accepted_ = true;
+    execute_active_ = false;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::completeAction( __Args&&... args )
 {
@@ -186,7 +196,7 @@ void __ActionServerPolicy::completeAction( __Args&&... args )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::abortAction( __Args&&... args )
 {
@@ -198,7 +208,7 @@ void __ActionServerPolicy::abortAction( __Args&&... args )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 template<class... __Args>
 void __ActionServerPolicy::preemptAction( __Args&&... args )
 {
@@ -210,7 +220,7 @@ void __ActionServerPolicy::preemptAction( __Args&&... args )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 bool __ActionServerPolicy::waitOnAction( double const & wait_time )
 {
     QUICKDEV_ASSERT_INITIALIZED( false );
@@ -225,7 +235,7 @@ bool __ActionServerPolicy::waitOnAction( double const & wait_time )
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 bool __ActionServerPolicy::preemptRequested()
 {
     QUICKDEV_ASSERT_INITIALIZED();
@@ -234,30 +244,31 @@ bool __ActionServerPolicy::preemptRequested()
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 bool const & __ActionServerPolicy::preemptAccepted() const
 {
     return preempt_accepted_;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 bool __ActionServerPolicy::successful() const
 {
     return !preemptAccepted();
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 bool __ActionServerPolicy::active()
 {
     QUICKDEV_ASSERT_INITIALIZED( false );
 
-    return action_server_->isActive();
+    // action_server_->isActive();
+    return execute_active_;
 }
 
 // =========================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_SERVER_POLICY
 bool __ActionServerPolicy::initialized()
 {
     QUICKDEV_ASSERT_INITIALIZED( false );
@@ -266,3 +277,4 @@ bool __ActionServerPolicy::initialized()
 }
 
 #undef __ActionServerPolicy
+#undef __template_ACTION_SERVER_POLICY

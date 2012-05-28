@@ -39,6 +39,7 @@
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
 
+#include <quickdev/storage_adapter.h>
 #include <quickdev/auto_bind.h>
 #include <quickdev/time.h>
 
@@ -48,7 +49,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__ = 0>
+template<class __Action, unsigned int __Id__ = 0, class __Storage = void>
 class ActionServerPolicy
 :
     public GenericPolicyAdapter
@@ -79,11 +80,16 @@ public:
 
     typedef GenericPolicyAdapter<NodeHandlePolicy, _ExecuteCallbackPolicy> _PolicyAdapter;
 
+    typedef StorageAdapter<__Storage> _StorageAdapter;
+
+    _StorageAdapter storage_;
+
 private:
     _ActionServer * action_server_;
 
     bool preempt_accepted_;
     bool goal_initialized_;
+    bool execute_active_;
 
     _PreemptCallback preempt_callback_;
     _GoalCallback goal_callback_;
@@ -108,6 +114,7 @@ public:
         action_server_( NULL ),
         preempt_accepted_( false ),
         goal_initialized_( false ),
+        execute_active_( false ),
         initialized_( false )
     {
         printPolicyActionStart( "create", this );
