@@ -159,37 +159,29 @@ public:
         if( !params_namespace.empty() && params_namespace.substr( params_namespace.size() - 1, 1 ) != "/" ) params_namespace += "/";
 
         // if we don't get any joystick messages after this much time, zero out all fields of the outgoing velocity message
-        joystick_timeout_ = ros::ParamReader<double, 1>::readParam( nh_rel, "keep_alive_period", 1.0 );
+        joystick_timeout_ = quickdev::ParamReader::readParam<double>( nh_rel, "keep_alive_period", 1.0 );
 
-        // read as many axis#_index values as exist on the parameter server starting with axis0_index
-        auto const axis_indices( ros::ParamReader<_Axis::_Index, 0>::readParams( nh_rel, params_namespace + "axis", "_index", 0 ) );
-        auto const axis_names( ros::ParamReader<_Axis::_Name, 0>::readParams( nh_rel, params_namespace + "axis", "_name", 0 ) );
-        auto const axis_scales( ros::ParamReader<_Axis::_Scale, 0>::readParams( nh_rel, params_namespace + "axis", "_scale", 0 ) );
+        // read axis and button mappings
+        auto axes_param = quickdev::ParamReader::readParam<XmlRpc::XmlRpcValue>( nh_rel, params_namespace + "axes" );
+        auto buttons_param = quickdev::ParamReader::readParam<XmlRpc::XmlRpcValue>( nh_rel, params_namespace + "buttons" );
 
-        auto const button_indices( ros::ParamReader<_Axis::_Index, 0>::readParams( nh_rel, params_namespace + "button", "_index", 0 ) );
-        auto const button_names( ros::ParamReader<_Axis::_Name, 0>::readParams( nh_rel, params_namespace + "button", "_name", 0 ) );
-
-        // unroll the axis names and indices into a map from names to indices
-        for( size_t i = 0; i < axis_names.size() && i < axis_indices.size(); ++i )
+        // store axis mappings
+        for( auto axes_it = axes_param.begin(); axes_it != axes_param.end(); ++axes_it )
         {
-            _Axis::_Name const & axis_name( axis_names[i] );
-            _Axis::_Index const & axis_index( axis_indices[i] );
-            _Axis::_Scale const & axis_scale( axis_scales.size() > i ? axis_scales[i] : _Axis::_Scale( 1.0 ) );
-            _Axis const axis( axis_name, axis_index, axis_scale );
+            std::string const & axis_name = axes_it->first;
+            int const & axis_index = axes_it->second["index"];
+            double const & axis_scale = axes_it->second["scale"];
 
-            PRINT_INFO( "Adding axis: %s", axis.str().c_str() );
-            axes_map_[axis_name] = axis;
+            axes_map_[axis_name] = _Axis( axis_name, axis_index, axis_scale );
         }
 
-        // unroll the button names and indices into a map from names to indices
-        for( size_t i = 0; i < button_names.size() && i < button_indices.size(); ++i )
+        // store button mappings
+        for( auto buttons_it = buttons_param.begin(); buttons_it != buttons_param.end(); ++buttons_it )
         {
-            _Axis::_Name const & axis_name( button_names[i] );
-            _Axis::_Index const & axis_index( button_indices[i] );
-            _Axis const axis( axis_name, axis_index, 1.0, true );
+            std::string const & axis_name = buttons_it->first;
+            int const & axis_index = buttons_it->second;
 
-            PRINT_INFO( "Adding axis: %s", axis.str().c_str() );
-            axes_map_[axis_name] = axis;
+            axes_map_[axis_name] = _Axis( axis_name, axis_index, 1.0, true );
         }
 
         postInit();
