@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_JOYSTICKPOLICY_H_
 
 #include <quickdev/node_handle_policy.h>
+#include <quickdev/storage_adapter.h>
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
 #include <geometry_msgs/Twist.h>
@@ -47,6 +48,87 @@
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
+class Axis;
+
+class Axis
+{
+public:
+    typedef joy::Joy _JoystickMsg;
+    typedef std::string _Name;
+    typedef int _Index;
+    typedef double _Scale;
+    typedef double _Value;
+
+    _Name name_;
+    _Index index_;
+    _Scale scale_;
+    bool is_button_;
+    bool is_button_pair_;
+
+    Axis* button1_;
+    Axis* button2_;
+
+    Axis( _Name const & name = _Name(), _Index const & index = -1, _Scale const & scale = 1.0, bool const & is_button = false )
+    :
+        name_( name ), index_( index ), scale_( scale ), is_button_( is_button ), is_button_pair_( false ), button1_( NULL ), button2_( NULL )
+    {
+        //
+    }
+
+    Axis( _Name const & name, Axis & button1, Axis & button2, _Scale const & scale = 1.0 )
+    :
+        name_( name ), index_( -1 ), scale_( scale ), is_button_( false ), is_button_pair_( true ), button1_( &button1 ), button2_( &button2 )
+    {
+        //
+    }
+
+    _Value getRawValue( _JoystickMsg::ConstPtr const & msg ) const
+    {
+        if( msg )
+        {
+            if( is_button_ )
+            {
+                if( index_ >= 0 ) return msg->buttons[index_];
+                return _Value();
+            }
+            else if( is_button_pair_ ) return getValueAsButtonPair( msg );
+            return msg->axes[index_];
+        }
+        return _Value();
+    }
+
+    _Value getValue( _JoystickMsg::ConstPtr const & msg ) const
+    {
+        return scale_ * getRawValue( msg );
+    }
+
+    _Value getValueAsButton( _JoystickMsg::ConstPtr const & msg ) const
+    {
+        return is_button_ ? getRawValue( msg ) : getValue( msg ) > 0.75;
+    }
+
+    _Value getValueAsButtonPair( _JoystickMsg::ConstPtr const & msg ) const
+    {
+        if( is_button_pair_ )
+        {
+            return button1_->getValue( msg ) - button2_->getValue( msg );
+        }
+        return _Value();
+    }
+
+    std::string str() const
+    {
+        std::stringstream ss;
+        ss << "[ " << index_ << " : " << name_;
+
+        if( is_button_ ) ss << " (button)";
+        else ss << " * " << scale_;
+
+        ss << " ]";
+        return ss.str();
+    }
+};
+
 QUICKDEV_DECLARE_POLICY( Joystick, NodeHandlePolicy )
 
 QUICKDEV_DECLARE_POLICY_CLASS( Joystick )
@@ -56,53 +138,6 @@ QUICKDEV_DECLARE_POLICY_CLASS( Joystick )
 public:
     typedef joy::Joy _JoystickMsg;
     typedef geometry_msgs::Twist _VelocityMsg;
-
-    struct Axis
-    {
-        typedef std::string _Name;
-        typedef int _Index;
-        typedef double _Scale;
-        typedef double _Value;
-
-        _Name name_;
-        _Index index_;
-        _Scale scale_;
-        bool is_button_;
-
-        Axis( _Name name = _Name(), _Index index = _Index(), _Scale scale = _Scale(), bool is_button = false )
-        :
-            name_( name ), index_( index ), scale_( scale ), is_button_( is_button )
-        {
-            //
-        }
-
-        inline _Value getRawValue( _JoystickMsg::ConstPtr const & msg ) const
-        {
-            return msg ? ( is_button_ ? msg->buttons[index_] : msg->axes[index_] ) : _Value();
-        }
-
-        inline _Value getValue( _JoystickMsg::ConstPtr const & msg ) const
-        {
-            return scale_ * getRawValue( msg );
-        }
-
-        inline _Value getValueAsButton( _JoystickMsg::ConstPtr const & msg ) const
-        {
-            return is_button_ ? getRawValue( msg ) : getValue( msg ) > 0.75;
-        }
-
-        std::string str() const
-        {
-            std::stringstream ss;
-            ss << "[ " << index_ << " : " << name_;
-
-            if( is_button_ ) ss << " (button)";
-            else ss << " * " << scale_;
-
-            ss << " ]";
-            return ss.str();
-        }
-    };
 
     typedef Axis _Axis;
     typedef std::map<_Axis::_Name, _Axis> _AxesMap;
@@ -165,16 +200,6 @@ public:
         auto axes_param = quickdev::ParamReader::readParam<XmlRpc::XmlRpcValue>( nh_rel, params_namespace + "axes" );
         auto buttons_param = quickdev::ParamReader::readParam<XmlRpc::XmlRpcValue>( nh_rel, params_namespace + "buttons" );
 
-        // store axis mappings
-        for( auto axes_it = axes_param.begin(); axes_it != axes_param.end(); ++axes_it )
-        {
-            std::string const & axis_name = axes_it->first;
-            int const & axis_index = axes_it->second["index"];
-            double const & axis_scale = axes_it->second["scale"];
-
-            axes_map_[axis_name] = _Axis( axis_name, axis_index, axis_scale );
-        }
-
         // store button mappings
         for( auto buttons_it = buttons_param.begin(); buttons_it != buttons_param.end(); ++buttons_it )
         {
@@ -182,6 +207,26 @@ public:
             int const & axis_index = buttons_it->second;
 
             axes_map_[axis_name] = _Axis( axis_name, axis_index, 1.0, true );
+        }
+
+        // store axis mappings
+        for( auto axes_it = axes_param.begin(); axes_it != axes_param.end(); ++axes_it )
+        {
+            std::string const & axis_name = axes_it->first;
+            auto & axis = axes_it->second;
+            double const & axis_scale = axis["scale"];
+
+            if( !axis.hasMember( "index" ) )
+            {
+                auto button_negative = axes_map_.find( axis["negative"] );
+                auto button_positive = axes_map_.find( axis["positive"] );
+                if( button_positive != axes_map_.end() && button_negative != axes_map_.end() ) axes_map_[axis_name] = _Axis( axis_name, button_positive->second, button_negative->second, axis_scale );
+            }
+            else
+            {
+                int const & axis_index = axes_it->second["index"];
+                axes_map_[axis_name] = _Axis( axis_name, axis_index, axis_scale );
+            }
         }
 
         postInit();
