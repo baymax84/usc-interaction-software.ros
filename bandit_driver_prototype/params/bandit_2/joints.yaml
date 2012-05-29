@@ -1,7 +1,5 @@
 eyebrows_joint: {direction: 1, origin: 30.0}
-head_left_brow_joint: {origin: 0.0}
 head_pan_joint: {direction: -1, origin: -11.865234375000027}
-head_right_brow_joint: {origin: 0.0}
 head_tilt_joint: {direction: -1, origin: -0.61523437499996314}
 left_bicep_forearm_joint: {direction: -1, origin: 48.867187499999979}
 left_forearm_wrist_joint: {direction: 1, origin: 6.6796874999999902}
