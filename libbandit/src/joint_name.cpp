@@ -51,18 +51,24 @@ JointName::JointName()
 JointName::JointName( int16_t const & id )
 :
     id_( id ),
-    name_( getJointNamesMap().find( id )->second )
+    name_( "" )
 {
-    //
+    auto const & names_map = getJointNamesMap();
+    auto const & name_it = names_map.find( id );
+    if( name_it != names_map.cend() ) name_ = name_it->second;
+    else printf( "Warning: constructing invalid joint via id [ %i ]", id_ );
 }
 
 // =============================================================================================================================================
 JointName::JointName( std::string const & name )
 :
-    id_( getJointIdsMap().find( name )->second ),
+    id_( -1 ),
     name_( name )
 {
-    //
+    auto const & ids_map = getJointIdsMap();
+    auto const & id_it = ids_map.find( name );
+    if( id_it != ids_map.cend() ) id_ = id_it->second;
+    else printf( "Warning: constructing invalid joint via name [ %s ]", name_.c_str() );
 }
 
 // =============================================================================================================================================
