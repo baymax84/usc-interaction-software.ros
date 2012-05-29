@@ -102,7 +102,7 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
             return QUICKDEV_GET_RUNABLE_POLICY()::interrupt();
         }
 
-        bandit_state_pub_ptr_ = quickdev::make_shared( new _RobotStatePublisher( bandit_model_ ) );
+        bandit_state_pub_ptr_ = boost::make_shared<_RobotStatePublisher>( bandit_model_ );
 
         // -------------------------------------------------------------------------------------------------------------------------------------
         // set up bandit driver object
@@ -289,6 +289,7 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
         }
 
         bandit_state_pub_ptr_->publishTransforms( joint_states_map, now );
+        bandit_state_pub_ptr_->publishFixedTransforms();
 
         multi_pub_.publish( "joint_states", quickdev::make_const_shared( joint_state_msg ) );
     }
