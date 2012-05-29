@@ -63,7 +63,7 @@ inline __Data min( __Data const & value, __Args&&... args );
 
 // =============================================================================================================================================
 template<class __Data>
-__Data rand( __Data const & min, __Data const & max );
+__Data random( __Data const & min, __Data const & max );
 
 #include <quickdev/details/math_impl.h>
 

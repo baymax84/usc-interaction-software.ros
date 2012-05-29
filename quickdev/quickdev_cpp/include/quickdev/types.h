@@ -37,10 +37,31 @@
 #define QUICKDEVCPP_QUICKDEV_TYPES_H_
 
 #include <quickdev/macros.h>
+#include <quickdev/global_settings.h>
+#include <mutex>
+
+// default joystick message changed at electric
+#if QUICKDEV_ROS_VERSION >= ROS_VERSION_ELECTRIC
+
+    #include <sensor_msgs/Joy.h>
+    QUICKDEV_DECLARE_INTERNAL_NAMESPACE(){ namespace types{ typedef sensor_msgs::Joy _JoystickMsg; } }
+
+#else
+
+    #include <joy/Joy.h>
+    QUICKDEV_DECLARE_INTERNAL_NAMESPACE(){ namespace types{ typedef joy::Joy _JoystickMsg; } }
+
+#endif
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
-
+    namespace types
+    {
+        typedef std::mutex _Mutex;
+        typedef std::timed_mutex _TimedMutex;
+        typedef std::unique_lock<_Mutex> _UniqueLock;
+        typedef std::unique_lock<_TimedMutex> _TimedUniqueLock;
+    }
 }
 
 #endif // QUICKDEVCPP_QUICKDEV_TYPES_H_

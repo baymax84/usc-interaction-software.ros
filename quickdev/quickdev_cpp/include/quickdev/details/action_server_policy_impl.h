@@ -60,6 +60,9 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__, __Stora
 
         execute_active_ = true;
 
+        // unblock new goal mutex if it's waiting
+        wait_for_goal_mutex_.unlock();
+
         // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
         _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
 
@@ -232,6 +235,27 @@ bool __ActionServerPolicy::waitOnAction( double const & wait_time )
     else action_mutex_.lock();
 
     return !preemptAccepted();
+}
+
+// =========================================================================================================================================
+__template_ACTION_SERVER_POLICY
+void __ActionServerPolicy::waitForNewGoal( double const & wait_time )
+{
+    QUICKDEV_ASSERT_INITIALIZED();
+
+    // make sure the mutex is locked once
+    wait_for_goal_mutex_.try_lock();
+
+    if( wait_time > 0 )
+    {
+        // block and wait for external unblock; time out after @wait_time
+        auto wait_for_goal_timed_lock = quickdev::make_unique_lock( wait_for_goal_mutex_, quickdev::Duration( wait_time ) );
+    }
+    // block and wait for external unblock
+    else wait_for_goal_mutex_.lock();
+
+    // unlock
+    wait_for_goal_mutex_.unlock();
 }
 
 // =========================================================================================================================================

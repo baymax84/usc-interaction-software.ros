@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_TYPEUTILS_H_
 
 #include <quickdev/global_settings.h>
+#include <quickdev/types.h>
 #include <quickdev/console.h>
 #include <quickdev/macros.h>
 #include <quickdev/container.h>
@@ -47,20 +48,11 @@
 #include <initializer_list>
 #include <boost/shared_ptr.hpp>
 #include <boost/type_traits/is_base_of.hpp>
-#include <mutex>
 #include <ros/message.h>
 #include <ros/message_traits.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
-    namespace type_utils
-    {
-        typedef std::mutex _Mutex;
-        typedef std::timed_mutex _TimedMutex;
-        typedef std::unique_lock<_Mutex> _UniqueLock;
-        typedef std::unique_lock<_TimedMutex> _TimedUniqueLock;
-    }
-
     //! Simple utility struct to determine if two statically-known data types contain the same value
     /*! Specialization for two different values */
     template<class __Data, __Data __Id1__, __Data __Id2__>
