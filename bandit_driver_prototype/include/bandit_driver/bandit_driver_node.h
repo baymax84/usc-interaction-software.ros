@@ -289,7 +289,12 @@ QUICKDEV_DECLARE_NODE_CLASS( BanditDriver )
         }
 
         bandit_state_pub_ptr_->publishTransforms( joint_states_map, now );
+
+#if QUICKDEV_ROS_VERSION >= ROS_VERSION_ELECTRIC        
+
         bandit_state_pub_ptr_->publishFixedTransforms();
+
+#endif
 
         multi_pub_.publish( "joint_states", quickdev::make_const_shared( joint_state_msg ) );
     }
