@@ -41,19 +41,16 @@
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
 #include <geometry_msgs/Twist.h>
-#include <joy/Joy.h>
 #include <map>
 #include <sstream>
 
+using quickdev::types::_JoystickMsg;
+
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
-
-class Axis;
-
 class Axis
 {
 public:
-    typedef joy::Joy _JoystickMsg;
     typedef std::string _Name;
     typedef int _Index;
     typedef double _Scale;
@@ -136,7 +133,6 @@ QUICKDEV_DECLARE_POLICY_CLASS( Joystick )
     QUICKDEV_MAKE_POLICY_FUNCS( Joystick )
 
 public:
-    typedef joy::Joy _JoystickMsg;
     typedef geometry_msgs::Twist _VelocityMsg;
 
     typedef Axis _Axis;

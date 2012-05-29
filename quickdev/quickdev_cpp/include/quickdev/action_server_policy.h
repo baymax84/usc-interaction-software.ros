@@ -62,7 +62,7 @@ class ActionServerPolicy
     QUICKDEV_MAKE_POLICY_FUNCS( ActionServer )
 
 public:
-    typedef type_utils::_TimedMutex _Mutex;
+    typedef quickdev::types::_TimedMutex _Mutex;
 
     typedef actionlib_msgs::GoalStatus _GoalStatusMsg;
 
@@ -95,6 +95,7 @@ private:
     _GoalCallback goal_callback_;
 
     _Mutex action_mutex_;
+    _Mutex wait_for_goal_mutex_;
 
     _GoalMsg goal_msg_;
 
@@ -180,6 +181,9 @@ public:
 
     //! Lock the current thread (should be the execute thread) until the action has completed (or aborted, or preempted)
     bool waitOnAction( double const & wait_time = 0 );
+
+    //! Lock the curren thread (user's choice) until a new goal is received
+    void waitForNewGoal( double const & wait_time = 0 );
 
     //! Whether we've received a request to preempt the current action
     bool preemptRequested();
