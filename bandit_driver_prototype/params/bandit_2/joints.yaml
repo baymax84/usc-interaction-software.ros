@@ -16,4 +16,4 @@ right_hand_thumb_joint: {direction: 1, origin: 0.0}
 right_shoulder_bicep_joint: {direction: -1, origin: 31.992187500000004}
 right_shoulder_mounting_shoulder_joint: {direction: -1, origin: 84.375000000000014}
 right_torso_shoulder_mounting_joint: {direction: -1, origin: 70.048828125}
-right_wrist_hand_joint: {direction: 1, origin: 0.0}
+right_wrist_hand_joint: {direction: 1, origin: 28.0}
