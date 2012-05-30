@@ -78,7 +78,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
 
         count_ ++;
 
-        _TestActionServerPolicy::_FeedbackMsg feedback_msg( count_ );
+        _TestActionServerPolicy::_FeedbackMsg feedback_msg;
+        feedback_msg.feedback = count_;
         _TestActionServerPolicy::sendFeedback( feedback_msg );
     }
 
@@ -88,7 +89,9 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
         if( enable_preempt_ )
         {
             PRINT_INFO( "preempting current goal" );
-            _TestActionServerPolicy::preemptAction( _TestActionServerPolicy::_ResultMsg( count_ ) );
+            _TestActionServerPolicy::_ResultMsg result_msg;
+            result_msg.result = count_;
+            _TestActionServerPolicy::preemptAction( result_msg );
         }
         else PRINT_INFO( "ignoring preempt request" );
     }
@@ -97,7 +100,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
     {
         count_ = 0;
 
-        _TestActionServerPolicy::_FeedbackMsg feedback_msg( count_ );
+        _TestActionServerPolicy::_FeedbackMsg feedback_msg;
+        feedback_msg.feedback = count_;
         _TestActionServerPolicy::sendFeedback( feedback_msg );
 
         PRINT_INFO( "blocking for ten seconds" );
@@ -106,7 +110,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
 
         PRINT_INFO( "done; sending result" );
 
-        _TestActionServerPolicy::_ResultMsg result_msg( count_ );
+        _TestActionServerPolicy::_ResultMsg result_msg;
+        result_msg.result = count_;
         _TestActionServerPolicy::setSuccessful( result_msg );
     }
 };
