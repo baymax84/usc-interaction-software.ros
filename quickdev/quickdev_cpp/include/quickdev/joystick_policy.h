@@ -133,6 +133,7 @@ QUICKDEV_DECLARE_POLICY_CLASS( Joystick )
     QUICKDEV_MAKE_POLICY_FUNCS( Joystick )
 
 public:
+    typedef quickdev::types::_JoystickMsg _JoystickMsg;
     typedef geometry_msgs::Twist _VelocityMsg;
 
     typedef Axis _Axis;
