@@ -65,10 +65,12 @@ struct PublisherAdapterStorage<ros::Publisher>
     typedef boost::shared_ptr<_PublisherAdapterStorage> _Ptr;
 
     unsigned int cache_size_;
+    bool latch_;
 
-    PublisherAdapterStorage( const decltype( cache_size_ ) & cache_size = 10 )
+    PublisherAdapterStorage( const decltype( cache_size_ ) & cache_size = 10, const decltype( latch_ ) & latch = true )
     :
-        cache_size_( cache_size )
+        cache_size_( cache_size ),
+        latch_( latch )
     {}
 };
 
@@ -103,7 +105,8 @@ public:
         if( !storage_ ) storage_ = quickdev::make_shared( new _Storage() );
         publisher_ = nh.advertise<__Message>(
             topic,
-            storage_->cache_size_ );
+            storage_->cache_size_,
+            storage_->latch_ );
 
         return publisher_;
     }
