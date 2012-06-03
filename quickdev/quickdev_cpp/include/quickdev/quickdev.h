@@ -38,6 +38,7 @@
 
 //#include <quickdev/action_client_policy.h>
 //#include <quickdev/action_server_policy.h>
+#include <quickdev/action_token.h>
 #include <quickdev/auto_bind.h>
 //#include <quickdev/callback_policy.h>
 #include <quickdev/console.h>

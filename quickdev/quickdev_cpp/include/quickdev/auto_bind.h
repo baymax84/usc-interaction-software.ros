@@ -57,6 +57,38 @@ struct make_function<__Return, __Container<__Args...> >
     typedef __AUTO_BIND_FUNCTION_TYPE<__Return(__Args...)> function_type;
 };
 
+template<class __Signature>
+struct make_signature
+{
+    typedef __Signature type;
+};
+
+template<class __Signature>
+struct from_signature
+{
+    typedef __Signature _Signature;
+};
+
+template<class __Return, class... __Args>
+struct from_signature<__Return( __Args... )>
+{
+    typedef typename make_signature<__Return( __Args... )>::type _Signature;
+    typedef __Return _Return;
+    typedef quickdev::SimpleContainer<__Args...> _ArgsContainer;
+};
+
+template<class __Signature>
+struct from_function : public from_signature<__Signature>
+{
+    //
+};
+
+template<template<typename> class __Function, class __Signature>
+struct from_function<__Function<__Signature> > : public from_function<__Signature>
+{
+    //
+};
+
 // #############################################################################################################################################
 template<int N>
 struct auto_binder
@@ -176,6 +208,16 @@ struct auto_binder<0>
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
+template
+<
+    class __Signature,
+    class __CallerType,
+    class... __ArgTypes
+>
+__AUTO_BIND_FUNCTION_TYPE<__Signature> auto_bind( typename details::from_function<__Signature>::_Return( __CallerType::*function_ptr )( __ArgTypes... ), __CallerType* const caller )
+{
+    return details::auto_binder<sizeof...(__ArgTypes)>::auto_bind( function_ptr, caller );
+}
 // =============================================================================================================================================
 template
 <

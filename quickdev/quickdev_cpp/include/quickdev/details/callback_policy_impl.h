@@ -2,9 +2,9 @@
 
 // =============================================================================================================================================
 template<class __CallbackReturn, class... __CallbackArgs>
-void __CallbackPolicy::registerCallback( _CallbackType const & external_callback )
+void __CallbackPolicy::registerCallback( _CallbackType const & callback )
 {
-    external_callback_ = external_callback;
+    callbacks_.push_back( callback );
 }
 
 // =============================================================================================================================================
@@ -12,7 +12,10 @@ template<class __CallbackReturn, class... __CallbackArgs> template<class __Retur
 QUICKDEV_ENABLE_IF_SAME( __CallbackReturn, __Return, void )
 __CallbackPolicy::invokeCallback_0( __CallbackArgs&&... args ) const
 {
-    if( external_callback_ ) external_callback_( std::forward<__CallbackArgs>( args )... );
+    for( auto callback_it = callbacks_.begin(); callback_it != callbacks_.end(); ++callback_it )
+    {
+        if( *callback_it ) (*callback_it)( std::forward<__CallbackArgs>( args )... );
+    }
 }
 
 // =============================================================================================================================================
@@ -20,10 +23,14 @@ template<class __CallbackReturn, class... __CallbackArgs> template<class __Retur
 QUICKDEV_ENABLE_IF_NOT_SAME( __CallbackReturn, __Return, void )
 __CallbackPolicy::invokeCallback_0( __CallbackArgs&&... args ) const
 {
-    static __CallbackReturn const default_return = __CallbackReturn();
+    __CallbackReturn default_return = __CallbackReturn();
 
-    if( !external_callback_ ) return default_return;
-    return external_callback_( std::forward<__CallbackArgs>( args )... );
+    for( auto callback_it = callbacks_.begin(); callback_it != callbacks_.end(); ++callback_it )
+    {
+        if( *callback_it ) default_return = (*callback_it)( std::forward<__CallbackArgs>( args )... );
+    }
+
+    return default_return;
 }
 
 // =============================================================================================================================================

@@ -1,14 +1,15 @@
 #define __ActionClientPolicy ActionClientPolicy<__Action, __Id__>
+#define __template_ACTION_CLIENT_POLICY template<class __Action, unsigned int __Id__>
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 __ActionClientPolicy::~ActionClientPolicy()
 {
     if( action_client_ ) delete action_client_;
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 QUICKDEV_DECLARE_INIT( ActionClientPolicy<__Action, __Id__>:: )
 {
     auto nh_rel = NodeHandlePolicy::getNodeHandle();
@@ -27,7 +28,7 @@ QUICKDEV_DECLARE_INIT( ActionClientPolicy<__Action, __Id__>:: )
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::activeCB()
 {
     PRINT_INFO( "Activated goal [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
@@ -36,23 +37,24 @@ void __ActionClientPolicy::activeCB()
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 QUICKDEV_DECLARE_MESSAGE_CALLBACK2( (ActionClientPolicy<__Action, __Id__>::feedbackCB), typename _FeedbackMsg, feedback )
 {
     _FeedbackCallbackPolicy::invokeCallback( feedback );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::doneCB( _GoalState const & state, typename _ResultMsg::ConstPtr const & result )
 {
     PRINT_INFO( "Finished [%s] on topic [%s] in state [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str(), state.toString().c_str() );
 
+    if( done_signal_ ) done_signal_();
     _DoneCallbackPolicy::invokeCallback( state, result );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 template<class... __Args>
 void __ActionClientPolicy::registerActiveCB( __Args&&... args )
 {
@@ -60,7 +62,7 @@ void __ActionClientPolicy::registerActiveCB( __Args&&... args )
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 template<class... __Args>
 void __ActionClientPolicy::registerFeedbackCB( __Args&&... args )
 {
@@ -68,7 +70,7 @@ void __ActionClientPolicy::registerFeedbackCB( __Args&&... args )
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 template<class... __Args>
 void __ActionClientPolicy::registerDoneCB( __Args&&... args )
 {
@@ -76,14 +78,21 @@ void __ActionClientPolicy::registerDoneCB( __Args&&... args )
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
+void __ActionClientPolicy::registerDoneSignal( _DoneSignal const & signal )
+{
+    done_signal_ = signal;
+}
+
+// =============================================================================================================================================
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::registerTimeout( double const & duration, _TimeoutCallback const & callback )
 {
     registerTimeout( ros::Duration( duration ), callback );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::registerTimeout( ros::Duration const & duration, _TimeoutCallback const & callback )
 {
     QUICKDEV_ASSERT_INITIALIZED();
@@ -100,14 +109,14 @@ void __ActionClientPolicy::registerTimeout( ros::Duration const & duration, _Tim
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 bool __ActionClientPolicy::sendGoalAndWait( _GoalMsg const & goal, double const & duration )
 {
     return sendGoalAndWait( goal, ros::Duration( duration ) );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 bool __ActionClientPolicy::sendGoalAndWait( _GoalMsg const & goal, ros::Duration const & duration )
 {
     sendGoal( goal );
@@ -115,14 +124,14 @@ bool __ActionClientPolicy::sendGoalAndWait( _GoalMsg const & goal, ros::Duration
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::sendGoalAndWait( _GoalMsg const & goal, double const & duration, _TimeoutCallback const & callback )
 {
     sendGoalAndWait( goal, ros::Duration( duration ), callback );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::sendGoalAndWait( _GoalMsg const & goal, ros::Duration const & duration, _TimeoutCallback const & callback )
 {
     sendGoal( goal );
@@ -130,14 +139,14 @@ void __ActionClientPolicy::sendGoalAndWait( _GoalMsg const & goal, ros::Duration
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 bool __ActionClientPolicy::waitForResult( double const & duration )
 {
     return waitForResult( ros::Duration( duration ) );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 bool __ActionClientPolicy::waitForResult( ros::Duration const & duration )
 {
     QUICKDEV_ASSERT_INITIALIZED( false );
@@ -146,21 +155,21 @@ bool __ActionClientPolicy::waitForResult( ros::Duration const & duration )
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::waitForResult( double const & duration, _TimeoutCallback const & callback )
 {
     return waitForResult( ros::Duration( duration ), callback );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::waitForResult( ros::Duration const & duration, _TimeoutCallback const & callback )
 {
     registerTimeout( duration, callback );
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 typename __ActionClientPolicy::_GoalState
 __ActionClientPolicy::getState()
 {
@@ -170,7 +179,7 @@ __ActionClientPolicy::getState()
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 typename __ActionClientPolicy::_ResultMsg::ConstPtr
 __ActionClientPolicy::getResult()
 {
@@ -180,15 +189,17 @@ __ActionClientPolicy::getResult()
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
-void __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
+__template_ACTION_CLIENT_POLICY
+quickdev::ActionToken __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
 {
-    QUICKDEV_ASSERT_INITIALIZED();
+    quickdev::ActionToken action_token;
+
+    QUICKDEV_ASSERT_INITIALIZED( action_token );
 
     if( !action_client_ )
     {
         PRINT_ERROR( "Cannot send goal to un-initialized client" );
-        return;
+        return action_token;
     }
 
     PRINT_INFO( "Waiting for action server [%s] on topic [%s] to start...", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
@@ -197,10 +208,15 @@ void __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
     PRINT_INFO( "Action server started; sending goal..." );
     // send a goal to the action
     action_client_->sendGoal( goal, auto_bind( &ActionClientPolicy::doneCB, this ), auto_bind( &ActionClientPolicy::activeCB, this ), auto_bind( &ActionClientPolicy::feedbackCB, this ) );
+
+    registerDoneSignal( action_token.makeDoneSignal() );
+    action_token.registerCancelCB( quickdev::auto_bind( &ActionClientPolicy::interruptAction, this ) );
+
+    return action_token;
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::update()
 {
     QUICKDEV_ASSERT_INITIALIZED();
@@ -213,7 +229,7 @@ void __ActionClientPolicy::update()
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 void __ActionClientPolicy::interruptAction()
 {
     QUICKDEV_ASSERT_INITIALIZED();
@@ -222,7 +238,7 @@ void __ActionClientPolicy::interruptAction()
 }
 
 // =============================================================================================================================================
-template<class __Action, unsigned int __Id__>
+__template_ACTION_CLIENT_POLICY
 bool __ActionClientPolicy::successful()
 {
     QUICKDEV_CHECK_INITIALIZED();
@@ -231,3 +247,4 @@ bool __ActionClientPolicy::successful()
 }
 
 #undef __ActionClientPolicy
+#undef __template_ACTION_CLIENT_POLICY
