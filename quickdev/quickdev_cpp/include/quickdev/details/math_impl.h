@@ -70,5 +70,5 @@ template<class __Data>
 __Data random( __Data const & min, __Data const & max )
 {
     quickdev::seedRand();
-    return min + max * double( std::rand() ) / RAND_MAX;
+    return min + ( max - min ) * double( std::rand() ) / RAND_MAX;
 }

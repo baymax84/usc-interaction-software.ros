@@ -37,6 +37,7 @@
 #define QUICKDEVCPP_QUICKDEV_CALLBACKPOLICY_H_
 
 #include <quickdev/policy.h>
+#include <deque>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
@@ -56,7 +57,7 @@ public:
     typedef __QUICKDEV_FUNCTION_TYPE<__CallbackReturn( __CallbackArgs&&... )> _CallbackType;
 
 private:
-    _CallbackType external_callback_;
+    std::deque<_CallbackType> callbacks_;
 
     // =========================================================================================================================================
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Callback )
@@ -66,7 +67,7 @@ private:
     }
 
     // =========================================================================================================================================
-    void registerCallback( _CallbackType const & external_callback );
+    void registerCallback( _CallbackType const & callback );
 
     template<class __Return>
     QUICKDEV_ENABLE_IF_SAME( __CallbackReturn, __Return, void )

@@ -39,6 +39,7 @@
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
 #include <quickdev/auto_bind.h>
+#include <quickdev/action_token.h>
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
@@ -68,6 +69,8 @@ public:
     typedef MessageCallbackPolicy<typename __Action::_action_feedback_type::_feedback_type> _FeedbackCallbackPolicy;
     typedef CallbackPolicy<void( actionlib::SimpleClientGoalState const &, typename __Action::_action_result_type::_result_type::ConstPtr const & )> _DoneCallbackPolicy;
 
+    typedef __QUICKDEV_FUNCTION_TYPE<void()> _DoneSignal;
+
 private:
     _ActionClient * action_client_;
     std::string action_name_;
@@ -75,6 +78,7 @@ private:
     _TimeoutCallback timeout_callback_;
     ros::Time timeout_timestamp_;
     bool enable_timeout_;
+    _DoneSignal done_signal_;
 
     // =========================================================================================================================================
 
@@ -111,6 +115,8 @@ private:
     template<class... __Args>
     void registerDoneCB( __Args&&... args );
 
+    void registerDoneSignal( _DoneSignal const & signal );
+
     void registerTimeout( double const & duration, _TimeoutCallback const & callback );
 
     void registerTimeout( ros::Duration const & duration, _TimeoutCallback const & callback );
@@ -135,7 +141,7 @@ private:
 
     typename _ResultMsg::ConstPtr getResult();
 
-    void sendGoal( _GoalMsg const & goal );
+    quickdev::ActionToken sendGoal( _GoalMsg const & goal );
 
     void update();
 
