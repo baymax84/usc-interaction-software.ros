@@ -46,257 +46,143 @@
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
-namespace action_token_types
-{
-    template<class __Signature>
-    struct make_signature
-    {
-        typedef __Signature type;
-    };
-
-    template<class __Signature>
-    struct from_signature
-    {
-        typedef __Signature _Signature;
-    };
-
-    template<class __Return, class... __Args>
-    struct from_signature<__Return( __Args... )>
-    {
-        typedef typename make_signature<__Return( __Args... )>::type _Signature;
-        typedef __Return _Return;
-        typedef quickdev::SimpleContainer<__Args...> _ArgsContainer;
-    };
-
-    template<class __Signature>
-    struct from_function : public from_signature<__Signature>
-    {
-        //
-    };
-
-    template<template<typename> class __Function, class __Signature>
-    struct from_function<__Function<__Signature> > : public from_function<__Signature>
-    {
-        //
-    };
-} // action_token
-
-class ActionTokenImpl
+template<class __Caller>
+class ActionTokenBase
 {
 public:
-    typedef __QUICKDEV_FUNCTION_TYPE<void()> _StartCallback;
-    typedef __QUICKDEV_FUNCTION_TYPE<void()> _CancelCallback;
-    typedef __QUICKDEV_FUNCTION_TYPE<void()> _DoneCallback;
+    typedef __Caller * _CallerPtr;
 
 protected:
-    quickdev::types::_TimedMutex action_mutex_;
-    _StartCallback start_callback_;
-    _CancelCallback cancel_callback_;
-    _DoneCallback done_callback_;
+    _CallerPtr caller_ptr_;
+    boost::shared_ptr<__Caller> caller_storage_ptr_;
 
-public:
-    ActionTokenImpl()
+    ActionTokenBase( __Caller * caller_ptr = NULL )
+    :
+        caller_ptr_( caller_ptr )
     {
         //
     }
 
-    void registerCancelCB( _CancelCallback const & callback )
+    template
+    <
+        class... __Args,
+        typename std::enable_if<(sizeof...(__Args) > 0), int>::type = 0
+    >
+    void create( __Args&&... args )
     {
-        cancel_callback_ = callback;
-    }
-
-    void registerStartCB( _StartCallback const & callback )
-    {
-        start_callback_ = callback;
-    }
-
-    void registerDoneCB( _DoneCallback const & callback )
-    {
-        done_callback_ = callback;
-    }
-
-    void start()
-    {
-        if( start_callback_ ) start_callback_();
-    }
-
-    void cancel()
-    {
-        // unblock
-        action_mutex_.unlock();
-        if( cancel_callback_ ) cancel_callback_();
-    }
-
-    void done()
-    {
-        // unblock
-        action_mutex_.unlock();
-        if( done_callback_ ) done_callback_();
-    }
-
-    _StartCallback makeStartSignal()
-    {
-        return quickdev::auto_bind( &ActionTokenImpl::start, this );
-    }
-
-    _CancelCallback makeCancelSignal()
-    {
-        return quickdev::auto_bind( &ActionTokenImpl::cancel, this );
-    }
-
-    _DoneCallback makeDoneSignal()
-    {
-        return quickdev::auto_bind( &ActionTokenImpl::done, this );
-    }
-
-    void wait( double const & timeout = 0 )
-    {
-        // make sure the mutex is locked once
-        action_mutex_.try_lock();
-
-        if( timeout > 0 )
-        {
-            // block with timeout
-            quickdev::make_unique_lock( action_mutex_, quickdev::Duration( timeout ) );
-        }
-        else
-        {
-            // block indefinitely
-            action_mutex_.lock();
-        }
-        // unlock
-        action_mutex_.unlock();
+        caller_storage_ptr_ = boost::make_shared<__Caller>( args... );
+        caller_ptr_ = caller_storage_ptr_.get();
     }
 };
 
-/*
-namespace action_token_types
-{
-    template<class __StartSignature, class __CancelSignature, class __DoneSignature>
-    struct from_signatures
-    {
-        typedef ActionTokenBase<__StartSignature, __CancelSignature, __DoneSignature> type;
-    };
-
-    template<class __StartSignature, class __CancelSignature, class __DoneSignature>
-    struct from_callbacks;
-
-    template<class __StartReturn, class... __StartArgs, class __CancelReturn, class... __CancelArgs, class __DoneReturn, class... __DoneArgs>
-    struct from_callbacks<__StartReturn(__StartArgs...), __CancelReturn(__CancelArgs...), __DoneReturn(__DoneArgs...)>
-    {
-        typedef typename from_signatures<__StartReturn(__DoneArgs...), __CancelReturn(__CancelArgs...), __DoneReturn(__DoneArgs...)>::type type;
-    };
-}
-*/
-
-class ActionToken
+template<class __Caller>
+class ActionToken : public ActionTokenBase<__Caller>
 {
 public:
-    typedef ActionTokenImpl _Impl;
-    typedef boost::shared_ptr<_Impl> _ImplPtr;
+    typedef ActionTokenBase<__Caller> _ActionTokenBase;
 
-    typedef _Impl::_StartCallback _StartCallback;
-    typedef _Impl::_CancelCallback _CancelCallback;
-    typedef _Impl::_DoneCallback _DoneCallback;
-
-protected:
-    _ImplPtr impl_ptr_;
-
-public:
-/*
     template<class... __Args>
     ActionToken( __Args&&... args )
     :
-        impl_ptr_( boost::make_shared<_Impl>( args... ) )
+        _ActionTokenBase( args... )
     {
         //
-    }
-*/
-
-    ActionToken()
-    :
-        impl_ptr_( boost::make_shared<_Impl>() )
-    {
-        //
-    }
-
-    template<class... __Args>
-    void registerCancelCB( __Args&&... args )
-    {
-        return impl_ptr_->registerCancelCB( args... );
-    }
-
-    template<class... __Args>
-    void registerStartCB( __Args&&... args )
-    {
-        return impl_ptr_->registerStartCB( args... );
-    }
-
-    template<class... __Args>
-    void registerDoneCB( __Args&&... args )
-    {
-        return impl_ptr_->registerDoneCB( args... );
     }
 
     void start()
     {
-        return impl_ptr_->start();
+        //
     }
 
     void cancel()
     {
-        return impl_ptr_->cancel();
+        //
     }
 
-    void done()
+    void wait()
     {
-        return impl_ptr_->done();
-    }
-
-    template<class... __Args>
-    void wait( __Args&&... args )
-    {
-        return impl_ptr_->wait( args... );
-    }
-
-    _StartCallback makeStartSignal()
-    {
-        return impl_ptr_->makeStartSignal();
-    }
-
-    _DoneCallback makeDoneSignal()
-    {
-        return impl_ptr_->makeDoneSignal();
-    }
-
-    _CancelCallback makeCancelSignal()
-    {
-        return impl_ptr_->makeCancelSignal();
-    }
-
-    _ImplPtr getImpl()
-    {
-        return impl_ptr_;
-    }
-
-    _Impl * get() const
-    {
-        return impl_ptr_.get();
+        //
     }
 };
 
-} // quickdev
+template<>
+class ActionToken<boost::thread> : public ActionTokenBase<boost::thread>
+{
+public:
+    typedef ActionTokenBase<boost::thread> _ActionTokenBase;
+
+    template<class... __Args>
+    ActionToken( __Args&&... args )
+    :
+        _ActionTokenBase( args... )
+    {
+        //
+    }
+
+    template<class... __Args>
+    void start( __Args&&... args )
+    {
+        this->create( args... );
+    }
+
+    void cancel()
+    {
+        //
+    }
+
+    void wait()
+    {
+        this->caller_ptr_->join();
+    }
+};
+
+namespace action_token
+{
+    template
+    <
+        class __Caller,
+        class... __Args,
+        typename std::enable_if<(sizeof...(__Args) != 1 || ( !std::is_same<typename variadic::element<0, __Args...>::type, __Caller &>::value && !std::is_same<typename variadic::element<0, __Args...>::type, __Caller *>::value ) ), int>::type = 0
+    >
+    ActionToken<__Caller> make_token( __Args&&... args )
+    {
+        ActionToken<__Caller> result;
+        result.create( args... );
+        return result;
+    }
+
+    template<class __Caller>
+    ActionToken<__Caller> make_token( __Caller * caller )
+    {
+        return ActionToken<__Caller>( caller );
+    }
+
+    template<class __Caller>
+    ActionToken<__Caller> make_token( __Caller & caller )
+    {
+        return ActionToken<__Caller>( &caller );
+    }
+} // action_token
 
 /*
-ActionToken sendGoal( ... )
+class ActionClientPolicy
 {
-    // send goal
+    ActionToken<ActionClientPolicy> sendGoal( ... )
+    {
+        return makeToken();
+    }
 
-    // make token
-    ActionToken token;
-    registerDoneCB( token.makeDoneCB() );
-    token.registerCancelCB( quickdev::auto_bind( &ActionClientPolicy::interruptAction, this ) );
-}
-*/
+    ActionToken<ActionClientPolicy> makeToken()
+    {
+        return action_token::make_token( this );
+    }
+
+    void unregister( ActionToken<ActionClientPolicy> * token )
+    {
+        //
+    }
+};*/
+
+} // quickdev
 
 #endif // QUICKDEVCPP_QUICKDEV_ACTIONTOKEN_H_

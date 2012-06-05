@@ -49,15 +49,29 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 
 // =============================================================================================================================================
 
+template<class __Action, unsigned int __Id__ = 0>
+class ActionClientPolicy;
+
+// =============================================================================================================================================
+
+template<class __Action, unsigned int __Id__>
+class ActionToken<ActionClientPolicy<__Action, __Id__> >;
+
+// #############################################################################################################################################
+
+// =============================================================================================================================================
 template<class __Action>
 QUICKDEV_DECLARE_POLICY2( ActionClient, NodeHandlePolicy, CallbackPolicy<void()>, MessageCallbackPolicy<typename __Action::_action_feedback_type::_feedback_type>, CallbackPolicy<void( actionlib::SimpleClientGoalState const &, typename __Action::_action_result_type::_result_type::ConstPtr const & )> );
 
-template<class __Action, unsigned int __Id__ = 0>
+template<class __Action, unsigned int __Id__>
 QUICKDEV_DECLARE_POLICY_CLASS2( ActionClient, __Action )
 {
     QUICKDEV_MAKE_POLICY_FUNCS( ActionClient )
 
 public:
+    typedef __Action _Action;
+    typedef ActionClientPolicy<__Action, __Id__> _ActionClientPolicy;
+
     typedef actionlib::SimpleActionClient<__Action> _ActionClient;
     typedef actionlib::SimpleClientGoalState _GoalState;
     typedef __QUICKDEV_FUNCTION_TYPE<void()> _TimeoutCallback;
@@ -72,26 +86,22 @@ public:
     typedef __QUICKDEV_FUNCTION_TYPE<void()> _DoneSignal;
 
 private:
-    _ActionClient * action_client_;
+    boost::shared_ptr<_ActionClient> action_client_ptr_;
     std::string action_name_;
     std::string action_topic_name_;
     _TimeoutCallback timeout_callback_;
     ros::Time timeout_timestamp_;
     bool enable_timeout_;
-    _DoneSignal done_signal_;
 
     // =========================================================================================================================================
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR2( ActionClient, __Action ),
-        action_client_( NULL ),
         enable_timeout_( false ),
         initialized_( false )
     {
         printPolicyActionStart( "create", this );
         printPolicyActionDone( "create", this );
     }
-
-    ~ActionClientPolicy();
 
     // =========================================================================================================================================
 
@@ -114,8 +124,6 @@ private:
 
     template<class... __Args>
     void registerDoneCB( __Args&&... args );
-
-    void registerDoneSignal( _DoneSignal const & signal );
 
     void registerTimeout( double const & duration, _TimeoutCallback const & callback );
 
@@ -141,13 +149,49 @@ private:
 
     typename _ResultMsg::ConstPtr getResult();
 
-    quickdev::ActionToken sendGoal( _GoalMsg const & goal );
+    quickdev::ActionToken<_ActionClientPolicy> sendGoal( _GoalMsg const & goal );
+
+    quickdev::ActionToken<_ActionClientPolicy> makeActionToken();
 
     void update();
 
     void interruptAction();
 
     bool successful();
+};
+
+// #############################################################################################################################################
+
+template<class __Action, unsigned int __Id__>
+class ActionToken<ActionClientPolicy<__Action, __Id__> > : public ActionTokenBase<ActionClientPolicy<__Action, __Id__> >
+{
+public:
+    typedef ActionTokenBase<ActionClientPolicy<__Action, __Id__> > _ActionTokenBase;
+
+    template<class... __Args>
+    ActionToken( __Args&&... args )
+    :
+        _ActionTokenBase( args... )
+    {
+        //
+    }
+
+    template<class... __Args>
+    void start( __Args&&... args )
+    {
+        this->caller_ptr_->sendGoal( args... );
+    }
+
+    void cancel()
+    {
+        this->caller_ptr_->interruptAction();
+    }
+
+    template<class... __Args>
+    void wait( __Args&&... args )
+    {
+        this->caller_ptr_->waitForResult( args... );
+    }
 };
 
 // #############################################################################################################################################

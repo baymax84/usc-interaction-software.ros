@@ -386,18 +386,95 @@ public:
         //
     }
 
-    template<class __Output>
+    template<class __Key, class __Data>
+    static std::string toString( std::map<__Key, __Data> const & param )
+    {
+        return std::string( "std::map" );
+    }
+
+    template<class __Data>
+    static std::string toString( std::vector<__Data> const & param )
+    {
+        return std::string( "std::vector" );
+    }
+
+    template
+    <
+        class __Param,
+        typename std::enable_if<!(std::is_arithmetic<__Param>::value), int>::type = 0
+    >
+    static std::string toString( __Param const & param )
+    {
+        return std::string( "non-integral type" );
+    }
+
+    static std::string toString( std::string const & param )
+    {
+        return param;
+    }
+
+    static std::string toString( XmlRpc::XmlRpcValue & param )
+    {
+        std::stringstream ss;
+        ss << param;
+        return ss.str();
+    }
+
+    template
+    <
+        class __Param,
+        typename std::enable_if<(std::is_arithmetic<__Param>::value), int>::type = 0
+    >
+    static std::string toString( __Param const & param )
+    {
+        std::stringstream ss;
+        ss << param;
+        return ss.str();
+    }
+
+    template
+    <
+        class __Output,
+        typename std::enable_if<( std::is_arithmetic<__Output>::value || std::is_same<std::string, __Output>::value || std::is_same<XmlRpc::XmlRpcValue, __Output>::value ), int>::type = 0
+    >
+    static __Output readParam( ros::NodeHandle & nh, std::string const & name, __Output const & default_value = __Output() )
+    {
+        __Output param;
+        bool const param_found = nh.getParam( name, param );
+
+        if( param_found )
+        {
+            PRINT_INFO( "Found param [ %s/%s ] with value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( param ).c_str() );
+            return param;
+        }
+
+        PRINT_WARN( "Param [ %s/%s ] not found; using default value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( default_value ).c_str() );
+        return default_value;
+    }
+
+    template
+    <
+        class __Output,
+        typename std::enable_if<!( std::is_arithmetic<__Output>::value || std::is_same<std::string, __Output>::value || std::is_same<XmlRpc::XmlRpcValue, __Output>::value ), int>::type = 0
+    >
     static __Output readParam( ros::NodeHandle & nh, std::string const & name, __Output const & default_value = __Output() )
     {
         _XmlRpcValue param;
         bool const param_found = nh.getParam( name, param );
 
-        if( param_found ) return param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+        if( param_found )
+        {
+            auto result = param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+            PRINT_INFO( "Found param [ %s/%s ] with value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( result ).c_str() );
+            return result;
+        }
+
+        PRINT_WARN( "Param [ %s/%s ] not found; using default value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( default_value ).c_str() );
         return default_value;
     }
 
     template<class __Output>
-    static __Output fromXmlRpcValue( _XmlRpcValue && param )
+    static __Output fromXmlRpcValue( _XmlRpcValue & param )
     {
         return param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
     }

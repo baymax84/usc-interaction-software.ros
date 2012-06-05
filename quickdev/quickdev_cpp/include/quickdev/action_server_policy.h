@@ -56,7 +56,7 @@ class ActionServerPolicy
     <
         NodeHandlePolicy,
         // executeCB( goal, server )
-        CallbackPolicy<void( typename __Action::_action_goal_type::_goal_type::ConstPtr const &, actionlib::SimpleActionServer<__Action> * const )>
+        CallbackPolicy<void( typename __Action::_action_goal_type::_goal_type::ConstPtr const &, boost::shared_ptr<actionlib::SimpleActionServer<__Action> > )>
     >
 {
     QUICKDEV_MAKE_POLICY_FUNCS( ActionServer )
@@ -72,9 +72,9 @@ public:
     typedef typename __Action::_action_feedback_type::_feedback_type _FeedbackMsg;
     typedef typename __Action::_action_result_type::_result_type _ResultMsg;
 
-    typedef __QUICKDEV_FUNCTION_TYPE<void ( typename _GoalMsg::ConstPtr const &, _ActionServer * const )> _ExecuteCallback;
-    typedef __QUICKDEV_FUNCTION_TYPE<void ( _ActionServer * const )> _PreemptCallback;
-    typedef __QUICKDEV_FUNCTION_TYPE<void ( _ActionServer * const )> _GoalCallback;
+    typedef __QUICKDEV_FUNCTION_TYPE<void ( typename _GoalMsg::ConstPtr const &, boost::shared_ptr<_ActionServer> )> _ExecuteCallback;
+    typedef __QUICKDEV_FUNCTION_TYPE<void ( boost::shared_ptr<_ActionServer> )> _PreemptCallback;
+    typedef __QUICKDEV_FUNCTION_TYPE<void ( boost::shared_ptr<_ActionServer> )> _GoalCallback;
 
     typedef typename CallbackPolicy_types::from_function<_ExecuteCallback>::type _ExecuteCallbackPolicy;
 
@@ -85,7 +85,7 @@ public:
     _StorageAdapter storage_;
 
 private:
-    _ActionServer * action_server_;
+    boost::shared_ptr<_ActionServer> action_server_ptr_;
 
     bool preempt_accepted_;
     bool goal_initialized_;
@@ -112,7 +112,6 @@ public:
     ActionServerPolicy( __Args&&... args )
     :
         _PolicyAdapter( std::forward<__Args>( args )... ),
-        action_server_( NULL ),
         preempt_accepted_( false ),
         goal_initialized_( false ),
         execute_active_( false ),

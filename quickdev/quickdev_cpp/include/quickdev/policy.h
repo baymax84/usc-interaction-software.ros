@@ -69,7 +69,7 @@ static __ParamType readPolicyParam( ros::NodeHandle & nh, std::string const & me
 {
     __ParamType param_value;
     if( tryGetMetaParam<__ParamType>( meta_param_key, param_value, std::forward<__Args>( args )... ) ) return param_value;
-    return ros::ParamReader<__ParamType, 1>::readParam( nh, ros_param_name, std::forward<__ParamType>( default_value ) );
+    return quickdev::ParamReader::readParam<__ParamType>( nh, ros_param_name, std::forward<__ParamType>( default_value ) );
 }
 
 template<class __ParamType, class... __Args>

@@ -18,16 +18,16 @@ QUICKDEV_DECLARE_INIT( ActionServerPolicy<__Action, __Id__, __Storage>:: )
 
     PRINT_INFO( "Creating action server [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    if( use_execute_callback ) action_server_ = new _ActionServer( nh_rel, action_name, auto_bind( &ActionServerPolicy::executeActionCB, this ), false );
+    if( use_execute_callback ) action_server_ptr_ = boost::make_shared<_ActionServer>( nh_rel, action_name, auto_bind( &ActionServerPolicy::executeActionCB, this ), false );
     else
     {
-        action_server_ = new _ActionServer( nh_rel, action_name, false );
-        action_server_->registerGoalCallback( auto_bind( &ActionServerPolicy::goalCB, this ) );
+        action_server_ptr_ = boost::make_shared<_ActionServer>( nh_rel, action_name, false );
+        action_server_ptr_->registerGoalCallback( auto_bind( &ActionServerPolicy::goalCB, this ) );
     }
 
-    action_server_->registerPreemptCallback( auto_bind( &ActionServerPolicy::preemptCB, this ) );
+    action_server_ptr_->registerPreemptCallback( auto_bind( &ActionServerPolicy::preemptCB, this ) );
 
-    action_server_->start();
+    action_server_ptr_->start();
 
     QUICKDEV_SET_INITIALIZED();
 }
@@ -40,7 +40,7 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__, __Stora
 
     PRINT_INFO( "Got goal callback [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    if( !action_server_ )
+    if( !action_server_ptr_ )
     {
         PRINT_ERROR( "Cannot send execute request to un-initialized server" );
         return;
@@ -64,20 +64,20 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__, __Stora
         wait_for_goal_mutex_.unlock();
 
         // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
-        _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ );
+        _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ptr_ );
 
         execute_active_ = false;
 
         switch( result_type_ )
         {
         case _GoalStatusMsg::SUCCEEDED:
-            action_server_->setSucceeded( result_msg_, result_info_ );
+            action_server_ptr_->setSucceeded( result_msg_, result_info_ );
             break;
         case _GoalStatusMsg::ABORTED:
-            action_server_->setAborted( result_msg_, result_info_ );
+            action_server_ptr_->setAborted( result_msg_, result_info_ );
             break;
         case _GoalStatusMsg::PREEMPTED:
-            action_server_->setPreempted( result_msg_, result_info_ );
+            action_server_ptr_->setPreempted( result_msg_, result_info_ );
             break;
         }
     }
@@ -87,14 +87,14 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__, __Stora
 __template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::preemptCB()
 {
-    if( preempt_callback_ ) preempt_callback_( action_server_ );
+    if( preempt_callback_ ) preempt_callback_( action_server_ptr_ );
 }
 
 // =========================================================================================================================================
 __template_ACTION_SERVER_POLICY
 void __ActionServerPolicy::goalCB()
 {
-    if( goal_callback_ ) goal_callback_( action_server_ );
+    if( goal_callback_ ) goal_callback_( action_server_ptr_ );
 }
 
 // =========================================================================================================================================
@@ -126,7 +126,7 @@ void __ActionServerPolicy::sendFeedback( __Args&&... args )
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    action_server_->publishFeedback( std::forward<__Args>( args )... );
+    action_server_ptr_->publishFeedback( std::forward<__Args>( args )... );
 }
 
 // =========================================================================================================================================
@@ -264,7 +264,7 @@ bool __ActionServerPolicy::preemptRequested()
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    return action_server_->isPreemptRequested();
+    return action_server_ptr_->isPreemptRequested();
 }
 
 // =========================================================================================================================================
@@ -287,7 +287,7 @@ bool __ActionServerPolicy::active()
 {
     QUICKDEV_ASSERT_INITIALIZED( false );
 
-    // action_server_->isActive();
+    // action_server_ptr_->isActive();
     return execute_active_;
 }
 
