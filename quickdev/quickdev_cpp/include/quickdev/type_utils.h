@@ -128,7 +128,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     template<class __Desired>
     bool tryGetMetaParamRec( std::string const & name, __Desired const & desired )
     {
-        PRINT_ERROR( ">>> Failed to find key [ %s ]", name.c_str() );
+        PRINT_WARN( ">>> Failed to find meta-param with key [ %s ]", name.c_str() );
         return false;
     }
 

@@ -3,13 +3,6 @@
 
 // =============================================================================================================================================
 __template_ACTION_CLIENT_POLICY
-__ActionClientPolicy::~ActionClientPolicy()
-{
-    if( action_client_ ) delete action_client_;
-}
-
-// =============================================================================================================================================
-__template_ACTION_CLIENT_POLICY
 QUICKDEV_DECLARE_INIT( ActionClientPolicy<__Action, __Id__>:: )
 {
     auto nh_rel = NodeHandlePolicy::getNodeHandle();
@@ -22,7 +15,7 @@ QUICKDEV_DECLARE_INIT( ActionClientPolicy<__Action, __Id__>:: )
 
     PRINT_INFO( "Creating action client [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    action_client_ = new _ActionClient( nh_rel, action_name_ );
+    action_client_ptr_ = boost::make_shared<_ActionClient>( nh_rel, action_name_ );
 
     QUICKDEV_SET_INITIALIZED();
 }
@@ -49,7 +42,6 @@ void __ActionClientPolicy::doneCB( _GoalState const & state, typename _ResultMsg
 {
     PRINT_INFO( "Finished [%s] on topic [%s] in state [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str(), state.toString().c_str() );
 
-    if( done_signal_ ) done_signal_();
     _DoneCallbackPolicy::invokeCallback( state, result );
 }
 
@@ -75,13 +67,6 @@ template<class... __Args>
 void __ActionClientPolicy::registerDoneCB( __Args&&... args )
 {
     _DoneCallbackPolicy::registerCallback( std::forward<__Args>( args )... );
-}
-
-// =============================================================================================================================================
-__template_ACTION_CLIENT_POLICY
-void __ActionClientPolicy::registerDoneSignal( _DoneSignal const & signal )
-{
-    done_signal_ = signal;
 }
 
 // =============================================================================================================================================
@@ -151,7 +136,7 @@ bool __ActionClientPolicy::waitForResult( ros::Duration const & duration )
 {
     QUICKDEV_ASSERT_INITIALIZED( false );
 
-    return action_client_->waitForResult( duration );
+    return action_client_ptr_->waitForResult( duration );
 }
 
 // =============================================================================================================================================
@@ -175,7 +160,7 @@ __ActionClientPolicy::getState()
 {
     QUICKDEV_CHECK_INITIALIZED();
 
-    return action_client_->getState();
+    return action_client_ptr_->getState();
 }
 
 // =============================================================================================================================================
@@ -185,34 +170,38 @@ __ActionClientPolicy::getResult()
 {
     QUICKDEV_CHECK_INITIALIZED();
 
-    return action_client_->getResult();
+    return action_client_ptr_->getResult();
 }
 
 // =============================================================================================================================================
 __template_ACTION_CLIENT_POLICY
-quickdev::ActionToken __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
+quickdev::ActionToken<__ActionClientPolicy > __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
 {
-    quickdev::ActionToken action_token;
+    auto action_token = makeActionToken();
 
     QUICKDEV_ASSERT_INITIALIZED( action_token );
 
-    if( !action_client_ )
+    if( !action_client_ptr_ )
     {
         PRINT_ERROR( "Cannot send goal to un-initialized client" );
         return action_token;
     }
 
     PRINT_INFO( "Waiting for action server [%s] on topic [%s] to start...", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
-    action_client_->waitForServer();
+    action_client_ptr_->waitForServer();
 
     PRINT_INFO( "Action server started; sending goal..." );
     // send a goal to the action
-    action_client_->sendGoal( goal, auto_bind( &ActionClientPolicy::doneCB, this ), auto_bind( &ActionClientPolicy::activeCB, this ), auto_bind( &ActionClientPolicy::feedbackCB, this ) );
-
-    registerDoneSignal( action_token.makeDoneSignal() );
-    action_token.registerCancelCB( quickdev::auto_bind( &ActionClientPolicy::interruptAction, this ) );
+    action_client_ptr_->sendGoal( goal, auto_bind( &ActionClientPolicy::doneCB, this ), auto_bind( &ActionClientPolicy::activeCB, this ), auto_bind( &ActionClientPolicy::feedbackCB, this ) );
 
     return action_token;
+}
+
+// =============================================================================================================================================
+__template_ACTION_CLIENT_POLICY
+quickdev::ActionToken<__ActionClientPolicy > __ActionClientPolicy::makeActionToken()
+{
+    return action_token::make_token( this );
 }
 
 // =============================================================================================================================================
@@ -234,7 +223,7 @@ void __ActionClientPolicy::interruptAction()
 {
     QUICKDEV_ASSERT_INITIALIZED();
 
-    action_client_->cancelGoal();
+    action_client_ptr_->cancelGoal();
 }
 
 // =============================================================================================================================================
@@ -243,7 +232,7 @@ bool __ActionClientPolicy::successful()
 {
     QUICKDEV_CHECK_INITIALIZED();
 
-    return action_client_->getState() == _GoalState::SUCCEEDED;
+    return action_client_ptr_->getState() == _GoalState::SUCCEEDED;
 }
 
 #undef __ActionClientPolicy
