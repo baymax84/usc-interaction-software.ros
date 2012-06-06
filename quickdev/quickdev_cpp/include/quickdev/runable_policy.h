@@ -61,6 +61,7 @@ private:
     bool run_;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Runable ),
+        spin_ros_thread_( false ),
         run_( false ),
         initialized_( false )
     {
