@@ -192,19 +192,19 @@ protected:
         //auto & nh_rel = NodeHandlePolicy::getNodeHandle();
         QUICKDEV_GET_NODEHANDLE( nh_rel );
 
-        auto const subscribe_to_image = policy::readPolicyParam<bool>( nh_rel, "subscribe_to_image_param", "subscribe_to_image", true, std::forward<__Args>( args )... );
-        auto const publish_image = policy::readPolicyParam<bool>( nh_rel, "publish_image_param", "publish_image", true, std::forward<__Args>( args )... );
+        auto const subscribe_to_image = policy::readPolicyParam<bool>( nh_rel, "subscribe_to_image_param", "subscribe_to_image", true, args... );
+        auto const publish_image = policy::readPolicyParam<bool>( nh_rel, "publish_image_param", "publish_image", true, args... );
 
         if( subscribe_to_image )
         {
-            auto const image_topic = policy::readPolicyParam<std::string>( nh_rel, "image_topic_param", "image_topic", "image", std::forward<__Args>( args )... );
-            auto const image_cache_size = policy::readPolicyParam<int>( nh_rel, "image_cache_size_param", "image_cache_size", 1, std::forward<__Args>( args )... );
-            addImageSubscriber( image_topic, getMetaParam<_ImageCallback>( "image_callback_param", std::forward<__Args>( args )... ), image_cache_size );
+            auto const image_topic = policy::readPolicyParam<std::string>( nh_rel, "image_topic_param", "image_topic", "image", args... );
+            auto const image_cache_size = policy::readPolicyParam<int>( nh_rel, "image_cache_size_param", "image_cache_size", 1, args... );
+            addImageSubscriber( image_topic, getMetaParam<_ImageCallback>( "image_callback_param", args... ), image_cache_size );
         }
 
         if( publish_image )
         {
-            auto const output_image_topic = policy::readPolicyParam<std::string>( nh_rel, "output_image_topic_param", "output_image_topic", "output_image", std::forward<__Args>( args )... );
+            auto const output_image_topic = policy::readPolicyParam<std::string>( nh_rel, "output_image_topic_param", "output_image_topic", "output_image", args... );
             addImagePublisher( output_image_topic );
         }
 
