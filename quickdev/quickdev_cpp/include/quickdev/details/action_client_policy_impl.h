@@ -175,7 +175,7 @@ __ActionClientPolicy::getResult()
 
 // =============================================================================================================================================
 __template_ACTION_CLIENT_POLICY
-quickdev::ActionToken<__ActionClientPolicy > __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
+typename __ActionClientPolicy::_ActionToken __ActionClientPolicy::sendGoal( _GoalMsg const & goal )
 {
     auto action_token = makeActionToken();
 
@@ -199,7 +199,7 @@ quickdev::ActionToken<__ActionClientPolicy > __ActionClientPolicy::sendGoal( _Go
 
 // =============================================================================================================================================
 __template_ACTION_CLIENT_POLICY
-quickdev::ActionToken<__ActionClientPolicy > __ActionClientPolicy::makeActionToken()
+typename __ActionClientPolicy::_ActionToken __ActionClientPolicy::makeActionToken()
 {
     return action_token::make_token( this );
 }

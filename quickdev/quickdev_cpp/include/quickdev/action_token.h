@@ -50,6 +50,7 @@ template<class __Caller>
 class ActionTokenBase
 {
 public:
+    typedef __Caller _Caller;
     typedef __Caller * _CallerPtr;
 
 protected:

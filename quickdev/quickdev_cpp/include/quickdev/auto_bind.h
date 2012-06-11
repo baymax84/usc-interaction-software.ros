@@ -208,6 +208,7 @@ struct auto_binder<0>
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
 
+// =============================================================================================================================================
 template
 <
     class __Signature,
@@ -218,6 +219,7 @@ __AUTO_BIND_FUNCTION_TYPE<__Signature> auto_bind( typename details::from_functio
 {
     return details::auto_binder<sizeof...(__ArgTypes)>::auto_bind( function_ptr, caller );
 }
+
 // =============================================================================================================================================
 template
 <

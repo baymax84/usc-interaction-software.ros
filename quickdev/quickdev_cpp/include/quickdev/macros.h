@@ -259,6 +259,17 @@ static bool const HAS_UPDATE_ = true; \
 template<class... __Args> \
 void update( __Args&&... args )
 
+// ########## Action Utility Macros ##################################
+// ------------------------------------------------------------------------------------------------------------------------------------------
+#define QUICKDEV_GET_ACTION_GOAL_TYPE( __ActionType ) \
+__ActionType::_action_goal_type::_goal_type
+
+#define QUICKDEV_GET_ACTION_FEEDBACK_TYPE( __ActionType ) \
+__ActionType::_action_feedback_type::_feedback_type
+
+#define QUICKDEV_GET_ACTION_RESULT_TYPE( __ActionType ) \
+__ActionType::_action_result_type::_result_type
+
 // ########## Generic Callback Macros ##################################
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_MESSAGE_CALLBACK2( callbackName, __MessageType, message_name ) \
@@ -309,7 +320,7 @@ QUICKDEV_DECLARE_RECONFIGURE_CALLBACK2( callbackName, __ReconfigureType, config,
 /*! \param msg_name a const reference to the incoming goal message */ \
 /*! \param action_server_name a const pointer to an SimpleActionServer<__ActionType> (the action server which is triggering this event) */ \
 /*! \return nothing */ \
-void callbackName( __ActionType::_action_goal_type::_goal_type::ConstPtr const & msg_name, boost::shared_ptr<actionlib::SimpleActionServer<__ActionType> > action_server_name )
+void callbackName( QUICKDEV_GET_ACTION_GOAL_TYPE( __ActionType )::ConstPtr const & msg_name, boost::shared_ptr<actionlib::SimpleActionServer<__ActionType> > action_server_name )
 // ------------------------------------------------------------------------------------------------------------------------------------------
 #define QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( callbackName, __ActionType ) \
 QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK2( callbackName, __ActionType, goal, action_server )

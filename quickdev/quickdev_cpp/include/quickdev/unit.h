@@ -190,7 +190,8 @@ public:
     {
         if( this != &other_unit )
         {
-            value_ = other_unit.value_;
+            // value_ = other_unit.value_;
+            *this = other_unit;
         }
         return *this;
     }
