@@ -70,6 +70,7 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfRotation, _Vector3, rot, double r, p, y; ro
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Vector3, msg, return _Vector3( msg.x, msg.y, msg.z ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _PointMsg, vec, _PointMsg msg; msg.x = vec.x; msg.y = vec.y; msg.z = vec.z; return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Quaternion, msg, return _Quaternion( msg.z, msg.y, msg.x ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _QuaternionMsg, vec, _Quaternion const quat = unit::make_unit( vec ); _QuaternionMsg msg; msg.x = quat.getX(); msg.y = quat.getY(); msg.z = quat.getZ(); msg.w = quat.getW(); return msg; )
 
 // Vector3 -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
@@ -89,6 +90,7 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _QuaternionMsg, quat, _QuaternionMs
 
 // QuaternionMsg -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quaternion( msg.x, msg.y, msg.z, msg.w ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Vector3Msg, msg, return unit::convert<_Vector3Msg>( _Quaternion( msg.x, msg.y, msg.z, msg.w ) ); )
 
 // Transform -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, _TwistMsg res; res.angular = unit::make_unit( tf.getRotation() ); res.linear = unit::make_unit( tf.getOrigin() ); return res; )

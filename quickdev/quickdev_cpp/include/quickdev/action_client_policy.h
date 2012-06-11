@@ -83,7 +83,7 @@ public:
     typedef MessageCallbackPolicy<typename __Action::_action_feedback_type::_feedback_type> _FeedbackCallbackPolicy;
     typedef CallbackPolicy<void( actionlib::SimpleClientGoalState const &, typename __Action::_action_result_type::_result_type::ConstPtr const & )> _DoneCallbackPolicy;
 
-    typedef __QUICKDEV_FUNCTION_TYPE<void()> _DoneSignal;
+    typedef quickdev::ActionToken<_ActionClientPolicy> _ActionToken;
 
 private:
     boost::shared_ptr<_ActionClient> action_client_ptr_;
@@ -149,9 +149,9 @@ private:
 
     typename _ResultMsg::ConstPtr getResult();
 
-    quickdev::ActionToken<_ActionClientPolicy> sendGoal( _GoalMsg const & goal );
+    _ActionToken sendGoal( _GoalMsg const & goal );
 
-    quickdev::ActionToken<_ActionClientPolicy> makeActionToken();
+    _ActionToken makeActionToken();
 
     void update();
 
@@ -179,18 +179,26 @@ public:
     template<class... __Args>
     void start( __Args&&... args )
     {
-        this->caller_ptr_->sendGoal( args... );
+        if( this->caller_ptr_ ) this->caller_ptr_->sendGoal( args... );
     }
 
     void cancel()
     {
-        this->caller_ptr_->interruptAction();
+        if( this->caller_ptr_ ) this->caller_ptr_->interruptAction();
     }
 
     template<class... __Args>
     void wait( __Args&&... args )
     {
-        this->caller_ptr_->waitForResult( args... );
+        if( this->caller_ptr_ ) this->caller_ptr_->waitForResult( args... );
+    }
+
+    template<class... __Args>
+    typename _ActionTokenBase::_Caller::_ResultMsg::ConstPtr get( __Args&&... args )
+    {
+        wait( args... );
+        if( this->caller_ptr_ ) return this->caller_ptr_->getResult();
+        return boost::make_shared<typename _ActionTokenBase::_Caller::_ResultMsg const>();
     }
 };
 
