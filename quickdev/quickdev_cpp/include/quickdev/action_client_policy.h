@@ -137,7 +137,7 @@ private:
 
     void sendGoalAndWait( _GoalMsg const & goal, ros::Duration const & duration, _TimeoutCallback const & callback );
 
-    bool waitForResult( double const & duration );
+    bool waitForResult( double const & duration = 0 );
 
     bool waitForResult( ros::Duration const & duration );
 
