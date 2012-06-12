@@ -260,7 +260,7 @@ protected:
     }
 
     // publish specializaiton for cv_bridge::CvImageConstPtr
-    void publishImages( std::string const & topic, cv_bridge::CvImageConstPtr & image_ptr ) const
+    void publishImages( std::string const & topic, cv_bridge::CvImageConstPtr const & image_ptr ) const
     {
         //PRINT_INFO( "publishing image (CvImageConstPtr) on topic %s", topic.c_str() );
 
@@ -271,7 +271,7 @@ protected:
     // enabled only if __Rest&&... is not empty
     template<class __Image, class... __Rest>
     typename std::enable_if<(sizeof...(__Rest) > 0), void>::type
-    publishImages( std::string const & topic, __Image & image, __Rest&&... rest ) const
+    publishImages( std::string const & topic, __Image const & image, __Rest&&... rest ) const
     {
         // publish using specialization for __Image
         publishImages( topic, image );
