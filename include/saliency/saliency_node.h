@@ -186,14 +186,14 @@ QUICKDEV_DECLARE_NODE_CLASS( Saliency )
 
         _ImageProcPolicy::publishImages
         (
-            std::string( "saliency_image" ), quickdev::opencv_conversion::fromMat( cv::Mat( env_image_to_opencv( &visual_cortex_out ) ), "", "mono8" ),
-            std::string( "intensity_image" ), quickdev::opencv_conversion::fromMat( cv::Mat( env_image_to_opencv( &intensity ) ), "", "mono8" ),
-            "color_image", quickdev::opencv_conversion::fromMat( cv::Mat( env_image_to_opencv( &color ) ), "", "mono8" ),
-            "orientation_image", quickdev::opencv_conversion::fromMat( cv::Mat( env_image_to_opencv( &orientation ) ), "", "mono8" )
+            "saliency_image",    quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &visual_cortex_out ), "", "mono8" ),
+            "intensity_image",   quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &intensity )        , "", "mono8" ),
+            "color_image",       quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &color )            , "", "mono8" ),
+            "orientation_image", quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &orientation )      , "", "mono8" )
 #ifdef ENV_WITH_DYNAMIC_CHANNELS
             ,
-            "flicker_image", quickdev::opencv_conversion::fromMat( cv::Mat( env_image_to_opencv( &flicker ) ), "", "mono8" ),
-            "motion_image", quickdev::opencv_conversion::fromMat( cv::Mat( env_image_to_opencv( &motion ) ), "", "mono8" )
+            "flicker_image",     quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &flicker ), "", "mono8" ),
+            "motion_image",      quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &motion ) , "", "mono8" )
 #endif
         );
     }
