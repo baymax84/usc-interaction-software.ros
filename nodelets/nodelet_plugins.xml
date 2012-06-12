@@ -1,0 +1,8 @@
+<library path="lib/libsaliency_nodelets">
+
+  <class name="saliency/saliency" type="saliency::SaliencyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>
