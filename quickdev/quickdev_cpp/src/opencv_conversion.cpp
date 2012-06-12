@@ -49,7 +49,7 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
 }
 
 // =============================================================================================================================================
-sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromIplImage( IplImage * image_ptr, std::string const & frame_id )
+sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fromIplImage( IplImage * image_ptr, std::string const & frame_id, std::string const & encoding )
 {
     //cv_bridge::CvImage image_wrapper;
 
@@ -62,6 +62,7 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
     auto result = sensor_msgs::CvBridge::cvToImgMsg( image_ptr );
     result->header.frame_id = frame_id;
     result->header.stamp = ros::Time::now();
+    result->encoding = encoding;
     return result;
 }
 
