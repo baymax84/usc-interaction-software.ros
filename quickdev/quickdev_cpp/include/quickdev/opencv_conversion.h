@@ -48,7 +48,7 @@ namespace opencv_conversion
 {
 
 sensor_msgs::Image::Ptr fromMat( cv::Mat const & mat, std::string const & frame_id = "", std::string const & encoding = "rgb8" );
-sensor_msgs::Image::Ptr fromIplImage( IplImage * image_ptr, std::string const & frame_id = "" );
+sensor_msgs::Image::Ptr fromIplImage( IplImage * image_ptr, std::string const & frame_id = "", std::string const & encoding = "rgb8" );
 
 cv_bridge::CvImageConstPtr fromImageMsg( sensor_msgs::Image::ConstPtr const & image_msg );
 cv_bridge::CvImageConstPtr fromImageMsg( sensor_msgs::Image const & image_msg );
