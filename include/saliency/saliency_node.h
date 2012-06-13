@@ -77,13 +77,42 @@ QUICKDEV_DECLARE_NODE_CLASS( Saliency )
     env_params env_params_;
     env_visual_cortex visual_cortex_;
 
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( Saliency )
+    env_image input_env_image_;
+    env_image visual_cortex_out_;
+    env_image intensity_;
+    env_image color_;
+    env_image orientation_;
+#ifdef ENV_WITH_DYNAMIC_CHANNELS
+    env_image flicker_;
+    env_image motion_;
+#endif
+
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( Saliency ),
+        input_env_image_( env_img_initializer ),
+        visual_cortex_out_( env_img_initializer ),
+        intensity_( env_img_initializer ),
+        color_( env_img_initializer ),
+        orientation_( env_img_initializer )
+#ifdef ENV_WITH_DYNAMIC_CHANNELS
+        ,
+        flicker_( env_img_initializer ),
+        motion_( env_img_initializer )
+#endif
     {
         initPolicies<QUICKDEV_GET_RUNABLE_POLICY()>();
     }
 
     ~SaliencyNode()
     {
+        env_img_make_empty(&input_env_image_);
+        env_img_make_empty(&visual_cortex_out_);
+        env_img_make_empty(&intensity_);
+        env_img_make_empty(&color_);
+        env_img_make_empty(&orientation_);
+#ifdef ENV_WITH_DYNAMIC_CHANNELS
+        env_img_make_empty(&flicker_);
+        env_img_make_empty(&motion_);
+#endif
         env_visual_cortex_destroy( &visual_cortex_ );
         env_allocation_cleanup();
     }
@@ -116,12 +145,14 @@ QUICKDEV_DECLARE_NODE_CLASS( Saliency )
             "output_image_topic_param", std::string( "saliency_image" )
         );
 
-        _ImageProcPolicy::addImagePublisher( "intensity" );
-        _ImageProcPolicy::addImagePublisher( "color" );
-        _ImageProcPolicy::addImagePublisher( "orientation" );
+        _ImageProcPolicy::addImagePublisher( "input_image" );
+
+        _ImageProcPolicy::addImagePublisher( "intensity_image" );
+        _ImageProcPolicy::addImagePublisher( "color_image" );
+        _ImageProcPolicy::addImagePublisher( "orientation_image" );
 #ifdef ENV_WITH_DYNAMIC_CHANNELS
-        _ImageProcPolicy::addImagePublisher( "flicker" );
-        _ImageProcPolicy::addImagePublisher( "motion" );
+        _ImageProcPolicy::addImagePublisher( "flicker_image" );
+        _ImageProcPolicy::addImagePublisher( "motion_image" );
 #endif
         initPolicies<quickdev::policy::ALL>();
     }
@@ -140,14 +171,34 @@ QUICKDEV_DECLARE_NODE_CLASS( Saliency )
         env_dims indims;
         env_rgb_pixel * input = opencv_to_env_rgb_pixel( &ipl_image, &indims );
 
-        env_image visual_cortex_out = env_img_initializer;
-        env_image intensity = env_img_initializer;
-        env_image color = env_img_initializer;
-        env_image orientation = env_img_initializer;
-#ifdef ENV_WITH_DYNAMIC_CHANNELS
-        env_image flicker = env_img_initializer;
-        env_image motion = env_img_initializer;
-#endif
+        env_img_resize_dims( &input_env_image_, indims );
+
+        // get a read-only pointer to the input pixels
+        const env_rgb_pixel * const sptr = input;
+        const env_size_t sz = indims.w * indims.h;
+        // get a writable pointer to the output image's content
+        intg32* const dptr = env_img_pixelsw( &input_env_image_ );
+        // for each pixel
+        for (env_size_t i = 0; i < sz; ++i)
+        {
+            intg32 sum = 0;
+            for( size_t c = 0; c < 3; ++c  )
+            {
+                sum += sptr[i].p[c];
+            }
+            dptr[i] = sum / 3.0;
+        }
+
+        IplImage * output_ipl_image = env_image_to_opencv( &input_env_image_ );
+
+        _ImageProcPolicy::publishImages
+        (
+            "input_image", quickdev::opencv_conversion::fromIplImage( output_ipl_image, "", "mono8" )
+        );
+
+        cvReleaseImage( &output_ipl_image );
+
+        // env_img_make_empty( &input_env_image );
 
         env_mt_visual_cortex_input
         (
@@ -160,42 +211,64 @@ QUICKDEV_DECLARE_NODE_CLASS( Saliency )
             indims,
             NULL,
             NULL,
-            &visual_cortex_out,
-            &intensity,
-            &color,
-            &orientation
+            &visual_cortex_out_,
+            &intensity_,
+            &color_,
+            &orientation_
 #ifdef ENV_WITH_DYNAMIC_CHANNELS
             ,
-            &flicker,
-            &motion
+            &flicker_,
+            &motion_
 #endif
         );
+
+//        printf( "After visual cortex, result state: %u\n", visual_cortex_out_.pixels != 0 );
 
         env_visual_cortex_rescale_ranges
         (
-            &visual_cortex_out,
-            &intensity,
-            &color,
-            &orientation
+            &visual_cortex_out_,
+            &intensity_,
+            &color_,
+            &orientation_
 #ifdef ENV_WITH_DYNAMIC_CHANNELS
             ,
-            &flicker,
-            &motion
+            &flicker_,
+            &motion_
 #endif
         );
 
+//        printf( "After rescaling, result state: %u\n", visual_cortex_out_.pixels != 0 );
+
+        IplImage * output_visual_cortex_image = env_image_to_opencv( &visual_cortex_out_ );
+        IplImage * output_intensity_image     = env_image_to_opencv( &intensity_ )        ;
+        IplImage * output_color_image         = env_image_to_opencv( &color_ )            ;
+        IplImage * output_orientation_image   = env_image_to_opencv( &orientation_ )      ;
+#ifdef ENV_WITH_DYNAMIC_CHANNELS
+        IplImage * output_flicker_image = env_image_to_opencv( &flicker_ );
+        IplImage * output_motion_image  = env_image_to_opencv( &motion_ ) ;
+#endif
+
         _ImageProcPolicy::publishImages
         (
-            "saliency_image",    quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &visual_cortex_out ), "", "mono8" ),
-            "intensity_image",   quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &intensity )        , "", "mono8" ),
-            "color_image",       quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &color )            , "", "mono8" ),
-            "orientation_image", quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &orientation )      , "", "mono8" )
+            "saliency_image",    quickdev::opencv_conversion::fromIplImage( output_visual_cortex_image, "", "mono8" ),
+            "intensity_image",   quickdev::opencv_conversion::fromIplImage( output_intensity_image    , "", "mono8" ),
+            "color_image",       quickdev::opencv_conversion::fromIplImage( output_color_image        , "", "mono8" ),
+            "orientation_image", quickdev::opencv_conversion::fromIplImage( output_orientation_image  , "", "mono8" )
 #ifdef ENV_WITH_DYNAMIC_CHANNELS
             ,
-            "flicker_image",     quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &flicker ), "", "mono8" ),
-            "motion_image",      quickdev::opencv_conversion::fromIplImage( env_image_to_opencv( &motion ) , "", "mono8" )
+            "flicker_image",     quickdev::opencv_conversion::fromIplImage( output_flicker_image, "", "mono8" ),
+            "motion_image",      quickdev::opencv_conversion::fromIplImage( output_motion_image , "", "mono8" )
 #endif
         );
+
+        if( output_visual_cortex_image ) cvReleaseImage( &output_visual_cortex_image );
+        if( output_intensity_image     ) cvReleaseImage( &output_intensity_image     );
+        if( output_color_image         ) cvReleaseImage( &output_color_image         );
+        if( output_orientation_image   ) cvReleaseImage( &output_orientation_image   );
+#ifdef ENV_WITH_DYNAMIC_CHANNELS
+        if( output_flicker_image ) cvReleaseImage( &output_flicker_image );
+        if( output_motion_image  ) cvReleaseImage( &output_motion_image  );
+#endif
     }
 };
 
