@@ -59,6 +59,12 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
 
     //return image_wrapper;
 
+    if( !image_ptr || !image_ptr->imageData )
+    {
+        PRINT_WARN( "Input image is not properly initialized" );
+        return sensor_msgs::Image::Ptr();
+    }
+
     auto result = sensor_msgs::CvBridge::cvToImgMsg( image_ptr );
     result->header.frame_id = frame_id;
     result->header.stamp = ros::Time::now();
