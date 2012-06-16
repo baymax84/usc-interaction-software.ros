@@ -143,6 +143,8 @@ private:
         while( run_ && ros::ok() )
         {
             spinOnce();
+            // regardless of whether the user is blocking in ::spinOnce, we want to update ROS callbacks if we get here
+            // if the user has enabled asynchronous ROS updates, their callbacks may be called both asynchronously and at this point
             ros::spinOnce();
             if( loop_rate_ ) loop_rate_->sleep();
         }
