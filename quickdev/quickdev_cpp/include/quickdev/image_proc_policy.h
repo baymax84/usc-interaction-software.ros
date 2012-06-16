@@ -165,6 +165,7 @@ QUICKDEV_DECLARE_POLICY_CLASS( ImageProc )
     typedef ros::PublisherAdapterStorage<image_transport::Publisher> _PublisherAdapterStorage;
     typedef ros::SubscriberAdapterStorage<image_transport::Subscriber> _SubscriberAdapterStorage;
     typedef __QUICKDEV_FUNCTION_TYPE<void(cv_bridge::CvImageConstPtr const &)> _ImageCallback;
+    typedef cv_bridge::CvImageConstPtr _CvBridgeImageConstPtr;
 
 protected:
     ros::MultiPublisher<image_transport::Publisher> image_pubs_;

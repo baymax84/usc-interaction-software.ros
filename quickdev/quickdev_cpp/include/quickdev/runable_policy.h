@@ -104,10 +104,11 @@ private:
         }
     }
 
-    QUICKDEV_DECLARE_CONST_ACCESSOR( loop_rate_hz_, LoopRateHz );
-    QUICKDEV_DECLARE_CONST_ACCESSOR( loop_rate_seconds_, LoopRateSeconds );
-    QUICKDEV_DECLARE_CONST_ACCESSOR( spin_ros_thread_, SpinNewThread );
-    QUICKDEV_DECLARE_CONST_ACCESSOR( ros_loop_rate_hz_, ROSLoopRateHz );
+    QUICKDEV_DECLARE_ACCESSOR2( loop_rate_, LoopRate )
+    QUICKDEV_DECLARE_CONST_ACCESSOR( loop_rate_hz_, LoopRateHz )
+    QUICKDEV_DECLARE_CONST_ACCESSOR( loop_rate_seconds_, LoopRateSeconds )
+    QUICKDEV_DECLARE_CONST_ACCESSOR( spin_ros_thread_, SpinNewThread )
+    QUICKDEV_DECLARE_CONST_ACCESSOR( ros_loop_rate_hz_, ROSLoopRateHz )
 
     virtual void setup(){}
 
