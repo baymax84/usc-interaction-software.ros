@@ -187,7 +187,7 @@ static _JointDependencyMap generateJointDependencyMap()
 
 static auto getJointDependencyMap() -> decltype( generateJointDependencyMap() ) const &
 {
-    static auto const && joint_dependency_map = generateJointDependencyMap();
+    static auto const & joint_dependency_map = generateJointDependencyMap();
 
     return joint_dependency_map;
 }
@@ -237,7 +237,7 @@ static _JointStateMap generateJointStateMap()
 
 static auto getJointStateMap() -> decltype( generateJointStateMap() ) const &
 {
-    static auto const && joint_state_map = generateJointStateMap();
+    static auto const & joint_state_map = generateJointStateMap();
 
     return joint_state_map;
 }
