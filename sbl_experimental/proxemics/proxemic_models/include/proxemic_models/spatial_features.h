@@ -36,22 +36,28 @@
 #ifndef PROXEMICMODELS_SPATIALFEATURES_H_
 #define PROXEMICMODELS_SPATIALFEATURES_H_
 
+// conversions
 #include <quickdev/geometry_message_conversions.h>
 #include <quickdev/numeric_unit_conversions.h>
 
+// objects
 #include <humanoid/humanoid_features.h>
-
 #include <LinearMath/btVector3.h>
+
+#include <proxemic_models/SpatialFeature.h>
 
 namespace proxemics
 {
+    typedef proxemic_models::SpatialFeature _SpatialFeatureMsg;
+
 namespace spatial
 {
     using humanoid::_Humanoid;
     using humanoid::_HumanoidPair;
     using humanoid::_HumanoidJointMsg;
 
-    static double distanceBetween( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    //! 3D distance along ray from joint1 to joint2
+    static double getDistanceTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         btVector3 joint1_pos = unit::make_unit( joint1 );
         btVector3 joint2_pos = unit::make_unit( joint2 );
@@ -59,7 +65,8 @@ namespace spatial
         return joint1_pos.distance( joint2_pos );
     }
 
-    static btVector3 getDistance( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    //! 3D per-axis distance between joint1 and joint2
+    static btVector3 getComponentDistanceTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         btVector3 joint1_pos = unit::make_unit( joint1 );
         btVector3 joint2_pos = unit::make_unit( joint2 );
@@ -67,6 +74,7 @@ namespace spatial
         return joint2_pos - joint1_pos;
     }
 
+    //! Midpoint between joint1 and joint2
     static btVector3 getMidpoint( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         btVector3 joint1_pos = unit::make_unit( joint1 );
@@ -75,6 +83,7 @@ namespace spatial
         return 0.5 * ( joint1_pos + joint2_pos );
     }
 
+    //! Transform from joint1 to joint2 (order matters)
     static btTransform getTransformTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         btTransform joint1_tf = unit::make_unit( joint1 );
@@ -83,16 +92,79 @@ namespace spatial
         return joint1_tf.inverse() * joint2_tf;
     }
 
+    //! Angle from joint1 to joint2 (order matters)
     static btQuaternion getAngleTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         return getTransformTo( joint1, joint2 ).getRotation();
     }
 
-    static btVector3 getAngleToRPY( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    //! Angle from joint1 to joint2 (YPR)
+    static btVector3 getAngleToYPR( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         return unit::convert<btVector3>( getAngleTo( joint1, joint2 ) );
     }
 } // spatial
+
+class SpatialFeature
+{
+protected:
+    _Humanoid humanoid_;
+
+public:
+    SpatialFeature( _Humanoid const & humanoid = _Humanoid() )
+    :
+        humanoid_( humanoid )
+    {
+        //
+    }
+
+    double getDistanceTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        return proxemics::spatial::getDistanceTo( from_joint, to_joint );
+    }
+
+    btVector3 getComponentDistanceTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        return proxemics::spatial::getComponentDistanceTo( from_joint, to_joint );
+    }
+
+    btVector3 getMidpoint( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        return proxemics::spatial::getMidpoint( from_joint, to_joint );
+    }
+
+    btTransform getTransformTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        return proxemics::spatial::getTransformTo( from_joint, to_joint );
+    }
+
+    btQuaternion getAngleTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        return proxemics::spatial::getAngleTo( from_joint, to_joint );
+    }
+
+    btVector3 getAngleToYPR( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        return proxemics::spatial::getAngleToYPR( from_joint, to_joint );
+    }
+
+    operator _SpatialFeatureMsg()
+    {
+
+};
+
 } // proxemics
 
 #endif // PROXEMICMODELS_SPATIALFEATURES_H_

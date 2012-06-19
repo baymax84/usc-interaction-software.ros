@@ -67,7 +67,7 @@ private:
 
     QUICKDEV_SPIN_FIRST()
     {
-        initAll();
+        initPolicies<_HumanoidRecognizerPolicy>( "update_pairs_param", true );
 
         marker_template_.header.frame_id = "/openni_depth_tracking_frame";
         marker_template_.ns = "mehrabian_visualization";
@@ -87,30 +87,25 @@ private:
         text_marker_template_ = marker_template_;
         text_marker_template_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
         text_marker_template_.scale.z = 0.1;
+
+        initPolicies<quickdev::policy::ALL>();
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
-
-        const auto now = ros::Time::now();
+        auto const now = ros::Time::now();
 
         _MarkerArrayMsg markers_msg;
         _SpatialFeatureArrayMsg features_msg;
 
-        unsigned int current_id = 0;
+        unsigned int marker_id = 0;
 
-        // we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
-        _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
-        _HumanoidRecognizerPolicy::updateHumanoidPairs();
-
-        const auto & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
+        auto const humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
             const auto & spatial_feature = proxemics::SpatialFeature( pair->first["torso"], pair->second["torso"] );
-            features_msg.features.push_back( unit::make_unit( spatial_feature ) );
+            features_msg.features.push_back( spatial_feature );
             //const auto & joint1 = pair->first["torso"];
             //const auto & joint2 = pair->second["torso"];
 
@@ -122,7 +117,7 @@ private:
 
             _MarkerMsg lines_marker = lines_marker_template_;
             lines_marker.header.stamp = now;
-            lines_marker.id = current_id ++;
+            lines_marker.id = marker_id ++;
             lines_marker.color = current_color;
             lines_marker.points.push_back( spatial_feature.joint1.pose.pose.position );
             lines_marker.points.push_back( spatial_feature.joint2.pose.pose.position );
@@ -131,7 +126,7 @@ private:
 
             _MarkerMsg text_marker = text_marker_template_;
             text_marker.header.stamp = now;
-            text_marker.id = current_id ++;
+            text_marker.id = marker_id ++;
             text_marker.color = current_color;
 
             char buffer[10];
