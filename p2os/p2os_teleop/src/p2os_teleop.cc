@@ -52,7 +52,7 @@
 #include <unistd.h>
 #include <math.h>
 #include "ros/ros.h"
-#include "joy/Joy.h"
+#include "sensor_msgs/Joy.h"
 #include "geometry_msgs/Twist.h"
 
 class TeleopBase 
@@ -142,7 +142,7 @@ class TeleopBase
 		passthrough_cmd = *pass_msg;
 	}
 
-	void joy_cb(const joy::Joy::ConstPtr& joy_msg)
+	void joy_cb(const sensor_msgs::Joy::ConstPtr& joy_msg)
 	{
         
     deadman_ = (((unsigned int)deadman_button < joy_msg->get_buttons_size()) && joy_msg->buttons[deadman_button]);
