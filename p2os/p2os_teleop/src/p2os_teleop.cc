@@ -145,7 +145,7 @@ class TeleopBase
 	void joy_cb(const sensor_msgs::Joy::ConstPtr& joy_msg)
 	{
         
-    deadman_ = (((unsigned int)deadman_button < joy_msg->get_buttons_size()) && joy_msg->buttons[deadman_button]);
+    deadman_ = (((unsigned int)deadman_button < joy_msg->buttons.size()) && joy_msg->buttons[deadman_button]);
 
     if (!deadman_)
     	return;
@@ -154,20 +154,20 @@ class TeleopBase
 		last_recieved_joy_message_time_ = ros::Time::now();
 
     // Base
-    running_ = (((unsigned int)run_button < joy_msg->get_buttons_size()) && joy_msg->buttons[run_button]);
+    running_ = (((unsigned int)run_button < joy_msg->buttons.size()) && joy_msg->buttons[run_button]);
     double vx = running_ ? max_vx_run : max_vx;
     double vy = running_ ? max_vy_run : max_vy;
     double vw = running_ ? max_vw_run : max_vw;
 
-    if((axis_vx >= 0) && (((unsigned int)axis_vx) < joy_msg->get_axes_size()))
+    if((axis_vx >= 0) && (((unsigned int)axis_vx) < joy_msg->axes.size()))
     	req_vx = joy_msg->axes[axis_vx] * vx;
     else
       req_vx = 0.0;
-    if((axis_vy >= 0) && (((unsigned int)axis_vy) < joy_msg->get_axes_size()))
+    if((axis_vy >= 0) && (((unsigned int)axis_vy) < joy_msg->axes.size()))
     	req_vy = joy_msg->axes[axis_vy] * vy;
     else
       req_vy = 0.0;
-    if((axis_vw >= 0) && (((unsigned int)axis_vw) < joy_msg->get_axes_size()))
+    if((axis_vw >= 0) && (((unsigned int)axis_vw) < joy_msg->axes.size()))
       req_vw = joy_msg->axes[axis_vw] * vw;
     else
       req_vw = 0.0;
