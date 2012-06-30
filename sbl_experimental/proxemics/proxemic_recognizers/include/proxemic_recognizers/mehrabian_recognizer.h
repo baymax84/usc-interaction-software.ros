@@ -104,8 +104,8 @@ private:
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
-            auto const & feature1 = proxemics::SpatialFeature( pair->first );
-            auto const & feature2 = proxemics::SpatialFeature( pair->second );
+            auto const & feature1 = proxemics::SpatialFeatureRecognizer( pair->first );
+            auto const & feature2 = proxemics::SpatialFeatureRecognizer( pair->second );
             features_msg.features.push_back( feature1.createMessage( feature2 ) );
             features_msg.features.push_back( feature2.createMessage( feature2 ) );
             //const auto & joint1 = pair->first["torso"];
@@ -117,12 +117,15 @@ private:
             current_color.b = 1.0;
             current_color.a = 1.0;
 
+            btVector3 const feature1_origin = feature1.getOrigin();
+            btVector3 const feature2_origin = feature2.getOrigin();
+
             _MarkerMsg lines_marker = lines_marker_template_;
             lines_marker.header.stamp = now;
             lines_marker.id = marker_id ++;
             lines_marker.color = current_color;
-            lines_marker.points.push_back( feature1.getOrigin() );
-            lines_marker.points.push_back( feature2.getOrigin() );
+            lines_marker.points.push_back( unit::make_unit( feature1_origin ) );
+            lines_marker.points.push_back( unit::make_unit( feature2_origin ) );
 
             markers_msg.markers.push_back( lines_marker );
 
@@ -131,12 +134,14 @@ private:
             text_marker.id = marker_id ++;
             text_marker.color = current_color;
 
+            btVector3 features_midpoint = ( feature1_origin - feature2_origin ) / 2.0;
+
             char buffer[10];
             sprintf( buffer, "%.2f", features_msg.features.back().distance );
             text_marker.text = buffer;
-            text_marker.pose.position.x = spatial_feature.midpoint.getX();
-            text_marker.pose.position.y = spatial_feature.midpoint.getY();
-            text_marker.pose.position.z = spatial_feature.midpoint.getZ() - 0.25;
+            text_marker.pose.position.x = features_midpoint.getX();
+            text_marker.pose.position.y = features_midpoint.getY();
+            text_marker.pose.position.z = features_midpoint.getZ() - 0.25;
 
             markers_msg.markers.push_back( text_marker );
         }
