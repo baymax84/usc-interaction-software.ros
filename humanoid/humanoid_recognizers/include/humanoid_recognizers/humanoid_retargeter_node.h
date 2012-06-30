@@ -235,29 +235,23 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
             std::cout << chain_it->getName() << " -> " << joint.getName() << " [" << joint.getTypeName() << "]" << std::endl;
         }
         std::cout << "--------------------" << std::endl;
-/*
+
         // for each pair of joints { left_shoulder -> left_elbow, left_elbow -> left_wrist, right_shoulder -> right_elbow, right_elbow -> right_wrist }
         // set up an ik solver for the target platform's corresponding joint (in this version we only care about angles so we need to normalize the link lengths on one platform)
 
         // Torso_link -> [L/R]ShoulderPitch -> [L/R]ShoulderPitch_link -> [L/R]ShoulderRoll -> [L/R]ShoulderRoll_link -> [L/R]ElbowYaw -> ...
-        retargeters_["l_shoulder_ori"] = quickdev::make_shared( _HumanoidChainRetargeter( "left_shoulder", "left_elbow", kinematic_tree_, "LShoulderPitch", "LShoulderRoll_link" ) );
-        retargeters_["r_shoulder_ori"] = quickdev::make_shared( _HumanoidChainRetargeter( "right_shoulder", "right_elbow", kinematic_tree_, "RShoulderPitch", "RShoulderRoll_link" ) );
+        retargeters_["l_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_shoulder", "left_elbow", kinematic_tree_, "LShoulderPitch_link", "LShoulderRoll_link" ) );
+        retargeters_["r_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_shoulder", "right_elbow", kinematic_tree_, "RShoulderPitch_link", "RShoulderRoll_link" ) );
 
         // ... -> [L/R]ShoulderRoll_link -> [L/R]ElbowYaw -> [L/R]ElbowYaw_link -> [L/R]ElbowRoll -> [L/R]ElbowRoll_link -> [L/R]WristYaw -> ...
         retargeters_["l_elbow_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_elbow", "left_wrist", kinematic_tree_, "LShoulderRoll_link", "LElbowRoll_link" ) );
         retargeters_["r_elbow_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_elbow", "right_wrist", kinematic_tree_, "RShoulderRoll_link", "RElbowRoll_link" ) );
-*/
+
         initPolicies<quickdev::policy::ALL>();
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        return;
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
-
-        _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
-
         auto const & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
         if( humanoids.size() == 0 ) return;
 

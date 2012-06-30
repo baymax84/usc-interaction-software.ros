@@ -36,18 +36,22 @@
 #ifndef HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
 #define HUMANOIDRECOGNIZERS_HUMANOIDRECOGNIZERPOLICY_H_
 
+// policies
 #include <quickdev/node_handle_policy.h>
 #include <quickdev/callback_policy.h>
+
+// objects
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/multi_publisher.h>
-#include <quickdev/threading.h>
 #include <quickdev/message_array_cache.h>
+#include <boost/thread.hpp>
+#include <map>
 
+// utils
+#include <quickdev/threading.h>
 #include <humanoid/humanoid_features.h>
 
 #include <visualization_msgs/MarkerArray.h>
-
-#include <map>
 
 QUICKDEV_DECLARE_POLICY_NS( HumanoidRecognizer )
 {
@@ -101,9 +105,9 @@ protected:
     std::mutex humanoid_pairs_mutex_;
     std::mutex process_humanoids_mutex_;
     std::map<std::string, std::mutex> mutexes_;
-    boost::shared_ptr<boost::thread> process_humanoids_thread_;
+    boost::shared_ptr<boost::thread> process_humanoids_thread_ptr_;
 
-    bool running_ = true;
+    bool running_;
 
 public:
     QUICKDEV_DECLARE_ACCESSOR2( multi_pub_, MultiPub )
@@ -112,6 +116,7 @@ public:
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( HumanoidRecognizer ),
         named_humanoid_cache_(),
         timed_humanoid_cache_( named_humanoid_cache_.getStorage() ),
+        running_( false ),
         initialized_( false )
     {
         printPolicyActionStart( "create", this );
@@ -124,7 +129,7 @@ public:
         humanoids_mutex_.unlock();
         humanoid_pairs_mutex_.unlock();
         process_humanoids_mutex_.unlock();
-        process_humanoids_thread_.join();
+        process_humanoids_thread_ptr_->join();
     }
 
     bool running()
@@ -142,7 +147,7 @@ public:
         multi_pub_.addPublishers<_MarkerArrayMsg, _MarkerArrayMsg, __FeatureArrayMsg>( nh_rel, { "marker_array", "/visualization_marker_array", "features" } );
         multi_sub_.addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
 
-        process_humanoids_thread_ = boost::make_shared<boost::thread>( &HumanoidRecognizerPolicy::processHumanoids, this );
+        process_humanoids_thread_ptr_ = boost::make_shared<boost::thread>( &HumanoidRecognizerPolicy::processHumanoids, this );
 
         QUICKDEV_SET_INITIALIZED();
     }
@@ -177,13 +182,13 @@ public:
         timed_humanoid_cache_.eraseOld( child_args... );
     }
 
-    auto getHumanoids() -> decltype( named_humanoid_cache_ ) const
+    auto getHumanoids() -> decltype( named_humanoid_cache_ )
     {
         auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
         return named_humanoid_cache_;
     }
 
-    auto getHumanoidPairs() -> decltype( humanoid_pairs_ ) const
+    auto getHumanoidPairs() -> decltype( humanoid_pairs_ )
     {
         auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
         return humanoid_pairs_;

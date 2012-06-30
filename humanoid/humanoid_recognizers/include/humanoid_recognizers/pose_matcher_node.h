@@ -70,10 +70,6 @@ QUICKDEV_DECLARE_NODE_CLASS( PoseMatcher )
 
     QUICKDEV_SPIN_ONCE()
     {
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
-
-        _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
         //_HumanoidRecognizerPolicy::eraseOld( 1.0 );
 
         //_MarkerArrayMsg markers;
@@ -107,7 +103,7 @@ QUICKDEV_DECLARE_NODE_CLASS( PoseMatcher )
 //            distance_components_ss << "{\n" << joint_state.name.at( i ) << " : " << distance_components.at( i );
             distance_components_ss << "{\n" << joint_state.name.at( i ) << " : " << joint_state.position.at( i );
             i ++;
-            for( i; i < num_components; ++i )
+            for( ; i < num_components; ++i )
             {
 //                distance_components_ss << ",\n" << joint_state.name.at( i ) << " : " << distance_components.at( i );
                 distance_components_ss << ",\n" << joint_state.name.at( i ) << " : " << joint_state.position.at( i );

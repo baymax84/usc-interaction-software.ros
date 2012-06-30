@@ -61,12 +61,11 @@ QUICKDEV_DECLARE_NODE_CLASS( SchegloffRecognizer )
 
     QUICKDEV_SPIN_ONCE()
     {
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
+        auto const & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
 
         _MarkerArrayMsg markers;
 
-        for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
+        for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
         {
             //
         }
