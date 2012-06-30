@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
 #include <boost/type_traits/is_base_of.hpp>
+#include <quickdev/type_utils.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
