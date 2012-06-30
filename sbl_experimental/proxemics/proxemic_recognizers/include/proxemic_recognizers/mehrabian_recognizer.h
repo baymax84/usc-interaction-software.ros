@@ -104,8 +104,10 @@ private:
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
-            const auto & spatial_feature = proxemics::SpatialFeature( pair->first["torso"], pair->second["torso"] );
-            features_msg.features.push_back( spatial_feature );
+            auto const & feature1 = proxemics::SpatialFeature( pair->first );
+            auto const & feature2 = proxemics::SpatialFeature( pair->second );
+            features_msg.features.push_back( feature1.createMessage( feature2 ) );
+            features_msg.features.push_back( feature2.createMessage( feature2 ) );
             //const auto & joint1 = pair->first["torso"];
             //const auto & joint2 = pair->second["torso"];
 
@@ -119,8 +121,8 @@ private:
             lines_marker.header.stamp = now;
             lines_marker.id = marker_id ++;
             lines_marker.color = current_color;
-            lines_marker.points.push_back( spatial_feature.joint1.pose.pose.position );
-            lines_marker.points.push_back( spatial_feature.joint2.pose.pose.position );
+            lines_marker.points.push_back( feature1.getOrigin() );
+            lines_marker.points.push_back( feature2.getOrigin() );
 
             markers_msg.markers.push_back( lines_marker );
 
@@ -130,7 +132,7 @@ private:
             text_marker.color = current_color;
 
             char buffer[10];
-            sprintf( buffer, "%.2f", spatial_feature.distance );
+            sprintf( buffer, "%.2f", features_msg.features.back().distance );
             text_marker.text = buffer;
             text_marker.pose.position.x = spatial_feature.midpoint.getX();
             text_marker.pose.position.y = spatial_feature.midpoint.getY();

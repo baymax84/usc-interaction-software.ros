@@ -1,7 +1,5 @@
 Header header
-humanoid_models/HumanoidJoint joint1
-humanoid_models/HumanoidJoint joint2
+string observer_name
+string target_name
 float64 distance
-geometry_msgs/Vector3 midpoint
-geometry_msgs/Quaternion orientation1
-geometry_msgs/Quaternion orientation2
+float64 orientation
