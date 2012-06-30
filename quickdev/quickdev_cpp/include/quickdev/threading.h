@@ -38,7 +38,7 @@
 
 #include <quickdev/macros.h>
 #include <quickdev/console.h>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
@@ -46,12 +46,12 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     class Mutex
     {
     public:
-        boost::mutex mutex_;
-        typedef boost::unique_lock<boost::mutex> _UniqueLock;
+        std::mutex mutex_;
+        typedef std::unique_lock<std::mutex> _UniqueLock;
 
         _UniqueLock tryLock()
         {
-            return _UniqueLock( mutex_, boost::try_to_lock_t() );
+            return _UniqueLock( mutex_, std::try_to_lock_t() );
         }
 
         _UniqueLock lock()
