@@ -138,7 +138,7 @@ private:
         // recursively erase all old messages
         _HumanoidRecognizerPolicy::eraseOld( 1.0 );
 
-        auto & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
+        auto humanoids = _HumanoidRecognizerPolicy::getHumanoids();
 
         // printf( "tracking %zu humanoids\n", humanoids.size() );
 
