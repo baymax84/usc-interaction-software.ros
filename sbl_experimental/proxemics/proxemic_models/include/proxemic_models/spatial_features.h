@@ -105,17 +105,27 @@ namespace spatial
     }
 } // spatial
 
-class SpatialFeature
+class SpatialFeatureRecognizer
 {
 protected:
     _Humanoid humanoid_;
 
 public:
-    SpatialFeature( _Humanoid const & humanoid = _Humanoid() )
+    SpatialFeatureRecognizer( _Humanoid const & humanoid = _Humanoid() )
     :
         humanoid_( humanoid )
     {
         //
+    }
+
+    btVector3 getOrigin( SpatialFeature const & other )
+    {
+        return unit::convert<btVector3>( other.humanoid_["torso"] );
+    }
+
+    double getRotation()
+    {
+        return unit::convert<btVector3>( unit::convert<btQuaternion>( other.humanoid_["torso"] ) ).getZ();
     }
 
     double getDistanceTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
@@ -160,9 +170,16 @@ public:
         return proxemics::spatial::getAngleToYPR( from_joint, to_joint );
     }
 
-    operator _SpatialFeatureMsg()
+    _SpatialFeatureMsg createMessage( SpatialFeature const & other )
     {
-
+        _SpatialFeatureMsg spatial_feature_msg;
+        spatial_feature_msg.header.stamp = ros::Time::now();
+        spatial_feature_msg.observer_name = humanoid_.getName();
+        spatial_feature_msg.target_name = other.humanoid_.getName();
+        spatial_feature_msg.distance = getComponentDistanceTo( other ).getX();
+        spatial_feature_msg.orientation = getAngleToYPR( other ).getZ();
+        return spatial_feature_msg;
+    }
 };
 
 } // proxemics
