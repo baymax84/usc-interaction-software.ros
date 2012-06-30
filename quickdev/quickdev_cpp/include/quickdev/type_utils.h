@@ -77,6 +77,12 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
         static bool const value = std::is_same<typename std::remove_reference<__Type1>::type, typename std::remove_reference<__Type2>::type>::value;
     };
 
+    template<class __Type1, class __Type2>
+    struct is_same_base_type
+    {
+        static bool const value = std::is_same<typename std::remove_reference<typename std::remove_const<__Type1>::type>::type, typename std::remove_reference<typename std::remove_const<__Type2>::type>::type>::value;
+    };
+
     //! Type designed to provide somewhat useful compiler output when using other type traits
     /*! Specifically, when using getFristOfType, getMetaParam, or getMetaParamDef, this type will be returned when
      *  no statically-known matches are found.*/

@@ -259,6 +259,11 @@ private:
 public:
     //template<class __Child, typename std::enable_if<boost::is_base_of<_MessageArrayCache, __Child>::value, int>::type = 0>
     //MessageArrayCache( __Child & child )
+    MessageArrayCache()
+    {
+        updateMessages( storage_->getMessages() );
+    }
+
     MessageArrayCache( typename _Storage::_Ptr & child_storage )
     {
         //if( child.getStorage() ) this->getStorage() = child.storage_;
@@ -268,10 +273,27 @@ public:
         else this->storage_ = typename _Storage::_Ptr( new _Storage() );
     }
 
-    template<class... __StorageArgs>
+    template
+    <
+        class __StorageArg,
+        typename std::enable_if<(!boost::is_base_of<MessageArrayCache<__Message>, __StorageArg>::value && !quickdev::is_same_type<typename _Storage::_Ptr, __StorageArg>::value), int>::type = 0
+    >
+    MessageArrayCache( __StorageArg const & storage_arg )
+    :
+        storage_( new _Storage( storage_arg ) )
+    {
+        // we still want to build our cache from the current info
+        updateMessages( storage_->getMessages() );
+    }
+
+    template
+    <
+        class... __StorageArgs,
+        typename std::enable_if<(sizeof...(__StorageArgs) > 1), int>::type = 0
+    >
     MessageArrayCache( __StorageArgs&&... storage_args )
     :
-        storage_( new _Storage( std::forward<__StorageArgs>( storage_args )... ) )
+        storage_( new _Storage( storage_args... ) )
     {
         // we still want to build our cache from the current info
         updateMessages( storage_->getMessages() );
@@ -335,7 +357,7 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCacheBase( __ParentArgs&&... parent_args )
     :
-        _Parent( std::forward<__ParentArgs>( parent_args )... ), stamp_( 0 )
+        _Parent( parent_args... ), stamp_( 0 )
     {
         this->getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyErase_0, this ) );
         this->getStorage()->registerNotifyUpdateFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyUpdate_0, this ) );
@@ -409,7 +431,7 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCacheHelper( __ParentArgs&&... parent_args )
     :
-        _Parent( std::forward<__ParentArgs>( parent_args )... )
+        _Parent( parent_args... )
     {
         //
     }
@@ -499,7 +521,7 @@ public:
     template<class... __ParentArgs>
     TimedMessageArrayCacheHelper( __ParentArgs&&... parent_args )
     :
-        _Parent( std::forward<__ParentArgs>( parent_args )... )
+        _Parent( parent_args... )
     {
         //
     }
@@ -562,10 +584,11 @@ public:
     typedef typename _Parent::_ROSMessageArray _ROSMessageArray;
 
 public:
+
     template<class... __ParentArgs>
     TimedMessageArrayCache( __ParentArgs&&... parent_args )
     :
-        _Parent( std::forward<__ParentArgs>( parent_args )... )
+        _Parent( parent_args... )
     {
         //
     }
@@ -598,7 +621,7 @@ public:
     template<class... __ParentArgs>
     NamedMessageArrayCache( __ParentArgs&&... parent_args )
     :
-        _Parent( std::forward<__ParentArgs>( parent_args )... )
+        _Parent( parent_args... )
     {
         _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &NamedMessageArrayCache::notifyErase, this ) );
         // we still want to build our cache from the current info
@@ -702,17 +725,24 @@ public:
 
     void updateMessage( __Message const & msg )
     {
-        auto const & message_index = message_index_map_.find( msg.name );
+        auto message_index_it = message_index_map_.find( msg.name );
 
-        if( message_index == message_index_map_.end() )
+        if( message_index_it == message_index_map_.end() )
         {
             message_index_map_[msg.name] = _Parent::getStorage()->message_array_.size();
             _Parent::updateMessage( msg );
         }
         else
         {
-            *( _Parent::getStorage()->message_array_.begin() + message_index_map_[msg.name] ) = msg;
+            *( _Parent::getStorage()->message_array_.begin() + message_index_it->second ) = msg;
         }
+    }
+
+    //! function to update cache with message stored in any kind of smart pointer
+    template<template<typename> class __Ptr>
+    void updateMessage( __Ptr<__Message> const & msg )
+    {
+        updateMessage( *msg );
     }
 
     void updateMessages( typename _Parent::_ROSMessageArray const & msg_array )
