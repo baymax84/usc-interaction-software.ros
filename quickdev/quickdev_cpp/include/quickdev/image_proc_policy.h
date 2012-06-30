@@ -193,14 +193,15 @@ protected:
         //auto & nh_rel = NodeHandlePolicy::getNodeHandle();
         QUICKDEV_GET_NODEHANDLE( nh_rel );
 
-        auto const subscribe_to_image = policy::readPolicyParam<bool>( nh_rel, "subscribe_to_image_param", "subscribe_to_image", true, args... );
         auto const publish_image = policy::readPolicyParam<bool>( nh_rel, "publish_image_param", "publish_image", true, args... );
 
-        if( subscribe_to_image )
+        _ImageCallback image_callback;
+
+        if( tryGetMetaParam<_ImageCallback>( "image_callback_param", image_callback, args... ) )
         {
             auto const image_topic = policy::readPolicyParam<std::string>( nh_rel, "image_topic_param", "image_topic", "image", args... );
             auto const image_cache_size = policy::readPolicyParam<int>( nh_rel, "image_cache_size_param", "image_cache_size", 1, args... );
-            addImageSubscriber( image_topic, getMetaParam<_ImageCallback>( "image_callback_param", args... ), image_cache_size );
+            addImageSubscriber( image_topic, image_callback, image_cache_size );
         }
 
         if( publish_image )

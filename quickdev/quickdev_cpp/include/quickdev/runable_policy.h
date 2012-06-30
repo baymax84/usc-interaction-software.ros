@@ -116,6 +116,8 @@ private:
 
     virtual void spinOnce(){}
 
+    virtual void shutdown(){}
+
     virtual void spin()
     {
         run_ = true;
@@ -156,6 +158,7 @@ private:
     {
         PRINT_INFO( ">>>>> Interrupting main loop..." );
         run_ = false;
+        shutdown();
     }
 };
 
