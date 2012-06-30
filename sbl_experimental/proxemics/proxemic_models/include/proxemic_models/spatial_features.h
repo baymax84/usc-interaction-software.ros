@@ -44,11 +44,12 @@
 #include <humanoid/humanoid_features.h>
 #include <LinearMath/btVector3.h>
 
-#include <proxemic_models/SpatialFeature.h>
+#include <proxemic_models/SpatialFeatureArray.h>
 
 namespace proxemics
 {
     typedef proxemic_models::SpatialFeature _SpatialFeatureMsg;
+    typedef proxemic_models::SpatialFeatureArray _SpatialFeatureArrayMsg;
 
 namespace spatial
 {
@@ -107,6 +108,9 @@ namespace spatial
 
 class SpatialFeatureRecognizer
 {
+public:
+    typedef humanoid::_Humanoid _Humanoid;
+
 protected:
     _Humanoid humanoid_;
 
@@ -118,64 +122,64 @@ public:
         //
     }
 
-    btVector3 getOrigin( SpatialFeature const & other )
+    btVector3 getOrigin() const
     {
-        return unit::convert<btVector3>( other.humanoid_["torso"] );
+        return unit::convert<btVector3>( humanoid_["torso"] );
     }
 
-    double getRotation()
+    double getRotation() const
     {
-        return unit::convert<btVector3>( unit::convert<btQuaternion>( other.humanoid_["torso"] ) ).getZ();
+        return unit::convert<btVector3>( unit::convert<btQuaternion>( humanoid_["torso"] ) ).getZ();
     }
 
-    double getDistanceTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    double getDistanceTo( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
         return proxemics::spatial::getDistanceTo( from_joint, to_joint );
     }
 
-    btVector3 getComponentDistanceTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    btVector3 getComponentDistanceTo( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
         return proxemics::spatial::getComponentDistanceTo( from_joint, to_joint );
     }
 
-    btVector3 getMidpoint( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    btVector3 getMidpoint( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
         return proxemics::spatial::getMidpoint( from_joint, to_joint );
     }
 
-    btTransform getTransformTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    btTransform getTransformTo( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
         return proxemics::spatial::getTransformTo( from_joint, to_joint );
     }
 
-    btQuaternion getAngleTo( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    btQuaternion getAngleTo( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
         return proxemics::spatial::getAngleTo( from_joint, to_joint );
     }
 
-    btVector3 getAngleToYPR( SpatialFeature const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    btVector3 getAngleToYPR( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
         return proxemics::spatial::getAngleToYPR( from_joint, to_joint );
     }
 
-    _SpatialFeatureMsg createMessage( SpatialFeature const & other )
+    _SpatialFeatureMsg createMessage( SpatialFeatureRecognizer const & other ) const
     {
         _SpatialFeatureMsg spatial_feature_msg;
         spatial_feature_msg.header.stamp = ros::Time::now();
-        spatial_feature_msg.observer_name = humanoid_.getName();
-        spatial_feature_msg.target_name = other.humanoid_.getName();
+        spatial_feature_msg.observer_name = humanoid_.name;
+        spatial_feature_msg.target_name = other.humanoid_.name;
         spatial_feature_msg.distance = getComponentDistanceTo( other ).getX();
         spatial_feature_msg.orientation = getAngleToYPR( other ).getZ();
         return spatial_feature_msg;

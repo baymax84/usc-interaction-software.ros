@@ -43,6 +43,7 @@
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
 using humanoid::_HumanoidStateMsg;
+using proxemics::_PsychophysicalFeatureMsg;
 using proxemics::_PsychophysicalFeatureArrayMsg;
 
 typedef HumanoidRecognizerPolicy<_PsychophysicalFeatureArrayMsg> _HumanoidRecognizerPolicy;
@@ -58,7 +59,8 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
     QUICKDEV_SPIN_FIRST()
     {
-        initAll();
+        initPolicies<_HumanoidRecognizerPolicy>( "update_pairs_param", true );
+        initPolicies<quickdev::policy::ALL>();
 
         marker_template_.header.frame_id = "/openni_depth_tracking_frame";
         marker_template_.ns = "mehrabian_visualization";
@@ -69,18 +71,11 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
     QUICKDEV_SPIN_ONCE()
     {
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
-
         auto const now = ros::Time::now();
 
         _MarkerArrayMsg markers_msg;
 
         unsigned int current_id = 0;
-
-        // we can't serialize maps (thanks, ROS) so we have to rebuild this every iteration
-        _HumanoidRecognizerPolicy::updateHumanoids( states_msg );
-        _HumanoidRecognizerPolicy::updateHumanoidPairs();
 
         auto const & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
 

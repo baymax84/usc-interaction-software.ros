@@ -38,9 +38,13 @@
 
 #include <proxemic_models/spatial_features.h>
 #include <angles/angles.h>
+#include <proxemic_models/PsychophysicalFeatureArray.h>
 
 namespace proxemics
 {
+    typedef proxemic_models::PsychophysicalFeature _PsychophysicalFeatureMsg;
+    typedef proxemic_models::PsychophysicalFeatureArray _PsychophysicalFeatureArrayMsg;
+
 namespace psychophysical
 {
     using humanoid::_Humanoid;
@@ -170,7 +174,7 @@ namespace psychophysical
 
     static SfpAxisCode getSfpAxisCode( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        Radian const & yaw_rad = fabs( angles::normalize_angle( proxemics::spatial::getAngleToRPY( joint1, joint2 ).getZ() ) );
+        Radian const & yaw_rad = fabs( angles::normalize_angle( proxemics::spatial::getAngleToYPR( joint1, joint2 ).getZ() ) );
         Degree const & yaw_deg( yaw_rad );
 
         int const num_sfp_axes = 8;
