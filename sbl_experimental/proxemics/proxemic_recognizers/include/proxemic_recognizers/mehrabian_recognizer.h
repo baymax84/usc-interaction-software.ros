@@ -117,6 +117,7 @@ private:
             current_color.b = 1.0;
             current_color.a = 1.0;
 
+            // implicit conversion from quickdev::FeatureWithCovariance<__Feature, __Dim__> to __Feature (with __Feaure = btVector3)
             btVector3 const feature1_origin = feature1.getOrigin();
             btVector3 const feature2_origin = feature2.getOrigin();
 
@@ -137,7 +138,7 @@ private:
             btVector3 features_midpoint = ( feature1_origin - feature2_origin ) / 2.0;
 
             char buffer[10];
-            sprintf( buffer, "%.2f", features_msg.features.back().distance );
+            //sprintf( buffer, "%.2f", features_msg.features.back().distance );
             text_marker.text = buffer;
             text_marker.pose.position.x = features_midpoint.getX();
             text_marker.pose.position.y = features_midpoint.getY();
