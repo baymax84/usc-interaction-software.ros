@@ -739,10 +739,11 @@ protected:
 };
 
 template<size_t __Dim__, class __Data, class __Derived = void>
-class VectorWrapper : public VectorWrapperBase<__Dim__, __Data, typename passthrough_derived<VectorWrapper<__Dim__, __Data, void>, __Derived>::type>
+// if __Derived is void (ie we're just a vector), then we wrap __Derived up in a VectorWrapper; otherwise we want to be convertible to __Derived
+class VectorWrapper : public VectorWrapperBase<__Dim__, __Data, typename passthrough_derived<VectorWrapper<__Dim__, __Data, __Derived>, __Derived>::type>
 {
 public:
-    typedef VectorWrapperBase<__Dim__, __Data, typename passthrough_derived<VectorWrapper<__Dim__, __Data, void>, __Derived>::type> _VectorWrapperBase;
+    typedef VectorWrapperBase<__Dim__, __Data, typename passthrough_derived<VectorWrapper<__Dim__, __Data, __Derived>, __Derived>::type> _VectorWrapperBase;
 
     template<class... __Args>
     VectorWrapper( __Args&&... args )
