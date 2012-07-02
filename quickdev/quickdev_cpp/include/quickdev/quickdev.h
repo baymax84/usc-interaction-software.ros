@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
-#define QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
+#ifndef QUICKDEVCPP_QUICKDEV_H_
+#define QUICKDEVCPP_QUICKDEV_H_
 
 //#include <quickdev/action_client_policy.h>
 //#include <quickdev/action_server_policy.h>
@@ -45,6 +45,7 @@
 //#include <quickdev/container.h>
 #include <quickdev/convolved_struct.h>
 //#include <quickdev/feature.h>
+#include <quickdev/feature_with_covariance.h>
 #include <quickdev/gaussian_pdf.h>
 #include <quickdev/generic_policy_adapter.h>
 #include <quickdev/image_loader.h>
@@ -92,4 +93,4 @@
 #include <quickdev/controllers/pid.h>
 #include <quickdev/controllers/reconfigurable_pid.h>
 
-#endif // QUICKDEVCPP_QUICKDEV_QUICKDEV_H_
+#endif // QUICKDEVCPP_QUICKDEV_H_

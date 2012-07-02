@@ -217,7 +217,7 @@ public:
     }
 };
 
-template<size_t __Rows__, size_t __Cols__, class __Data, class __Policy = matrix_base::policies::Rectangular>
+template<size_t __Rows__, size_t __Cols__, class __Data = double, class __Policy = matrix_base::policies::Rectangular>
 class Matrix : public MatrixBase<__Rows__, __Cols__, __Data, __Policy>
 {
 public:
@@ -226,6 +226,22 @@ public:
     {
         auto converted_matrix = MatrixBase<__Rows__, __Cols__, __Data, __Policy>::template convertTo<__OtherPolicy>();
         return *(Matrix<__Rows__, __Cols__, __Data, __OtherPolicy>*) &converted_matrix;
+        //return this->convertTo<__Other>();
+        //return MatrixBase<__Rows__, __Cols__, __Data, __Policy>::template convertTo<__Other>();
+    }
+    //
+};
+
+// symmetric matrix
+template<size_t __Rows__, class __Data = double, class __Policy = matrix_base::policies::UpperSymmetric>
+class SymmetricMatrix : public MatrixBase<__Rows__, __Rows__, __Data, __Policy>
+{
+public:
+    template<class __OtherPolicy>
+    Matrix<__Rows__, __Rows__, __Data, __OtherPolicy> convertTo() const
+    {
+        auto converted_matrix = MatrixBase<__Rows__, __Rows__, __Data, __Policy>::template convertTo<__OtherPolicy>();
+        return *(Matrix<__Rows__, __Rows__, __Data, __OtherPolicy>*) &converted_matrix;
         //return this->convertTo<__Other>();
         //return MatrixBase<__Rows__, __Cols__, __Data, __Policy>::template convertTo<__Other>();
     }
