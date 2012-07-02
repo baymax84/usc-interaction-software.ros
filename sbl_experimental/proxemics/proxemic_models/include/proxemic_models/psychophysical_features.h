@@ -45,6 +45,21 @@ namespace proxemics
     typedef proxemic_models::PsychophysicalFeature _PsychophysicalFeatureMsg;
     typedef proxemic_models::PsychophysicalFeatureArray _PsychophysicalFeatureArrayMsg;
 
+class SoftClassification
+{
+public:
+    int id_;
+    std::string name_;
+    double value_;
+
+    bool operator<( SoftClassification const & other ) const
+    {
+        return value_ < other.value_;
+    }
+};
+
+typedef std::map<std::string, SoftClassification, std::less<SoftClassification> > _SoftClassificationMap;
+
 namespace psychophysical
 {
     using humanoid::_Humanoid;
@@ -191,7 +206,63 @@ namespace psychophysical
 
         return SfpAxisCode( ++sfp_axis );
     }
+
+    static _SoftClassificationMap getVoiceLoudnessCode( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    {
+        _SoftClassificationMap result;
+
+        VOICE_LOUDNESS_SILENT = 0,
+        VOICE_LOUDNESS_VERY_SOFT,
+        VOICE_LOUDNESS_SOFT,
+        VOICE_LOUDNESS_NORMAL,
+        VOICE_LOUDNESS_NORMAL_PLUS
+        VOICE_LOUDNESS_LOUD,
+        VOICE_LOUDNESS_VERY_LOUD,
+
+        // { voice_loudness: [ { name: silent, min: 0, max: 0.01 }, { name: very_soft, min: 0.01, max: 0.1 } ] }
+        // magical lookup on parameter server
+        XmlRpc::XmlRpcValue intervals;
+
+        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+
+        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
+        {
+            auto & interval = intervals[interval_idx];
+            result[interval["name"]] = SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ) );
+        }
+    }
+
+
 } // psychophysical
+
+class PsychophysicalFeatureRecognizer
+{
+public:
+    typedef humanoid::_Humanoid _Humanoid;
+
+protected:
+    _Humanoid humanoid_;
+
+public:
+    PsychophysicalFeatureRecognizer( _Humanoid const & humanoid = _Humanoid() )
+    :
+        humanoid_( humanoid )
+    {
+        //
+    }
+
+    _SoftClassificationMap getVoiceLoudnessCode( SpatialFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+
+        _SoftClassificationMap result;
+
+        return result;
+    }
+
+};
+
 } // proxemics
 
 #endif // PROXEMICMODELS_PSYCHOPHYSICALFEATURES_H_
