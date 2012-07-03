@@ -107,7 +107,7 @@ private:
             auto const & feature1 = proxemics::SpatialFeatureRecognizer( pair->first );
             auto const & feature2 = proxemics::SpatialFeatureRecognizer( pair->second );
             features_msg.features.push_back( feature1.createMessage( feature2 ) );
-            features_msg.features.push_back( feature2.createMessage( feature2 ) );
+            features_msg.features.push_back( feature2.createMessage( feature1 ) );
             //const auto & joint1 = pair->first["torso"];
             //const auto & joint2 = pair->second["torso"];
 
