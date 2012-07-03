@@ -405,7 +405,7 @@ public:
     >
     static std::string toString( __Param const & param )
     {
-        return std::string( "non-integral type" );
+        return std::string( "non-arithmetic type" );
     }
 
     static std::string toString( std::string const & param )
@@ -415,9 +415,7 @@ public:
 
     static std::string toString( XmlRpc::XmlRpcValue & param )
     {
-        std::stringstream ss;
-        ss << param;
-        return ss.str();
+        return std::string( "XmlRpcValue" );
     }
 
     template
