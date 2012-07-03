@@ -73,7 +73,10 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
     {
         auto const now = ros::Time::now();
 
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+
         _MarkerArrayMsg markers_msg;
+        _PsychophysicalFeatureArrayMsg features_msg;
 
         unsigned int current_id = 0;
 
@@ -81,6 +84,12 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
+            auto feature1( proxemics::PsychophysicalFeatureRecognizer( pair->first, nh_rel ) );
+            auto feature2( proxemics::PsychophysicalFeatureRecognizer( pair->second, nh_rel ) );
+
+            features_msg.features.push_back( feature1.createMessage( feature2 ) );
+            features_msg.features.push_back( feature2.createMessage( feature1 ) );
+
             //const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
             //const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];
 
@@ -99,6 +108,8 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
             markers_msg.markers.push_back( arrow_marker );*/
         }
+
+        _HumanoidRecognizerPolicy::updateFeatures( features_msg );
     }
 };
 

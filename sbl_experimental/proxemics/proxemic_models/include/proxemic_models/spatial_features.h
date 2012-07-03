@@ -153,6 +153,8 @@ public:
     _Humanoid humanoid_;
 
 public:
+    SpatialFeatureRecognizer(){}
+
     SpatialFeatureRecognizer( _Humanoid const & humanoid = _Humanoid() )
     :
         humanoid_( humanoid )
