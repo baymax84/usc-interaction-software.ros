@@ -1,0 +1,50 @@
+intervals:
+{
+  visual:
+  [
+    { name: foveal,     id: 0, min: 0,    max: 1.5  },
+    { name: macular,    id: 0, min: 1.5,  max: 6.5  },
+    { name: scanning,   id: 0, min: 6.5,  max: 30.0 },
+    { name: peripheral, id: 0, min: 30.0, max: 90.0 }
+  ],
+
+  thermal:
+  [
+    { name: conducted, id: 1, min: 0,      max: 0.1542 },
+    { name: radiant,   id: 2, min: 0.1542, max: 0.3048 },
+    { name: probably,  id: 4, min: 0.3048, max: 0.5334 },
+    { name: none,      id: 8, min: 0.5334, max: +inf   }
+  ],
+
+  olfaction:
+  [
+    { name: diff,     id: 1, min: 0,      max: 0.1542 },
+    { name: undiff,   id: 2, min: 0.1542, max: 0.3048 },
+    { name: breath,   id: 3, min: 0.3048, max: 0.4572 },
+    { name: probably, id: 4, min: 0.4572, max: 0.9144 },
+    { name: none,     id: 8, min: 0.9144, max: +inf   }
+  ],
+
+  voice_loudness:
+  [
+    { name: silent,      id: 0, min: 0,      max: 0.1542 },
+    { name: very_soft,   id: 1, min: 0.1542, max: 0.3048 },
+    { name: soft,        id: 2, min: 0.3048, max: 0.7620 },
+    { name: normal,      id: 3, min: 0.7620, max: 1.9812 },
+    { name: normal_plus, id: 4, min: 1.9812, max: 3.6576 },
+    { name: loud,        id: 5, min: 3.6576, max: 5.7912 },
+    { name: very_loud,   id: 6, min: 5.7912, max: +inf   }
+  ]
+
+  distance:
+  [
+    { name: intimate_close, id: 0, min: 0      , max: 0.1524 },
+    { name: intimate_far,   id: 0, min: 0.1524 , max: 0.4572 },
+    { name: personal_close, id: 0, min: 0.4572 , max: 0.7620 },
+    { name: personal_far,   id: 0, min: 0.7620 , max: 1.2192 },
+    { name: social_close,   id: 0, min: 1.2192 , max: 2.1336 },
+    { name: social_far,     id: 0, min: 2.1336 , max: 3.6576 },
+    { name: public_close,   id: 0, min: 3.6576 , max: 7.6200 },
+    { name: public_far,     id: 0, min: 7.6200 , max: +inf   }
+  ]
+}
