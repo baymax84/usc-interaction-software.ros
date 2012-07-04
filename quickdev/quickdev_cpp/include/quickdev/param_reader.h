@@ -465,6 +465,12 @@ public:
     }
 
     template<class __Output>
+    static __Output fromXmlRpcValue( _XmlRpcValue & param )
+    {
+        return param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+    }
+
+    template<class __Output>
     static __Output readParam( ros::NodeHandle & nh, std::string const & name, __Output const & default_value = __Output() )
     {
         _XmlRpcValue param;
@@ -472,7 +478,7 @@ public:
 
         if( param_found )
         {
-            __Output result = param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+            __Output result = fromXmlRpcValue<__Output>( param );
             PRINT_INFO( "Found param [ %s/%s ] with value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( result ).c_str() );
             return result;
         }
@@ -482,15 +488,9 @@ public:
     }
 
     template<class __Output>
-    static __Output fromXmlRpcValue( _XmlRpcValue & param )
-    {
-        return param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
-    }
-
-    template<class __Output>
     static __Output getXmlRpcValue( XmlRpc::XmlRpcValue & xml_rpc_value, std::string const & member_name, __Output const & default_value = __Output() )
     {
-        if( xml_rpc_value.hasMember( member_name ) ) return __Output( xml_rpc_value[member_name] );
+        if( xml_rpc_value.hasMember( member_name ) ) return fromXmlRpcValue<__Output>( xml_rpc_value[member_name] );
 
         PRINT_WARN( "XmlRpcValue does not contain member %s; returning default", member_name.c_str() );
         return default_value;
