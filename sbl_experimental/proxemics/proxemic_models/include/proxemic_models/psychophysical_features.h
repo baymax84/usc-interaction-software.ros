@@ -292,7 +292,13 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        //
+        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+
+        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
+        {
+            auto & interval = intervals[interval_idx];
+            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
+        }
 
         return result;
     }
@@ -302,13 +308,35 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        //
+        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+
+        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
+        {
+            auto & interval = intervals[interval_idx];
+            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
+        }
 
         return result;
     }
 
     // =========================================================================================================================================
     static _SoftClassificationSet getVoiceLoudnessClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
+    {
+        _SoftClassificationSet result;
+
+        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+
+        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
+        {
+            auto & interval = intervals[interval_idx];
+            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
+        }
+
+        return result;
+    }
+
+    // =========================================================================================================================================
+    static _SoftClassificationSet getDistanceClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
     {
         _SoftClassificationSet result;
 
@@ -461,13 +489,23 @@ public:
         return result;
     }
 
+    _SoftClassificationSet getDistanceClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    {
+        auto const & from_joint = humanoid_[from_joint_name];
+        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+
+        _SoftClassificationSet result = proxemics::psychophysical::getDistanceClassification( from_joint, to_joint, params_["intervals"]["distance"] );
+
+        return result;
+    }
+
     _PsychophysicalFeatureMsg createMessage( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
     {
         _PsychophysicalFeatureMsg psychophysical_feature_msg;
         psychophysical_feature_msg.header.stamp = ros::Time::now();
         psychophysical_feature_msg.observer_name = humanoid_.name;
         psychophysical_feature_msg.target_name = other.humanoid_.name;
-        psychophysical_feature_msg.dimensions.resize( 8 );
+        psychophysical_feature_msg.dimensions.resize( 10 );
 
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -570,6 +608,16 @@ public:
             dimension_msg.name = "voice_loudness";
 
             auto const & classification = getVoiceLoudnessClassification( other, from_joint_name, to_joint_name );
+            appendClassification( dimension_msg, classification );
+        }
+
+        // -------------------------------------------------------------------------------------------------------------------------------------
+        // distance
+        {
+            auto & dimension_msg = psychophysical_feature_msg.dimensions[9];
+            dimension_msg.name = "distance";
+
+            auto const & classification = getDistanceClassification( other, from_joint_name, to_joint_name );
             appendClassification( dimension_msg, classification );
         }
 
