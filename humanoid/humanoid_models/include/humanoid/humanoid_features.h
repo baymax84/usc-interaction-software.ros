@@ -58,7 +58,7 @@ typedef std::string _JointName;
 typedef std::vector<_JointName> _JointNames;
 typedef std::map<_JointName, _JointName> _JointDependencyMap;
 typedef std::map<_JointName, std::vector<std::vector<int> > > _JointStateMap;
-typedef humanoid_models::PoseWithConfidence _PoseWithConfidenceMsg;
+typedef geometry_msgs::PoseWithCovariance _PoseWithConfidenceMsg;
 typedef humanoid_models::HumanoidJoint _HumanoidJointMsg;
 typedef humanoid_models::HumanoidState _HumanoidStateMsg;
 typedef humanoid_models::HumanoidStateArray _HumanoidStateArrayMsg;
