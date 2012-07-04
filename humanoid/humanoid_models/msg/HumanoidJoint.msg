@@ -1,4 +1,4 @@
 Header header
 string name
 string parent_name
-humanoid_models/PoseWithConfidence pose
+geometry_msgs/PoseWithCovariance pose

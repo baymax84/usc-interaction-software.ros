@@ -56,6 +56,40 @@ using humanoid::_HumanoidStateMsg;
 using humanoid::_HumanoidJointMsg;
 using humanoid::_JointName;
 typedef std::map<_JointName, btQuaternion> _JointNormMap;
+typedef std::map<_JointName, std::vector<double> > _JointErrorMap;
+
+static _JointErrorMap generateJointErrorMap()
+{
+    _JointErrorMap joint_error_map;
+
+    // joint_error_map["joint"]            = { x, y, z, r, p, y };
+    joint_error_map["head"]             = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["neck"]             = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["torso"]            = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["waist"]            = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_collar"]     = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_shoulder"]   = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_elbow"]      = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_wrist"]      = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_hand"]       = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_finger_tip"] = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_collar"]      = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_shoulder"]    = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_elbow"]       = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_wrist"]       = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_hand"]        = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_finger_tip"]  = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_hip"]        = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_knee"]       = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_ankle"]      = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["right_foot"]       = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_hip"]         = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_knee"]        = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_ankle"]       = { 0, 0, 0, 0, 0, 0 };
+    joint_error_map["left_foot"]        = { 0, 0, 0, 0, 0, 0 };
+
+    return joint_error_map;
+}
 
 static _JointNormMap generateJointNormMap()
 {
@@ -91,9 +125,16 @@ static _JointNormMap generateJointNormMap()
 
 static auto getJointNormMap() -> decltype( generateJointNormMap() ) const &
 {
-    static auto && joint_norm_map = generateJointNormMap();
+    static auto const & joint_norm_map = generateJointNormMap();
 
     return joint_norm_map;
+}
+
+static auto getJointErrorMap() -> decltype( generateJointErrorMap() ) const &
+{
+    static auto const & joint_error_map = generateJointErrorMap();
+
+    return joint_error_map;
 }
 
 //! Reads data from an openni_multitracker/openni_multitracker node and converts these data into Humanoid messages
@@ -140,6 +181,7 @@ private:
         state_array_msg.header.stamp = now;
 
         auto const & joint_norm_map = getJointNormMap();
+        auto const & joint_error_map = getJointErrorMap();
         auto const & joint_dependency_map = humanoid::getJointDependencyMap();
 
         for( auto user_state = user_states_msg->user_states.cbegin(); user_state != user_states_msg->user_states.cend(); ++user_state )
@@ -172,7 +214,17 @@ private:
                     joint_msg.parent_name = parent_joint_name;
                     joint_msg.pose.pose.position = unit::make_unit( normalized_transform.getOrigin() );
                     joint_msg.pose.pose.orientation = unit::make_unit( normalized_transform.getRotation() );
-                    joint_msg.pose.confidence = 1.0;
+
+                    auto const joint_error_model = joint_error_map.find( *joint_name )->second;
+
+                    // joint_msg.pose.covariance[row * width + col]
+                    joint_msg.pose.covariance[0 * 6 + 0] = joint_error_model[0];
+                    joint_msg.pose.covariance[1 * 6 + 1] = joint_error_model[1];
+                    joint_msg.pose.covariance[2 * 6 + 2] = joint_error_model[2];
+
+                    joint_msg.pose.covariance[3 * 6 + 3] = joint_error_model[3];
+                    joint_msg.pose.covariance[4 * 6 + 4] = joint_error_model[4];
+                    joint_msg.pose.covariance[5 * 6 + 5] = joint_error_model[5];
 
                     state_msg.joints.push_back( joint_msg );
 
