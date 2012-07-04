@@ -209,7 +209,7 @@ namespace psychophysical
 
     static SfpAxisCode getSfpAxisCode( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        Radian const & yaw_rad = fabs( angles::normalize_angle( proxemics::spatial::getAngleToYPR( joint1, joint2 ).getZ() ) );
+        Radian const & yaw_rad = fabs( angles::normalize_angle( proxemics::spatial::getAngleToYPR( joint1, joint2 ).getFeature().getZ() ) );
         Degree const & yaw_deg( yaw_rad );
 
         int const num_sfp_axes = 8;
@@ -227,8 +227,30 @@ namespace psychophysical
         return SfpAxisCode( ++sfp_axis );
     }
 
+    static _SoftClassificationSet sampleIntervals( XmlRpc::XmlRpcValue * const begin, XmlRpc::XmlRpcValue * const end, double const & mean, double const & sigma )
+    {
+        _SoftClassificationSet result;
+
+        if( begin )
+        {
+            for( XmlRpc::XmlRpcValue * interval_it = begin; interval_it != end; ++interval_it )
+            {
+                auto & interval = *interval_it;
+
+                auto const interval_id = quickdev::ParamReader::getXmlRpcValue<int>( interval, "id" );
+                auto const interval_min = quickdev::ParamReader::getXmlRpcValue<double>( interval, "min" );
+                auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
+                auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
+
+                result.insert( SoftClassification( interval_id, gsl_cdf_gaussian_P( mean + interval_max, sigma ) - gsl_cdf_gaussian_P( mean - interval_min, sigma ), interval_name ) );
+            }
+        }
+
+        return result;
+    }
+
     // =========================================================================================================================================
-    static _SoftClassificationSet getSexClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
+    static _SoftClassificationSet getSexClassification()
     {
         _SoftClassificationSet result;
 
@@ -238,7 +260,7 @@ namespace psychophysical
     }
 
     // =========================================================================================================================================
-    static _SoftClassificationSet getPosturalClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
+    static _SoftClassificationSet getPosturalClassification()
     {
         _SoftClassificationSet result;
 
@@ -248,7 +270,7 @@ namespace psychophysical
     }
 
     // =========================================================================================================================================
-    static _SoftClassificationSet getSociofugalClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
+    static _SoftClassificationSet getSFPClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
     {
         _SoftClassificationSet result;
 
@@ -278,13 +300,15 @@ namespace psychophysical
     }
 
     // =========================================================================================================================================
-    static _SoftClassificationSet getRetinalClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
+    static _SoftClassificationSet getVisualClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
     {
         _SoftClassificationSet result;
 
-        //
+        auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
+        double const sigma = angle.getCovariance()( 0, 0 );
+        double const mean = angle;
 
-        return result;
+        return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
 
     // =========================================================================================================================================
@@ -292,15 +316,11 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+        auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
+        double const sigma = distance.getCovariance()( 0, 0 );
+        double const mean = distance;
 
-        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
-        {
-            auto & interval = intervals[interval_idx];
-            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
-        }
-
-        return result;
+        return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
 
     // =========================================================================================================================================
@@ -308,31 +328,21 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+        auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
+        double const sigma = distance.getCovariance()( 0, 0 );
+        double const mean = distance;
 
-        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
-        {
-            auto & interval = intervals[interval_idx];
-            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
-        }
-
-        return result;
+        return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
 
     // =========================================================================================================================================
     static _SoftClassificationSet getVoiceLoudnessClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
     {
-        _SoftClassificationSet result;
+        auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
+        double const sigma = distance.getCovariance()( 0, 0 );
+        double const mean = distance;
 
-        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
-
-        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
-        {
-            auto & interval = intervals[interval_idx];
-            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
-        }
-
-        return result;
+        return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
 
     // =========================================================================================================================================
@@ -340,15 +350,11 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        double const sigma = joint1.pose.covariance[0] + joint2.pose.covariance[0];
+        auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
+        double const sigma = distance.getCovariance()( 0, 0 );
+        double const mean = distance;
 
-        for( int interval_idx = 0; interval_idx < intervals.size(); ++interval_idx )
-        {
-            auto & interval = intervals[interval_idx];
-            result.insert( SoftClassification( interval_idx, gsl_cdf_gaussian_P( interval["max"], sigma ) - gsl_cdf_gaussian_P( interval["min"], sigma ), interval["name"] ) );
-        }
-
-        return result;
+        return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
 
 
@@ -378,7 +384,7 @@ public:
     void init( ros::NodeHandle & nh, __Args&&... args )
     {
         // { voice_loudness: [ { name: silent, min: 0, max: 0.01 }, { name: very_soft, min: 0.01, max: 0.1 } ] }
-        params_ = quickdev::ParamReader::readParam<XmlRpc::XmlRpcValue>( nh, "params" );
+        params_ = quickdev::ParamReader::readParam<XmlRpc::XmlRpcValue>( nh, "/proxemics/psychophysical" );
         init( args... );
     }
 
@@ -399,32 +405,30 @@ public:
         }
     }
 
-    _SoftClassificationSet getSexClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getSexClassification()
     {
-        auto const & from_joint = humanoid_[from_joint_name];
-        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        _SoftClassificationSet result;
 
-        _SoftClassificationSet result = proxemics::psychophysical::getSexClassification( from_joint, to_joint, params_["intervals"]["sex"] );
+        result.insert( SoftClassification( proxemics::psychophysical::SEX_MALE, 1.0 ) );
 
         return result;
     }
 
-    _SoftClassificationSet getPosturalClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getPosturalClassification()
     {
-        auto const & from_joint = humanoid_[from_joint_name];
-        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        _SoftClassificationSet result;
 
-        _SoftClassificationSet result = proxemics::psychophysical::getPosturalClassification( from_joint, to_joint, params_["intervals"]["postural"] );
+        result.insert( SoftClassification( proxemics::psychophysical::POSTURE_STANDING, 1.0 ) );
 
         return result;
     }
 
-    _SoftClassificationSet getSociofugalClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getSFPClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
 
-        _SoftClassificationSet result = proxemics::psychophysical::getSociofugalClassification( from_joint, to_joint, params_["intervals"]["sociofugal"] );
+        _SoftClassificationSet result = proxemics::psychophysical::getSFPClassification( from_joint, to_joint, params_["intervals"]["sfp"] );
 
         return result;
     }
@@ -449,12 +453,12 @@ public:
         return result;
     }
 
-    _SoftClassificationSet getRetinalClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getVisualClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
 
-        _SoftClassificationSet result = proxemics::psychophysical::getRetinalClassification( from_joint, to_joint, params_["intervals"]["retinal"] );
+        _SoftClassificationSet result = proxemics::psychophysical::getVisualClassification( from_joint, to_joint, params_["intervals"]["visual"] );
 
         return result;
     }
@@ -469,30 +473,32 @@ public:
         return result;
     }
 
-    _SoftClassificationSet getOlfactionClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getOlfactionClassification( PsychophysicalFeatureRecognizer const & other )
     {
-        auto const & from_joint = humanoid_[from_joint_name];
-        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        auto const & from_joint = humanoid_["head"];
+
+        // note: replace with "closest joint to observer"
+        auto const & to_joint = other.humanoid_["head"];
 
         _SoftClassificationSet result = proxemics::psychophysical::getOlfactionClassification( from_joint, to_joint, params_["intervals"]["olfaction"] );
 
         return result;
     }
 
-    _SoftClassificationSet getVoiceLoudnessClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getVoiceLoudnessClassification( PsychophysicalFeatureRecognizer const & other )
     {
-        auto const & from_joint = humanoid_[from_joint_name];
-        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        auto const & from_joint = humanoid_["head"];
+        auto const & to_joint = other.humanoid_["head"];
 
         _SoftClassificationSet result = proxemics::psychophysical::getVoiceLoudnessClassification( from_joint, to_joint, params_["intervals"]["voice_loudness"] );
 
         return result;
     }
 
-    _SoftClassificationSet getDistanceClassification( PsychophysicalFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" )
+    _SoftClassificationSet getDistanceClassification( PsychophysicalFeatureRecognizer const & other )
     {
-        auto const & from_joint = humanoid_[from_joint_name];
-        auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
+        auto const & from_joint = humanoid_["torso"];
+        auto const & to_joint = other.humanoid_["torso"];
 
         _SoftClassificationSet result = proxemics::psychophysical::getDistanceClassification( from_joint, to_joint, params_["intervals"]["distance"] );
 
@@ -527,7 +533,7 @@ public:
             auto & dimension_msg = psychophysical_feature_msg.dimensions[0];
             dimension_msg.name = "sex";
 
-            auto const & classification = getSexClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getSexClassification();
             appendClassification( dimension_msg, classification );
         }
 
@@ -537,17 +543,17 @@ public:
             auto & dimension_msg = psychophysical_feature_msg.dimensions[1];
             dimension_msg.name = "postural";
 
-            auto const & classification = getPosturalClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getPosturalClassification();
             appendClassification( dimension_msg, classification );
         }
 
         // -------------------------------------------------------------------------------------------------------------------------------------
-        // sociofugal
+        // sfp
         {
             auto & dimension_msg = psychophysical_feature_msg.dimensions[2];
-            dimension_msg.name = "sociofugal";
+            dimension_msg.name = "sfp";
 
-            auto const & classification = getSociofugalClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getSFPClassification( other, from_joint_name, to_joint_name );
             appendClassification( dimension_msg, classification );
         }
 
@@ -572,12 +578,12 @@ public:
         }
 
         // -------------------------------------------------------------------------------------------------------------------------------------
-        // retinal
+        // visual
         {
             auto & dimension_msg = psychophysical_feature_msg.dimensions[5];
-            dimension_msg.name = "retinal";
+            dimension_msg.name = "visual";
 
-            auto const & classification = getRetinalClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getVisualClassification( other, from_joint_name, to_joint_name );
             appendClassification( dimension_msg, classification );
         }
 
@@ -597,7 +603,7 @@ public:
             auto & dimension_msg = psychophysical_feature_msg.dimensions[7];
             dimension_msg.name = "olfaction";
 
-            auto const & classification = getOlfactionClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getOlfactionClassification( other );
             appendClassification( dimension_msg, classification );
         }
 
@@ -607,7 +613,7 @@ public:
             auto & dimension_msg = psychophysical_feature_msg.dimensions[8];
             dimension_msg.name = "voice_loudness";
 
-            auto const & classification = getVoiceLoudnessClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getVoiceLoudnessClassification( other );
             appendClassification( dimension_msg, classification );
         }
 
@@ -617,7 +623,7 @@ public:
             auto & dimension_msg = psychophysical_feature_msg.dimensions[9];
             dimension_msg.name = "distance";
 
-            auto const & classification = getDistanceClassification( other, from_joint_name, to_joint_name );
+            auto const & classification = getDistanceClassification( other );
             appendClassification( dimension_msg, classification );
         }
 
