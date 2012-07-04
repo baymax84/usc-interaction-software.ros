@@ -323,9 +323,43 @@ struct XmlRpcStorageAdapter
 {
     typedef __Output _Output;
 
-    static __Output convert( _XmlRpcValue && input )
+    template
+    <
+        class __MOutput,
+        typename std::enable_if<( std::is_arithmetic<__MOutput>::value ), int>::type = 0
+    >
+    static __Output convert( _XmlRpcValue & input )
+    {
+        if( input.getType() == XmlRpc::XmlRpcValue::TypeString )
+        {
+            std::string const input_str = input;
+            if( input_str.find( "inf" ) != std::string::npos )
+            {
+                std::string const sign_str = input_str.substr( 0, 1 );
+                if( sign_str == "+" ) return std::numeric_limits<__Output>::max();
+                if( sign_str == "-" ) return std::numeric_limits<__Output>::min();
+            }
+            return __Output();
+        }
+        if( input.getType() == XmlRpc::XmlRpcValue::TypeInt ) return int( input );
+        if( input.getType() == XmlRpc::XmlRpcValue::TypeDouble ) return double( input );
+
+        return input;
+    }
+
+    template
+    <
+        class __MOutput,
+        typename std::enable_if<( !std::is_arithmetic<__MOutput>::value ), int>::type = 0
+    >
+    static __Output convert( _XmlRpcValue & input )
     {
         return __Output( input );
+    }
+
+    static __Output convert( _XmlRpcValue & input )
+    {
+        return convert<__Output>( input );
     }
 };
 
@@ -335,7 +369,7 @@ struct XmlRpcStorageAdapter<std::vector<__Storage> >
     typedef _XmlRpcValue::ValueArray _XmlRpcType;
     typedef std::vector<__Storage> _Output;
 
-    static _Output convert( _XmlRpcValue && input )
+    static _Output convert( _XmlRpcValue & input )
     {
         _Output result( input.size() );
 
@@ -354,7 +388,7 @@ struct XmlRpcStorageAdapter<std::map<std::string, __Storage> >
     typedef _XmlRpcValue::ValueStruct _XmlRpcType;
     typedef std::map<std::string, __Storage> _Output;
 
-    static _Output convert( _XmlRpcValue && input )
+    static _Output convert( _XmlRpcValue & input )
     {
         _Output result;
 
@@ -430,31 +464,7 @@ public:
         return ss.str();
     }
 
-    template
-    <
-        class __Output,
-        typename std::enable_if<( std::is_arithmetic<__Output>::value || std::is_same<std::string, __Output>::value || std::is_same<XmlRpc::XmlRpcValue, __Output>::value ), int>::type = 0
-    >
-    static __Output readParam( ros::NodeHandle & nh, std::string const & name, __Output const & default_value = __Output() )
-    {
-        __Output param;
-        bool const param_found = nh.getParam( name, param );
-
-        if( param_found )
-        {
-            PRINT_INFO( "Found param [ %s/%s ] with value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( param ).c_str() );
-            return param;
-        }
-
-        PRINT_WARN( "Param [ %s/%s ] not found; using default value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( default_value ).c_str() );
-        return default_value;
-    }
-
-    template
-    <
-        class __Output,
-        typename std::enable_if<!( std::is_arithmetic<__Output>::value || std::is_same<std::string, __Output>::value || std::is_same<XmlRpc::XmlRpcValue, __Output>::value ), int>::type = 0
-    >
+    template<class __Output>
     static __Output readParam( ros::NodeHandle & nh, std::string const & name, __Output const & default_value = __Output() )
     {
         _XmlRpcValue param;
@@ -462,7 +472,7 @@ public:
 
         if( param_found )
         {
-            auto result = param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
+            __Output result = param_reader_traits::XmlRpcStorageAdapter<__Output>::convert( param );
             PRINT_INFO( "Found param [ %s/%s ] with value [ %s ]", nh.getNamespace().c_str(), name.c_str(), toString( result ).c_str() );
             return result;
         }
