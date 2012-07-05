@@ -260,8 +260,6 @@ private:
                     auto & parent_joint_msg = parent_joint_msg_it->second;
                     auto & joint_msg = joint_msg_it->second;
 
-                    joint_msg.pose.covariance[3 * 6 + 3] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[3 * 6 + 3], joint_msg.pose.covariance[3 * 6 + 3] );
-                    joint_msg.pose.covariance[4 * 6 + 4] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[4 * 6 + 4], joint_msg.pose.covariance[4 * 6 + 4] );
                     joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
                 }
             }
@@ -281,14 +279,12 @@ private:
                     joint_msg.parent_name = "head";
 
                     // copy parent pose
-                    joint_msg.pose.pose = parent_joint_msg.pose.pose;
+                    joint_msg.pose = parent_joint_msg.pose;
 
                     joint_msg.pose.pose.position.x += 0; // some constant(?) offset
                     joint_msg.pose.pose.position.y += 0; // some constant(?) offset
                     joint_msg.pose.pose.position.z += 0; // some constant(?) offset
 
-                    joint_msg.pose.covariance[3 * 6 + 3] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[3 * 6 + 3], joint_msg.pose.covariance[3 * 6 + 3] );
-                    joint_msg.pose.covariance[4 * 6 + 4] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[4 * 6 + 4], joint_msg.pose.covariance[4 * 6 + 4] );
                     joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
                 }
             }
