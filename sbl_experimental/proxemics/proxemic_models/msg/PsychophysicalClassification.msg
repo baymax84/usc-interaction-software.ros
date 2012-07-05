@@ -2,6 +2,7 @@
 string name
 # likelihood
 float64 likelihood
+float64 log_likelihood
 
 # stored elsewhere (invariant at runtime):
 # float64 interval_min

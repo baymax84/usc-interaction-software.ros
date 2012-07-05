@@ -52,13 +52,15 @@ class SoftClassification
 {
 public:
     int id_;
-    double value_;
+    double likelihood_;
+    double log_likelihood_;
     std::string name_;
 
-    SoftClassification( int const & id = 0, double const & value = 0, std::string const & name = "" )
+    SoftClassification( int const & id = 0, double const & likelihood = 0, std::string const & name = "" )
     :
         id_( id ),
-        value_( value ),
+        likelihood_( likelihood ),
+        log_likelihood_( log( likelihood ) ),
         name_( name )
     {
         //
@@ -66,14 +68,15 @@ public:
 
     bool operator<( SoftClassification const & other ) const
     {
-        return value_ < other.value_;
+        return likelihood_ < other.likelihood_;
     }
 
     operator _PsychophysicalClassificationMsg() const
     {
         _PsychophysicalClassificationMsg classification_msg;
         classification_msg.name = name_;
-        classification_msg.likelihood = value_;
+        classification_msg.likelihood = likelihood_;
+        classification_msg.log_likelihood = log_likelihood_;
         return classification_msg;
     }
 };
