@@ -71,7 +71,7 @@ static _JointNames const JOINT_NAMES_
     "head",             // 0  : nnn :
     "neck",             // 1  : ryp :
     "torso",            // 2  : ryp :
-    "waist",            // 3  : ryp
+    "pelvis",           // 3  : ryp
     "right_collar",     // 4  : nnn
     "right_shoulder",   // 5  : ryn
     "right_elbow",      // 6  : nyp
@@ -136,7 +136,7 @@ namespace RotationAxes
 //       [left_hand]   |   [right_hand]       //             _______/ | \_______________     //
 //            |        |         |            //            /          \                \    //
 // [left_finger_tip]   |   [right_finger_tip] //     [left_collar]  [right_collar]    [neck] //
-//                  [waist]                   //           ^              ^              ^   //
+//                  [wais]                   //           ^              ^              ^   //
 //                  /     \                   //   [left_shoulder]  [right_shoulder]  [head] //
 //                 /       \                  //           ^              ^                  //
 //         [left_hip]     [right_hip]         //      [left_elbow]  [right_elbow]            //
@@ -155,8 +155,8 @@ static _JointDependencyMap generateJointDependencyMap()
     //        parent of ["joint1"]           = "joint2"
     joint_dependency_map["head"]             = "neck";
     joint_dependency_map["neck"]             = "torso";
-    joint_dependency_map["torso"]            = "waist";
-    joint_dependency_map["waist"]            = "sensor";
+    joint_dependency_map["torso"]            = "pelvis";
+    joint_dependency_map["pelvis"]           = "sensor";
 
     joint_dependency_map["right_collar"]     = "torso";
     joint_dependency_map["right_shoulder"]   = "right_collar";
@@ -165,7 +165,7 @@ static _JointDependencyMap generateJointDependencyMap()
     joint_dependency_map["right_hand"]       = "right_wrist";
     joint_dependency_map["right_finger_tip"] = "right_hand";
 
-    joint_dependency_map["right_hip"]        = "waist";
+    joint_dependency_map["right_hip"]        = "pelvis";
     joint_dependency_map["right_knee"]       = "right_hip";
     joint_dependency_map["right_ankle"]      = "right_knee";
     joint_dependency_map["right_foot"]       = "right_ankle";
@@ -177,7 +177,7 @@ static _JointDependencyMap generateJointDependencyMap()
     joint_dependency_map["left_hand"]        = "left_wrist";
     joint_dependency_map["left_finger_tip"]  = "left_hand";
 
-    joint_dependency_map["left_hip"]         = "waist";
+    joint_dependency_map["left_hip"]         = "pelvis";
     joint_dependency_map["left_knee"]        = "left_hip";
     joint_dependency_map["left_ankle"]       = "left_knee";
     joint_dependency_map["left_foot"]        = "left_ankle";
@@ -210,7 +210,7 @@ static _JointStateMap generateJointStateMap()
     joint_state_map[JOINT_NAMES_[0]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // head
     joint_state_map[JOINT_NAMES_[1]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // neck
     joint_state_map[JOINT_NAMES_[2]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // torso
-    joint_state_map[JOINT_NAMES_[3]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // waist
+    joint_state_map[JOINT_NAMES_[3]]  = { { -z, -x,  y }, { 0, 0, 180 } }; // pelvis
     joint_state_map[JOINT_NAMES_[4]]  = { {  n,  n,  n }, { 0, 0, 0   } }; // right_collar
     joint_state_map[JOINT_NAMES_[5]]  = { { -z,  n, -y }, { 0, 0, 180 } }; // right_shoulder
     joint_state_map[JOINT_NAMES_[6]]  = { {  n, -z,  y }, { 0, 0, 90  } }; // right_elbow
