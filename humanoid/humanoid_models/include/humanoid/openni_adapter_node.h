@@ -99,6 +99,39 @@ static _JointErrorMap generateJointErrorMap()
     return joint_error_map;
 }
 
+static _JointErrorMap generateJointOffsetMap()
+{
+    _JointErrorMap joint_offset_map;
+
+    // joint_offset_map["joint"]            = { x, y, z };
+    joint_offset_map["head"]             = { 0, 0, 0 };
+    joint_offset_map["neck"]             = { 0, 0, 0 };
+    joint_offset_map["torso"]            = { 0, 0, 0 };
+    joint_offset_map["waist"]            = { 0, 0, 0 };
+    joint_offset_map["right_collar"]     = { 0, 0, 0 };
+    joint_offset_map["right_shoulder"]   = { 0, 0, 0 };
+    joint_offset_map["right_elbow"]      = { 0, 0, 0 };
+    joint_offset_map["right_wrist"]      = { 0, 0, 0 };
+    joint_offset_map["right_hand"]       = { 0, 0, 0 };
+    joint_offset_map["right_finger_tip"] = { 0, 0, 0 };
+    joint_offset_map["left_collar"]      = { 0, 0, 0 };
+    joint_offset_map["left_shoulder"]    = { 0, 0, 0 };
+    joint_offset_map["left_elbow"]       = { 0, 0, 0 };
+    joint_offset_map["left_wrist"]       = { 0, 0, 0 };
+    joint_offset_map["left_hand"]        = { 0, 0, 0 };
+    joint_offset_map["left_finger_tip"]  = { 0, 0, 0 };
+    joint_offset_map["right_hip"]        = { 0, 0, 0 };
+    joint_offset_map["right_knee"]       = { 0, 0, 0 };
+    joint_offset_map["right_ankle"]      = { 0, 0, 0 };
+    joint_offset_map["right_foot"]       = { 0, 0, 0 };
+    joint_offset_map["left_hip"]         = { 0, 0, 0 };
+    joint_offset_map["left_knee"]        = { 0, 0, 0 };
+    joint_offset_map["left_ankle"]       = { 0, 0, 0 };
+    joint_offset_map["left_foot"]        = { 0, 0, 0 };
+
+    return joint_offset_map;
+}
+
 static _JointNormMap generateJointNormMap()
 {
     _JointNormMap joint_norm_map;
@@ -143,6 +176,13 @@ static auto getJointErrorMap() -> decltype( generateJointErrorMap() ) const &
     static auto const & joint_error_map = generateJointErrorMap();
 
     return joint_error_map;
+}
+
+static auto getJointOffsetMap() -> decltype( generateJointOffsetMap() ) const &
+{
+    static auto const & joint_offset_map = generateJointOffsetMap();
+
+    return joint_offset_map;
 }
 
 //! Reads data from an openni_multitracker/openni_multitracker node and converts these data into Humanoid messages
@@ -260,7 +300,8 @@ private:
                     auto & parent_joint_msg = parent_joint_msg_it->second;
                     auto & joint_msg = joint_msg_it->second;
 
-                    joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
+                    // pelvis -> head * pelvis * head
+                    joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( 0.24682683, parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
                 }
             }
 
@@ -285,7 +326,8 @@ private:
                     joint_msg.pose.pose.position.y += 0; // some constant(?) offset
                     joint_msg.pose.pose.position.z += 0; // some constant(?) offset
 
-                    joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
+                    // head -> eyes * head
+                    joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( 0.787377587, parent_joint_msg.pose.covariance[5 * 6 + 5] );
                 }
             }
 
