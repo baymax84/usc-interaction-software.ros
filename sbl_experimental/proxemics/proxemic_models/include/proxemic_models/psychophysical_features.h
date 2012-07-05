@@ -308,7 +308,7 @@ namespace psychophysical
         _SoftClassificationSet result;
 
         auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
-        double const sigma = angle.getCovariance()( 0, 0 );
+        double const sigma = sqrt( angle.getCovariance()( 0, 0 ) );
         double const mean = angle;
 
         return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
@@ -320,7 +320,7 @@ namespace psychophysical
         _SoftClassificationSet result;
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = distance.getCovariance()( 0, 0 );
+        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance;
 
         return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
@@ -332,7 +332,7 @@ namespace psychophysical
         _SoftClassificationSet result;
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = distance.getCovariance()( 0, 0 );
+        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance;
 
         return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
@@ -342,7 +342,7 @@ namespace psychophysical
     static _SoftClassificationSet getVoiceLoudnessClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
     {
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = distance.getCovariance()( 0, 0 );
+        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance;
 
         return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
@@ -354,7 +354,7 @@ namespace psychophysical
         _SoftClassificationSet result;
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = distance.getCovariance()( 0, 0 );
+        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance;
 
         return sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
