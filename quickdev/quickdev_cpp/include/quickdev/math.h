@@ -70,8 +70,30 @@ template<class __Data>
 __Data gaussian_product_mean( __Data const & mean1, __Data const & mean2 );
 
 // =============================================================================================================================================
+/*
+template
+<
+    class... __Args
+    typename std::enable_if<(sizeof...(__Args) > 2 ), int>::type = 0
+>
+__Data gaussian_product_mean( __Data const & mean, __Data const & variance, __Args&&... args )
+{
+    return gaussian_product_mean( mean, variance, gaussian_product_mean( mean, variance, args... ), gaussian_product_variance( variance ) );
+}
+*/
+
+// =============================================================================================================================================
 template<class __Data>
 __Data gaussian_product_variance( __Data const & variance1, __Data const & variance2 );
+
+// =============================================================================================================================================
+template
+<
+    class __Data,
+    class... __Args,
+    typename std::enable_if<(sizeof...(__Args) > 1 ), int>::type = 0
+>
+__Data gaussian_product_variance( __Data const & mean, __Args&&... args );
 
 // =============================================================================================================================================
 template<class __Data>
