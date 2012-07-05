@@ -37,14 +37,22 @@
 #define HUMANOIDMODELS_HUMANOID_OPENNIADAPTERNODE_H_
 
 #include <quickdev/node.h>
+
+// policies
 #include <quickdev/tf_tranceiver_policy.h>
 #include <quickdev/timed_policy.h>
+
+// objects
 #include <quickdev/multi_publisher.h>
 #include <quickdev/multi_subscriber.h>
+
+// utils
 #include <quickdev/threading.h>
 #include <quickdev/geometry_message_conversions.h>
-
+#include <quickdev/math.h>
 #include <humanoid/humanoid_features.h>
+
+// msgs
 #include <openni_multitracker/UserStateArray.h>
 
 typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
@@ -62,31 +70,31 @@ static _JointErrorMap generateJointErrorMap()
 {
     _JointErrorMap joint_error_map;
 
-    // joint_error_map["joint"]            = { x, y, z, r, p, y };
-    joint_error_map["head"]             = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["neck"]             = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["torso"]            = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["waist"]            = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_collar"]     = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_shoulder"]   = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_elbow"]      = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_wrist"]      = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_hand"]       = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_finger_tip"] = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_collar"]      = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_shoulder"]    = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_elbow"]       = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_wrist"]       = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_hand"]        = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_finger_tip"]  = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_hip"]        = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_knee"]       = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_ankle"]      = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["right_foot"]       = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_hip"]         = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_knee"]        = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_ankle"]       = { 0, 0, 0, 0, 0, 0 };
-    joint_error_map["left_foot"]        = { 0, 0, 0, 0, 0, 0 };
+    // joint_error_map["joint"]            = { r, p, y };
+    joint_error_map["head"]             = { 0, 0, 0 };
+    joint_error_map["neck"]             = { 0, 0, 0 };
+    joint_error_map["torso"]            = { 0, 0, 0 };
+    joint_error_map["waist"]            = { 0, 0, 0 };
+    joint_error_map["right_collar"]     = { 0, 0, 0 };
+    joint_error_map["right_shoulder"]   = { 0, 0, 0 };
+    joint_error_map["right_elbow"]      = { 0, 0, 0 };
+    joint_error_map["right_wrist"]      = { 0, 0, 0 };
+    joint_error_map["right_hand"]       = { 0, 0, 0 };
+    joint_error_map["right_finger_tip"] = { 0, 0, 0 };
+    joint_error_map["left_collar"]      = { 0, 0, 0 };
+    joint_error_map["left_shoulder"]    = { 0, 0, 0 };
+    joint_error_map["left_elbow"]       = { 0, 0, 0 };
+    joint_error_map["left_wrist"]       = { 0, 0, 0 };
+    joint_error_map["left_hand"]        = { 0, 0, 0 };
+    joint_error_map["left_finger_tip"]  = { 0, 0, 0 };
+    joint_error_map["right_hip"]        = { 0, 0, 0 };
+    joint_error_map["right_knee"]       = { 0, 0, 0 };
+    joint_error_map["right_ankle"]      = { 0, 0, 0 };
+    joint_error_map["right_foot"]       = { 0, 0, 0 };
+    joint_error_map["left_hip"]         = { 0, 0, 0 };
+    joint_error_map["left_knee"]        = { 0, 0, 0 };
+    joint_error_map["left_ankle"]       = { 0, 0, 0 };
+    joint_error_map["left_foot"]        = { 0, 0, 0 };
 
     return joint_error_map;
 }
@@ -169,14 +177,13 @@ private:
 
     QUICKDEV_SPIN_ONCE()
     {
-        if( ros::Time::now() - _UserStatesCBTimer::last() > kinect_timeout_duration_ ) return;
+        auto const now = ros::Time::now();
+        if( now - _UserStatesCBTimer::last() > kinect_timeout_duration_ ) return;
 
         QUICKDEV_LOCK_CACHE_AND_GET( user_states_cache_, user_states_msg );
         if( !user_states_msg ) return;
 
         _HumanoidStateArrayMsg state_array_msg;
-
-        auto const now = ros::Time::now();
 
         state_array_msg.header.stamp = now;
 
@@ -193,11 +200,14 @@ private:
 
             state_msg.name = user_state->name;
 
-            for( auto joint_name = humanoid::JOINT_NAMES_.begin(); joint_name != humanoid::JOINT_NAMES_.end(); ++joint_name )
-            {
-                auto const parent_joint_name = joint_dependency_map.find( *joint_name )->second;
+            std::map<std::string, _HumanoidJointMsg> joint_msg_map;
 
-                auto const joint_frame_name( "/" + user_state->name + "/" + *joint_name );
+            for( auto joint_name_it = humanoid::JOINT_NAMES_.begin(); joint_name_it != humanoid::JOINT_NAMES_.end(); ++joint_name_it )
+            {
+                auto const & joint_name = *joint_name_it;
+                auto const parent_joint_name = joint_dependency_map.find( joint_name )->second;
+
+                auto const joint_frame_name( "/" + user_state->name + "/" + joint_name );
                 //auto const parent_joint_frame_name( "/" + user_state->name + "/" + parent_joint_name );
 
                 if( transformExists( world_frame_, joint_frame_name ) )
@@ -205,31 +215,87 @@ private:
                     auto const world_transform( lookupTransform( world_frame_, joint_frame_name ) );
                     //auto const parent_transform( lookupTransform( parent_joint_frame_name, joint_frame_name ) );
 
-                    auto const norm_rotation = joint_norm_map.find( *joint_name )->second;
+                    auto const norm_rotation = joint_norm_map.find( joint_name )->second;
                     btTransform const normalized_transform( world_transform.getRotation() * norm_rotation, world_transform.getOrigin() );
 
                     _HumanoidJointMsg joint_msg;
 
-                    joint_msg.name = *joint_name;
+                    joint_msg.name = joint_name;
                     joint_msg.parent_name = parent_joint_name;
-                    joint_msg.pose.pose.position = unit::make_unit( normalized_transform.getOrigin() );
-                    joint_msg.pose.pose.orientation = unit::make_unit( normalized_transform.getRotation() );
 
-                    auto const joint_error_model = joint_error_map.find( *joint_name )->second;
+                    auto const normalized_position = normalized_transform.getOrigin();
+                    auto const normalized_rotation = normalized_transform.getRotation();
+
+                    joint_msg.pose.pose.position = unit::make_unit( normalized_position );
+                    joint_msg.pose.pose.orientation = unit::make_unit( normalized_rotation );
 
                     // joint_msg.pose.covariance[row * width + col]
-                    joint_msg.pose.covariance[0 * 6 + 0] = joint_error_model[0];
-                    joint_msg.pose.covariance[1 * 6 + 1] = joint_error_model[1];
-                    joint_msg.pose.covariance[2 * 6 + 2] = joint_error_model[2];
+                    double const position_sigma = pow( normalized_position.length() - 0.039, 2 ) * 0.0055;
+                    joint_msg.pose.covariance[0 * 6 + 0] = position_sigma;
+                    joint_msg.pose.covariance[1 * 6 + 1] = position_sigma;
+                    joint_msg.pose.covariance[2 * 6 + 2] = position_sigma;
 
-                    joint_msg.pose.covariance[3 * 6 + 3] = joint_error_model[3];
-                    joint_msg.pose.covariance[4 * 6 + 4] = joint_error_model[4];
-                    joint_msg.pose.covariance[5 * 6 + 5] = joint_error_model[5];
+                    auto joint_error_model_it = joint_error_map.find( joint_name );
+                    if( joint_error_model_it != joint_error_map.end() )
+                    {
+                        auto const & joint_error_model = joint_error_model_it->second;
+                        joint_msg.pose.covariance[3 * 6 + 3] = joint_error_model[3];
+                        joint_msg.pose.covariance[4 * 6 + 4] = joint_error_model[4];
+                        joint_msg.pose.covariance[5 * 6 + 5] = joint_error_model[5];
+                    }
 
-                    state_msg.joints.push_back( joint_msg );
-
+                    joint_msg_map[joint_name] = joint_msg;
                     publishTransform( normalized_transform, world_frame_, joint_frame_name + "_norm" );
                 }
+            }
+
+            // head given waist
+            {
+                auto parent_joint_msg_it = joint_msg_map.find( "waist" );
+                auto joint_msg_it = joint_msg_map.find( "head" );
+
+                // if the parent joint doesn't exist, then we can't do anything here
+                if( parent_joint_msg_it != joint_msg_map.end() && joint_msg_it != joint_msg_map.end() )
+                {
+                    auto & parent_joint_msg = parent_joint_msg_it->second;
+                    auto & joint_msg = joint_msg_it->second;
+
+                    joint_msg.pose.covariance[3 * 6 + 3] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[3 * 6 + 3], joint_msg.pose.covariance[3 * 6 + 3] );
+                    joint_msg.pose.covariance[4 * 6 + 4] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[4 * 6 + 4], joint_msg.pose.covariance[4 * 6 + 4] );
+                    joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
+                }
+            }
+
+            // eyes given head
+            {
+                auto parent_joint_msg_it = joint_msg_map.find( "head" );
+
+                // if the parent joint doesn't exist, then we can't do anything here
+                if( parent_joint_msg_it != joint_msg_map.end() )
+                {
+                    auto & parent_joint_msg = parent_joint_msg_it->second;
+
+                    _HumanoidJointMsg joint_msg;
+
+                    joint_msg.name = "eyes";
+                    joint_msg.parent_name = "head";
+
+                    // copy parent pose
+                    joint_msg.pose.pose = parent_joint_msg.pose.pose;
+
+                    joint_msg.pose.pose.position.x += 0; // some constant(?) offset
+                    joint_msg.pose.pose.position.y += 0; // some constant(?) offset
+                    joint_msg.pose.pose.position.z += 0; // some constant(?) offset
+
+                    joint_msg.pose.covariance[3 * 6 + 3] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[3 * 6 + 3], joint_msg.pose.covariance[3 * 6 + 3] );
+                    joint_msg.pose.covariance[4 * 6 + 4] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[4 * 6 + 4], joint_msg.pose.covariance[4 * 6 + 4] );
+                    joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( parent_joint_msg.pose.covariance[5 * 6 + 5], joint_msg.pose.covariance[5 * 6 + 5] );
+                }
+            }
+
+            for( auto joint_msg_it = joint_msg_map.cbegin(); joint_msg_it != joint_msg_map.cend(); ++joint_msg_it )
+            {
+                state_msg.joints.push_back( joint_msg_it->second );
             }
 
             state_array_msg.states.push_back( state_msg );
