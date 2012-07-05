@@ -88,6 +88,18 @@ __Data gaussian_product_variance( __Data const & variance1, __Data const & varia
 }
 
 // =============================================================================================================================================
+template
+<
+    class __Data,
+    class... __Args,
+    typename std::enable_if<(sizeof...(__Args) > 1 ), int>::type
+>
+__Data gaussian_product_variance( __Data const & mean, __Args&&... args )
+{
+    return gaussian_product_mean( mean, gaussian_product_variance( args... ) );
+}
+
+// =============================================================================================================================================
 template<class __Data>
 std::pair<__Data, __Data> gaussian_product( __Data const & mean1, __Data const & variance1, __Data const & mean2, __Data const & variance2 )
 {
