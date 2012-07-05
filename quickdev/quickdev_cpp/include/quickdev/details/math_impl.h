@@ -72,3 +72,24 @@ __Data random( __Data const & min, __Data const & max )
     quickdev::seedRand();
     return min + ( max - min ) * double( std::rand() ) / RAND_MAX;
 }
+
+// =============================================================================================================================================
+template<class __Data>
+__Data gaussian_product_mean( __Data const & mean1, __Data const & variance1, __Data const & mean2, __Data const & variance2 )
+{
+    return ( mean1 * variance2 + mean2 * variance1 ) / ( variance1 + variance2 );
+}
+
+// =============================================================================================================================================
+template<class __Data>
+__Data gaussian_product_variance( __Data const & variance1, __Data const & variance2 )
+{
+    return ( variance1 * variance2 ) / ( variance1 + variance2 );
+}
+
+// =============================================================================================================================================
+template<class __Data>
+std::pair<__Data, __Data> gaussian_product( __Data const & mean1, __Data const & variance1, __Data const & mean2, __Data const & variance2 )
+{
+    return std::pair<__Data, __Data>( gaussian_product_mean( mean1, variance1, mean2, variance2 ), gaussian_product_variance( variance1, variance2 ) );
+}

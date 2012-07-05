@@ -65,6 +65,18 @@ inline __Data min( __Data const & value, __Args&&... args );
 template<class __Data>
 __Data random( __Data const & min, __Data const & max );
 
+// =============================================================================================================================================
+template<class __Data>
+__Data gaussian_product_mean( __Data const & mean1, __Data const & mean2 );
+
+// =============================================================================================================================================
+template<class __Data>
+__Data gaussian_product_variance( __Data const & variance1, __Data const & variance2 );
+
+// =============================================================================================================================================
+template<class __Data>
+std::pair<__Data, __Data> gaussian_product( __Data const & mean1, __Data const & variance1, __Data const & mean2, __Data const & variance2 );
+
 #include <quickdev/details/math_impl.h>
 
 } // quickdev
