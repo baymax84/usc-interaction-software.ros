@@ -67,7 +67,7 @@ __Data random( __Data const & min, __Data const & max );
 
 // =============================================================================================================================================
 template<class __Data>
-__Data gaussian_product_mean( __Data const & mean1, __Data const & mean2 );
+__Data gaussian_product_mean( __Data const & mean1, __Data const & variance1, __Data const & mean2, __Data const & variance2 );
 
 // =============================================================================================================================================
 /*
