@@ -45,6 +45,8 @@
 #include <quickdev/numeric_unit_conversions.h>
 #include <quickdev/feature.h>
 #include <angles/angles.h>
+#include <quickdev/feature_with_covariance.h>
+#include <humanoid/soft_classification.h>
 
 #include <humanoid_models/HumanoidStateArray.h>
 #include <humanoid_models/JointStateArray.h>
@@ -65,6 +67,8 @@ typedef humanoid_models::HumanoidStateArray _HumanoidStateArrayMsg;
 typedef sensor_msgs::JointState _JointStateMsg;
 typedef humanoid_models::JointStateArray _JointStateArrayMsg;
 typedef KDL::JntArray _JntArray;
+typedef SoftClassification _SoftClassification;
+typedef _SoftClassification::_SoftClassificationSet _SoftClassificationSet;
 
 static _JointNames const JOINT_NAMES_
 {
@@ -458,6 +462,94 @@ public:
 
 typedef Humanoid _Humanoid;
 typedef std::pair<_Humanoid, _Humanoid> _HumanoidPair;
+
+class HumanoidFeatureRecognizer
+{
+public:
+    _Humanoid humanoid_;
+
+    HumanoidFeatureRecognizer( _Humanoid const & humanoid = _Humanoid() )
+    :
+        humanoid_( humanoid )
+    {
+        //
+    }
+
+    std::pair<std::string, std::string> getClosestPair( HumanoidFeatureRecognizer const & other )
+    {
+        double closest_distance = 0;
+        std::string joint1_name;
+        std::string joint2_name;
+
+        for( auto joint1_it = humanoid_.cbegin(); joint1_it != humanoid_.cend(); ++joint1_it )
+        {
+            for( auto joint2_it = other.humanoid_.cbegin(); joint2_it != other.humanoid_.cend(); ++joint2_it )
+            {
+                auto const & joint1 = *joint1_it;
+                auto const & joint2 = *joint2_it;
+
+                double const distance = unit::convert<btVector3>( joint1 ).distance( unit::convert<btVector3>( joint2 ) );
+                if( distance < closest_distance )
+                {
+                    closest_distance = distance;
+                    joint1_name = joint1.name;
+                    joint2_name = joint2.name;
+                }
+            }
+        }
+
+        return std::pair<std::string, std::string>( joint1_name, joint2_name );
+    }
+
+    // find the closest joint in the other feature to our <joint1_name>
+    std::string getClosestJoint( std::string const & joint1_name, HumanoidFeatureRecognizer const & other )
+    {
+        double closest_distance = 0;
+        std::string joint2_name;
+
+        auto joint1_it = humanoid_.find( joint1_name );
+        if( joint1_it == humanoid_.end() ) return "";
+
+        for( auto joint2_it = other.humanoid_.cbegin(); joint2_it != other.humanoid_.cend(); ++joint2_it )
+        {
+            auto const & joint1 = *joint1_it;
+            auto const & joint2 = *joint2_it;
+
+            double const distance = unit::convert<btVector3>( joint1 ).distance( unit::convert<btVector3>( joint2 ) );
+            if( distance < closest_distance )
+            {
+                closest_distance = distance;
+                joint2_name = joint2.name;
+            }
+        }
+
+        return joint1_name;
+    }
+
+    quickdev::FeatureWithCovariance<btVector3, 3> getOrigin( std::string const & joint_name = "torso" ) const
+    {
+        auto const & joint = humanoid_[joint_name];
+
+        quickdev::FeatureWithCovariance<btVector3, 3> result( unit::convert<btVector3>( joint ) );
+
+        result.getCovariance()( 0, 0 ) = joint.pose.covariance[0 * 6 + 0];
+        result.getCovariance()( 1, 1 ) = joint.pose.covariance[1 * 6 + 1];
+        result.getCovariance()( 2, 2 ) = joint.pose.covariance[2 * 6 + 2];
+
+        return result;
+    }
+
+    quickdev::FeatureWithCovariance<double, 1> getRotation( std::string const & joint_name = "torso" ) const
+    {
+        auto const & joint = humanoid_[joint_name];
+
+        quickdev::FeatureWithCovariance<double, 1> result( unit::convert<btVector3>( unit::convert<btQuaternion>( humanoid_[joint_name] ) ).getZ() );
+
+        result.getCovariance()( 0, 0 ) = joint.pose.covariance[5 * 6 + 5];
+
+        return result;
+    }
+};
 
 } // humanoid
 
