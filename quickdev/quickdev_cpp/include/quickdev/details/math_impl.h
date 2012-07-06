@@ -96,7 +96,7 @@ template
 >
 __Data gaussian_product_variance( __Data const & mean, __Args&&... args )
 {
-    return gaussian_product_mean( mean, gaussian_product_variance( args... ) );
+    return gaussian_product_variance( mean, gaussian_product_variance( args... ) );
 }
 
 // =============================================================================================================================================
