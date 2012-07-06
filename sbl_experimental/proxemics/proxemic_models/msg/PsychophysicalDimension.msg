@@ -1,3 +1,3 @@
 # ie "voice loudness"
 string name
-PsychophysicalClassification[] classifications
+humanoid_models/SoftClassification[] classifications
