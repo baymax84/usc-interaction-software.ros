@@ -262,7 +262,7 @@ public:
     //MessageArrayCache( __Child & child )
     MessageArrayCache()
     {
-        updateMessages( storage_->getMessages() );
+        this->storage_ = typename _Storage::_Ptr( new _Storage() );
     }
 
     MessageArrayCache( typename _Storage::_Ptr & child_storage )
