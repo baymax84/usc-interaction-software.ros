@@ -11,6 +11,7 @@ class FeatureWithCovariance
 {
 public:
     typedef quickdev::SymmetricMatrix<__Dim__, double> _Covariance;
+    typedef FeatureWithCovariance<__Data, __Dim__> _FeatureWithCovariance;
 
 protected:
     __Data feature_;
@@ -34,6 +35,115 @@ public:
         return feature_;
     }
 
+    // =========================================================================================================================================
+    template
+    <
+        class __Other,
+        typename std::enable_if<(std::is_arithmetic<__Other>::value), int>::type = 0
+    >
+    _FeatureWithCovariance & operator+=( __Other const & value )
+    {
+        feature_ += value;
+        return *this;
+    }
+
+    _FeatureWithCovariance & operator+=( _FeatureWithCovariance const & other )
+    {
+        feature_ += other.getFeature();
+        covariance_ += other.getCovariance();
+        return *this;
+    }
+
+    template
+    <
+        class __Other,
+        typename std::enable_if<(std::is_arithmetic<__Other>::value), int>::type = 0
+    >
+    _FeatureWithCovariance operator+( __Other const & value ) const
+    {
+        return _FeatureWithCovariance( getFeature() + value );
+    }
+
+    _FeatureWithCovariance operator+( _FeatureWithCovariance const & other ) const
+    {
+        _FeatureWithCovariance result( getFeature() + other.getFeature() );
+        result.getCovariance().copyFrom( getCovariance() + other.getCovariance() );
+        return result;
+    }
+
+    // =========================================================================================================================================
+    template
+    <
+        class __Other,
+        typename std::enable_if<(std::is_arithmetic<__Other>::value), int>::type = 0
+    >
+    _FeatureWithCovariance & operator-=( __Other const & value )
+    {
+        feature_ -= value;
+        return *this;
+    }
+
+    _FeatureWithCovariance & operator-=( _FeatureWithCovariance const & other )
+    {
+        feature_ -= other.getFeature();
+        covariance_ += other.getCovariance();
+        return *this;
+    }
+
+    template
+    <
+        class __Other,
+        typename std::enable_if<(std::is_arithmetic<__Other>::value), int>::type = 0
+    >
+    _FeatureWithCovariance operator-( __Other const & value ) const
+    {
+        return _FeatureWithCovariance( getFeature() - value );
+    }
+
+    _FeatureWithCovariance operator-( _FeatureWithCovariance const & other ) const
+    {
+        _FeatureWithCovariance result( getFeature() - other.getFeature() );
+        result.getCovariance().copyFrom( getCovariance() + other.getCovariance() );
+        return result;
+    }
+
+    // =========================================================================================================================================
+    template
+    <
+        class __Other,
+        typename std::enable_if<(std::is_arithmetic<__Other>::value), int>::type = 0
+    >
+    _FeatureWithCovariance & operator*=( __Other const & value )
+    {
+        feature_ *= value;
+        return *this;
+    }
+
+    _FeatureWithCovariance & operator*=( _FeatureWithCovariance const & other )
+    {
+        feature_ *= other.getFeature();
+        covariance_ += other.getCovariance();
+        return *this;
+    }
+
+    template
+    <
+        class __Other,
+        typename std::enable_if<(std::is_arithmetic<__Other>::value), int>::type = 0
+    >
+    _FeatureWithCovariance operator*( __Other const & value ) const
+    {
+        return _FeatureWithCovariance( getFeature() * value );
+    }
+
+    _FeatureWithCovariance operator*( _FeatureWithCovariance const & other ) const
+    {
+        _FeatureWithCovariance result( getFeature() * other.getFeature() );
+        result.getCovariance().copyFrom( getCovariance() + other.getCovariance() );
+        return result;
+    }
+
+    // =========================================================================================================================================
     __Data & getFeature(){ return feature_; }
     __Data const & getFeature() const { return feature_; }
 
