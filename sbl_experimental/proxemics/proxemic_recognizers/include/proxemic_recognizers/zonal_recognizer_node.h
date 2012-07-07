@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/proxemic_recognizers/hall_recognizer.h
+ *  include/proxemic_recognizers/zonal_recognizer_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,27 +33,26 @@
  *
  **************************************************************************/
 
-#ifndef PROXEMICRECOGNIZERS_HALLRECOGNIZER_H_
-#define PROXEMICRECOGNIZERS_HALLRECOGNIZER_H_
+#ifndef PROXEMICRECOGNIZERS_ZONALRECOGNIZERNODE_H_
+#define PROXEMICRECOGNIZERS_ZONALRECOGNIZERNODE_H_
 
 #include <quickdev/node.h>
 
-#include <proxemic_models/psychophysical_features.h>
+#include <proxemic_models/zonal_features.h>
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
 using humanoid::_HumanoidStateMsg;
-using proxemics::_PsychophysicalFeatureMsg;
-using proxemics::_PsychophysicalFeatureArrayMsg;
+using proxemics::_ZonalFeatureMsg;
+using proxemics::_ZonalFeatureArrayMsg;
 
-typedef HumanoidRecognizerPolicy<_PsychophysicalFeatureArrayMsg> _HumanoidRecognizerPolicy;
+typedef HumanoidRecognizerPolicy<_ZonalFeatureArrayMsg> _HumanoidRecognizerPolicy;
 
-QUICKDEV_DECLARE_NODE( HallRecognizer, _HumanoidRecognizerPolicy )
+QUICKDEV_DECLARE_NODE( ZonalRecognizer, _HumanoidRecognizerPolicy )
 
-QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
+QUICKDEV_DECLARE_NODE_CLASS( ZonalRecognizer )
 {
-    _MarkerMsg marker_template_;
-    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HallRecognizer )
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ZonalRecognizer )
     {
         //
     }
@@ -62,12 +61,6 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
     {
         initPolicies<_HumanoidRecognizerPolicy>( "update_pairs_param", true );
         initPolicies<quickdev::policy::ALL>();
-
-        marker_template_.header.frame_id = "/openni_depth_tracking_frame";
-        marker_template_.ns = "mehrabian_visualization";
-        marker_template_.action = visualization_msgs::Marker::ADD;
-        marker_template_.lifetime = ros::Duration( 0.1 );
-        marker_template_.pose.orientation.w = 1.0;
     }
 
     QUICKDEV_SPIN_ONCE()
@@ -76,42 +69,21 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
 
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
-        _MarkerArrayMsg markers_msg;
-        _PsychophysicalFeatureArrayMsg features_msg;
-
-        unsigned int current_id = 0;
+        _ZonalFeatureArrayMsg features_msg;
 
         auto const & humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
-            auto feature1( proxemics::PsychophysicalFeatureRecognizer( pair->first, nh_rel ) );
-            auto feature2( proxemics::PsychophysicalFeatureRecognizer( pair->second, nh_rel ) );
+            auto feature1( proxemics::ZonalFeatureRecognizer( pair->first, nh_rel ) );
+            auto feature2( proxemics::ZonalFeatureRecognizer( pair->second, nh_rel ) );
 
             features_msg.features.push_back( feature1.createMessage( feature2 ) );
             features_msg.features.push_back( feature2.createMessage( feature1 ) );
-
-            //const auto & joint1 = _HumanoidRecognizerPolicy::states_map_[pair->first.name]["torso"];
-            //const auto & joint2 = _HumanoidRecognizerPolicy::states_map_[pair->second.name]["torso"];
-
-            /*std_msgs::ColorRGBA current_color;
-            current_color.r = 0.0;
-            current_color.g = 0.0;
-            current_color.b = 1.0;
-            current_color.a = 1.0;
-
-            _MarkerMsg arrow_marker = arrow_marker_template_;
-            arrow_marker.header.stamp = now;
-            arrow_marker.id = current_id ++;
-            arrow_marker.color = current_color;
-            arrow_marker.points.push_back( joint1.pose.pose.position );
-            arrow_marker.points.push_back( joint2.pose.pose.position );
-
-            markers_msg.markers.push_back( arrow_marker );*/
         }
 
         _HumanoidRecognizerPolicy::updateFeatures( features_msg );
     }
 };
 
-#endif // PROXEMICRECOGNIZERS_HALLRECOGNIZER_H_
+#endif // PROXEMICRECOGNIZERS_ZONALRECOGNIZERNODE_H_

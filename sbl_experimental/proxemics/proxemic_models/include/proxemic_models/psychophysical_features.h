@@ -353,12 +353,17 @@ public:
         auto const left_hand_joint = humanoid_["left_hand"];
         auto const right_hand_joint = humanoid_["right_hand"];
 
-        quickdev::FeatureWithCovariance<double, 1> const body_max = ( proxemics::spatial::getDistanceTo( neck_joint, left_shoulder_joint ) + proxemics::spatial::getDistanceTo( neck_joint, right_shoulder_joint ) ) * 0.5;
-        quickdev::FeatureWithCovariance<double, 1> const body_outside_max = body_max + double( Meter( Inch( 1 ) ) );
+        auto const body_max = ( proxemics::spatial::getDistanceTo( neck_joint, left_shoulder_joint ) + proxemics::spatial::getDistanceTo( neck_joint, right_shoulder_joint ) ) * 0.5;
+        auto const body_outside_max = body_max + double( Meter( Inch( 1 ) ) );
 
         auto const lower_arm_max = body_max + ( proxemics::spatial::getDistanceTo( left_elbow_joint, left_hand_joint ) + proxemics::spatial::getDistanceTo( right_elbow_joint, right_hand_joint ) ) * 0.5;
         auto const lower_arm_outside_max = lower_arm_max + double( Meter( Inch( 2 ) ) );
 
+        auto const whole_arm_max = lower_arm_max + ( proxemics::spatial::getDistanceTo( left_shoulder_joint, left_elbow_joint ) + proxemics::spatial::getDistanceTo( right_shoulder_joint, right_elbow_joint ) ) * 0.5;
+        auto const whole_arm_outside_max = whole_arm_max + double( Meter( Inch( 1 ) ) );
+
+        auto const reach_max = whole_arm_max + proxemics::spatial::getDistanceTo( torso_joint, pelvis_joint ) + proxemics::spatial::getDistanceTo( neck_joint, torso_joint );
+        auto const reach_outside_max = reach_max + double( Meter( Inch( 4 ) ) );
 /*
         auto const body_max = ( ( left_shoulder_vec - neck_vec ).length() + ( right_shoulder_vec - neck_vec ).length() ) / 2;
         auto const body_outside_max = body_max + Meter( Inch( 1 ) );
@@ -394,13 +399,21 @@ public:
         sigma = base_sigma + lower_arm_outside_max.getCovariance()( 0, 0 ) + lower_arm_max.getCovariance()( 0, 0 );
         result.insert( SoftClassification( 3, gsl_cdf_gaussian_P( mean + lower_arm_outside_max, sigma ) -              gsl_cdf_gaussian_P( mean - lower_arm_max, sigma ),         "lower_arm_outside" ) );
 
-/*
+        sigma = base_sigma + whole_arm_max.getCovariance()( 0, 0 ) + lower_arm_outside_max.getCovariance()( 0, 0 );
         result.insert( SoftClassification( 4, gsl_cdf_gaussian_P( mean + whole_arm_max, sigma ) -                      gsl_cdf_gaussian_P( mean - lower_arm_outside_max, sigma ), "whole_arm" ) );
+
+        sigma = base_sigma + whole_arm_outside_max.getCovariance()( 0, 0 ) + whole_arm_max.getCovariance()( 0, 0 );
         result.insert( SoftClassification( 5, gsl_cdf_gaussian_P( mean + whole_arm_outside_max, sigma ) -              gsl_cdf_gaussian_P( mean - whole_arm_max, sigma ),         "whole_arm_outside" ) );
+
+        sigma = base_sigma + reach_max.getCovariance()( 0, 0 ) + whole_arm_outside_max.getCovariance()( 0, 0 );
         result.insert( SoftClassification( 6, gsl_cdf_gaussian_P( mean + reach_max, sigma ) -                          gsl_cdf_gaussian_P( mean - whole_arm_outside_max, sigma ), "reach" ) );
+
+        sigma = base_sigma + reach_outside_max.getCovariance()( 0, 0 ) + reach_max.getCovariance()( 0, 0 );
         result.insert( SoftClassification( 7, gsl_cdf_gaussian_P( mean + reach_outside_max, sigma ) -                  gsl_cdf_gaussian_P( mean - reach_max, sigma ),             "reach_outside" ) );
+
+        sigma = base_sigma + reach_outside_max.getCovariance()( 0, 0 );
         result.insert( SoftClassification( 8, gsl_cdf_gaussian_P( mean + std::numeric_limits<double>::max(), sigma ) - gsl_cdf_gaussian_P( mean - reach_outside_max, sigma ),     "outside" ) );
-*/
+
         return result;
     }
 
