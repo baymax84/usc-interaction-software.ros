@@ -1,0 +1,12 @@
+distance:
+  intervals:
+    [
+      { name: intimate_close, id: 0, min: 0.0    , max: 0.1524 },
+      { name: intimate_far,   id: 0, min: 0.1524 , max: 0.4572 },
+      { name: personal_close, id: 0, min: 0.4572 , max: 0.7620 },
+      { name: personal_far,   id: 0, min: 0.7620 , max: 1.2192 },
+      { name: social_close,   id: 0, min: 1.2192 , max: 2.1336 },
+      { name: social_far,     id: 0, min: 2.1336 , max: 3.6576 },
+      { name: public_close,   id: 0, min: 3.6576 , max: 7.6200 },
+      { name: public_far,     id: 0, min: 7.6200 , max: +inf   }
+    ]

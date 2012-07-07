@@ -105,8 +105,8 @@ public:
 
     _SoftClassificationSet getDistanceClassification( _HumanoidFeatureRecognizer const & other )
     {
-        auto const & from_joint = humanoid_["torso"];
-        auto const & to_joint = other.humanoid_["torso"];
+        auto const & from_joint = humanoid_["pelvis"];
+        auto const & to_joint = other.humanoid_["pelvis"];
 
         _SoftClassificationSet result = proxemics::zonal::getDistanceClassification( from_joint, to_joint, params_["intervals"]["distance"] );
 

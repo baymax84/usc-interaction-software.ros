@@ -183,7 +183,7 @@ public:
         //
     }
 
-    quickdev::FeatureWithCovariance<double, 1> getDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<double, 1> getDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -191,7 +191,7 @@ public:
         return proxemics::spatial::getDistanceTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<double, 1> getDistance2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<double, 1> getDistance2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -199,7 +199,7 @@ public:
         return proxemics::spatial::getDistance2DTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getComponentDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btVector3, 3> getComponentDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -207,7 +207,7 @@ public:
         return proxemics::spatial::getComponentDistanceTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getMidpoint( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btVector3, 3> getMidpoint( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -215,7 +215,7 @@ public:
         return proxemics::spatial::getMidpoint( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btTransform, 6> getTransformTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btTransform, 6> getTransformTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -223,7 +223,7 @@ public:
         return proxemics::spatial::getTransformTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btQuaternion, 3> getAngleTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btQuaternion, 3> getAngleTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -231,7 +231,7 @@ public:
         return proxemics::spatial::getAngleTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getAngleToYPR( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btVector3, 3> getAngleToYPR( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -239,7 +239,7 @@ public:
         return proxemics::spatial::getAngleToYPR( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<double, 1> getAngle2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<double, 1> getAngle2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -247,7 +247,7 @@ public:
         return proxemics::spatial::getAngle2DTo( from_joint, to_joint );
     }
 
-    _SpatialFeatureMsg createMessage( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "torso", std::string const & to_joint_name = "" ) const
+    _SpatialFeatureMsg createMessage( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
