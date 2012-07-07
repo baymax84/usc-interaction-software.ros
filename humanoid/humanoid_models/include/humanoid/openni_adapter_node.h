@@ -306,6 +306,7 @@ private:
             }
 
             // eyes given head
+            if( joint_msg_map.find( "eyes" ) == joint_msg_map.end() )
             {
                 auto parent_joint_msg_it = joint_msg_map.find( "head" );
 
@@ -336,6 +337,7 @@ private:
             }
 
             // ears
+            if( joint_msg_map.find( "ears" ) == joint_msg_map.end() )
             {
                 auto parent_joint_msg_it = joint_msg_map.find( "head" );
 
@@ -384,6 +386,7 @@ private:
             }
 
             // nose
+            if( joint_msg_map.find( "nose" ) == joint_msg_map.end() )
             {
                 auto parent_joint_msg_it = joint_msg_map.find( "head" );
 
@@ -405,6 +408,41 @@ private:
                     auto const head_to_nose_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
 
                     joint_msg.pose.pose.position = unit::make_unit( head_to_nose_tf.getOrigin() );
+
+                    joint_msg_map[joint_msg.name] = joint_msg;
+                }
+            }
+
+            // pelvis
+            if( joint_msg_map.find( "pelvis" ) == joint_msg_map.end() )
+            {
+                auto parent_joint_msg1_it = joint_msg_map.find( "left_hip" );
+                auto parent_joint_msg2_it = joint_msg_map.find( "right_hip" );
+
+                // if the parent joints don't exist, then we can't do anything here
+                if( parent_joint_msg1_it != joint_msg_map.end() && parent_joint_msg1_it != joint_msg_map.end() )
+                {
+                    auto & parent_joint_msg1 = parent_joint_msg1_it->second;
+                    auto & parent_joint_msg2 = parent_joint_msg2_it->second;
+
+                    auto const sensor_to_left_hip_tf = unit::convert<btTransform>( parent_joint_msg1 );
+                    auto const sensor_to_right_hip_tf = unit::convert<btTransform>( parent_joint_msg2 );
+
+                    _HumanoidJointMsg joint_msg;
+
+                    joint_msg.name = "pelvis";
+                    joint_msg.parent_name = "";
+
+                    auto const sensor_to_pelvis_tf = btTransform( ( sensor_to_left_hip_tf.getRotation() + sensor_to_right_hip_tf.getRotation() ) / 2, ( sensor_to_left_hip_tf.getOrigin() + sensor_to_right_hip_tf.getOrigin() ) / 2 );
+
+                    joint_msg.pose.pose = unit::make_unit( sensor_to_pelvis_tf );
+
+                    joint_msg.pose.covariance[0 * 6 + 0] = parent_joint_msg1.pose.covariance[0 * 6 + 0] + parent_joint_msg2.pose.covariance[0 * 6 + 0];
+                    joint_msg.pose.covariance[1 * 6 + 1] = parent_joint_msg1.pose.covariance[1 * 6 + 1] + parent_joint_msg2.pose.covariance[1 * 6 + 1];
+                    joint_msg.pose.covariance[2 * 6 + 2] = parent_joint_msg1.pose.covariance[2 * 6 + 2] + parent_joint_msg2.pose.covariance[2 * 6 + 2];
+                    joint_msg.pose.covariance[3 * 6 + 3] = parent_joint_msg1.pose.covariance[3 * 6 + 3] + parent_joint_msg2.pose.covariance[3 * 6 + 3];
+                    joint_msg.pose.covariance[4 * 6 + 4] = parent_joint_msg1.pose.covariance[4 * 6 + 4] + parent_joint_msg2.pose.covariance[4 * 6 + 4];
+                    joint_msg.pose.covariance[5 * 6 + 5] = parent_joint_msg1.pose.covariance[5 * 6 + 5] + parent_joint_msg2.pose.covariance[5 * 6 + 5];
 
                     joint_msg_map[joint_msg.name] = joint_msg;
                 }
