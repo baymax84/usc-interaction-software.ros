@@ -126,7 +126,7 @@ namespace RotationAxes
 //                                            //                                             //
 //                  [head]                    //                  [<sensor>]                 //
 //                     |                      //                      ^                      //
-//                  [neck]                    //                   [waist]                   //
+//                  [neck]                    //                  [pelvis]                   //
 //                     |                      //                      ^                      //
 //                     |                      //              ______/ | \______              //
 //     [left_collar]   |   [right_collar]     //             /        |        \             //
@@ -140,7 +140,7 @@ namespace RotationAxes
 //       [left_hand]   |   [right_hand]       //             _______/ | \_______________     //
 //            |        |         |            //            /          \                \    //
 // [left_finger_tip]   |   [right_finger_tip] //     [left_collar]  [right_collar]    [neck] //
-//                  [wais]                   //           ^              ^              ^   //
+//                 [pelvis]                   //           ^              ^              ^   //
 //                  /     \                   //   [left_shoulder]  [right_shoulder]  [head] //
 //                 /       \                  //           ^              ^                  //
 //         [left_hip]     [right_hip]         //      [left_elbow]  [right_elbow]            //
@@ -457,6 +457,48 @@ public:
     size_t size() const
     {
         return _NamedMessageArrayCache::size();
+    }
+
+    // use world frame
+    btTransform calculateBaseLinkTransform( btTransform const & world_to_sensor_tf )
+    {
+        // given: [sensor -> { joints }]
+        //        [world -> sensor]
+        // need: 2d pose of pelvis in world x-y plane, transformed back to the sensor
+        // solution: [world -> sensor] * [sensor -> pelvis] = [world -> pelvis]
+        //           [world -> pelvis]: [set z, roll, pitch = 0] = [world -> base_link]
+        //           [world -> pelvis] * -[world -> sensor] = [sensor -> base_link]
+
+        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( operator[]( "pelvis" ) );
+        auto const world_to_pelvis_tf = world_to_sensor_tf * sensor_to_pelvis_tf;
+
+        auto ori_2d = unit::convert<btVector3>( world_to_pelvis_tf.getRotation() );
+        ori_2d.setX( 0 );
+        ori_2d.setY( 0 );
+
+        auto pos_2d = world_to_pelvis_tf.getOrigin();
+        pos_2d.setZ( 0 );
+
+        return btTransform( unit::convert<btQuaternion>( ori_2d ), pos_2d ) * world_to_pelvis_tf.inverse();
+    }
+
+    // assumes sensor has no roll with respect to the world
+    btTransform calculateBaseLinkTransform() const
+    {
+        // given: [sensor -> { joints }]
+        // need: 2d pose of pelvis projected to the z-coordinate of the foot that is farthest from the pelvis
+        auto const sensor_to_left_foot_tf = unit::convert<btTransform>( operator[]( "left_foot" ) );
+        auto const sensor_to_right_foot_tf = unit::convert<btTransform>( operator[]( "right_foot" ) );
+        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( operator[]( "pelvis" ) );
+
+        auto const pelvis_to_left_foot_vec = sensor_to_left_foot_tf.getOrigin() - sensor_to_pelvis_tf.getOrigin();
+        auto const pelvis_to_right_foot_vec = sensor_to_right_foot_tf.getOrigin() - sensor_to_pelvis_tf.getOrigin();
+
+        auto const sensor_to_farthest_foot_vec = fabs( pelvis_to_left_foot_vec.length() ) > fabs( pelvis_to_right_foot_vec.length() ) ? pelvis_to_left_foot_vec : pelvis_to_right_foot_vec;
+
+        auto const sensor_to_pelvis_ori = unit::convert<btVector3>( sensor_to_pelvis_tf.getRotation() );
+
+        return btTransform( btQuaternion( sensor_to_pelvis_ori.getZ(), 0, 0 ), btVector3( sensor_to_pelvis_tf.getOrigin().getX(), sensor_to_pelvis_tf.getOrigin().getY(), sensor_to_farthest_foot_vec.getZ() ) );
     }
 };
 

@@ -322,12 +322,91 @@ private:
                     // copy parent pose
                     joint_msg.pose = parent_joint_msg.pose;
 
-                    joint_msg.pose.pose.position.x += 0; // some constant(?) offset
-                    joint_msg.pose.pose.position.y += 0; // some constant(?) offset
-                    joint_msg.pose.pose.position.z += 0; // some constant(?) offset
+                    auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+                    // the eyes are 0.039 m along the head's x-axis
+                    auto const head_to_eyes_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+
+                    joint_msg.pose.pose.position = unit::make_unit( head_to_eyes_tf.getOrigin() );
 
                     // head -> eyes * head
                     joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( 0.787377587, parent_joint_msg.pose.covariance[5 * 6 + 5] );
+
+                    joint_msg_map[joint_msg.name] = joint_msg;
+                }
+            }
+
+            // ears
+            {
+                auto parent_joint_msg_it = joint_msg_map.find( "head" );
+
+                // if the parent joint doesn't exist, then we can't do anything here
+                if( parent_joint_msg_it != joint_msg_map.end() )
+                {
+                    auto & parent_joint_msg = parent_joint_msg_it->second;
+
+                    auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+
+                    // left ear
+                    {
+                        _HumanoidJointMsg joint_msg;
+
+                        joint_msg.name = "left_ear";
+                        joint_msg.parent_name = "head";
+
+                        // copy parent pose
+                        joint_msg.pose = parent_joint_msg.pose;
+
+                        auto const head_to_left_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, -0.039, 0 ) );
+
+                        joint_msg.pose.pose.position = unit::make_unit( head_to_left_ear_tf.getOrigin() );
+
+                        joint_msg_map[joint_msg.name] = joint_msg;
+                    }
+
+                    // right ear
+                    {
+                        _HumanoidJointMsg joint_msg;
+
+                        joint_msg.name = "right_ear";
+                        joint_msg.parent_name = "head";
+
+                        // copy parent pose
+                        joint_msg.pose = parent_joint_msg.pose;
+
+                        // the eyes are 0.039 m along the head's x-axis
+                        auto const head_to_right_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, 0.039, 0 ) );
+
+                        joint_msg.pose.pose.position = unit::make_unit( head_to_right_ear_tf.getOrigin() );
+
+                        joint_msg_map[joint_msg.name] = joint_msg;
+                    }
+                }
+            }
+
+            // nose
+            {
+                auto parent_joint_msg_it = joint_msg_map.find( "head" );
+
+                // if the parent joint doesn't exist, then we can't do anything here
+                if( parent_joint_msg_it != joint_msg_map.end() )
+                {
+                    auto & parent_joint_msg = parent_joint_msg_it->second;
+
+                    auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+
+                    _HumanoidJointMsg joint_msg;
+
+                    joint_msg.name = "nose";
+                    joint_msg.parent_name = "head";
+
+                    // copy parent pose
+                    joint_msg.pose = parent_joint_msg.pose;
+
+                    auto const head_to_nose_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+
+                    joint_msg.pose.pose.position = unit::make_unit( head_to_nose_tf.getOrigin() );
+
+                    joint_msg_map[joint_msg.name] = joint_msg;
                 }
             }
 
