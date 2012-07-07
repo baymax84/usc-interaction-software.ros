@@ -39,6 +39,7 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose.h>
 #include <LinearMath/btTransform.h>
 
 // we have to include this header because urdf/pose.h doesn't include it ಠ_ಠ
@@ -58,6 +59,7 @@ typedef geometry_msgs::Point _PointMsg;
 typedef geometry_msgs::Vector3 _Vector3Msg;
 typedef geometry_msgs::Twist _TwistMsg;
 typedef geometry_msgs::Quaternion _QuaternionMsg;
+typedef geometry_msgs::Pose _PoseMsg;
 
 // UrdfVector3 -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfVector3, _Vector3, vec, return _Vector3( vec.x, vec.y, vec.z ); )
@@ -101,6 +103,9 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion 
 
 // UrdfPose -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfPose, _Transform, pose, return _Transform( unit::convert<_Quaternion>( pose.rotation ), unit::convert<_Vector3>( pose.position ) ); )
+
+DECLARE_UNIT_CONVERSION_LAMBDA( _PoseMsg, _Transform, pose, return _Transform( unit::convert<_Quaternion>( pose.orientation ), unit::convert<_Vector3>( pose.position ) ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _PoseMsg, tf, _PoseMsg result; result.position = unit::make_unit( tf.getOrigin() ); result.orientation = unit::make_unit( tf.getRotation() ); return result; )
 
 // Transform *= Scalar
 static void operator*=( _Transform & transform, double const & scale )
