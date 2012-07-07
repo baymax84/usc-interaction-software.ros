@@ -75,9 +75,11 @@ private:
         //initAll( "features_topic_name_param", std::string( "humanoid_states_agg" ) );
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel_ );
 
-        multi_pub_.addPublishers<_JointStateMsg>( nh_rel_, { "joint_states" } );
+        multi_pub_.addPublishers<_JointStateArrayMsg>( nh_rel_, { "joint_states" } );
 
         _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidAggregatorNode::humanoidStatesCB, this ) );
+
+        initPolicies<_HumanoidRecognizerPolicy>( "update_humanoids_param", false );
 
         initPolicies<quickdev::policy::ALL>();
 
@@ -140,7 +142,7 @@ private:
 
         auto humanoids = _HumanoidRecognizerPolicy::getHumanoids();
 
-        // printf( "tracking %zu humanoids\n", humanoids.size() );
+        printf( "tracking %zu humanoids\n", humanoids.size() );
 
         _HumanoidStateArrayMsg combined_states_msg;
         combined_states_msg.states.reserve( humanoids.size() );
@@ -215,8 +217,8 @@ private:
             markers.markers.push_back( points_marker );
         }
 
-        _HumanoidRecognizerPolicy::updateFeatures( combined_states_msg );
-        _HumanoidRecognizerPolicy::updateMarkers( markers );
+         _HumanoidRecognizerPolicy::updateFeatures( combined_states_msg );
+         _HumanoidRecognizerPolicy::updateMarkers( markers );
 
         multi_pub_.publish( "joint_states", joint_states_msg );
 
