@@ -456,7 +456,7 @@ private:
             state_array_msg.states.push_back( state_msg );
         }
 
-        multi_pub_.publish( "humanoid_states", quickdev::make_const_shared( state_array_msg ) );
+        if( state_array_msg.states.size() > 0 ) multi_pub_.publish( "humanoid_states", quickdev::make_const_shared( state_array_msg ) );
     }
 
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( userStatesCB, _UserStateArrayMsg )
