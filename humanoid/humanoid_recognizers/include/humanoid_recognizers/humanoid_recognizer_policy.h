@@ -147,6 +147,7 @@ public:
         multi_pub_.addPublishers<_MarkerArrayMsg, _MarkerArrayMsg, __FeatureArrayMsg>( nh_rel, { "marker_array", "/visualization_marker_array", "features" } );
         multi_sub_.addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
 
+		running_ = true;
         process_humanoids_thread_ptr_ = boost::make_shared<boost::thread>( &HumanoidRecognizerPolicy::processHumanoids, this );
 
         QUICKDEV_SET_INITIALIZED();
@@ -270,6 +271,8 @@ public:
         {
             process_humanoids_mutex_.try_lock();
             auto process_humanoids_lock = quickdev::make_unique_lock( process_humanoids_mutex_ );
+            
+            PRINT_INFO( "--------------------Updating humanoid states------------------------------" );
 
             if( !last_humanoid_states_msg_ ) continue;
 
@@ -282,6 +285,7 @@ public:
 
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
     {
+		PRINT_INFO( "Got new humanoid state array message." );
         last_humanoid_states_msg_ = msg;
 
         // wake up the processHumanoids thread for one cycle

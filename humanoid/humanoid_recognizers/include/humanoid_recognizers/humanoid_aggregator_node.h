@@ -75,7 +75,7 @@ private:
         //initAll( "features_topic_name_param", std::string( "humanoid_states_agg" ) );
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel_ );
 
-        multi_pub_.addPublishers<_JointStateArrayMsg>( nh_rel_, { "joint_states" } );
+        //multi_pub_.addPublishers<_JointStateArrayMsg>( nh_rel_, { "joint_states" } );
 
         _HumanoidRecognizerPolicy::registerCallback( quickdev::auto_bind( &HumanoidAggregatorNode::humanoidStatesCB, this ) );
 
@@ -127,6 +127,8 @@ private:
         auto const now = ros::Time::now();
 
         unsigned int current_id = 0;
+        
+        printf( "cached %zu humanoid messages\n", state_arrays_cache.size() );
 
         for( auto users_components = state_arrays_cache.begin(); users_components != state_arrays_cache.end(); ++users_components )
         {
@@ -138,7 +140,7 @@ private:
 //        printf( "tracking %u humanoids\n", humanoids_temp.size() );
 
         // recursively erase all old messages
-        _HumanoidRecognizerPolicy::eraseOld( 1.0 );
+        // _HumanoidRecognizerPolicy::eraseOld( 1.0 );
 
         auto humanoids = _HumanoidRecognizerPolicy::getHumanoids();
 
@@ -147,14 +149,14 @@ private:
         _HumanoidStateArrayMsg combined_states_msg;
         combined_states_msg.states.reserve( humanoids.size() );
 
-        _JointStateArrayMsg joint_states_msg;
-        joint_states_msg.names.reserve( humanoids.size() );
-        joint_states_msg.states.reserve( humanoids.size() );
+        //_JointStateArrayMsg joint_states_msg;
+        //joint_states_msg.names.reserve( humanoids.size() );
+        //joint_states_msg.states.reserve( humanoids.size() );
 
         for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
         {
-            joint_states_msg.names.push_back( humanoid->name );
-            joint_states_msg.states.push_back( humanoid->getJointStateMessage() );
+            //joint_states_msg.names.push_back( humanoid->name );
+            //joint_states_msg.states.push_back( humanoid->getJointStateMessage() );
 
             //note: can't use cbegin() in for() above because getJointsMessage() modifies Humanoid (specifically, it modifies the ROS message cache of the humanoid's storage object)
             const auto & joints = humanoid->getJointsMessage();
@@ -220,7 +222,7 @@ private:
          _HumanoidRecognizerPolicy::updateFeatures( combined_states_msg );
          _HumanoidRecognizerPolicy::updateMarkers( markers );
 
-        multi_pub_.publish( "joint_states", joint_states_msg );
+        //multi_pub_.publish( "joint_states", joint_states_msg );
 
         // clear out the cache for the next update iteration
         state_arrays_cache.clear();
