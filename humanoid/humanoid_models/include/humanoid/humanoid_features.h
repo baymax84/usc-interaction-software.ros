@@ -536,9 +536,9 @@ public:
 
         auto const now = state_msg.header.stamp;
 
-        // head given waist
+        // head given pelvis
         {
-            auto parent_joint_msg_it = joint_map.find( "waist" );
+            auto parent_joint_msg_it = joint_map.find( "pelvis" );
             auto joint_msg_it = joint_map.find( "head" );
 
             // if the parent joint doesn't exist, then we can't do anything here
@@ -564,20 +564,19 @@ public:
 
                 _HumanoidJointMsg joint_msg;
 
-                joint_msg.header.stamp = now;
-                joint_msg.header.frame_id = state_msg.header.frame_id;
+                joint_msg.header = parent_joint_msg.header;
 
                 joint_msg.name = "eyes";
                 joint_msg.parent_name = "head";
 
                 // copy parent pose
-                joint_msg.pose = parent_joint_msg.pose;
+                joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
                 auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
                 // the eyes are 0.039 m along the head's x-axis
-                auto const head_to_eyes_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+                auto const sensor_to_eyes_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
 
-                joint_msg.pose.pose.position = unit::make_unit( head_to_eyes_tf.getOrigin() );
+                joint_msg.pose.pose = unit::make_unit( sensor_to_eyes_tf );
 
                 // head -> eyes * head
                 joint_msg.pose.covariance[5 * 6 + 5] = quickdev::gaussian_product_variance( 0.787377587, parent_joint_msg.pose.covariance[5 * 6 + 5] );
@@ -602,18 +601,17 @@ public:
                 {
                     _HumanoidJointMsg joint_msg;
 
-                    joint_msg.header.stamp = now;
-                    joint_msg.header.frame_id = state_msg.header.frame_id;
+                    joint_msg.header = parent_joint_msg.header;
 
                     joint_msg.name = "left_ear";
                     joint_msg.parent_name = "head";
 
                     // copy parent pose
-                    joint_msg.pose = parent_joint_msg.pose;
+                    joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
-                    auto const head_to_left_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, -0.039, 0 ) );
+                    auto const head_to_left_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( M_PI_2, 0, 0 ), btVector3( 0, -0.039, 0 ) );
 
-                    joint_msg.pose.pose.position = unit::make_unit( head_to_left_ear_tf.getOrigin() );
+                    joint_msg.pose.pose = unit::make_unit( head_to_left_ear_tf );
 
                     joint_map[joint_msg.name] = joint_msg;
                 }
@@ -622,19 +620,18 @@ public:
                 {
                     _HumanoidJointMsg joint_msg;
 
-                    joint_msg.header.stamp = now;
-                    joint_msg.header.frame_id = state_msg.header.frame_id;
+                    joint_msg.header = parent_joint_msg.header;
 
                     joint_msg.name = "right_ear";
                     joint_msg.parent_name = "head";
 
                     // copy parent pose
-                    joint_msg.pose = parent_joint_msg.pose;
+                    joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
                     // the eyes are 0.039 m along the head's x-axis
-                    auto const head_to_right_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, 0.039, 0 ) );
+                    auto const head_to_right_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( -M_PI_2, 0, 0 ), btVector3( 0, 0.039, 0 ) );
 
-                    joint_msg.pose.pose.position = unit::make_unit( head_to_right_ear_tf.getOrigin() );
+                    joint_msg.pose.pose = unit::make_unit( head_to_right_ear_tf );
 
                     joint_map[joint_msg.name] = joint_msg;
                 }
@@ -655,18 +652,47 @@ public:
 
                 _HumanoidJointMsg joint_msg;
 
-                joint_msg.header.stamp = now;
-                joint_msg.header.frame_id = state_msg.header.frame_id;
+                joint_msg.header = parent_joint_msg.header;
 
                 joint_msg.name = "nose";
                 joint_msg.parent_name = "head";
 
                 // copy parent pose
-                joint_msg.pose = parent_joint_msg.pose;
+                joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
                 auto const head_to_nose_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
 
-                joint_msg.pose.pose.position = unit::make_unit( head_to_nose_tf.getOrigin() );
+                joint_msg.pose.pose = unit::make_unit( head_to_nose_tf );
+
+                joint_map[joint_msg.name] = joint_msg;
+            }
+        }
+
+        // mouth
+        if( joint_map.find( "mouth" ) == joint_map.end() )
+        {
+            auto parent_joint_msg_it = joint_map.find( "head" );
+
+            // if the parent joint doesn't exist, then we can't do anything here
+            if( parent_joint_msg_it != joint_map.end() )
+            {
+                auto & parent_joint_msg = parent_joint_msg_it->second;
+
+                auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+
+                _HumanoidJointMsg joint_msg;
+
+                joint_msg.header = parent_joint_msg.header;
+
+                joint_msg.name = "mouth";
+                joint_msg.parent_name = "head";
+
+                // copy parent pose
+                joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
+
+                auto const head_to_mouth_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+
+                joint_msg.pose.pose = unit::make_unit( head_to_mouth_tf );
 
                 joint_map[joint_msg.name] = joint_msg;
             }
@@ -689,8 +715,7 @@ public:
 
                 _HumanoidJointMsg joint_msg;
 
-                joint_msg.header.stamp = now;
-                joint_msg.header.frame_id = state_msg.header.frame_id;
+                joint_msg.header = parent_joint_msg1.header;
 
                 joint_msg.name = "pelvis";
                 joint_msg.parent_name = "";
@@ -745,7 +770,7 @@ public:
 
     std::pair<std::string, std::string> getClosestPair( HumanoidFeatureRecognizer const & other )
     {
-        double closest_distance = 0;
+        double closest_distance = std::numeric_limits<double>::max();
         std::string joint1_name;
         std::string joint2_name;
 
@@ -772,7 +797,7 @@ public:
     // find the closest joint in the other feature to our <joint1_name>
     std::string getClosestJoint( std::string const & joint1_name, HumanoidFeatureRecognizer const & other )
     {
-        double closest_distance = 0;
+        double closest_distance = std::numeric_limits<double>::max();
         std::string joint2_name;
 
         auto joint1_it = humanoid_.find( joint1_name );
@@ -791,7 +816,7 @@ public:
             }
         }
 
-        return joint1_name;
+        return joint2_name;
     }
 
     quickdev::FeatureWithCovariance<btVector3, 3> getOrigin( std::string const & joint_name = "pelvis" ) const
