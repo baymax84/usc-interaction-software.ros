@@ -52,6 +52,7 @@ typedef humanoid_models::VirtualHumanoidConfig _VirtualHumanoidConfig;
 typedef quickdev::ReconfigurePolicy<_VirtualHumanoidConfig> _VirtualHumanoidLiveParams;
 typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
 
+using humanoid::_Humanoid;
 using humanoid::_HumanoidStateArrayMsg;
 using humanoid::_HumanoidStateMsg;
 using humanoid::_HumanoidJointMsg;
@@ -83,7 +84,7 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
             std::make_pair( "head",             _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
             std::make_pair( "neck",             _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.neck_yaw,           &config_.neck_pitch,        &config_.neck_roll           } ),
             std::make_pair( "torso",            _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.torso_yaw,          &config_.torso_pitch,       &config_.torso_roll          } ),
-            std::make_pair( "waist",            _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.waist_yaw,          &config_.waist_pitch,       &config_.waist_roll          } ),
+            std::make_pair( "pelvis",           _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.pelvis_yaw,         &config_.pelvis_pitch,      &config_.pelvis_roll         } ),
             std::make_pair( "right_collar",     _VirtualHumanoidJointRelOriMap::mapped_type{ &zero_angle_,                &zero_angle_,               &zero_angle_                 } ),
             std::make_pair( "right_shoulder",   _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_shoulder_yaw, &zero_angle_,               &config_.right_shoulder_roll } ),
             std::make_pair( "right_elbow",      _VirtualHumanoidJointRelOriMap::mapped_type{ &config_.right_elbow_yaw,    &config_.right_elbow_pitch, &zero_angle_                 } ),
@@ -124,8 +125,8 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         //                                ["parent->child"]
         virtual_humanoid_joint_rel_pos_map["neck->head"]                   = btVector3( 0,     0,     0.15 );
         virtual_humanoid_joint_rel_pos_map["torso->neck"]                  = btVector3( 0,     0,     0.4  );
-        virtual_humanoid_joint_rel_pos_map["waist->torso"]                 = btVector3( 0,     0,     0.2  );
-        virtual_humanoid_joint_rel_pos_map["sensor->waist"]                = btVector3( 0,     0,     0    );
+        virtual_humanoid_joint_rel_pos_map["pelvis->torso"]                = btVector3( 0,     0,     0.2  );
+        virtual_humanoid_joint_rel_pos_map["sensor->pelvis"]               = btVector3( 0,     0,     0    );
         virtual_humanoid_joint_rel_pos_map["torso->right_collar"]          = btVector3( 0,    -0.15,  0.3  );
         virtual_humanoid_joint_rel_pos_map["right_collar->right_shoulder"] = btVector3( 0,     0,     0    );
         virtual_humanoid_joint_rel_pos_map["right_shoulder->right_elbow"]  = btVector3( 0,    -0.3,   0    );
@@ -134,15 +135,15 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         virtual_humanoid_joint_rel_pos_map["right_hand->right_finger_tip"] = btVector3( 0.03,  0,     0    );
         virtual_humanoid_joint_rel_pos_map["torso->left_collar"]           = btVector3( 0,     0.15,  0.3  );
         virtual_humanoid_joint_rel_pos_map["left_collar->left_shoulder"]   = btVector3( 0,     0,     0    );
-        virtual_humanoid_joint_rel_pos_map["left_shoulder->left_elbow"]    = btVector3( 0,     0.2,   0    );
+        virtual_humanoid_joint_rel_pos_map["left_shoulder->left_elbow"]    = btVector3( 0,     0.3,   0    );
         virtual_humanoid_joint_rel_pos_map["left_elbow->left_wrist"]       = btVector3( 0.3,   0,     0    );
         virtual_humanoid_joint_rel_pos_map["left_wrist->left_hand"]        = btVector3( 0.03,  0,     0    );
         virtual_humanoid_joint_rel_pos_map["left_hand->left_finger_tip"]   = btVector3( 0.03,  0,     0    );
-        virtual_humanoid_joint_rel_pos_map["waist->right_hip"]             = btVector3( 0,    -0.15,  0    );
+        virtual_humanoid_joint_rel_pos_map["pelvis->right_hip"]            = btVector3( 0,    -0.15,  0    );
         virtual_humanoid_joint_rel_pos_map["right_hip->right_knee"]        = btVector3( 0,     0,    -0.4  );
         virtual_humanoid_joint_rel_pos_map["right_knee->right_ankle"]      = btVector3( 0,     0,    -0.6  );
         virtual_humanoid_joint_rel_pos_map["right_ankle->right_foot"]      = btVector3( 0.06,  0,    -0.03 );
-        virtual_humanoid_joint_rel_pos_map["waist->left_hip"]              = btVector3( 0,     0.15,  0    );
+        virtual_humanoid_joint_rel_pos_map["pelvis->left_hip"]             = btVector3( 0,     0.15,  0    );
         virtual_humanoid_joint_rel_pos_map["left_hip->left_knee"]          = btVector3( 0,     0,    -0.4  );
         virtual_humanoid_joint_rel_pos_map["left_knee->left_ankle"]        = btVector3( 0,     0,    -0.6  );
         virtual_humanoid_joint_rel_pos_map["left_ankle->left_foot"]        = btVector3( 0.06,  0,    -0.03 );
@@ -152,7 +153,7 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
 
     static auto getVirtualHumanoidJointRelPosMap() -> decltype( generateVirtualHumanoidJointRelPosMap() ) const &
     {
-        static auto && virtual_humanoid_joint_rel_pos_map = generateVirtualHumanoidJointRelPosMap();
+        static auto const & virtual_humanoid_joint_rel_pos_map = generateVirtualHumanoidJointRelPosMap();
 
         return virtual_humanoid_joint_rel_pos_map;
     }
@@ -163,6 +164,15 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         auto const & joint_dependency_map = humanoid::getJointDependencyMap();
         auto const & sensor_frame_name = config_.sensor_frame_name;
         auto const & user_name = config_.name;
+
+        auto const now = ros::Time::now();
+
+        _HumanoidStateArrayMsg humanoid_state_array_msg;
+        _HumanoidStateMsg humanoid_state_msg;
+        humanoid_state_msg.header.stamp = now;
+        humanoid_state_msg.header.frame_id = sensor_frame_name;
+        humanoid_state_msg.name = user_name;
+        humanoid_state_msg.header.stamp = ros::Time::now();
 
         for( auto joint_entry = joint_dependency_map.cbegin(); joint_entry != joint_dependency_map.cend(); ++joint_entry )
         {
@@ -183,8 +193,30 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
 
             btTransform transform( joint_rel_ori, joint_rel_pos );
 
+            _HumanoidJointMsg joint_msg;
+            joint_msg.header.stamp = now;
+            joint_msg.header.frame_id = from_frame_name;
+            joint_msg.name = to_joint_name;
+            joint_msg.parent_name = joint_dependency_map.find( to_joint_name )->second;
+            joint_msg.pose.pose = unit::make_unit( transform );
+
+            joint_msg.pose.covariance[0 * 6 + 0] = 0.007660796;
+            joint_msg.pose.covariance[1 * 6 + 1] = 0.007660796;
+            joint_msg.pose.covariance[2 * 6 + 2] = 0.007660796;
+            joint_msg.pose.covariance[3 * 6 + 3] = 0.007660796;
+            joint_msg.pose.covariance[4 * 6 + 4] = 0.007660796;
+            joint_msg.pose.covariance[5 * 6 + 5] = 0.007660796;
+
+            humanoid_state_msg.joints.push_back( joint_msg );
+
             publishTransform( transform, from_frame_name, to_frame_name );
         }
+
+        humanoid_state_msg = _Humanoid::estimateExtraJoints( humanoid_state_msg );
+
+        humanoid_state_array_msg.states.push_back( humanoid_state_msg );
+
+        multi_pub_.publish( "humanoid_states", humanoid_state_array_msg );
     }
 };
 

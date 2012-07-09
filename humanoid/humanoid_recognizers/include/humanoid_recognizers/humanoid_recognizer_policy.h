@@ -90,6 +90,7 @@ protected:
 
     // we use a ConstPtr here to simplify copying and threading
     _HumanoidStateArrayMsg::ConstPtr last_humanoid_states_msg_;
+    std::mutex last_humanoid_states_msg_mutex_;
 
     //_HumanoidsMap humanoids_map_;
     _NamedHumanoidCache named_humanoid_cache_;
@@ -115,7 +116,7 @@ public:
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( HumanoidRecognizer ),
         named_humanoid_cache_(),
-        timed_humanoid_cache_( named_humanoid_cache_.getStorage() ),
+        //timed_humanoid_cache_( named_humanoid_cache_.getStorage() ),
         running_( false ),
         initialized_( false )
     {
@@ -147,7 +148,7 @@ public:
         multi_pub_.addPublishers<_MarkerArrayMsg, _MarkerArrayMsg, __FeatureArrayMsg>( nh_rel, { "marker_array", "/visualization_marker_array", "features" } );
         multi_sub_.addSubscriber( nh_rel, "humanoid_states", &HumanoidRecognizerPolicy::humanoidStatesCB, this );
 
-		running_ = true;
+        running_ = true;
         process_humanoids_thread_ptr_ = boost::make_shared<boost::thread>( &HumanoidRecognizerPolicy::processHumanoids, this );
 
         QUICKDEV_SET_INITIALIZED();
@@ -183,30 +184,43 @@ public:
         timed_humanoid_cache_.eraseOld( child_args... );
     }
 
-    auto getHumanoids() -> decltype( named_humanoid_cache_ )
+    auto getHumanoids() -> decltype( named_humanoid_cache_ ) &
     {
         auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
         return named_humanoid_cache_;
     }
 
-    auto getHumanoidPairs() -> decltype( humanoid_pairs_ )
+    auto getHumanoids() const -> decltype( named_humanoid_cache_ )
+    {
+        auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
+        return named_humanoid_cache_;
+    }
+
+    auto getHumanoidPairs() -> decltype( humanoid_pairs_ ) &
+    {
+        auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
+        return humanoid_pairs_;
+    }
+
+    auto getHumanoidPairs() const -> decltype( humanoid_pairs_ )
     {
         auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
         return humanoid_pairs_;
     }
 
     //! Build a list of unique humanoids (mapped from name to _Humanoid)
-    QUICKDEV_DECLARE_MESSAGE_CALLBACK( updateHumanoids, _HumanoidStateArrayMsg )
+    void updateHumanoids( _HumanoidStateArrayMsg const & msg )
     {
-        // make sure the given message isn't null
-        if( !msg ) return;
-
         auto lock = quickdev::make_unique_lock( humanoids_mutex_ );
 
-        for( auto humanoid_msg = msg->states.begin(); humanoid_msg != msg->states.end(); ++humanoid_msg )
+//        quickdev::start_stream_indented( "updating humanoids from message array of size ", msg->states.size() );
+        for( auto humanoid_msg = msg.states.begin(); humanoid_msg != msg.states.end(); ++humanoid_msg )
         {
+//            quickdev::start_stream_indented( "updating humanoid object: ", humanoid_msg->name );
             named_humanoid_cache_.updateMessage( _Humanoid( *humanoid_msg ) );
+//            quickdev::end_stream_indented();
         }
+//        quickdev::end_stream_indented();
     }
 
     //! Build a list of unique humanoid pairs (mapped from combined name to _HumanoidPair)
@@ -271,21 +285,33 @@ public:
         {
             process_humanoids_mutex_.try_lock();
             auto process_humanoids_lock = quickdev::make_unique_lock( process_humanoids_mutex_ );
-            
-            PRINT_INFO( "--------------------Updating humanoid states------------------------------" );
 
-            if( !last_humanoid_states_msg_ ) continue;
+//            quickdev::start_stream_indented( "updating humanoid states" );
 
-            if( update_humanoids_ ) updateHumanoids( last_humanoid_states_msg_ );
+            auto lock = quickdev::make_unique_lock( last_humanoid_states_msg_mutex_ );
+
+            if( !last_humanoid_states_msg_ )
+            {
+//                quickdev::end_stream_indented();
+                continue;
+            }
+
+            if( update_humanoids_ && last_humanoid_states_msg_ ) updateHumanoids( *last_humanoid_states_msg_ );
             if( update_pairs_ ) updateHumanoidPairs();
 
+//            quickdev::start_stream_indented( "invoking humanoid state array message callback" );
             QUICKDEV_GET_POLICY_NS( HumanoidRecognizer )::_HumanoidStateArrayMessageCallbackPolicy::invokeCallback( last_humanoid_states_msg_ );
+//            quickdev::end_stream_indented();
+
+//            quickdev::end_stream_indented();
         }
     }
 
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( humanoidStatesCB, _HumanoidStateArrayMsg )
     {
-		PRINT_INFO( "Got new humanoid state array message." );
+        auto lock = quickdev::make_unique_lock( last_humanoid_states_msg_mutex_, std::try_to_lock );
+        if( !lock.owns_lock() ) return;
+//        PRINT_INFO( "Got new humanoid state array message." );
         last_humanoid_states_msg_ = msg;
 
         // wake up the processHumanoids thread for one cycle
