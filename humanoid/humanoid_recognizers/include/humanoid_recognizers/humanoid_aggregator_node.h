@@ -68,6 +68,7 @@ private:
         marker_template_,
         text_marker_template_,
         lines_marker_template_,
+        arrow_marker_template_,
         points_marker_template_;
 
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidAggregator )
@@ -105,6 +106,12 @@ private:
         //lines_marker_template_.ns = "basic_skeleton_lines";
         lines_marker_template_.type = visualization_msgs::Marker::LINE_LIST;
         lines_marker_template_.scale.x = 0.02;
+
+        arrow_marker_template_ = marker_template_;
+        arrow_marker_template_.type = visualization_msgs::Marker::ARROW;
+        arrow_marker_template_.scale.x = 0.25;
+        arrow_marker_template_.scale.y = 0.3;
+        arrow_marker_template_.scale.z = 0.3;
 
         points_marker_template_ = marker_template_;
         //points_marker_template_.ns = "basic_skeleton_points";
@@ -194,13 +201,14 @@ private:
         //joint_states_msg.names.reserve( humanoids.size() );
         //joint_states_msg.states.reserve( humanoids.size() );
 
-        for( auto humanoid = humanoids.begin(); humanoid != humanoids.end(); ++humanoid )
+        for( auto humanoid_it = humanoids.begin(); humanoid_it != humanoids.end(); ++humanoid_it )
         {
-            //joint_states_msg.names.push_back( humanoid->name );
-            //joint_states_msg.states.push_back( humanoid->getJointStateMessage() );
+            auto & humanoid = *humanoid_it;
+            //joint_states_msg.names.push_back( humanoid.name );
+            //joint_states_msg.states.push_back( humanoid.getJointStateMessage() );
 
             //note: can't use cbegin() in for() above because getJointsMessage() modifies Humanoid (specifically, it modifies the ROS message cache of the humanoid's storage object)
-            const auto & joints = humanoid->getJointsMessage();
+            const auto & joints = humanoid.getJointsMessage();
 
             combined_states_msg.states.push_back( joints );
 
@@ -228,22 +236,65 @@ private:
             lines_marker.id = current_id ++;
             lines_marker.color = current_color;
 
-            appendLineMarker( lines_marker, "head", "neck", *humanoid );
-            appendLineMarker( lines_marker, "neck", "left_shoulder", *humanoid );
-            appendLineMarker( lines_marker, "neck", "right_shoulder", *humanoid );
-            appendLineMarker( lines_marker, "torso", "left_shoulder", *humanoid );
-            appendLineMarker( lines_marker, "torso", "right_shoulder", *humanoid );
-            appendLineMarker( lines_marker, "torso", "left_hip", *humanoid );
-            appendLineMarker( lines_marker, "torso", "right_hip", *humanoid );
-            appendLineMarker( lines_marker, "left_shoulder", "left_elbow", *humanoid );
-            appendLineMarker( lines_marker, "left_elbow", "left_hand", *humanoid );
-            appendLineMarker( lines_marker, "right_shoulder", "right_elbow", *humanoid );
-            appendLineMarker( lines_marker, "right_elbow", "right_hand", *humanoid );
-            appendLineMarker( lines_marker, "left_hip", "right_hip", *humanoid );
-            appendLineMarker( lines_marker, "left_hip", "left_knee", *humanoid );
-            appendLineMarker( lines_marker, "left_knee", "left_foot", *humanoid );
-            appendLineMarker( lines_marker, "right_hip", "right_knee", *humanoid );
-            appendLineMarker( lines_marker, "right_knee", "right_foot", *humanoid );
+            appendLineMarker( lines_marker, "head", "neck", humanoid );
+            appendLineMarker( lines_marker, "neck", "left_shoulder", humanoid );
+            appendLineMarker( lines_marker, "neck", "right_shoulder", humanoid );
+            appendLineMarker( lines_marker, "torso", "left_shoulder", humanoid );
+            appendLineMarker( lines_marker, "torso", "right_shoulder", humanoid );
+            appendLineMarker( lines_marker, "torso", "left_hip", humanoid );
+            appendLineMarker( lines_marker, "torso", "right_hip", humanoid );
+            appendLineMarker( lines_marker, "left_shoulder", "left_elbow", humanoid );
+            appendLineMarker( lines_marker, "left_elbow", "left_hand", humanoid );
+            appendLineMarker( lines_marker, "right_shoulder", "right_elbow", humanoid );
+            appendLineMarker( lines_marker, "right_elbow", "right_hand", humanoid );
+            appendLineMarker( lines_marker, "left_hip", "right_hip", humanoid );
+            appendLineMarker( lines_marker, "left_hip", "left_knee", humanoid );
+            appendLineMarker( lines_marker, "left_knee", "left_foot", humanoid );
+            appendLineMarker( lines_marker, "right_hip", "right_knee", humanoid );
+            appendLineMarker( lines_marker, "right_knee", "right_foot", humanoid );
+            appendLineMarker( lines_marker, "head", "eyes", humanoid );
+
+            _MarkerMsg eyes_arrow_marker = arrow_marker_template_;
+            eyes_arrow_marker.pose = humanoid["eyes"].pose.pose;
+            eyes_arrow_marker.id = current_id ++;
+            eyes_arrow_marker.color = current_color;
+            markers.markers.push_back( eyes_arrow_marker );
+
+            _MarkerMsg head_arrow_marker = arrow_marker_template_;
+            head_arrow_marker.pose = humanoid["head"].pose.pose;
+            head_arrow_marker.id = current_id ++;
+            head_arrow_marker.color = current_color;
+            markers.markers.push_back( head_arrow_marker );
+
+            _MarkerMsg neck_arrow_marker = arrow_marker_template_;
+            neck_arrow_marker.pose = humanoid["neck"].pose.pose;
+            neck_arrow_marker.id = current_id ++;
+            neck_arrow_marker.color = current_color;
+            markers.markers.push_back( neck_arrow_marker );
+
+            _MarkerMsg torso_arrow_marker = arrow_marker_template_;
+            torso_arrow_marker.pose = humanoid["torso"].pose.pose;
+            torso_arrow_marker.id = current_id ++;
+            torso_arrow_marker.color = current_color;
+            markers.markers.push_back( torso_arrow_marker );
+
+            _MarkerMsg pelvis_arrow_marker = arrow_marker_template_;
+            pelvis_arrow_marker.pose = humanoid["pelvis"].pose.pose;
+            pelvis_arrow_marker.id = current_id ++;
+            pelvis_arrow_marker.color = current_color;
+            markers.markers.push_back( pelvis_arrow_marker );
+
+            _MarkerMsg l_ear_arrow_marker = arrow_marker_template_;
+            l_ear_arrow_marker.pose = humanoid["left_ear"].pose.pose;
+            l_ear_arrow_marker.id = current_id ++;
+            l_ear_arrow_marker.color = current_color;
+            markers.markers.push_back( l_ear_arrow_marker );
+
+            _MarkerMsg r_ear_arrow_marker = arrow_marker_template_;
+            r_ear_arrow_marker.pose = humanoid["right_ear"].pose.pose;
+            r_ear_arrow_marker.id = current_id ++;
+            r_ear_arrow_marker.color = current_color;
+            markers.markers.push_back( r_ear_arrow_marker );
 
             // set text position
             _MarkerMsg text_marker( text_marker_template_ );
@@ -251,8 +302,8 @@ private:
             text_marker.id = current_id ++;
             text_marker.color = current_color;
 
-            text_marker.text = humanoid->name;
-            text_marker.pose.position = humanoid->at("head").pose.pose.position;
+            text_marker.text = humanoid.name;
+            text_marker.pose.position = humanoid["head"].pose.pose.position;
             text_marker.pose.position.z += 0.2;  // determined empirically...
 
             markers.markers.push_back( lines_marker );
