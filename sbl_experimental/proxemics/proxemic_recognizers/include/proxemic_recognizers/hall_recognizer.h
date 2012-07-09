@@ -63,7 +63,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HallRecognizer )
         initPolicies<_HumanoidRecognizerPolicy>( "update_pairs_param", true );
         initPolicies<quickdev::policy::ALL>();
 
-        marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+        marker_template_.header.frame_id = "/world";
         marker_template_.ns = "mehrabian_visualization";
         marker_template_.action = visualization_msgs::Marker::ADD;
         marker_template_.lifetime = ros::Duration( 0.1 );

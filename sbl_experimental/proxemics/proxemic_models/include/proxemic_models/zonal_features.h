@@ -53,13 +53,15 @@ namespace zonal
     using humanoid::_SoftClassificationSet;
 
     // =========================================================================================================================================
-    static _SoftClassificationSet getDistanceClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & intervals )
+    static _SoftClassificationSet getDistanceClassification( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2, XmlRpc::XmlRpcValue & params )
     {
-        _SoftClassificationSet result;
+        auto & intervals = params["intervals"];
+        auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
+        std::cout << distance.getCovariance() << std::endl;
         double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
-        double const mean = distance;
+        double const mean = distance + offset;
 
         return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
@@ -108,7 +110,7 @@ public:
         auto const & from_joint = humanoid_["pelvis"];
         auto const & to_joint = other.humanoid_["pelvis"];
 
-        _SoftClassificationSet result = proxemics::zonal::getDistanceClassification( from_joint, to_joint, params_["intervals"]["distance"] );
+        _SoftClassificationSet result = proxemics::zonal::getDistanceClassification( from_joint, to_joint, params_["distance"] );
 
         return result;
     }

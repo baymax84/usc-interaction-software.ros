@@ -79,6 +79,8 @@ namespace spatial
 
         quickdev::FeatureWithCovariance<double, 1> result( joint1_pos.distance( joint2_pos ) );
 
+//        PRINT_INFO( "variance1: %f; variance2: %f", joint1.pose.covariance[0 * 6 + 0], joint2.pose.covariance[0 * 6 + 0] );
+
         // here we assume that all linear components have identical static variance
         result.getCovariance()( 0, 0 ) = joint1.pose.covariance[0 * 6 + 0] + joint2.pose.covariance[0 * 6 + 0];
 
@@ -88,10 +90,12 @@ namespace spatial
     //! 3D per-axis distance between joint1 and joint2
     static quickdev::FeatureWithCovariance<btVector3, 3> getComponentDistanceTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        btVector3 joint1_pos = unit::make_unit( joint1 );
-        btVector3 joint2_pos = unit::make_unit( joint2 );
+        btTransform const world_to_joint1_tf = unit::make_unit( joint1 );
+        btTransform const world_to_joint2_tf = unit::make_unit( joint2 );
 
-        quickdev::FeatureWithCovariance<btVector3, 3> result( joint2_pos - joint1_pos );
+        btTransform const joint1_to_joint2_tf = world_to_joint1_tf.inverse() * world_to_joint2_tf;
+
+        quickdev::FeatureWithCovariance<btVector3, 3> result( joint1_to_joint2_tf.getOrigin() );
 
         result.getCovariance()( 0, 0 ) = joint1.pose.covariance[0 * 6 + 0] + joint2.pose.covariance[0 * 6 + 0];
         result.getCovariance()( 1, 1 ) = joint1.pose.covariance[1 * 6 + 1] + joint2.pose.covariance[1 * 6 + 1];
@@ -183,7 +187,7 @@ public:
         //
     }
 
-    quickdev::FeatureWithCovariance<double, 1> getDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<double, 1> getDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -191,15 +195,17 @@ public:
         return proxemics::spatial::getDistanceTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<double, 1> getDistance2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<double, 1> getDistance2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
 
+//        PRINT_INFO( "from_joint variance: %f; to_joint variance: %f", from_joint.pose.covariance[0 * 6 + 0], to_joint.pose.covariance[0 * 6 + 0] );
+
         return proxemics::spatial::getDistance2DTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getComponentDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btVector3, 3> getComponentDistanceTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -207,7 +213,7 @@ public:
         return proxemics::spatial::getComponentDistanceTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getMidpoint( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btVector3, 3> getMidpoint( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -215,7 +221,7 @@ public:
         return proxemics::spatial::getMidpoint( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btTransform, 6> getTransformTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btTransform, 6> getTransformTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -223,7 +229,7 @@ public:
         return proxemics::spatial::getTransformTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btQuaternion, 3> getAngleTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btQuaternion, 3> getAngleTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -231,7 +237,7 @@ public:
         return proxemics::spatial::getAngleTo( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getAngleToYPR( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<btVector3, 3> getAngleToYPR( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -239,7 +245,7 @@ public:
         return proxemics::spatial::getAngleToYPR( from_joint, to_joint );
     }
 
-    quickdev::FeatureWithCovariance<double, 1> getAngle2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    quickdev::FeatureWithCovariance<double, 1> getAngle2DTo( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
@@ -247,7 +253,7 @@ public:
         return proxemics::spatial::getAngle2DTo( from_joint, to_joint );
     }
 
-    _SpatialFeatureMsg createMessage( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "base_link", std::string const & to_joint_name = "" ) const
+    _SpatialFeatureMsg createMessage( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "pelvis", std::string const & to_joint_name = "" ) const
     {
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];

@@ -3,9 +3,12 @@
     <arg name="name" default="zonal_recognizer" />
     <arg name="type" default="$(arg name)_node" />
     <arg name="rate" default="30" />
-    <arg name="args" value="_loop_rate:=$(arg rate)" />
+    <arg name="args" value="_loop_rate:=$(arg rate) ~humanoid_states:=/humanoid_aggregator/humanoid_states_agg" />
     <arg name="manager" default="manager" />
     <arg name="nodelet" default="false" />
+
+    <rosparam param="/proxemics/zonal" command="load" file="$(find proxemic_models)/params/zonal.yaml" />
+
     <node
         if="$(arg nodelet)"
         pkg="nodelet"

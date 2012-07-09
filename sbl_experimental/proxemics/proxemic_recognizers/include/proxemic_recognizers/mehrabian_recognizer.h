@@ -62,14 +62,16 @@ private:
 
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( MehrabianRecognizer )
     {
-        //
+        btVector3 vec( 0, 0, 3.14 );
+        btQuaternion quat( unit::make_unit( vec ) );
+        btVector3 vec_res = unit::make_unit( quat );
     }
 
     QUICKDEV_SPIN_FIRST()
     {
         initPolicies<_HumanoidRecognizerPolicy>( "update_pairs_param", true );
 
-        marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+        marker_template_.header.frame_id = "/world";
         marker_template_.ns = "mehrabian_visualization";
         marker_template_.action = visualization_msgs::Marker::ADD;
         marker_template_.lifetime = ros::Duration( 0.1 );
@@ -100,14 +102,20 @@ private:
 
         unsigned int marker_id = 0;
 
+        // copy
         auto const humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
 
         for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
+            PRINT_INFO( "analyzing pair [%s,%s]", pair->first.name.c_str(), pair->second.name.c_str() );
             auto const & feature1 = proxemics::SpatialFeatureRecognizer( pair->first );
             auto const & feature2 = proxemics::SpatialFeatureRecognizer( pair->second );
-            features_msg.features.push_back( feature1.createMessage( feature2 ) );
-            features_msg.features.push_back( feature2.createMessage( feature1 ) );
+
+            auto const feature1_msg = feature1.createMessage( feature2 );
+            auto const feature2_msg = feature2.createMessage( feature1 );
+
+            features_msg.features.push_back( feature1_msg );
+            features_msg.features.push_back( feature2_msg );
             //const auto & joint1 = pair->first["torso"];
             //const auto & joint2 = pair->second["torso"];
 
@@ -128,6 +136,38 @@ private:
             lines_marker.points.push_back( unit::make_unit( feature1_origin ) );
             lines_marker.points.push_back( unit::make_unit( feature2_origin ) );
 
+            btVector3 feature1_origin2d = btVector3( feature1_origin.getX(), feature1_origin.getY(), 0 );
+            btVector3 feature2_origin2d = btVector3( feature2_origin.getX(), feature2_origin.getY(), 0 );
+
+            btTransform const world_to_pelvis1_tf = unit::make_unit( pair->first["pelvis"] );
+            btTransform const world_to_pelvis2_tf = unit::make_unit( pair->second["pelvis"] );
+
+            btVector3 pelvis1_ori = unit::make_unit( world_to_pelvis1_tf.getRotation() );
+            btVector3 pelvis2_ori = unit::make_unit( world_to_pelvis2_tf.getRotation() );
+
+            //pelvis1_ori.setZ( 0 );
+            //pelvis1_ori.setY( 0 );
+            //pelvis2_ori.setZ( 0 );
+            //pelvis2_ori.setY( 0 );
+
+            btTransform world_to_feature1_x_tf = world_to_pelvis1_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( feature1_msg.pose.x, 0, 0 ) );
+            btTransform world_to_feature2_x_tf = world_to_pelvis2_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( feature2_msg.pose.x, 0, 0 ) );
+
+            // feature1_origin -> world_to_feature1_x_tf, world_to_feature1_x_tf -> feature2_origin2d (with z = feature1_origin.z)
+            // feature2_origin -> world_to_feature2_x_tf, world_to_feature2_x_tf -> feature1_origin2d (with z = feature2_origin.z)
+
+            lines_marker.points.push_back( unit::make_unit( feature1_origin ) );
+            lines_marker.points.push_back( unit::make_unit( world_to_feature1_x_tf.getOrigin() ) );
+
+            lines_marker.points.push_back( unit::make_unit( world_to_feature1_x_tf.getOrigin() ) );
+            lines_marker.points.push_back( unit::make_unit( btVector3( feature2_origin.getX(), feature2_origin.getY(), feature1_origin.getZ() ) ) );
+
+            lines_marker.points.push_back( unit::make_unit( feature2_origin ) );
+            lines_marker.points.push_back( unit::make_unit( world_to_feature2_x_tf.getOrigin() ) );
+
+            lines_marker.points.push_back( unit::make_unit( world_to_feature2_x_tf.getOrigin() ) );
+            lines_marker.points.push_back( unit::make_unit( btVector3( feature1_origin.getX(), feature1_origin.getY(), feature2_origin.getZ() ) ) );
+
             markers_msg.markers.push_back( lines_marker );
 
             _MarkerMsg text_marker = text_marker_template_;
@@ -135,10 +175,10 @@ private:
             text_marker.id = marker_id ++;
             text_marker.color = current_color;
 
-            btVector3 features_midpoint = ( feature1_origin - feature2_origin ) / 2.0;
+            btVector3 const features_midpoint = ( feature1_origin + feature2_origin ) / 2.0;
 
             char buffer[10];
-            //sprintf( buffer, "%.2f", features_msg.features.back().distance );
+            sprintf( buffer, "%.2f", feature1_origin.distance( feature2_origin ) );
             text_marker.text = buffer;
             text_marker.pose.position.x = features_midpoint.getX();
             text_marker.pose.position.y = features_midpoint.getY();
