@@ -50,6 +50,7 @@
 #include <quickdev/generic_policy_adapter.h>
 #include <quickdev/image_loader.h>
 #include <quickdev/image_proc_policy.h>
+#include <quickdev/indented_stream.h>
 #include <quickdev/joystick_policy.h>
 #include <quickdev/macros.h>
 //#include <quickdev/math.h>
