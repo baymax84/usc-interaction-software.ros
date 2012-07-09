@@ -171,7 +171,7 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        result.insert( SoftClassification( SEX_MALE, 1.0 ) );
+        result.insert( SoftClassification( SEX_MALE, 1.0, "male" ) );
 
         return result;
     }
@@ -181,7 +181,7 @@ namespace psychophysical
     {
         _SoftClassificationSet result;
 
-        result.insert( SoftClassification( POSTURE_STANDING, 1.0 ) );
+        result.insert( SoftClassification( POSTURE_STANDING, 1.0, "standing" ) );
 
         return result;
     }
@@ -192,9 +192,9 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-        auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
-        double const mean = distance + offset;
+        auto const angle = proxemics::spatial::getAngleToYPR( joint1, joint2 );
+        double const sigma = sqrt( angle.getCovariance()( 2, 2 ) );
+        double const mean = Degree( Radian( angles::normalize_angle( angle.getFeature().getZ() ) ) ) + offset;
 
         return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
@@ -218,9 +218,9 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-        auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
-        double const sigma = sqrt( angle.getCovariance()( 0, 0 ) );
-        double const mean = Degree( Radian( angle.getFeature() ) ) + offset;
+        auto const angle = proxemics::spatial::getAngleToYPR( joint1, joint2 );
+        double const sigma = sqrt( angle.getCovariance()( 2, 2 ) );
+        double const mean = Degree( Radian( angles::normalize_angle( angle.getFeature().getZ() ) ) ) + offset;
 
         return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
     }
@@ -312,20 +312,12 @@ public:
 
     _SoftClassificationSet getSexClassification()
     {
-        _SoftClassificationSet result;
-
-        result.insert( SoftClassification( proxemics::psychophysical::SEX_MALE, 1.0 ) );
-
-        return result;
+        return proxemics::psychophysical::getSexClassification();
     }
 
     _SoftClassificationSet getPosturalClassification()
     {
-        _SoftClassificationSet result;
-
-        result.insert( SoftClassification( proxemics::psychophysical::POSTURE_STANDING, 1.0 ) );
-
-        return result;
+        return proxemics::psychophysical::getPosturalClassification();
     }
 
     _SoftClassificationSet getSFPClassification( _HumanoidFeatureRecognizer const & other, std::string const & from_joint_name = "neck", std::string const & to_joint_name = "" )
@@ -364,19 +356,7 @@ public:
 
         auto const reach_max = whole_arm_max + proxemics::spatial::getDistanceTo( torso_joint, pelvis_joint ) + proxemics::spatial::getDistanceTo( neck_joint, torso_joint );
         auto const reach_outside_max = reach_max + double( Meter( Inch( 4 ) ) );
-/*
-        auto const body_max = ( ( left_shoulder_vec - neck_vec ).length() + ( right_shoulder_vec - neck_vec ).length() ) / 2;
-        auto const body_outside_max = body_max + Meter( Inch( 1 ) );
 
-        auto const lower_arm_max = body_max + ( ( left_hand_vec - left_elbow_vec ).length() + ( right_hand_vec - right_elbow_vec ).length() ) / 2;
-        auto const lower_arm_outside_max = lower_arm_max + Meter( Inch( 2 ) );
-
-        auto const whole_arm_max = lower_arm_max + ( ( left_elbow_vec - left_shoulder_vec ).length() + ( right_elbow_vec - right_shoulder_vec ).length() ) / 2;
-        auto const whole_arm_outside_max = whole_arm_max + Meter( Inch( 3 ) );
-
-        auto const reach_max = whole_arm_max + ( pelvis_vec - torso_vec ).length() + ( torso_vec - neck_vec ).length();
-        auto const reach_outside_max = reach_max + Meter( Inch( 4 ) );
-*/
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params_["kinesthetic"], "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( humanoid_["neck"], other.humanoid_[getClosestJoint( "neck", other )] );

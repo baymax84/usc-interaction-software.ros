@@ -3,9 +3,9 @@
     <arg name="type" value="mehrabian_recognizer" />
     <arg name="name" default="$(arg type)" />
     <arg name="rate" default="30" />
-    <arg name="args" value="_loop_rate:=$(arg rate) ~humanoid_states:=/humanoid_recognizer/humanoid_states_agg" />
+    <arg name="args" value="_loop_rate:=$(arg rate) ~humanoid_states:=/humanoid_aggregator/humanoid_states_agg" />
     <arg name="manager" default="manager" />
-    <arg name="nodelet" default="true" />
+    <arg name="nodelet" default="false" />
 
     <node
         if="$(arg nodelet)"
