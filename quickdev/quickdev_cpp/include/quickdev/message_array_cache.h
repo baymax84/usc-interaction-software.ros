@@ -173,7 +173,11 @@ public:
         notify_update_funcs_.push_back( notify_func );
     }
 
-    template<bool has_stamped_wrapper, typename std::enable_if<(has_stamped_wrapper), int>::type = 0>
+    template
+    <
+        bool has_stamped_wrapper,
+        typename std::enable_if<(has_stamped_wrapper), int>::type = 0
+    >
     void copyMessages()
     {
         ros_message_array_.resize( message_array_.size() );
@@ -188,7 +192,11 @@ public:
         }
     }
 
-    template<bool has_stamped_wrapper, typename std::enable_if<(!has_stamped_wrapper), int>::type = 0>
+    template
+    <
+        bool has_stamped_wrapper,
+        typename std::enable_if<(!has_stamped_wrapper), int>::type = 0
+    >
     void copyMessages()
     {
         ros_message_array_.resize( message_array_.size() );
@@ -262,6 +270,7 @@ public:
     //MessageArrayCache( __Child & child )
     MessageArrayCache()
     {
+//        quickdev::print_stream_indented( "allocating new storage object in MessageArrayCache()" );
         this->storage_ = typename _Storage::_Ptr( new _Storage() );
     }
 
@@ -270,8 +279,30 @@ public:
         //if( child.getStorage() ) this->getStorage() = child.storage_;
         //else this->storage_ = typename _Storage::_Ptr( new _Storage() );
 
-        if( child_storage ) this->storage_ = child_storage;
-        else this->storage_ = typename _Storage::_Ptr( new _Storage() );
+//        quickdev::start_stream_indented( "attempting to copy child storage object" );
+        if( child_storage )
+        {
+//            quickdev::print_stream_indented( "copying existing storage object in MessageArrayCache()" );
+            this->storage_ = child_storage;
+        }
+        else
+        {
+//            quickdev::print_stream_indented( "allocating new storage object in MessageArrayCache()" );
+            this->storage_ = typename _Storage::_Ptr( new _Storage() );
+        }
+//        quickdev::end_stream_indented();
+    }
+
+    MessageArrayCache( MessageArrayCache<__Message> const & other )
+    {
+        if( other.getStorage() )
+        {
+            this->storage_ = other.getStorage();
+        }
+        else
+        {
+            this->storage_ = typename _Storage::_Ptr( new _Storage() );
+        }
     }
 
     template
@@ -284,7 +315,9 @@ public:
         storage_( new _Storage( storage_arg ) )
     {
         // we still want to build our cache from the current info
+//        quickdev::start_stream_indented( "initializing messages from storage object in MessageArrayCache::MessageArrayCache()" );
         updateMessages( storage_->getMessages() );
+//        quickdev::end_stream_indented();
     }
 
     template
@@ -317,15 +350,19 @@ public:
 
     void updateMessage( __Message const & msg )
     {
+//        quickdev::start_stream_indented( "updating message in MessageArrayCache::updateMessage()" );
         storage_->push_back( msg );
+//        quickdev::end_stream_indented();
     }
 
     void updateMessages( _ROSMessageArray const & msg_array )
     {
+//        quickdev::start_stream_indented( "copying messages from array in MessageArrayCache::updateMessages()" );
         for( auto message = msg_array.begin(); message != msg_array.end(); ++message )
         {
             updateMessage( *message );
         }
+//        quickdev::end_stream_indented();
     }
 };
 
@@ -350,20 +387,37 @@ public:
     typedef __Message _Message;
     typedef typename _Parent::_MessageArray _MessageArray;
     typedef typename _Parent::_ROSMessageArray _ROSMessageArray;
+    typedef typename _Parent::_Storage _Storage;
 
 protected:
     ros::Time stamp_;
 
 public:
-    template<class... __ParentArgs>
-    TimedMessageArrayCacheBase( __ParentArgs&&... parent_args )
+    TimedMessageArrayCacheBase()
     :
-        _Parent( parent_args... ), stamp_( 0 )
+        _Parent(),
+        stamp_( 0 )
     {
-        this->getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyErase_0, this ) );
-        this->getStorage()->registerNotifyUpdateFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyUpdate_0, this ) );
-        // we still want to build our cache from the current info
-        //eraseOld();
+        _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyErase_0, this ) );
+        _Parent::getStorage()->registerNotifyUpdateFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyUpdate_0, this ) );
+    }
+
+    TimedMessageArrayCacheBase( TimedMessageArrayCacheBase<__Message> const & other )
+    :
+        _Parent( other ),
+        stamp_( other.stamp_ )
+    {
+        _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyErase_0, this ) );
+        _Parent::getStorage()->registerNotifyUpdateFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyUpdate_0, this ) );
+    }
+
+    TimedMessageArrayCacheBase( typename _Parent::_Storage::_Ptr & storage_ptr )
+    :
+        _Parent( storage_ptr ),
+        stamp_( 0 )
+    {
+        _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyErase_0, this ) );
+        _Parent::getStorage()->registerNotifyUpdateFunc( quickdev::auto_bind( &TimedMessageArrayCacheBase::notifyUpdate_0, this ) );
     }
 
     virtual void notifyUpdate( _Message const & msg ) = 0;
@@ -514,15 +568,30 @@ public:
     typedef __Message _Message;
     typedef typename _Parent::_MessageArray _MessageArray;
     typedef typename _Parent::_ROSMessageArray _ROSMessageArray;
+    typedef TimedMessageArrayCacheHelper<__Message, TimedMessageArrayCacheFlags::STAMPED_ON_UPDATE> _TimedMessageArrayCacheHelper;
 
 protected:
     std::deque<ros::Time> timestamps_;
 
 public:
-    template<class... __ParentArgs>
-    TimedMessageArrayCacheHelper( __ParentArgs&&... parent_args )
+    TimedMessageArrayCacheHelper()
     :
-        _Parent( parent_args... )
+        _Parent()
+    {
+        //
+    }
+
+    TimedMessageArrayCacheHelper( _TimedMessageArrayCacheHelper const & other )
+    :
+        _Parent( other ),
+        timestamps_( other.timestamps_ )
+    {
+        //
+    }
+
+    TimedMessageArrayCacheHelper( typename _Parent::_Storage::_Ptr & storage_ptr )
+    :
+        _Parent( storage_ptr )
     {
         //
     }
@@ -538,7 +607,7 @@ public:
     //! called by our parent when an item is about to be erased
     void notifyErase( typename _MessageArray::iterator const & msg )
     {
-        // if the message we're about to erase has the most recent timestamp, find the most-recent timestamp
+        // if the message we're about to erase has the most recent timestamp, find the next-most-recent timestamp
         // this will necessarily be the message closest to the back of the queue that is not the current message
         if( timestamps_.size() > 1 )
         {
@@ -619,30 +688,74 @@ protected:
     _MessageIndexMap message_index_map_;
 
 public:
-    template<class... __ParentArgs>
-    NamedMessageArrayCache( __ParentArgs&&... parent_args )
+    NamedMessageArrayCache()
     :
-        _Parent( parent_args... )
+        _Parent()
     {
         _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &NamedMessageArrayCache::notifyErase, this ) );
-        // we still want to build our cache from the current info
+    }
+
+    NamedMessageArrayCache( NamedMessageArrayCache<__Message> const & other )
+    :
+        _Parent( other ),
+        message_index_map_( other.message_index_map_ )
+    {
+        _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &NamedMessageArrayCache::notifyErase, this ) );
         updateMessages( _Parent::getStorage()->getMessages() );
     }
 
-    inline NamedMessageArrayCache<__Message> & getInstance(){ return *this; }
+    NamedMessageArrayCache( typename _Parent::_Storage::_Ptr & storage )
+    :
+        _Parent( storage )
+    {
+        _Parent::getStorage()->registerNotifyEraseFunc( quickdev::auto_bind( &NamedMessageArrayCache::notifyErase, this ) );
+        auto const & existing_messages = _Parent::getStorage()->getMessages();
+
+        size_t i = 0;
+        for( auto message = existing_messages.cbegin(); message != existing_messages.cend(); ++message, ++i )
+        {
+            message_index_map_[message->name] = i;
+        }
+    }
+
+    NamedMessageArrayCache<__Message> & getInstance()
+    {
+        return *this;
+    }
+
+    NamedMessageArrayCache<__Message> const & getInstance() const
+    {
+        return *this;
+    }
 
     //! called by our storage object when an item is about to be erased
     void notifyErase( typename _MessageArray::iterator const & msg )
     {
-        auto const & erase_index = message_index_map_.find( msg->name );
+        auto const msg_name = msg->name;
+//        quickdev::start_stream_indented( "About to erase ", msg_name, " from a list of ", message_index_map_.size(), " messages " );
+
+        if( message_index_map_.size() == 0 ) return;
+
+        auto erase_index = message_index_map_.find( msg_name );
+        if( erase_index == message_index_map_.end() )
+        {
+//            quickdev::print_stream_indented( msg_name, " not found in cache" );
+//            quickdev::end_stream_indented();
+            return;
+        }
+
+//        quickdev::start_stream_indented( "adjusting indices" );
         // starting at the item to erase, decrement all indices by 1
         for( auto message_index = erase_index; message_index != message_index_map_.end(); ++message_index )
         {
             --message_index->second;
         }
+//        quickdev::end_stream_indented();
 
         // erase the indicated item from our index map
         message_index_map_.erase( erase_index );
+
+//        quickdev::end_stream_indented();
     }
 
     size_t size() const
@@ -726,17 +839,29 @@ public:
 
     void updateMessage( __Message const & msg )
     {
+/*
+        quickdev::start_stream_indented( "Adding message with name ", msg.name, " to sorage object of size ", _Parent::getStorage()->message_array_.size() );
+        for( auto entry = message_index_map_.cbegin(); entry != message_index_map_.cend(); ++entry )
+        {
+            quickdev::print_stream_indented( "mapping: ", entry->first, " -> ", entry->second );
+        }
+*/
         auto message_index_it = message_index_map_.find( msg.name );
 
         if( message_index_it == message_index_map_.end() )
         {
+//            quickdev::start_stream_indented( "Message name is unique; allocating new space for it after position ", _Parent::getStorage()->message_array_.size() );
             message_index_map_[msg.name] = _Parent::getStorage()->message_array_.size();
             _Parent::updateMessage( msg );
+//            quickdev::end_stream_indented();
         }
         else
         {
+//            quickdev::start_stream_indented( "Message name is not unique; updating entry ", message_index_it->second );
             *( _Parent::getStorage()->message_array_.begin() + message_index_it->second ) = msg;
+//            quickdev::end_stream_indented();
         }
+//        quickdev::end_stream_indented();
     }
 
     //! function to update cache with message stored in any kind of smart pointer
@@ -748,10 +873,12 @@ public:
 
     void updateMessages( typename _Parent::_ROSMessageArray const & msg_array )
     {
+//        quickdev::start_stream_indented( "adding messages from array in NamedMessageArrayCache::updateMessages()" );
         for( auto message = msg_array.begin(); message != msg_array.end(); ++message )
         {
             updateMessage( *message );
         }
+//        quickdev::end_stream_indented();
     }
 };
 

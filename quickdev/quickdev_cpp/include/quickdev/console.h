@@ -38,6 +38,7 @@
 
 #include <ros/console.h>
 #include <sstream>
+#include <quickdev/indented_stream.h>
 
 // =============================================================================================================================================
 #define PRINT_INFO( args... ) ROS_INFO( args )
