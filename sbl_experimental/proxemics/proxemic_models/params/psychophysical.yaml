@@ -32,8 +32,8 @@ touch:
 visual:
   intervals:
     [
-      { name: foveal,     id: 0, min:  0.0, max: 1.5   },
-      { name: macular,    id: 1, min:  1.5, max: 6.5   },
+      { name: foveal,     id: 0, min:  0.0, max: 1.0   },
+      { name: macular,    id: 1, min:  1.0, max: 6.5   },
       { name: scanning,   id: 2, min:  6.5, max: 30.0  },
       { name: peripheral, id: 3, min: 30.0, max: 95.0  },
       { name: none,       id: 8, min: 95.0, max: 180.0 }
