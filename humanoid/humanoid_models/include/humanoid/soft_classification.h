@@ -79,8 +79,14 @@ public:
                 auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
                 auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
 
-                result.insert( SoftClassification( interval_id, gsl_cdf_gaussian_P( mean + interval_max, sigma ) - gsl_cdf_gaussian_P( mean - interval_min, sigma ), interval_name ) );
+                PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
+
+                result.insert( SoftClassification( interval_id, gsl_cdf_gaussian_P( interval_max - mean, sigma ) - gsl_cdf_gaussian_P( interval_min - mean, sigma ), interval_name ) );
             }
+        }
+        else
+        {
+            PRINT_WARN( "interval pointer is not valid" );
         }
 
         return result;
@@ -88,7 +94,7 @@ public:
 
     bool operator<( SoftClassification const & other ) const
     {
-        return likelihood_ < other.likelihood_;
+        return ( ( likelihood_ == other.likelihood_ || std::isnan( likelihood_ ) || std::isnan( other.likelihood_ ) ) && id_ > other.id_ ) || likelihood_ > other.likelihood_;
     }
 
     operator _SoftClassificationMsg() const

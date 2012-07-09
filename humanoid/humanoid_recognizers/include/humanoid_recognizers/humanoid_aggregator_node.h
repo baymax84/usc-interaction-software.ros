@@ -39,6 +39,7 @@
 #include <quickdev/node.h>
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
+#include <quickdev/tf_tranceiver_policy.h>
 
 #include <deque>
 
@@ -49,7 +50,9 @@ using humanoid::_JointStateMsg;
 using humanoid::_JointStateArrayMsg;
 
 typedef HumanoidRecognizerPolicy<_HumanoidStateArrayMsg> _HumanoidRecognizerPolicy;
-QUICKDEV_DECLARE_NODE( HumanoidAggregator, _HumanoidRecognizerPolicy )
+typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
+
+QUICKDEV_DECLARE_NODE( HumanoidAggregator, _HumanoidRecognizerPolicy, _TfTranceiverPolicy )
 
 typedef _HumanoidRecognizerPolicy::_MarkerArrayMsg _MarkerArrayMsg;
 typedef _HumanoidRecognizerPolicy::_MarkerMsg _MarkerMsg;
@@ -58,6 +61,8 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidAggregator )
 {
 private:
     quickdev::MutexedCache<std::deque<_HumanoidStateArrayMsg::ConstPtr> > state_arrays_cache_;
+
+    std::string world_frame_name_;
 
     _MarkerMsg
         marker_template_,
@@ -73,7 +78,7 @@ private:
     QUICKDEV_SPIN_FIRST()
     {
         //initAll( "features_topic_name_param", std::string( "humanoid_states_agg" ) );
-        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel_ );
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
         //multi_pub_.addPublishers<_JointStateArrayMsg>( nh_rel_, { "joint_states" } );
 
@@ -83,7 +88,9 @@ private:
 
         initPolicies<quickdev::policy::ALL>();
 
-        marker_template_.header.frame_id = "/openni_depth_tracking_frame";
+        world_frame_name_ = quickdev::ParamReader::readParam<decltype( world_frame_name_ )>( nh_rel, "world_frame_name", "/world" );
+
+        marker_template_.header.frame_id = world_frame_name_;
         marker_template_.ns = "basic_skeleton";
         marker_template_.action = visualization_msgs::Marker::ADD;
         marker_template_.lifetime = ros::Duration( 0.1 );
@@ -123,28 +130,62 @@ private:
         // get a read/write reference to the cache's data (called state_arrays_cache)
         QUICKDEV_LOCK_CACHE_AND_GET( state_arrays_cache_, state_arrays_cache );
 
-        _MarkerArrayMsg markers;
         auto const now = ros::Time::now();
 
-        unsigned int current_id = 0;
-        
-        printf( "cached %zu humanoid messages\n", state_arrays_cache.size() );
+        //printf( "cached %zu humanoid messages\n", state_arrays_cache.size() );
 
-        for( auto users_components = state_arrays_cache.begin(); users_components != state_arrays_cache.end(); ++users_components )
+        // given the desired "world" frame, transform all the joints of all incoming humanoids to this world frame, then mesh them together into one message
+        for( auto users_msg_it = state_arrays_cache.begin(); users_msg_it != state_arrays_cache.end(); ++users_msg_it )
         {
+            // copy
+            _HumanoidStateArrayMsg users_msg = *(*users_msg_it);
+            auto & users = users_msg.states;
+
+            for( auto user_it = users.begin(); user_it != users.end(); ++user_it )
+            {
+                auto & joints = user_it->joints;
+
+                for( auto joint_it = joints.begin(); joint_it != joints.end(); ++joint_it )
+                {
+                    auto & joint = *joint_it;
+
+                    // if the joint was already measured with respect to the world frame, then move to the next joint
+                    if( joint.header.frame_id == world_frame_name_ ) continue;
+
+                    // otherwise, transform the joint into the coordinate frame specified
+
+                    // the joint was measured with respect to some sensor; get that transform
+                    auto const sensor_to_joint_tf = unit::convert<btTransform>( joint.pose.pose );
+                    // the sensor should exist somewhere in the world; look up that transform
+                    auto const world_to_sensor_tf = _TfTranceiverPolicy::waitForAndLookupTransform( world_frame_name_, joint.header.frame_id, 10, 10 );
+
+                    joint.pose.pose = unit::make_unit( world_to_sensor_tf * sensor_to_joint_tf );
+                    joint.header.frame_id = world_frame_name_;
+                }
+            }
+
             // mesh all parts of all humanoids into one message
-            _HumanoidRecognizerPolicy::updateHumanoids( *users_components );
+            _HumanoidRecognizerPolicy::updateHumanoids( users_msg );
         }
 
-//        auto & humanoids_temp = _HumanoidRecognizerPolicy::getHumanoids();
-//        printf( "tracking %u humanoids\n", humanoids_temp.size() );
+        /*std::cout << "------------" << std::endl;
+        auto humanoids_temp = _HumanoidRecognizerPolicy::getHumanoids();
+        for( auto humanoid = humanoids_temp.begin(); humanoid != humanoids_temp.end(); ++humanoid )
+        {
+            std::cout << "Tracking: " << humanoid->name << std::endl;
+        }*/
 
         // recursively erase all old messages
-        // _HumanoidRecognizerPolicy::eraseOld( 1.0 );
+        _HumanoidRecognizerPolicy::eraseOld( 2.0 );
 
-        auto humanoids = _HumanoidRecognizerPolicy::getHumanoids();
+//        quickdev::start_stream_indented( "getting a copy of the list of humanoids from _HumanoidRecognizerPolicy" );
+        auto & humanoids = _HumanoidRecognizerPolicy::getHumanoids();
+//        quickdev::end_stream_indented();
 
-        printf( "tracking %zu humanoids\n", humanoids.size() );
+        PRINT_INFO( "tracking %zu humanoids", humanoids.size() );
+
+        _MarkerArrayMsg markers;
+        unsigned int current_id = 0;
 
         _HumanoidStateArrayMsg combined_states_msg;
         combined_states_msg.states.reserve( humanoids.size() );
