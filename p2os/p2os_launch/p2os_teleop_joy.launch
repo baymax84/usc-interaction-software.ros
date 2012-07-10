@@ -2,5 +2,9 @@
 	<include file="$(find p2os_launch)/p2os_driver.launch" />
 	
 	<!-- run corequisites -->
-	<include file="$(find p2os_launch)/teleop_joy.launch" />
+	<!-- note: see p2os_launch/params/joystick_<controller>.launch for joystick mappings -->
+	<arg name="controller" />
+	<include file="$(find p2os_launch)/teleop_joy.launch" >
+		<arg name="controller" value="$(arg controller)" />
+	</include>
 </launch>

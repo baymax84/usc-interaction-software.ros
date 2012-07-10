@@ -75,7 +75,7 @@ class TeleopBase
   ros::Subscriber joy_sub_;
   ros::Subscriber passthrough_sub_;
 
-  TeleopBase(bool deadman_no_publish = false) : max_vx(0.6), max_vy(0.6), max_vw(0.8), max_vx_run(0.6), max_vy_run(0.6), max_vw_run(0.8), deadman_no_publish_(deadman_no_publish), running_(false)
+  TeleopBase(bool deadman_no_publish = false) : max_vx(0.6), max_vy(0.6), max_vw(0.8), max_vx_run(0.6), max_vy_run(0.6), max_vw_run(0.8), deadman_no_publish_(deadman_no_publish), running_(false), n_( "~" )
   { }
 
   void init()
@@ -147,8 +147,7 @@ class TeleopBase
         
     deadman_ = (((unsigned int)deadman_button < joy_msg->buttons.size()) && joy_msg->buttons[deadman_button]);
 
-    if (!deadman_)
-    	return;
+    if (!deadman_) return;
 		
 		//Record this message reciept
 		last_recieved_joy_message_time_ = ros::Time::now();
@@ -177,8 +176,9 @@ class TeleopBase
   void send_cmd_vel()
   {
     if(deadman_ &&
-		  last_recieved_joy_message_time_ + joy_msg_timeout_ > ros::Time::now() && running_ )
+		  last_recieved_joy_message_time_ + joy_msg_timeout_ > ros::Time::now() )
     {
+		if( running_ ) printf( "sprinting!\n" );
     	cmd.linear.x = req_vx;
       cmd.linear.y = req_vy;
       cmd.angular.z = req_vw;
@@ -202,7 +202,6 @@ class TeleopBase
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "teleop_base");
-	ros::NodeHandle nh;
   const char* opt_no_publish    = "--deadman_no_publish";
   
   bool no_publish = false;
@@ -211,10 +210,11 @@ int main(int argc, char **argv)
     if(!strncmp(argv[i], opt_no_publish, strlen(opt_no_publish)))
       no_publish = true;
   }
+  
+  TeleopBase teleop_base(no_publish);
 
   ros::Rate pub_rate(20);
 
-  TeleopBase teleop_base(no_publish);
   teleop_base.init();
   
   while (ros::ok())
