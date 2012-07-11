@@ -192,13 +192,44 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-        quickdev::start_stream_indented( "calculating 2d angle from ", joint1.name, " to ", joint2.name );
         auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
-        quickdev::end_stream_indented();
         double const sigma = sqrt( angle.getCovariance()( 0, 0 ) );
-        double const mean = Degree( Radian( angle.getFeature() ) ) + offset;
+        double const mean = fabs( Degree( Radian( angle.getFeature() ) ) + 180 ) + offset;
 
-        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
+        _SoftClassificationSet result;
+
+        auto begin = &intervals[0];
+        auto end = &intervals[0] + intervals.size();
+
+        double last_interval = 0;
+
+        for( XmlRpc::XmlRpcValue * interval_it = begin; interval_it != end; ++interval_it )
+        {
+            auto & interval = *interval_it;
+
+            auto const interval_id = quickdev::ParamReader::getXmlRpcValue<int>( interval, "id" );
+            auto const interval_min = quickdev::ParamReader::getXmlRpcValue<double>( interval, "min" );
+            auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
+            auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
+
+            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
+
+            double subinterval = quickdev::cdf_gaussian( mean, sigma, -interval_max, interval_max );
+            double cumulative_subinterval = subinterval;
+            int cdf_offset = 0;
+            while( subinterval > 0.0001 )
+            {
+                // cumulative probability from last interval end to this interval start along cdf at mean & cdf at mean +/- 360
+                subinterval = quickdev::cdf_gaussian( mean + 360 * cdf_offset, sigma, -interval_max, interval_max ) + quickdev::cdf_gaussian( mean - 360 * cdf_offset, sigma, -interval_max, interval_max );
+                cumulative_subinterval += subinterval;
+            }
+
+            result.insert( SoftClassification( interval_id, cumulative_subinterval - last_interval, interval_name ) );
+
+            last_interval = cumulative_subinterval;
+        }
+
+        return result;
     }
 
     // =========================================================================================================================================
