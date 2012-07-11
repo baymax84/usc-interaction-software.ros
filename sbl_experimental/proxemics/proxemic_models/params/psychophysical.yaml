@@ -1,15 +1,15 @@
 sfp:
   intervals:
     [
-      { name: axis0, id: 0, min:   0.0, max:  22.5 },
-      { name: axis1, id: 1, min:  22.5, max:  45.0 },
-      { name: axis2, id: 2, min:  45.0, max:  77.5 },
-      { name: axis3, id: 3, min:  77.5, max:  90.0 },
-      { name: axis4, id: 4, min:  90.0, max: 112.5 },
-      { name: axis5, id: 5, min: 112.5, max: 135.0 },
-      { name: axis6, id: 6, min: 135.0, max: 157.5 },
-      { name: axis7, id: 7, min: 157.5, max: 180.0 },
-      { name: axis8, id: 8, min: 180.0, max: +inf  }
+      { name: axis0, id: 0, min:   0.0 ,  max:  11.25 },
+      { name: axis1, id: 1, min:  11.25,  max:  33.75 },
+      { name: axis2, id: 2, min:  33.75,  max:  56.25 },
+      { name: axis3, id: 3, min:  56.25,  max:  78.75 },
+      { name: axis4, id: 4, min:  78.75,  max: 101.25 },
+      { name: axis5, id: 5, min: 101.25,  max: 123.75 },
+      { name: axis6, id: 6, min: 123.75,  max: 146.25 },
+      { name: axis7, id: 7, min: 146.25,  max: 168.75 },
+      { name: axis8, id: 8, min: 168.75,  max: 180.0  }
     ]
   offset: 0.0
 
