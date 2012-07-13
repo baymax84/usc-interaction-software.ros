@@ -101,10 +101,7 @@ template<class __Data>
 std::pair<__Data, __Data> gaussian_product( __Data const & mean1, __Data const & variance1, __Data const & mean2, __Data const & variance2 );
 
 // =============================================================================================================================================
-double cdf_gaussian( double const & mean, double const & sigma, double const & min, double const & max )
-{
-    return gsl_cdf_gaussian_P( max - mean, sigma ) - gsl_cdf_gaussian_P( min - mean, sigma );
-}
+double cdf_gaussian( double const & mean, double const & sigma, double const & min, double const & max );
 
 #include <quickdev/details/math_impl.h>
 
