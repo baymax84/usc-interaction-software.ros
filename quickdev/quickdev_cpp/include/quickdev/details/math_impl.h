@@ -1,3 +1,6 @@
+#ifndef QUICKDEVCPP_QUICKDEV_DETAILS_MATHIMPL_H_
+#define QUICKDEVCPP_QUICKDEV_DETAILS_MATHIMPL_H_
+
 // =============================================================================================================================================
 template<class __Data>
 __Data normalizeEuler( __Data const & value )
@@ -105,3 +108,5 @@ std::pair<__Data, __Data> gaussian_product( __Data const & mean1, __Data const &
 {
     return std::pair<__Data, __Data>( gaussian_product_mean( mean1, variance1, mean2, variance2 ), gaussian_product_variance( variance1, variance2 ) );
 }
+
+#endif // QUICKDEVCPP_QUICKDEV_DETAILS_MATHIMPL_H_

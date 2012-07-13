@@ -21,4 +21,10 @@ void seedRand()
     quickdev::seedRand( time( NULL ) );
 }
 
+// =============================================================================================================================================
+double cdf_gaussian( double const & mean, double const & sigma, double const & min, double const & max )
+{
+    return gsl_cdf_gaussian_P( max - mean, sigma ) - gsl_cdf_gaussian_P( min - mean, sigma );
+}
+
 } // quickdev
