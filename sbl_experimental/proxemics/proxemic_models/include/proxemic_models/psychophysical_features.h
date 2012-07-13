@@ -192,7 +192,8 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-        auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
+        // note: angle from person 2 to person 1 used here because we're trying to find angular displacement from 0 -> 360 between the two people
+        auto const angle = proxemics::spatial::getAngle2DTo( joint2, joint1 );
         double const sigma = sqrt( angle.getCovariance()( 0, 0 ) );
         double const mean = fabs( Degree( Radian( angle.getFeature() ) ) + 180 ) + offset;
 
@@ -201,7 +202,7 @@ namespace psychophysical
         auto begin = &intervals[0];
         auto end = &intervals[0] + intervals.size();
 
-        double last_interval = 0;
+        double interval_0_8_probability;
 
         for( XmlRpc::XmlRpcValue * interval_it = begin; interval_it != end; ++interval_it )
         {
@@ -214,20 +215,24 @@ namespace psychophysical
 
             //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
 
+            // get the probability with the PDF centered at the mean
             double subinterval = quickdev::cdf_gaussian( mean, sigma, -interval_max, interval_max );
             double cumulative_subinterval = subinterval;
             int cdf_offset = 0;
-            while( subinterval > 0.0001 )
+            // get the additional probability one interval left and right of the mean until the amount of probability added by this operation is negligible
+            do
             {
                 // cumulative probability from last interval end to this interval start along cdf at mean & cdf at mean +/- 360
                 subinterval = quickdev::cdf_gaussian( mean + 360 * cdf_offset, sigma, -interval_max, interval_max ) + quickdev::cdf_gaussian( mean - 360 * cdf_offset, sigma, -interval_max, interval_max );
                 cumulative_subinterval += subinterval;
             }
+            while( subinterval > 0.0001 );
 
-            result.insert( SoftClassification( interval_id, cumulative_subinterval - last_interval, interval_name ) );
-
-            last_interval = cumulative_subinterval;
+            if( interval_id == 0 || interval_id == 8 ) interval_0_8_probability += cumulative_subinterval;
+            else result.insert( SoftClassification( interval_id, cumulative_subinterval, interval_name ) );
         }
+        result.insert( SoftClassification( quickdev::ParamReader::getXmlRpcValue<int>( intervals[0], "id" ), interval_0_8_probability, quickdev::ParamReader::getXmlRpcValue<std::string>( intervals[0], "name" ) ) );
+        result.insert( SoftClassification( quickdev::ParamReader::getXmlRpcValue<int>( intervals[8], "id" ), interval_0_8_probability, quickdev::ParamReader::getXmlRpcValue<std::string>( intervals[8], "name" ) ) );
 
         return result;
     }
@@ -278,11 +283,22 @@ namespace psychophysical
 
             //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
 
-            double const cumulative_interval = gsl_cdf_gaussian_P( interval_max - mean, sigma ) - gsl_cdf_gaussian_P( -interval_max - mean, sigma );
+            // get the probability with the PDF centered at the mean
+            double subinterval = quickdev::cdf_gaussian( mean, sigma, -interval_max, interval_max );
+            double cumulative_subinterval = subinterval;
+            int cdf_offset = 0;
+            // get the additional probability one interval left and right of the mean until the amount of probability added by this operation is negligible
+            do
+            {
+                // cumulative probability from last interval end to this interval start along cdf at mean & cdf at mean +/- 360
+                subinterval = quickdev::cdf_gaussian( mean + 360 * cdf_offset, sigma, -interval_max, interval_max ) + quickdev::cdf_gaussian( mean - 360 * cdf_offset, sigma, -interval_max, interval_max );
+                cumulative_subinterval += subinterval;
+            }
+            while( subinterval > 0.0001 );
 
-            result.insert( SoftClassification( interval_id, cumulative_interval - last_interval, interval_name ) );
+            result.insert( SoftClassification( interval_id, cumulative_subinterval - last_interval, interval_name ) );
 
-            last_interval = cumulative_interval;
+            last_interval = cumulative_subinterval;
         }
 
         return result;
