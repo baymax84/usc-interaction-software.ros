@@ -95,9 +95,14 @@ private:
         QUICKDEV_SET_INITIALIZED();
     }
 
+    bool running() const
+    {
+        return run_ && ros::ok();
+    }
+
     void updateRos()
     {
-        while( run_ && ros::ok() )
+        while( running() )
         {
             ros::spinOnce();
             if( ros_loop_rate_ ) ros_loop_rate_->sleep();
@@ -142,7 +147,7 @@ private:
         PRINT_INFO( "--------------------" );
         PRINT_INFO( ">>>>> Spinning at %f Hz...", loop_rate_hz_ );
 
-        while( run_ && ros::ok() )
+        while( running() )
         {
             spinOnce();
             // regardless of whether the user is blocking in ::spinOnce, we want to update ROS callbacks if we get here
