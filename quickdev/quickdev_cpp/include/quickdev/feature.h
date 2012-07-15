@@ -39,6 +39,7 @@
 #include <quickdev/macros.h>
 
 #include <gsl/gsl_cdf.h>
+#include <quickdev/math.h>
 
 #include <math.h>
 #include <type_traits>

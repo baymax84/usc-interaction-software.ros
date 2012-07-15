@@ -385,7 +385,7 @@ double __Feature::distanceToImpl( Feature<__OtherData> const & other, Feature<__
     for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
     {
         auto const abs_distance_component = fabs( *distance_component );
-        auto const probability_component = gsl_cdf_gaussian_P( abs_distance_component + half_resolution, *sigma ) - gsl_cdf_gaussian_P( abs_distance_component - half_resolution, *sigma );
+        auto const probability_component = quickdev::cdf_gaussian( abs_distance_component, *sigma, -half_resolution, half_resolution );
 
         total_distance *= probability_component;
     }
@@ -410,7 +410,7 @@ double __Feature::distanceToImpl( Feature<__OtherData> const & other, Feature<__
     double total_distance = 1.0;
     auto sigma = sigmas.cbegin();
 
-    for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend(); ++distance_component, ++sigma )
+    for( auto distance_component = distance_components.cbegin(); distance_component != distance_components.cend() && sigma != sigmas.cend(); ++distance_component, ++sigma )
     {
         auto const abs_distance_component = fabs( *distance_component );
         auto const probability_range = *sigma * std_dev;
