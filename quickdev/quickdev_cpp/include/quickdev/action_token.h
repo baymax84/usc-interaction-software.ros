@@ -42,24 +42,81 @@
 #include <quickdev/type_utils.h>
 #include <quickdev/auto_bind.h>
 #include <quickdev/time.h>
+#include <condition_variable>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {
+
+template<class __Data>
+class ActionTokenStorage
+{
+public:
+    typedef __Data _Data;
+    typedef std::vector<std::condition_variable *> _ConditionVector;
+
+    __Data * data_ptr_;
+    boost::shared_ptr<__Data> data_storage_ptr_;
+    bool running_;
+    bool success_;
+    std::condition_variable wait_condition_;
+    std::vector<std::condition_variable *> child_conditions_;
+    std::mutex wait_mutex_;
+
+    ActionTokenStorage( __Data * data_ptr = NULL )
+    :
+        data_ptr_( data_ptr ),
+        running_( false ),
+        success_( false )
+    {
+        //
+    }
+
+    ActionTokenStorage( std::vector<std::condition_variable *> child_conditions )
+    :
+        data_ptr_( NULL ),
+        running_( false ),
+        success_( false ),
+        child_conditions_( child_conditions )
+    {
+        //
+    }
+};
 
 template<class __Caller>
 class ActionTokenBase
 {
 public:
     typedef __Caller _Caller;
-    typedef __Caller * _CallerPtr;
+    typedef ActionTokenStorage<__Caller> _Storage;
 
 protected:
-    _CallerPtr caller_ptr_;
-    boost::shared_ptr<__Caller> caller_storage_ptr_;
+    boost::shared_ptr<_Storage> storage_ptr_;
 
-    ActionTokenBase( __Caller * caller_ptr = NULL )
+public:
+    ActionTokenBase()
     :
-        caller_ptr_( caller_ptr )
+        storage_ptr_( boost::make_shared<_Storage>() )
+    {
+        //
+    }
+
+    ActionTokenBase( ActionTokenBase const & other )
+    :
+        storage_ptr_( other.storage_ptr_ )
+    {
+        //
+    }
+
+    ActionTokenBase( std::vector<std::condition_variable *> child_conditions )
+    :
+        storage_ptr_( boost::make_shared<_Storage>( child_conditions ) )
+    {
+        //
+    }
+
+    ActionTokenBase( __Caller * caller_ptr )
+    :
+        storage_ptr_( boost::make_shared<_Storage>( caller_ptr ) )
     {
         //
     }
@@ -71,8 +128,38 @@ protected:
     >
     void create( __Args&&... args )
     {
-        caller_storage_ptr_ = boost::make_shared<__Caller>( args... );
-        caller_ptr_ = caller_storage_ptr_.get();
+        storage_ptr_->data_storage_ptr_ = boost::make_shared<__Caller>( args... );
+        storage_ptr_->data_ptr_ = storage_ptr_->data_storage_ptr_.get();
+    }
+
+    boost::shared_ptr<_Storage> getStorage()
+    {
+        return storage_ptr_;
+    }
+
+    boost::shared_ptr<_Storage> const getStorage() const
+    {
+        return storage_ptr_;
+    }
+
+    bool & success()
+    {
+        return storage_ptr_->success_;
+    }
+
+    bool success() const
+    {
+        return storage_ptr_->success_;
+    }
+
+    bool & running()
+    {
+        return storage_ptr_->running_;
+    }
+
+    bool running() const
+    {
+        return storage_ptr_->running_;
     }
 };
 
@@ -112,6 +199,13 @@ class ActionToken<boost::thread> : public ActionTokenBase<boost::thread>
 public:
     typedef ActionTokenBase<boost::thread> _ActionTokenBase;
 
+    ActionToken( ActionToken<boost::thread> const & other )
+    :
+        _ActionTokenBase( other )
+    {
+        //
+    }
+
     template<class... __Args>
     ActionToken( __Args&&... args )
     :
@@ -120,22 +214,56 @@ public:
         //
     }
 
+    ~ActionToken()
+    {
+        cancel();
+    }
+
     template<class... __Args>
     void start( __Args&&... args )
     {
+        getStorage()->running_ = true;
+        getStorage()->success_ = false;
         this->create( args... );
     }
 
     void cancel()
     {
-        //
+        getStorage()->success_ = false;
+        getStorage()->running_ = false;
+        getStorage()->wait_condition_.notify_all();
+
+        // unblock all child conditions
+        auto & child_conditions = getStorage()->child_conditions_;
+        for( auto child_condition_it = child_conditions.begin(); child_condition_it != child_conditions.end(); ++child_condition_it )
+        {
+            auto & child_condition = *child_condition_it;
+            if( child_condition ) child_condition->notify_all();
+        }
     }
 
-    void wait()
+    bool ok() const
     {
-        this->caller_ptr_->join();
+        return getStorage()->running_;
+    }
+
+    bool wait( double const & timeout = 0 )
+    {
+        auto lock = quickdev::make_unique_lock( getStorage()->wait_mutex_ );
+        if( timeout > 0 ) getStorage()->wait_condition_.wait_for( lock, quickdev::Duration( timeout ) );
+        else getStorage()->wait_condition_.wait( lock );
+
+        return getStorage()->success_;
+    }
+
+    void complete( bool const & success = false )
+    {
+        getStorage()->success_ = success;
+        getStorage()->wait_condition_.notify_all();
     }
 };
+
+typedef ActionToken<boost::thread> SimpleActionToken;
 
 namespace action_token
 {

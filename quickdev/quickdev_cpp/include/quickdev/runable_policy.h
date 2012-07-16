@@ -156,6 +156,10 @@ private:
             if( loop_rate_ ) loop_rate_->sleep();
         }
 
+        PRINT_INFO( "<<<<< Shutting down" );
+
+        shutdown();
+
         PRINT_INFO( "<<<<< Main loop finished" );
     }
 
@@ -163,7 +167,6 @@ private:
     {
         PRINT_INFO( ">>>>> Interrupting main loop..." );
         run_ = false;
-        shutdown();
     }
 };
 
