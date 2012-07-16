@@ -179,25 +179,25 @@ public:
     template<class... __Args>
     void start( __Args&&... args )
     {
-        if( this->caller_ptr_ ) this->caller_ptr_->sendGoal( args... );
+        if( this->getStorage()->data_ptr_ ) this->getStorage()->data_ptr_->sendGoal( args... );
     }
 
     void cancel()
     {
-        if( this->caller_ptr_ ) this->caller_ptr_->interruptAction();
+        if( this->getStorage()->data_ptr_ ) this->getStorage()->data_ptr_->interruptAction();
     }
 
     template<class... __Args>
     void wait( __Args&&... args )
     {
-        if( this->caller_ptr_ ) this->caller_ptr_->waitForResult( args... );
+        if( this->getStorage()->data_ptr_ ) this->getStorage()->data_ptr_->waitForResult( args... );
     }
 
     template<class... __Args>
     typename _ActionTokenBase::_Caller::_ResultMsg::ConstPtr get( __Args&&... args )
     {
         wait( args... );
-        if( this->caller_ptr_ ) return this->caller_ptr_->getResult();
+        if( this->getStorage()->data_ptr_ ) return this->getStorage()->data_ptr_->getResult();
         return boost::make_shared<typename _ActionTokenBase::_Caller::_ResultMsg const>();
     }
 };

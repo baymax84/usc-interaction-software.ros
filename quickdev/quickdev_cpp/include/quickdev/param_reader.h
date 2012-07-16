@@ -492,7 +492,7 @@ public:
     {
         if( xml_rpc_value.hasMember( member_name ) ) return fromXmlRpcValue<__Output>( xml_rpc_value[member_name] );
 
-        PRINT_WARN( "XmlRpcValue does not contain member %s; returning default", member_name.c_str() );
+        PRINT_DEBUG( "XmlRpcValue does not contain member %s; returning default", member_name.c_str() );
         return default_value;
     }
 
