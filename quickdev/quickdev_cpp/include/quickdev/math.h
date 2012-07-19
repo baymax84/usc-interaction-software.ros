@@ -103,6 +103,10 @@ std::pair<__Data, __Data> gaussian_product( __Data const & mean1, __Data const &
 // =============================================================================================================================================
 double cdf_gaussian( double const & mean, double const & sigma, double const & min, double const & max );
 
+// =============================================================================================================================================
+double angleBetween( double const & value1, double const & value2 = 0 );
+
+
 #include <quickdev/details/math_impl.h>
 
 } // quickdev
