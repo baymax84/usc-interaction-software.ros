@@ -214,11 +214,6 @@ public:
         //
     }
 
-    ~ActionToken()
-    {
-        cancel();
-    }
-
     template<class... __Args>
     void start( __Args&&... args )
     {
@@ -229,6 +224,9 @@ public:
 
     void cancel()
     {
+        if( !ok() ) return;
+        PRINT_INFO( "Got cancel signal; aborting token." );
+
         getStorage()->success_ = false;
         getStorage()->running_ = false;
         getStorage()->wait_condition_.notify_all();
@@ -250,14 +248,25 @@ public:
     bool wait( double const & timeout = 0 )
     {
         auto lock = quickdev::make_unique_lock( getStorage()->wait_mutex_ );
-        if( timeout > 0 ) getStorage()->wait_condition_.wait_for( lock, quickdev::Duration( timeout ) );
-        else getStorage()->wait_condition_.wait( lock );
+        if( timeout > 0 )
+        {
+            PRINT_INFO( "Waiting for %f seconds for action to complete", timeout );
+            getStorage()->wait_condition_.wait_for( lock, quickdev::Duration( timeout ) );
+        }
+        else
+        {
+            PRINT_INFO( "Waiting indefinitely for action to complete" );
+            getStorage()->wait_condition_.wait( lock );
+        }
+
+        PRINT_INFO( "Token completed with state %u", getStorage()->success_ );
 
         return getStorage()->success_;
     }
 
     void complete( bool const & success = false )
     {
+        PRINT_INFO( "Token completed with state %u", success );
         getStorage()->success_ = success;
         getStorage()->wait_condition_.notify_all();
     }
