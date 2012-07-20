@@ -236,7 +236,7 @@ public:
         for( auto child_condition_it = child_conditions.begin(); child_condition_it != child_conditions.end(); ++child_condition_it )
         {
             auto & child_condition = *child_condition_it;
-            if( child_condition ) child_condition->notify_all();
+            child_condition->notify_all();
         }
     }
 
@@ -267,6 +267,7 @@ public:
     void complete( bool const & success = false )
     {
         PRINT_INFO( "Token completed with state %u", success );
+        getStorage()->running_ = false;
         getStorage()->success_ = success;
         getStorage()->wait_condition_.notify_all();
     }
