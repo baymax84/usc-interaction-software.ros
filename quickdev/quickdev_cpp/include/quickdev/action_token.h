@@ -80,6 +80,26 @@ public:
     {
         //
     }
+
+    bool ok() const
+    {
+        return running_;
+    }
+
+    bool success() const
+    {
+        return success_;
+    }
+
+    bool running() const
+    {
+        return running_;
+    }
+
+    bool done() const
+    {
+        return !ok();
+    }
 };
 
 template<class __Caller>
@@ -161,6 +181,37 @@ public:
     {
         return storage_ptr_->running_;
     }
+
+    bool ok() const
+    {
+        return storage_ptr_->running_;
+    }
+
+    bool done() const
+    {
+        return storage_ptr_->done();
+    }
+
+    void unblockChildren()
+    {
+        // unblock all child conditions
+        auto & child_conditions = getStorage()->child_conditions_;
+        for( auto child_condition_it = child_conditions.begin(); child_condition_it != child_conditions.end(); ++child_condition_it )
+        {
+            auto & child_condition = *child_condition_it;
+            child_condition->notify_all();
+        }
+    }
+
+    operator bool() const
+    {
+        return ok();
+    }
+
+    bool operator()() const
+    {
+        return ok();
+    }
 };
 
 template<class __Caller>
@@ -217,6 +268,8 @@ public:
     template<class... __Args>
     void start( __Args&&... args )
     {
+        if( ok() ) return;
+
         getStorage()->running_ = true;
         getStorage()->success_ = false;
         this->create( args... );
@@ -231,22 +284,13 @@ public:
         getStorage()->running_ = false;
         getStorage()->wait_condition_.notify_all();
 
-        // unblock all child conditions
-        auto & child_conditions = getStorage()->child_conditions_;
-        for( auto child_condition_it = child_conditions.begin(); child_condition_it != child_conditions.end(); ++child_condition_it )
-        {
-            auto & child_condition = *child_condition_it;
-            child_condition->notify_all();
-        }
-    }
-
-    bool ok() const
-    {
-        return getStorage()->running_;
+        unblockChildren();
     }
 
     bool wait( double const & timeout = 0 )
     {
+        if( !ok() ) return false;
+
         auto lock = quickdev::make_unique_lock( getStorage()->wait_mutex_ );
         if( timeout > 0 )
         {
@@ -261,15 +305,19 @@ public:
 
         PRINT_INFO( "Token completed with state %u", getStorage()->success_ );
 
-        return getStorage()->success_;
+        return success();
     }
 
     void complete( bool const & success = false )
     {
+        if( !ok() ) return;
+
         PRINT_INFO( "Token completed with state %u", success );
         getStorage()->running_ = false;
         getStorage()->success_ = success;
         getStorage()->wait_condition_.notify_all();
+
+        unblockChildren();
     }
 };
 
@@ -277,6 +325,8 @@ typedef ActionToken<boost::thread> SimpleActionToken;
 
 namespace action_token
 {
+    std::function<bool()> make_term_criteria( SimpleActionToken token );
+
     template
     <
         class __Caller,
