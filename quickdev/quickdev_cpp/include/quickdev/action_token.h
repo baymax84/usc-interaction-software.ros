@@ -100,6 +100,12 @@ public:
     {
         return !ok();
     }
+
+    ~ActionTokenStorage()
+    {
+        running_ = false;
+        wait_condition_.notify_all();
+    }
 };
 
 template<class __Caller>
