@@ -10,6 +10,7 @@ std::vector<std::string> const FRAME_NAMES_
     "head"          ,
     "neck"          ,
     "torso"         ,
+    "pelvis"        ,
     "right_shoulder",
     "right_elbow"   ,
     "right_hand"    ,
@@ -83,7 +84,7 @@ public:
         }
         catch ( tf::TransformException & ex )
         {
-            ROS_ERROR("%s",ex.what() );
+            ROS_ERROR("While looking up %s -> %s : %s", from_frame.c_str(), to_frame.c_str(), ex.what() );
         }
         return transform;
     }
@@ -129,10 +130,9 @@ public:
             closest_person_name_ss << "/" << *closest_person << "/" << distance_frame_;
             for( size_t i = 0; i < FRAME_NAMES_.size(); ++i )
             {
-                tf::Transform transform = lookupTransform( &tf_listener_, "/proxemics_observer", "/" + *closest_person + "/" + FRAME_NAMES_[i] );
-                tf_broadcaster_.sendTransform( tf::StampedTransform( transform, ros::Time::now(), "/proxemics_observer", "/person/" + FRAME_NAMES_[i] ) );
+                tf::Transform transform = lookupTransform( &tf_listener_, "/openni_depth_tracking_frame", "/" + *closest_person + "/" + FRAME_NAMES_[i] );
+                tf_broadcaster_.sendTransform( tf::StampedTransform( transform, ros::Time::now(), "/openni_depth_tracking_frame", "/person/" + FRAME_NAMES_[i] ) );
             }
-            tf_broadcaster_.sendTransform( tf::StampedTransform( tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), tf::Vector3( 0, 0, 0 ) ), ros::Time::now(), closest_person_name_ss.str(), "/proxemics_target" ) );
         }
 
         people_mutex_.unlock();
