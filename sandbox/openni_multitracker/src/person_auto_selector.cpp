@@ -104,7 +104,7 @@ public:
             const tf::StampedTransform
                 observer_to_person( lookupTransform(
                     &tf_listener_,
-                    "/proxemics_observer",
+                    "/openni_depth_tracking_frame",
                     distance_target_frame_ss.str() ) );
 
             if( !closest_person )
