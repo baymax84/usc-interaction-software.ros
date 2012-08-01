@@ -1,0 +1,16 @@
+<package>
+  <description brief="gsl">
+
+     gsl
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/gsl</url>
+  <rosdep name="gsl"/>
+
+  <export>
+    <cpp cflags="-I/usr/include/gsl" lflags="-lgsl -lgslcblas"/>
+  </export>
+</package>

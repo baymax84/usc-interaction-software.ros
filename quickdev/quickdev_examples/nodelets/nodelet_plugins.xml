@@ -1,0 +1,52 @@
+<library path="lib/libquickdev_examples_nodelets">
+  <class name="quickdev_examples/image_proc_policy" type="quickdev_examples::ImageProcPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/joystick_policy" type="quickdev_examples::JoystickPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/node" type="quickdev_examples::NodeNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/publisher_policy" type="quickdev_examples::PublisherPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/reconfigure_policy" type="quickdev_examples::ReconfigurePolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/robot_controller_policy" type="quickdev_examples::RobotControllerPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/robot_driver_policy" type="quickdev_examples::RobotDriverPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/service_client_policy" type="quickdev_examples::ServiceClientPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/service_server_policy" type="quickdev_examples::ServiceServerPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+  <class name="quickdev_examples/tf_tranceiver_policy" type="quickdev_examples::TfTranceiverPolicyNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>

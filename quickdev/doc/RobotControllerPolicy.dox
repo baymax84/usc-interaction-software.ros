@@ -1,0 +1,6 @@
+/*!
+    \page RobotControllerPolicy RobotControllerPolicy
+
+	This example shows how to use the basic functions of a quickdev::RobotControllerPolicy
+    \include include/quickdev_examples/robot_controller_policy.h
+*/

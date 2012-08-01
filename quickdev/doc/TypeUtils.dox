@@ -1,0 +1,6 @@
+/*!
+    \page TypeUtils TypeUtils
+
+	This example shows how to use the basic type-traits tools defined in type_utils.h
+    \include nodes/type_utils.cpp
+*/

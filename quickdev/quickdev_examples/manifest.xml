@@ -1,0 +1,16 @@
+<package>
+  <description brief="quickdev_examples">
+
+     A group of examples using tools from quickdev_cpp
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/quickdev_examples</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="nodelet"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>

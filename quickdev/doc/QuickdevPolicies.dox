@@ -1,0 +1,98 @@
+/*!
+
+\page QuickdevPolicies What are Policies?
+
+\section QuickdevPolicies-Contents Contents
+- \ref QuickdevPolicies-Overview
+- \ref QuickdevPolicies-Details
+- \ref QuickdevPolicies-Macros
+
+\section QuickdevPolicies-Overview Overview
+quickdev defines a paradigm by which code can be discretized into units called policies.
+
+These policies can be easily combined together to form new, more complex (and usually more specialized) policies.
+
+\section QuickdevPolicies-Details Details
+
+Any set of policies can be instantiated, but when a quickdev::RunablePolicy is included in that set, the policy is said to be a Node. Nodes
+can be instantiated with the QUICKDEV_INST_NODE() macro and can be generically wrapped with the quickdev::Nodelet class, enabling zero-effort
+creation of adaptable high-performance communication architectures using the existing ROS Nodelet framework. The \ref QuickdevScripts-create_pkg
+script takes advantages of this wrapper to optionally create and register a nodelet for each specified node.
+
+Policies are combined using a quickdev::GenericPolicyAdapter; using variadic templates, any number of policies can be specified.
+Each GenericPolicyAdapter is a child of all specified policies; specifically, it publicly inherits all functionality from all given policies.
+The GenericPolicyAdapter also handles construction of all given policies and provides an initAll() function that can be used to pass a set
+of key-value pairs to the init() function of all initable parent policies.
+
+For example, a TfManagerPolicy is defined to be a combination of a NodeHandlePolicy, TfTranceiverPolicy, TimedPolicy<0>, and TimedPolicy<1> via:
+
+\code
+class TfManagerPolicy : public GenericPolicyAdapter< NodeHandlePolicy, TfTranceiverPolicy, TimedPolicy<0>, and TimedPolicy<1> > {};
+\endcode
+
+\section QuickdevPolicies-Macros Policy Macros
+
+In practice, this can be a bit verbose. For example, the constructor for the above would look like:
+
+\code
+template<class... __Args>
+TfManagerPolicy( __Args&&... args )
+:
+    GenericPolicyAdapter< NodeHandlePolicy, TfTranceiverPolicy, TimedPolicy<0>, and TimedPolicy<1> >( args... )
+{
+    //
+}
+\endcode
+
+To prevent repeatedly specifying both static and dynamic elements, several policy-specific macros have been created:
+- \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY
+- \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY_CLASS
+- \ref QuickdevMacros-QUICKDEV_DECLARE_POLICY_CONSTRUCTOR
+- \ref QuickdevMacros-QUICKDEV_MAKE_POLICY_FUNCS
+
+A standard policy declaration without macros would look like:
+
+\code
+class ExamplePolicy : public GenericPolicyAdapter<ParentPolicy1, ParentPolicy2, ParentPolicy3>
+{
+public:
+    const static inline std::string name() { return "Example"; }
+    inline ExamplePolicy & getInstance() { return *this; }
+
+    template<class... __Args>
+    ExamplePolicy( __Args&&... args )
+    :
+        GenericPolicyAdapter<ParentPolicy1, ParentPolicy2, ParentPolicy3>( args... ),
+        some_member_( 8933 )
+    {
+        //
+    }
+
+private:
+    int some_member_;
+};
+\endcode
+
+However, after applying the above macros, we get:
+
+\code
+QUICKDEV_DECLARE_POLICY( Example, ParentPolicy1, ParentPolicy2, ParentPolicy3 )
+
+QUICKDEV_DECLARE_POLICY_CLASS( Example )
+{
+    QUICKDEV_MAKE_POLICY_FUNCS( Example )
+
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( Example ),
+        some_member_( 8933 )
+    {
+        //
+    }
+
+private:
+    int some_member_;
+};
+\endcode
+
+This saves space, removes redundant declarations, and allows for standard functionality to be defined in a central location (macros.h)
+
+*/

@@ -1,0 +1,6 @@
+/*!
+    \page RobotDriverPolicy RobotDriverPolicy
+
+	This example shows how to use the basic functions of a quickdev::RobotDriverPolicy
+    \include include/quickdev_examples/robot_driver_policy.h
+*/
