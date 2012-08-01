@@ -48,9 +48,17 @@ QUICKDEV_DECLARE_NODE( ActionClient, _TestActionClientPolicy )
 
 QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
 {
+    quickdev::ActionToken<_TestActionClientPolicy> action_token_;
+
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( ActionClient )
     {
         //
+    }
+
+    void setup()
+    {
+        // update ROS in a separate thread so we're free to block within spinOnce()
+        initPolicies<quickdev::RunablePolicy>( "spin_ros_thread_param", true );
     }
 
     QUICKDEV_SPIN_FIRST()
@@ -58,20 +66,28 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionClient )
         _TestActionClientPolicy::registerActiveCB( quickdev::auto_bind( &ActionClientNode::testActionActiveCB, this ) );
         _TestActionClientPolicy::registerFeedbackCB( quickdev::auto_bind( &ActionClientNode::testActionFeedbackCB, this ) );
         _TestActionClientPolicy::registerDoneCB( quickdev::auto_bind( &ActionClientNode::testActionDoneCB, this ) );
+
         initPolicies<quickdev::policy::ALL>();
 
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
-        if( !ros::ParamReader<bool, 1 >::readParam( nh_rel, "enable_goal", true ) ) return;
+        if( !quickdev::ParamReader::readParam<bool>( nh_rel, "enable_goal", true ) ) return;
 
         _TestActionClientPolicy::_GoalMsg goal;
-        _TestActionClientPolicy::sendGoal( goal );
+
+        // test
+        auto token = _TestActionClientPolicy::sendGoal( goal );
+        action_token_ = token;
     }
 
     QUICKDEV_SPIN_ONCE()
     {
         PRINT_INFO( "spinning!" );
         PRINT_INFO( "server state: %s", _TestActionClientPolicy::getState().toString().c_str() );
+
+        ros::Duration( 5 ).sleep();
+
+        action_token_.cancel();
     }
 
     QUICKDEV_DECLARE_ACTION_ACTIVE_CALLBACK( testActionActiveCB )

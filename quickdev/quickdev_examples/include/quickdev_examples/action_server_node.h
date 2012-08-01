@@ -67,7 +67,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ActionServer )
 
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
-        enable_preempt_ = ros::ParamReader<bool, 1>::readParam( nh_rel, "enable_preempt", true );
+        enable_preempt_ = quickdev::ParamReader::readParam<bool>( nh_rel, "enable_preempt", true );
     }
 
     QUICKDEV_SPIN_ONCE()
