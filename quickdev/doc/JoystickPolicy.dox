@@ -1,0 +1,6 @@
+/*!
+    \page JoystickPolicy JoystickPolicy
+
+	This example shows how to use the basic functions of a quickdev::JoystickPolicy
+    \include include/quickdev_examples/joystick_policy.h
+*/

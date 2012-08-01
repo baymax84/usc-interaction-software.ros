@@ -1,0 +1,6 @@
+/*!
+    \page TfTranceiverPolicy TfTranceiverPolicy
+
+	This example shows how to use the basic functions of a quickdev::TfTranceiverPolicy
+    \include include/quickdev_examples/tf_tranceiver_policy.h
+*/

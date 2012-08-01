@@ -1,0 +1,6 @@
+/*!
+    \page MultiSubscriber MultiSubscriber
+
+	This example shows how to use the basic functions of a ros::MultiSubscriber
+    \include nodes/multi_subscriber.cpp
+*/

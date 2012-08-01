@@ -1,0 +1,15 @@
+<package>
+  <description brief="quickdev_build">
+
+     quickdev_build
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/quickdev_build</url>
+  <depend package="rosbuild"/>
+  <export>
+    <rosbuild cmake_directory="${prefix}/cmake"/>
+  </export>
+</package>

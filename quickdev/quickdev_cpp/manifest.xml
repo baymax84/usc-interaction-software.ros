@@ -1,0 +1,43 @@
+<package>
+  <description brief="quickdev_cpp">
+
+     A toolbox designed to speed up the development time of code by providing generic implementations and utilities.
+     Diamondback: supported; Electric: technically supported; Fuerte: experimental.
+
+  </description>
+  <author>Edward T. Kaszubski (ekaszubski@gmail.com)</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/quickdev_cpp</url>
+  <depend package="rosbuild"/>
+  <depend package="roscpp"/>
+  <depend package="quickdev_build"/>
+  <depend package="cpp11"/>
+  <depend package="gsl"/>
+  <depend package="std_msgs"/>
+  <depend package="std_srvs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="tf"/>
+  <depend package="dynamic_reconfigure"/>
+  <depend package="sensor_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="image_transport"/>
+  <depend package="driver_base"/>
+  <depend package="nodelet"/>
+  <depend package="pluginlib"/>
+  <depend package="joy"/>
+  <depend package="actionlib"/>
+  <depend package="urdf"/>
+  <depend package="tinyxml"/>
+
+  <export>
+    <rosdoc config="rosdoc.yaml"/>
+    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lquickdev_cpp"/>
+    <!-- cmake files exported for backwards compatibility; new packages should be using quickdev_build for this functionality -->
+    <rosbuild cmake_directory="${prefix}/cmake"/>
+  </export>
+
+</package>
+
+

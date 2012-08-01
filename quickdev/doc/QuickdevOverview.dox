@@ -1,0 +1,26 @@
+/*!
+
+\page QuickdevOverview What is quickdev?
+
+\section QuickdevOverview-Contents Contents
+- \ref QuickdevOverview-Overview
+- \ref QuickdevOverview-Details
+
+\section QuickdevOverview-Overview Overview
+quickdev is a toolbox designed to speed up the development time of code targeted for ROS by providing generic implementations and utilities.
+
+\section QuickdevOverview-Details Details
+
+Specifically, quickdev defines a paradigm by which code can be discretized into units called \link QuickdevPolicies policies\endlink.
+quickdev provides a standard set of these policies that encapsulate generic implementations of commonly-used features in ROS. It also takes
+advantage of the features of C++11 and Boost to provide convenience wrappers around existing ROS features.
+
+quickdev nodes can be created through the use of a quickdev::RunablePolicy. These nodes can be instantiated with the QUICKDEV_INST_NODE()
+macro and can be generically wrapped with the quickdev::Nodelet class, enabling zero-effort creation of adaptable high-performance
+communication architectures using the existing ROS Nodelet framework.
+
+To prevent as much manual copying-and-pasting as possible, quickdev provides an extensive list of \link QuickdevMacros macros\endlink.
+
+To speed up and even automate common tasks, such as package creation and source-file licensing, quickdev provides a set of \link QuickdevScripts scripts\endlink.
+
+*/

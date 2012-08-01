@@ -1,0 +1,6 @@
+/*!
+    \page ReconfigurePolicy ReconfigurePolicy
+
+	This example shows how to use the basic functions of a quickdev::ReconfigurePolicy
+    \include include/quickdev_examples/reconfigure_policy.h
+*/

@@ -1,0 +1,14 @@
+<launch>
+    <arg name="pkg" value="quickdev_examples" />
+    <arg name="name" value="multi_subscriber" />
+    <arg name="type" value="$(arg name)_node" />
+    <arg name="rate" default="30" />
+    <arg name="args" value="_loop_rate:=$(arg rate) ~string:=/multi_publisher/string ~point:=/multi_publisher/point" />
+    <node
+        pkg="$(arg pkg)"
+        type="$(arg type)"
+        name="$(arg name)"
+        args="$(arg args)"
+        output="screen" />
+    <include file="$(find quickdev_examples)/launch/multi_publisher.launch" />
+</launch>
