@@ -125,6 +125,28 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
         return getFirstOfType<__Desired>( std::forward<__Rest>( rest )... );
     }
 
+    template
+    <
+        class __Data,
+        typename std::enable_if<(std::is_arithmetic<__Data>::value || quickdev::is_same_type<__Data, std::string>::value), int>::type = 0
+    >
+    std::string metaParamToString( __Data const & value )
+    {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    template
+    <
+        class __Data,
+        typename std::enable_if<!(std::is_arithmetic<__Data>::value || quickdev::is_same_type<__Data, std::string>::value), int>::type = 0
+    >
+    std::string metaParamToString( __Data const & value )
+    {
+        return "non-arithmetic value";
+    }
+
     //! Specialization of tryGetMetaParamRec when a value of type __Desired was in the list but its key did not match the given key
     /*! This function is called after recursing through all key-value pairs in a variadic template containing at least
      *  one value of type __Desired without finding a matching key. This signifies that the requested key-value pair
@@ -202,9 +224,7 @@ QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
     {
         if( name == current_name )
         {
-            std::stringstream ss;
-            ss << current;
-            PRINT_INFO( "Found key [ %s ] with value [ %s ]", name.c_str(), ss.str().c_str() );
+            PRINT_INFO( "Found key [ %s ] with value [ %s ]", name.c_str(), metaParamToString( current ).c_str() );
             desired = std::forward<__Current>( current );
             return true;
         }
