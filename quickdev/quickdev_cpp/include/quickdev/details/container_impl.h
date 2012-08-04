@@ -1,4 +1,5 @@
 // =============================================================================================================================================
+/*
 template<class... __Types>
 template
 <
@@ -11,7 +12,7 @@ Container<__Types...>::Container( __MTypes&&... values )
 {
     //
 }
-
+*/
 template<class... __Types>
 Container<__Types...>::Container()
 {
