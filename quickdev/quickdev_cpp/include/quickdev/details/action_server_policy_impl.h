@@ -64,7 +64,7 @@ QUICKDEV_DECLARE_MESSAGE_CALLBACK( (ActionServerPolicy<__Action, __Id__, __Stora
         wait_for_goal_mutex_.unlock();
 
         // work gets done here; the current context is guaranteed to be a separate thread, so it's safe to block here
-        _ExecuteCallbackPolicy::invokeCallback( msg, action_server_ptr_ );
+        _ExecuteCallbackPolicy::invokeCallback( msg, std::forward<decltype( action_server_ptr_ )>( action_server_ptr_ ) );
 
         execute_active_ = false;
 

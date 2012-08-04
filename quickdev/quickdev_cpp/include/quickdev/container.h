@@ -93,7 +93,12 @@ struct Container : SimpleContainer<__Types...>
         class... __MTypes,
         typename std::enable_if<(sizeof...(__MTypes) > 0 && std::is_same<SimpleContainer<__Types...>, SimpleContainer<__MTypes...> >::value), int>::type = 0
     >
-    Container( __MTypes&&... values );
+    Container( __MTypes&&... values )
+    :
+        values_( std::make_tuple( std::forward<__MTypes>( values )... ) )
+    {
+        //
+    }
 
     //! Empty constructor
     Container();
