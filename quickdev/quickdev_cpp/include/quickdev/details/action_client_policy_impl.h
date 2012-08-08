@@ -15,7 +15,9 @@ QUICKDEV_DECLARE_INIT( ActionClientPolicy<__Action, __Id__>:: )
 
     PRINT_INFO( "Creating action client [%s] on topic [%s]", QUICKDEV_GET_MESSAGE_NAME( __Action ).c_str(), action_topic_name_.c_str() );
 
-    action_client_ptr_ = boost::make_shared<_ActionClient>( nh_rel, action_name_ );
+    // make_shared fails here because it passes nh_rel as ros::NodeHandle const & instead of ros::NodeHandle & :
+    // action_client_ptr_ = boost::make_shared<_ActionClient>( nh_rel, action_name_ );
+    action_client_ptr_ = decltype( action_client_ptr_ )( new _ActionClient( nh_rel, action_name_ ) );
 
     QUICKDEV_SET_INITIALIZED();
 }
