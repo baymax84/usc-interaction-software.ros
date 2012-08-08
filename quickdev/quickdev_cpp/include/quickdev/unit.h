@@ -350,6 +350,12 @@ make_unit( __Storage const & value )
     return NumericUnit<__Data, __Storage>( value );
 }
 
+template<class __Data>
+auto implicit_convert( __Data const & data ) -> decltype( make_unit( data ) )
+{
+    return make_unit( data );
+}
+
 template<class __ToData, class __FromData>
 typename std::enable_if<(!unit_traits<__ToData>::is_numeric_ && !unit_traits<__FromData>::is_numeric_), __ToData >::type
 convert_unit( Unit<__FromData> const & unit )
