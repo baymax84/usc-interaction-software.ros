@@ -41,6 +41,7 @@
 #include <proxemic_models/PsychophysicalFeatureArray.h>
 #include <quickdev/param_reader.h>
 #include <humanoid/soft_classification.h>
+#include <quickdev/cdf_wrapped_normal.h>
 
 namespace proxemics
 {
@@ -215,21 +216,10 @@ namespace psychophysical
 
             //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
 
-            // get the probability with the PDF centered at the mean
-            double subinterval = quickdev::cdf_gaussian( mean, sigma, -interval_max, interval_max );
-            double cumulative_subinterval = subinterval;
-            int cdf_offset = 0;
-            // get the additional probability one interval left and right of the mean until the amount of probability added by this operation is negligible
-            do
-            {
-                // cumulative probability from last interval end to this interval start along cdf at mean & cdf at mean +/- 360
-                subinterval = quickdev::cdf_gaussian( mean + 360 * cdf_offset, sigma, -interval_max, interval_max ) + quickdev::cdf_gaussian( mean - 360 * cdf_offset, sigma, -interval_max, interval_max );
-                cumulative_subinterval += subinterval;
-            }
-            while( subinterval > 0.0001 );
+            double const interval_value = cdf_wrapped_normal( mean, sigma, interval_max ) - cdf_wrapped_normal( mean, sigma, interval_min );
 
-            if( interval_id == 0 || interval_id == 8 ) interval_0_8_probability += cumulative_subinterval;
-            else result.insert( SoftClassification( interval_id, cumulative_subinterval, interval_name ) );
+            if( interval_id == 0 || interval_id == 8 ) interval_0_8_probability += interval_value;
+            else result.insert( SoftClassification( interval_id, interval_value, interval_name ) );
         }
         result.insert( SoftClassification( quickdev::ParamReader::getXmlRpcValue<int>( intervals[0], "id" ), interval_0_8_probability, quickdev::ParamReader::getXmlRpcValue<std::string>( intervals[0], "name" ) ) );
         result.insert( SoftClassification( quickdev::ParamReader::getXmlRpcValue<int>( intervals[8], "id" ), interval_0_8_probability, quickdev::ParamReader::getXmlRpcValue<std::string>( intervals[8], "name" ) ) );
@@ -270,7 +260,7 @@ namespace psychophysical
         auto begin = &intervals[0];
         auto end = &intervals[0] + intervals.size();
 
-        double last_interval = 0;
+        double last_interval_value = 0;
 
         for( XmlRpc::XmlRpcValue * interval_it = begin; interval_it != end; ++interval_it )
         {
@@ -283,22 +273,11 @@ namespace psychophysical
 
             //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
 
-            // get the probability with the PDF centered at the mean
-            double subinterval = quickdev::cdf_gaussian( mean, sigma, -interval_max, interval_max );
-            double cumulative_subinterval = subinterval;
-            int cdf_offset = 0;
-            // get the additional probability one interval left and right of the mean until the amount of probability added by this operation is negligible
-            do
-            {
-                // cumulative probability from last interval end to this interval start along cdf at mean & cdf at mean +/- 360
-                subinterval = quickdev::cdf_gaussian( mean + 360 * cdf_offset, sigma, -interval_max, interval_max ) + quickdev::cdf_gaussian( mean - 360 * cdf_offset, sigma, -interval_max, interval_max );
-                cumulative_subinterval += subinterval;
-            }
-            while( subinterval > 0.0001 );
+            double const interval_value = cdf_wrapped_normal( mean, sigma, interval_max ) - cdf_wrapped_normal( mean, sigma, interval_min );
 
-            result.insert( SoftClassification( interval_id, cumulative_subinterval - last_interval, interval_name ) );
+            result.insert( SoftClassification( interval_id, interval_value - last_interval_value, interval_name ) );
 
-            last_interval = cumulative_subinterval;
+            last_interval_value = interval_value;
         }
 
         return result;
