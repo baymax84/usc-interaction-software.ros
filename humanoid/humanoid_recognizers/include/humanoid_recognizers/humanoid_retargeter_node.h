@@ -36,6 +36,8 @@
 #ifndef HUMANOIDRECOGNIZERS_HUMANOIDRETARGETERNODE_H_
 #define HUMANOIDRECOGNIZERS_HUMANOIDRETARGETERNODE_H_
 
+#include <urdf/model.h>
+
 #include <quickdev/node.h>
 #include <quickdev/reconfigure_policy.h>
 
@@ -71,25 +73,25 @@ struct IkChainSolver
     __IkSolverPos ik_pos_solver_;
 
     template<class... __Args>
-    IkChainSolver( decltype( target_chain_ ) const & target_chain, __Args... args )
+    IkChainSolver( decltype( target_chain_ ) const & target_chain, const KDL::JntArray & q_min , const KDL::JntArray & q_max,__Args... args )
     :
         target_chain_( target_chain ),
         fk_pos_solver_( target_chain_ ),
         ik_vel_solver_( target_chain_ ),
-        ik_pos_solver_( target_chain_, target_chain_.getNrOfJoints(), target_chain_.getNrOfJoints(), fk_pos_solver_, ik_vel_solver_, args... )
+        ik_pos_solver_( target_chain_, q_min, q_max, fk_pos_solver_, ik_vel_solver_, target_chain_.getNrOfJoints(), args... )
     {
         //
     }
 
     template<class... __Args>
-    IkChainSolver( KDL::Tree const & tree, std::string const & start_frame, std::string const & end_frame, __Args... args )
+    IkChainSolver( KDL::Tree const & tree, const KDL::JntArray & q_min, const KDL::JntArray & q_max, std::string const & start_frame, std::string const & end_frame, __Args... args )
     :
         target_chain_( getChainFromTree( tree, start_frame, end_frame ) ),
         fk_pos_solver_( target_chain_ ),
         ik_vel_solver_( target_chain_ ),
-        ik_pos_solver_( target_chain_, target_chain_.getNrOfJoints(), target_chain_.getNrOfJoints(), fk_pos_solver_, ik_vel_solver_, args... )
+        ik_pos_solver_( target_chain_, q_min, q_max, fk_pos_solver_, ik_vel_solver_, target_chain_.getNrOfJoints(), args... )
     {
-        //
+        // 
     }
 
     static KDL::Chain getChainFromTree( KDL::Tree const & tree, std::string const & start_frame, std::string const & end_frame )
@@ -162,6 +164,13 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
     std::map<std::string, boost::shared_ptr<_HumanoidChainRetargeter> > retargeters_;
 
+    KDL::JntArray q_min_;
+    KDL::JntArray q_max_;
+    KDL::JntArray L_qmin_;
+    KDL::JntArray R_qmin_;
+    KDL::JntArray L_qmax_;
+    KDL::JntArray R_qmax_;
+
     QUICKDEV_DECLARE_NODE_CONSTRUCTOR( HumanoidRetargeter )
     {
         //
@@ -173,9 +182,17 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
 
         // load and parse urdf
+        //For Nao
+        if(!model_.initFile("/home/matias/ros_workspace/stacks/nao_common/nao_description/urdf/nao_v4.urdf"))
+        {
+          ROS_ERROR("Failed to Parse URDF");
+        } 
+ 
+        std::cout << "Loading URDF File" << std::endl;
 
         // get uri of urdf file
-        auto const urdf_uri = ros::ParamReader<std::string, 1>::readParam( nh_rel, "urdf_uri", "" );
+        /**auto const urdf_uri = ros::ParamReader<std::string, 1>::readParam( nh_rel, "urdf_uri", "" );
+        std::cout << "URDI: " << urdf_uri << std::endl; 
 
         // load and parse document at specified uri
         std::cout << "Loading xml document" << std::endl;
@@ -184,21 +201,31 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
         // create our robot model from the "robot" element of the document
         std::cout << "Building urdf model from xml" << std::endl;
-        model_.initXml( urdf_doc.FirstChildElement( "robot" ) );
+        model_.initXml( urdf_doc.FirstChildElement( "robot" ) );**/
 
         std::cout << "Read " << model_.joints_.size() << " joints" << std::endl;
         for( auto joint_it = model_.joints_.cbegin(); joint_it != model_.joints_.cend(); ++joint_it )
-        {
+        {     
             std::cout << joint_it->first << std::endl;
         }
         std::cout << "--------------------" << std::endl;
+
+        
+
+
+        /**for(int i = 0; i < model_.joints_.size(); i++)
+        {
+            q_min_.data[i] = model_.joints_[i]->limits->lower;
+            q_max_.data[i] = model_.joints_[i]->limits->upper;
+            std::cout << model_.joints_[i]->name << "-->" << q_min_.data[i] << "to" << q_max_.data[i] << std::endl;
+        }
+        std::cout << "--------------------" << std::endl;**/
 
         std::cout << "Read " << model_.links_.size() << " links" << std::endl;
         for( auto link_it = model_.links_.cbegin(); link_it != model_.links_.cend(); ++link_it )
         {
             std::cout << link_it->first << std::endl;
         }
-        std::cout << "--------------------" << std::endl;
 
         // prepare kinematic chains for the robot's arms
         // create a KDL::Tree from our robot model
@@ -217,8 +244,15 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
         KDL::Chain l_arm_chain;
         KDL::Chain r_arm_chain;
-        kinematic_tree_.getChain( "Torso_link", "LHand_link", l_arm_chain );
-        kinematic_tree_.getChain( "Torso_link", "RHand_link", r_arm_chain );
+        if(!kinematic_tree_.getChain( "torso", "LWristYaw_link", l_arm_chain ))
+        {
+           ROS_ERROR("Left Arm Chain did not initialize properly");
+        }
+
+        if(!kinematic_tree_.getChain( "torso", "RWristYaw_link", r_arm_chain ))
+        {
+           ROS_ERROR("Right Arm Chain did not initialize properly");
+        }
 
         std::cout << "Chain from torso to lhand has " << l_arm_chain.getNrOfSegments() << " segments" << std::endl;
         for( auto chain_it = l_arm_chain.segments.cbegin(); chain_it != l_arm_chain.segments.cend(); ++ chain_it )
@@ -236,16 +270,117 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
         }
         std::cout << "--------------------" << std::endl;
 
-        // for each pair of joints { left_shoulder -> left_elbow, left_elbow -> left_wrist, right_shoulder -> right_elbow, right_elbow -> right_wrist }
-        // set up an ik solver for the target platform's corresponding joint (in this version we only care about angles so we need to normalize the link lengths on one platform)
+        std::cout << "Reading Right Joint Limits" << std::endl;
 
+        //Resize q_min array and q_max array
+        R_qmin_.resize(6);//Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
+        R_qmax_.resize(6);   
+
+        boost::shared_ptr<const urdf::Link> link = model_.getLink("RWristYaw_link"); 
+        boost::shared_ptr<const urdf::Joint> joint = model_.getJoint(link->parent_joint->name);
+
+        std::cout <<"For loop initializes" << std::endl;      
+        for(unsigned int i = 0; i < 6; i++) //Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
+        {
+            joint = model_.getJoint(link->parent_joint->name);
+
+            std::cout << link->parent_joint->name << " pointer: " << &model_.getLink(link->parent_joint->name) << std::endl;
+            std::cout << joint->name << " pointer: " << &joint << std::endl;
+
+            if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
+            {
+                std::cout << joint->name.c_str() << ": " << joint->limits->lower << " to " << joint->limits->upper << std::endl;
+
+                float lower, upper;
+                if ( joint->type != urdf::Joint::CONTINUOUS ) 
+                {
+                    lower = joint->limits->lower;
+                    upper = joint->limits->upper;
+                }
+                else
+                {
+                    lower = -.5;
+                    upper = .5;
+                }
+
+                int index = 6 - i - 1; //Selected 6 for simplicity sake later dynamic allocation should be used
+
+                R_qmin_.data[index] = lower;
+                R_qmax_.data[index] = upper;
+            }
+
+            std::cout << "Made it through if statement!" << std::endl;       
+
+            link = model_.getLink(link->getParent()->name);
+
+            std::cout << "Loop Iteration!" << std::endl;
+        }
+        std::cout << "--------------------" << std::endl;
+        std::cout << "Reading Right Joint Limits" << std::endl;
+
+        // Reading Joint limits from URDF for left and right arm to set up JntArray that holds Joint limits
+        //  _HumanoidChainRetargeter initialization
+
+        // Reinitialize L_qmin/max joint arrays
+        L_qmin_.resize(6);
+        L_qmax_.resize(6);  //Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
+
+        link = model_.getLink("LWristYaw_link"); 
+        joint = model_.getJoint(link->parent_joint->name);
+
+        std::cout <<"For loop initializes" << std::endl; 
+        
+        for(unsigned int i = 0; i < 6; i++) //Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
+        {
+            joint = model_.getJoint(link->parent_joint->name);
+
+            std::cout << link->parent_joint->name << " pointer: " << &model_.getLink(link->parent_joint->name) << std::endl;
+            std::cout << joint->name << " pointer: " << &joint << std::endl;
+
+            if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
+            {
+                std::cout << joint->name.c_str() << ": " << joint->limits->lower << " to " << joint->limits->upper << std::endl;
+
+                float lower, upper;
+                if ( joint->type != urdf::Joint::CONTINUOUS ) 
+                {
+                    lower = joint->limits->lower;
+                    upper = joint->limits->upper;
+                }
+                else
+                {
+                    lower = -.5;
+                    upper = .5;
+                }
+
+                int index = 6 - i - 1;//Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
+
+                L_qmin_.data[index] = lower;
+                L_qmax_.data[index] = upper;
+            }
+
+            std::cout << "Made it through if statement!" << std::endl;       
+
+            link = model_.getLink(link->getParent()->name);
+
+            std::cout << "Loop Iteration!" << std::endl;
+        }
+        std::cout << "--------------------" << std::endl;
+
+
+        // for each pair of joints { left_shoulder -> left_elbow, left_elbow -> left_wrist, right_shoulder -> right_elbow,
+        // right_elbow -> right_wrist }
+        // set up an ik solver for the target platform's corresponding joint (in this version we only care about angles 
+        // so we need to normalize the link lengths on one platform)
+
+       
         // Torso_link -> [L/R]ShoulderPitch -> [L/R]ShoulderPitch_link -> [L/R]ShoulderRoll -> [L/R]ShoulderRoll_link -> [L/R]ElbowYaw -> ...
-        retargeters_["l_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_shoulder", "left_elbow", kinematic_tree_, "LShoulderPitch_link", "LShoulderRoll_link" ) );
-        retargeters_["r_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_shoulder", "right_elbow", kinematic_tree_, "RShoulderPitch_link", "RShoulderRoll_link" ) );
+        /**retargeters_["l_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_shoulder", "left_elbow", kinematic_tree_, "LShoulderPitch_link", "LShoulderRoll_link" ) );
+        retargeters_["r_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_shoulder", "right_elbow", kinematic_tree_, "RShoulderPitch_link", "RShoulderRoll_link" ) );**/
 
         // ... -> [L/R]ShoulderRoll_link -> [L/R]ElbowYaw -> [L/R]ElbowYaw_link -> [L/R]ElbowRoll -> [L/R]ElbowRoll_link -> [L/R]WristYaw -> ...
-        retargeters_["l_elbow_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_elbow", "left_wrist", kinematic_tree_, "LShoulderRoll_link", "LElbowRoll_link" ) );
-        retargeters_["r_elbow_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_elbow", "right_wrist", kinematic_tree_, "RShoulderRoll_link", "RElbowRoll_link" ) );
+        /**retargeters_["l_elbow_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_elbow", "left_wrist", kinematic_tree_, "LShoulderRoll_link", "LElbowRoll_link" ) );
+        retargeters_["r_elbow_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_elbow", "right_wrist", kinematic_tree_, "RShoulderRoll_link", "RElbowRoll_link" ) );**/
 
         initPolicies<quickdev::policy::ALL>();
     }
