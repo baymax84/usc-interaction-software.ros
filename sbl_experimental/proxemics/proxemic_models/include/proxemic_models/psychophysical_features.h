@@ -195,8 +195,8 @@ namespace psychophysical
 
         // note: angle from person 2 to person 1 used here because we're trying to find angular displacement from 0 -> 360 between the two people
         auto const angle = proxemics::spatial::getAngle2DTo( joint2, joint1 );
-        double const sigma = sqrt( angle.getCovariance()( 0, 0 ) );
-        double const mean = fabs( Degree( Radian( angle.getFeature() ) ) + 180 ) + offset;
+        double const std_dev = sqrt( angle.getCovariance()( 0, 0 ) );
+        double const mean = fabs( angle.getFeature() + M_PI ) + Radian( Degree( offset ) );
 
         _SoftClassificationSet result;
 
@@ -214,9 +214,9 @@ namespace psychophysical
             auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
             auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
 
-            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
+            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
 
-            double const interval_value = cdf_wrapped_normal( mean, sigma, interval_max ) - cdf_wrapped_normal( mean, sigma, interval_min );
+            double const interval_value = cdf_wrapped_normal( mean, std_dev, interval_max ) - cdf_wrapped_normal( mean, std_dev, interval_min );
 
             if( interval_id == 0 || interval_id == 8 ) interval_0_8_probability += interval_value;
             else result.insert( SoftClassification( interval_id, interval_value, interval_name ) );
@@ -234,10 +234,10 @@ namespace psychophysical
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
+        double const std_dev = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance + offset;
 
-        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
+        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, std_dev );
     }
 
     // =========================================================================================================================================
@@ -250,10 +250,10 @@ namespace psychophysical
         auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
         quickdev::end_stream_indented();
         std::cout << "angle: " << angle.getFeature() << std::endl;
-        double const sigma = sqrt( angle.getCovariance()( 0, 0 ) );
-        double const mean = Degree( Radian( angle.getFeature() ) ) + offset;
+        double const std_dev = sqrt( angle.getCovariance()( 0, 0 ) );
+        double const mean = angle.getFeature() + Radian( Degree( offset ) );
 
-        //return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
+        //return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, std_dev );
 
         _SoftClassificationSet result;
 
@@ -271,9 +271,9 @@ namespace psychophysical
             auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
             auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
 
-            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
+            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
 
-            double const interval_value = cdf_wrapped_normal( mean, sigma, interval_max ) - cdf_wrapped_normal( mean, sigma, interval_min );
+            double const interval_value = cdf_wrapped_normal( mean, std_dev, interval_max ) - cdf_wrapped_normal( mean, std_dev, -interval_max );
 
             result.insert( SoftClassification( interval_id, interval_value - last_interval_value, interval_name ) );
 
@@ -290,10 +290,10 @@ namespace psychophysical
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
+        double const std_dev = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance + offset;
 
-        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
+        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, std_dev );
     }
 
     // =========================================================================================================================================
@@ -303,10 +303,10 @@ namespace psychophysical
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
+        double const std_dev = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance + offset;
 
-        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
+        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, std_dev );
     }
 
     // =========================================================================================================================================
@@ -316,10 +316,10 @@ namespace psychophysical
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( joint1, joint2 );
-        double const sigma = sqrt( distance.getCovariance()( 0, 0 ) );
+        double const std_dev = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance + offset;
 
-        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, sigma );
+        return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, std_dev );
     }
 
 } // psychophysical
@@ -420,39 +420,39 @@ public:
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params_["kinesthetic"], "offset", 0 );
 
         auto const distance = proxemics::spatial::getDistance2DTo( humanoid_["neck"], other.humanoid_[getClosestJoint( "neck", other )] );
-        double const base_sigma = sqrt( distance.getCovariance()( 0, 0 ) );
+        double const base_std_dev = sqrt( distance.getCovariance()( 0, 0 ) );
         double const mean = distance + offset;
 
         _SoftClassificationSet result;
 
-        double sigma;
+        double std_dev;
 
-        sigma = base_sigma + body_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 0, gsl_cdf_gaussian_P( mean + body_max, sigma ) -                           gsl_cdf_gaussian_P( mean - 0.0, sigma ),                   "body" ) );
+        std_dev = base_std_dev + body_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 0, gsl_cdf_gaussian_P( mean + body_max, std_dev ) -                           gsl_cdf_gaussian_P( mean - 0.0, std_dev ),                   "body" ) );
 
-        sigma = base_sigma + body_outside_max.getCovariance()( 0, 0 ) + body_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 1, gsl_cdf_gaussian_P( mean + body_outside_max, sigma ) -                   gsl_cdf_gaussian_P( mean - body_max, sigma ),              "body_outside" ) );
+        std_dev = base_std_dev + body_outside_max.getCovariance()( 0, 0 ) + body_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 1, gsl_cdf_gaussian_P( mean + body_outside_max, std_dev ) -                   gsl_cdf_gaussian_P( mean - body_max, std_dev ),              "body_outside" ) );
 
-        sigma = base_sigma + lower_arm_max.getCovariance()( 0, 0 ) + body_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 2, gsl_cdf_gaussian_P( mean + lower_arm_max, sigma ) -                      gsl_cdf_gaussian_P( mean - body_outside_max, sigma ),      "lower_arm" ) );
+        std_dev = base_std_dev + lower_arm_max.getCovariance()( 0, 0 ) + body_outside_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 2, gsl_cdf_gaussian_P( mean + lower_arm_max, std_dev ) -                      gsl_cdf_gaussian_P( mean - body_outside_max, std_dev ),      "lower_arm" ) );
 
-        sigma = base_sigma + lower_arm_outside_max.getCovariance()( 0, 0 ) + lower_arm_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 3, gsl_cdf_gaussian_P( mean + lower_arm_outside_max, sigma ) -              gsl_cdf_gaussian_P( mean - lower_arm_max, sigma ),         "lower_arm_outside" ) );
+        std_dev = base_std_dev + lower_arm_outside_max.getCovariance()( 0, 0 ) + lower_arm_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 3, gsl_cdf_gaussian_P( mean + lower_arm_outside_max, std_dev ) -              gsl_cdf_gaussian_P( mean - lower_arm_max, std_dev ),         "lower_arm_outside" ) );
 
-        sigma = base_sigma + whole_arm_max.getCovariance()( 0, 0 ) + lower_arm_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 4, gsl_cdf_gaussian_P( mean + whole_arm_max, sigma ) -                      gsl_cdf_gaussian_P( mean - lower_arm_outside_max, sigma ), "whole_arm" ) );
+        std_dev = base_std_dev + whole_arm_max.getCovariance()( 0, 0 ) + lower_arm_outside_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 4, gsl_cdf_gaussian_P( mean + whole_arm_max, std_dev ) -                      gsl_cdf_gaussian_P( mean - lower_arm_outside_max, std_dev ), "whole_arm" ) );
 
-        sigma = base_sigma + whole_arm_outside_max.getCovariance()( 0, 0 ) + whole_arm_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 5, gsl_cdf_gaussian_P( mean + whole_arm_outside_max, sigma ) -              gsl_cdf_gaussian_P( mean - whole_arm_max, sigma ),         "whole_arm_outside" ) );
+        std_dev = base_std_dev + whole_arm_outside_max.getCovariance()( 0, 0 ) + whole_arm_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 5, gsl_cdf_gaussian_P( mean + whole_arm_outside_max, std_dev ) -              gsl_cdf_gaussian_P( mean - whole_arm_max, std_dev ),         "whole_arm_outside" ) );
 
-        sigma = base_sigma + reach_max.getCovariance()( 0, 0 ) + whole_arm_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 6, gsl_cdf_gaussian_P( mean + reach_max, sigma ) -                          gsl_cdf_gaussian_P( mean - whole_arm_outside_max, sigma ), "reach" ) );
+        std_dev = base_std_dev + reach_max.getCovariance()( 0, 0 ) + whole_arm_outside_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 6, gsl_cdf_gaussian_P( mean + reach_max, std_dev ) -                          gsl_cdf_gaussian_P( mean - whole_arm_outside_max, std_dev ), "reach" ) );
 
-        sigma = base_sigma + reach_outside_max.getCovariance()( 0, 0 ) + reach_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 7, gsl_cdf_gaussian_P( mean + reach_outside_max, sigma ) -                  gsl_cdf_gaussian_P( mean - reach_max, sigma ),             "reach_outside" ) );
+        std_dev = base_std_dev + reach_outside_max.getCovariance()( 0, 0 ) + reach_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 7, gsl_cdf_gaussian_P( mean + reach_outside_max, std_dev ) -                  gsl_cdf_gaussian_P( mean - reach_max, std_dev ),             "reach_outside" ) );
 
-        sigma = base_sigma + reach_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 8, gsl_cdf_gaussian_P( mean + std::numeric_limits<double>::max(), sigma ) - gsl_cdf_gaussian_P( mean - reach_outside_max, sigma ),     "outside" ) );
+        std_dev = base_std_dev + reach_outside_max.getCovariance()( 0, 0 );
+        result.insert( SoftClassification( 8, gsl_cdf_gaussian_P( mean + std::numeric_limits<double>::max(), std_dev ) - gsl_cdf_gaussian_P( mean - reach_outside_max, std_dev ),     "outside" ) );
 
         return result;
     }
