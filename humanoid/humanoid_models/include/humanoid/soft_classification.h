@@ -37,7 +37,7 @@
 #define HUMANOID_SOFTCLASSIFICATION_H_
 
 #include <quickdev/param_reader.h>
-#include <gsl/gsl_cdf.h>
+#include <quickdev/cdf_unsigned_normal.h>
 #include <set>
 
 #include <humanoid_models/SoftClassification.h>
@@ -64,7 +64,7 @@ public:
         //
     }
 
-    static _SoftClassificationSet sampleIntervals( XmlRpc::XmlRpcValue * const begin, XmlRpc::XmlRpcValue * const end, double const & mean, double const & sigma )
+    static _SoftClassificationSet sampleIntervals( XmlRpc::XmlRpcValue * const begin, XmlRpc::XmlRpcValue * const end, double const & mean, double const & std_dev )
     {
         _SoftClassificationSet result;
 
@@ -79,9 +79,9 @@ public:
                 auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
                 auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
 
-                //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, sigma, interval_min, interval_max );
+                //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
 
-                result.insert( SoftClassification( interval_id, gsl_cdf_gaussian_P( interval_max - mean, sigma ) - gsl_cdf_gaussian_P( interval_min - mean, sigma ), interval_name ) );
+                result.insert( SoftClassification( interval_id, cdf_unsigned_normal( mean, std_dev, interval_max ) - cdf_unsigned_normal( mean, std_dev, interval_min ), interval_name ) );
             }
         }
         else
