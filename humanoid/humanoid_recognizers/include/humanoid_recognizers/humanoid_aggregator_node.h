@@ -249,9 +249,11 @@ private:
             appendLineMarker( lines_marker, "right_elbow", "right_hand", humanoid );
             appendLineMarker( lines_marker, "left_hip", "right_hip", humanoid );
             appendLineMarker( lines_marker, "left_hip", "left_knee", humanoid );
-            appendLineMarker( lines_marker, "left_knee", "left_foot", humanoid );
+            appendLineMarker( lines_marker, "left_knee", "left_ankle", humanoid );
+            appendLineMarker( lines_marker, "left_ankle", "left_foot", humanoid );
             appendLineMarker( lines_marker, "right_hip", "right_knee", humanoid );
-            appendLineMarker( lines_marker, "right_knee", "right_foot", humanoid );
+            appendLineMarker( lines_marker, "right_knee", "right_ankle", humanoid );
+            appendLineMarker( lines_marker, "right_ankle", "right_foot", humanoid );
             appendLineMarker( lines_marker, "head", "eyes", humanoid );
 
             _MarkerMsg eyes_arrow_marker = arrow_marker_template_;
