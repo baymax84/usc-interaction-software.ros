@@ -9,21 +9,21 @@ double int_upper_von_mises( double const & k, double const & value, double const
 
     double const precision_value = pow( 10, int( log10( std::numeric_limits<double>::min() ) * precision ) );
 
-    //std::cout << "int_indef_von_mises( " << k << ", " << value << ")" << std::endl;
-    //std::cout << "----" << std::endl;
+//    std::cout << "int_indef_von_mises( " << k << ", " << value << ")" << std::endl;
+//    std::cout << "----" << std::endl;
 
     do
     {
         sum_component = gsl_sf_bessel_In( order, k ) * ( sin( (double)order * value ) / (double) order );
-        //std::cout << order << " : " << sum_component << std::endl;
+//        std::cout << order << " : " << sum_component << std::endl;
         sum += sum_component;
         order ++;
     }
     while( fabs( sum_component ) > precision_value );
 
-    std::cout << "sum took " << ( order - 1 ) << " iterations to get within precision " << ( precision * 100 ) << "% (" << precision_value << ")" << std::endl;
+//    std::cout << "sum took " << ( order - 1 ) << " iterations to get within precision " << ( precision * 100 ) << "% (" << precision_value << ")" << std::endl;
 
-    //std::cout << ">>>" << sum << std::endl;
+//    std::cout << ">>>" << sum << std::endl;
 
     return ( 1.0 / ( 2.0 * M_PI ) ) * ( value + ( 2.0 / gsl_sf_bessel_I0( k ) ) * sum ) + 0.5;
 }
