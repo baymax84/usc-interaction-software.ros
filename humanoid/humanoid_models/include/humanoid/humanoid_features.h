@@ -490,21 +490,22 @@ public:
         // given: [sensor -> { joints }]
         //        [world -> sensor]
         // need: 2d pose of pelvis in world x-y plane, transformed back to the sensor
-        // solution: [world -> sensor] * [sensor -> pelvis] = [world -> pelvis]
-        //           [world -> pelvis]: [set z, roll, pitch = 0] = [world -> base_link]
-        //           [world -> pelvis] * -[world -> sensor] = [sensor -> base_link]
+        // solution: position = avg( [world -> left_hip], [world -> right_hip] )
+        //           angle = ( angle from left hip to right hip ) + 90 deg
+        // result [sensor -> base_link] = [world -> base_link] * -[world -> sensor]
 
-        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( operator[]( "pelvis" ) );
-        auto const world_to_pelvis_tf = world_to_sensor_tf * sensor_to_pelvis_tf;
+        auto const sensor_to_left_hip_tf = unit::convert<btTransform>( operator[]( "left_hip" ) );
+        auto const sensor_to_right_hip_tf = unit::convert<btTransform>( operator[]( "right_hip" ) );
 
-        auto ori_2d = unit::convert<btVector3>( world_to_pelvis_tf.getRotation() );
-        ori_2d.setX( 0 );
-        ori_2d.setY( 0 );
+        auto const world_to_left_hip_tf = world_to_sensor_tf * sensor_to_left_hip_tf;
+        auto const world_to_right_hip_tf = world_to_sensor_tf * sensor_to_right_hip_tf;
 
-        auto pos_2d = world_to_pelvis_tf.getOrigin();
-        pos_2d.setZ( 0 );
+        double const angle = atan2( world_to_right_hip_tf.getOrigin().getY() - world_to_left_hip_tf.getOrigin().getY(), world_to_right_hip_tf.getOrigin().getX() - world_to_left_hip_tf.getOrigin().getX() );
+        btVector3 position = ( world_to_left_hip_tf.getOrigin() + world_to_right_hip_tf.getOrigin() ) / 2.0;
+        position.setZ( 0 );
 
-        return btTransform( unit::convert<btQuaternion>( ori_2d ), pos_2d ) * world_to_pelvis_tf.inverse();
+        btTransform world_to_base_link_tf( btQuaternion( angle, 0, 0 ), position );
+        return world_to_base_link_tf * world_to_sensor_tf.inverse();
     }
 
     // assumes sensor has no roll with respect to the world

@@ -213,7 +213,13 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         }
 
         humanoid_state_msg = _Humanoid::estimateExtraJoints( humanoid_state_msg );
+/*
+        _HumanoidJointMsg base_link_joint;
+        base_link_joint.name = "base_link";
+        base_link_joint.pose.pose = unit::implicit_convert( base_link_tf );
 
+        humanoid_state_msg.joints.push_back( base_link_joint );
+*/
         humanoid_state_array_msg.states.push_back( humanoid_state_msg );
 
         multi_pub_.publish( "humanoid_states", humanoid_state_array_msg );
