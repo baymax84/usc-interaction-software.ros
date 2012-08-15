@@ -5,6 +5,7 @@
 #include <iostream>
 #include <math.h>
 #include <limits>
+#include <quickdev/math.h>
 
 // #############################################################################################################################################
 //! The probability density function of the Von Mises distribution

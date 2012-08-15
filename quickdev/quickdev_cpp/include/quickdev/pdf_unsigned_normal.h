@@ -5,6 +5,6 @@
 #include <gsl/gsl_randist.h>
 #include <math.h>
 
-double pdf_unsigned_normal( double const & mean, double const & variance, double const & value );
+double pdf_unsigned_normal( double const & mean, double const & std_dev, double const & value );
 
 #endif // UNSIGNEDNORMAL_PDFUNSIGNEDNORMAL_H_

@@ -5,21 +5,16 @@
 #include <iostream>
 #include <math.h>
 #include <limits>
+#include <quickdev/math.h>
 
 // #############################################################################################################################################
 //! The upper component of the indefinite integral of the Von Mises distribution
 /*! @param k kappa, the measure of concentration
+ *  @param mean the location of the center of the distribution
  *  @param value the value at which to evaluate the indefinite integral
  *  @param precision the percentage of the current archiecture's precision to use as a lower-limit when performing iterative calculations
  */
-double int_upper_von_mises( double const & k, double const & value, double const & precision = 0.05 );
-
-// #############################################################################################################################################
-//! The cumulative distribution function of the zero-centered Von Mises distribution
-/*! @param k kappa, the measure of concentration
- *  @param value, the value at which to evaluate the CDF
- */
-double cdf_norm_von_mises( double const & k, double const & value );
+double int_indef_von_mises( double const & mean, double const & k, double const & value, double const & precision = 0.05 );
 
 // #############################################################################################################################################
 //! The cumulative distribution function of the Von Mises distribution

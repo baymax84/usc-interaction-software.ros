@@ -4,6 +4,6 @@
 #include <gsl/gsl_cdf.h>
 #include <math.h>
 
-double cdf_unsigned_normal( double const & mean, double const & variance, double const & value );
+double cdf_unsigned_normal( double const & mean, double const & std_dev, double const & value );
 
 #endif // UNSIGNEDNORMAL_CDFUNSIGNEDNORMAL_H_
