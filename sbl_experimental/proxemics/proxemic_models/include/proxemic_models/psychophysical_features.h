@@ -428,31 +428,31 @@ public:
         double std_dev;
 
         std_dev = base_std_dev + body_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 0, gsl_cdf_gaussian_P( mean + body_max, std_dev ) -                           gsl_cdf_gaussian_P( mean - 0.0, std_dev ),                   "body" ) );
+        result.insert( SoftClassification( 0, cdf_unsigned_normal( mean, std_dev, body_max ) -                           cdf_unsigned_normal( mean, std_dev, 0.0 ),                   "body" ) );
 
         std_dev = base_std_dev + body_outside_max.getCovariance()( 0, 0 ) + body_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 1, gsl_cdf_gaussian_P( mean + body_outside_max, std_dev ) -                   gsl_cdf_gaussian_P( mean - body_max, std_dev ),              "body_outside" ) );
+        result.insert( SoftClassification( 1, cdf_unsigned_normal( mean, std_dev, body_outside_max ) -                   cdf_unsigned_normal( mean, std_dev, body_max ),              "body_outside" ) );
 
         std_dev = base_std_dev + lower_arm_max.getCovariance()( 0, 0 ) + body_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 2, gsl_cdf_gaussian_P( mean + lower_arm_max, std_dev ) -                      gsl_cdf_gaussian_P( mean - body_outside_max, std_dev ),      "lower_arm" ) );
+        result.insert( SoftClassification( 2, cdf_unsigned_normal( mean, std_dev, lower_arm_max ) -                      cdf_unsigned_normal( mean, std_dev, body_outside_max ),      "lower_arm" ) );
 
         std_dev = base_std_dev + lower_arm_outside_max.getCovariance()( 0, 0 ) + lower_arm_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 3, gsl_cdf_gaussian_P( mean + lower_arm_outside_max, std_dev ) -              gsl_cdf_gaussian_P( mean - lower_arm_max, std_dev ),         "lower_arm_outside" ) );
+        result.insert( SoftClassification( 3, cdf_unsigned_normal( mean, std_dev, lower_arm_outside_max ) -              cdf_unsigned_normal( mean, std_dev, lower_arm_max ),         "lower_arm_outside" ) );
 
         std_dev = base_std_dev + whole_arm_max.getCovariance()( 0, 0 ) + lower_arm_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 4, gsl_cdf_gaussian_P( mean + whole_arm_max, std_dev ) -                      gsl_cdf_gaussian_P( mean - lower_arm_outside_max, std_dev ), "whole_arm" ) );
+        result.insert( SoftClassification( 4, cdf_unsigned_normal( mean, std_dev, whole_arm_max ) -                      cdf_unsigned_normal( mean, std_dev, lower_arm_outside_max ), "whole_arm" ) );
 
         std_dev = base_std_dev + whole_arm_outside_max.getCovariance()( 0, 0 ) + whole_arm_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 5, gsl_cdf_gaussian_P( mean + whole_arm_outside_max, std_dev ) -              gsl_cdf_gaussian_P( mean - whole_arm_max, std_dev ),         "whole_arm_outside" ) );
+        result.insert( SoftClassification( 5, cdf_unsigned_normal( mean, std_dev, whole_arm_outside_max ) -              cdf_unsigned_normal( mean, std_dev, whole_arm_max ),         "whole_arm_outside" ) );
 
         std_dev = base_std_dev + reach_max.getCovariance()( 0, 0 ) + whole_arm_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 6, gsl_cdf_gaussian_P( mean + reach_max, std_dev ) -                          gsl_cdf_gaussian_P( mean - whole_arm_outside_max, std_dev ), "reach" ) );
+        result.insert( SoftClassification( 6, cdf_unsigned_normal( mean, std_dev, reach_max ) -                          cdf_unsigned_normal( mean, std_dev, whole_arm_outside_max ), "reach" ) );
 
         std_dev = base_std_dev + reach_outside_max.getCovariance()( 0, 0 ) + reach_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 7, gsl_cdf_gaussian_P( mean + reach_outside_max, std_dev ) -                  gsl_cdf_gaussian_P( mean - reach_max, std_dev ),             "reach_outside" ) );
+        result.insert( SoftClassification( 7, cdf_unsigned_normal( mean, std_dev, reach_outside_max ) -                  cdf_unsigned_normal( mean, std_dev, reach_max ),             "reach_outside" ) );
 
         std_dev = base_std_dev + reach_outside_max.getCovariance()( 0, 0 );
-        result.insert( SoftClassification( 8, gsl_cdf_gaussian_P( mean + std::numeric_limits<double>::max(), std_dev ) - gsl_cdf_gaussian_P( mean - reach_outside_max, std_dev ),     "outside" ) );
+        result.insert( SoftClassification( 8, 1 -                                                                        cdf_unsigned_normal( mean, std_dev, reach_outside_max ),     "outside" ) );
 
         return result;
     }
