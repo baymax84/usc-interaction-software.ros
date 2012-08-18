@@ -79,7 +79,7 @@ public:
                 auto const interval_max = quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" );
                 auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
 
-                //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
+//                PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
 
                 result.insert( SoftClassification( interval_id, cdf_unsigned_normal( mean, std_dev, interval_max ) - cdf_unsigned_normal( mean, std_dev, interval_min ), interval_name ) );
             }
