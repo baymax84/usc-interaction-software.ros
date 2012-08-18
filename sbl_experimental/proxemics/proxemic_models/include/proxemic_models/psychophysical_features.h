@@ -246,10 +246,10 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-        quickdev::start_stream_indented( "calculating 2d angle from ", joint1.name, " to ", joint2.name );
+//        quickdev::start_stream_indented( "calculating 2d angle from ", joint1.name, " to ", joint2.name );
         auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
-        quickdev::end_stream_indented();
-        std::cout << "angle: " << angle.getFeature() << std::endl;
+//        quickdev::end_stream_indented();
+//        std::cout << "angle: " << angle.getFeature() << std::endl;
         double const std_dev = sqrt( angle.getCovariance()( 0, 0 ) );
         double const mean = angle.getFeature() + Radian( Degree( offset ) );
 
@@ -383,17 +383,15 @@ public:
         auto const & from_joint = humanoid_[from_joint_name];
         auto const & to_joint = other.humanoid_[to_joint_name.empty() ? from_joint_name : to_joint_name];
 
-        quickdev::start_stream_indented( "getting sfp classification from ", humanoid_.name, " to ", other.humanoid_.name );
+//        quickdev::start_stream_indented( "getting sfp classification from ", humanoid_.name, " to ", other.humanoid_.name );
         _SoftClassificationSet result = proxemics::psychophysical::getSFPClassification( from_joint, to_joint, params_["sfp"] );
-        quickdev::end_stream_indented();
+//        quickdev::end_stream_indented();
 
         return result;
     }
 
     _SoftClassificationSet getKinestheticClassification( _HumanoidFeatureRecognizer const & other )
     {
-        XmlRpc::XmlRpcValue intervals;
-
         // average distance from neck to r/l shoulder
         auto const neck_joint = humanoid_["neck"];
         auto const pelvis_joint = humanoid_["pelvis"];
@@ -426,32 +424,42 @@ public:
         _SoftClassificationSet result;
 
         double std_dev;
-
-        std_dev = base_std_dev + body_max.getCovariance()( 0, 0 );
+/*
+        PRINT_INFO( "interval [body_max]: 0 -> %f\n", body_max.getFeature() );
+        PRINT_INFO( "interval [body_outside_max]: %f -> %f", body_max.getFeature(), body_outside_max.getFeature() );
+        PRINT_INFO( "interval [lower_arm_max]: %f -> %f", body_outside_max.getFeature(), lower_arm_max.getFeature() );
+        PRINT_INFO( "interval [lower_arm_outside_max]: %f -> %f", lower_arm_max.getFeature(), lower_arm_outside_max.getFeature() );
+        PRINT_INFO( "interval [whole_arm_max]: %f -> %f", lower_arm_outside_max.getFeature(), whole_arm_max.getFeature() );
+        PRINT_INFO( "interval [whole_arm_outside_max]: %f -> %f", whole_arm_max.getFeature(), whole_arm_outside_max.getFeature() );
+        PRINT_INFO( "interval [reach_max]: %f -> %f", whole_arm_outside_max.getFeature(), reach_max.getFeature() );
+        PRINT_INFO( "interval [reach_outside_max]: %f -> %f", reach_max.getFeature(), reach_outside_max.getFeature() );
+        PRINT_INFO( "interval [outside]: %f -> inf", reach_outside_max.getFeature() );
+*/
+        std_dev = base_std_dev + sqrt( body_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 0, cdf_unsigned_normal( mean, std_dev, body_max ) -                           cdf_unsigned_normal( mean, std_dev, 0.0 ),                   "body" ) );
 
-        std_dev = base_std_dev + body_outside_max.getCovariance()( 0, 0 ) + body_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( body_outside_max.getCovariance()( 0, 0 ) + body_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 1, cdf_unsigned_normal( mean, std_dev, body_outside_max ) -                   cdf_unsigned_normal( mean, std_dev, body_max ),              "body_outside" ) );
 
-        std_dev = base_std_dev + lower_arm_max.getCovariance()( 0, 0 ) + body_outside_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( lower_arm_max.getCovariance()( 0, 0 ) + body_outside_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 2, cdf_unsigned_normal( mean, std_dev, lower_arm_max ) -                      cdf_unsigned_normal( mean, std_dev, body_outside_max ),      "lower_arm" ) );
 
-        std_dev = base_std_dev + lower_arm_outside_max.getCovariance()( 0, 0 ) + lower_arm_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( lower_arm_outside_max.getCovariance()( 0, 0 ) + lower_arm_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 3, cdf_unsigned_normal( mean, std_dev, lower_arm_outside_max ) -              cdf_unsigned_normal( mean, std_dev, lower_arm_max ),         "lower_arm_outside" ) );
 
-        std_dev = base_std_dev + whole_arm_max.getCovariance()( 0, 0 ) + lower_arm_outside_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( whole_arm_max.getCovariance()( 0, 0 ) + lower_arm_outside_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 4, cdf_unsigned_normal( mean, std_dev, whole_arm_max ) -                      cdf_unsigned_normal( mean, std_dev, lower_arm_outside_max ), "whole_arm" ) );
 
-        std_dev = base_std_dev + whole_arm_outside_max.getCovariance()( 0, 0 ) + whole_arm_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( whole_arm_outside_max.getCovariance()( 0, 0 ) + whole_arm_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 5, cdf_unsigned_normal( mean, std_dev, whole_arm_outside_max ) -              cdf_unsigned_normal( mean, std_dev, whole_arm_max ),         "whole_arm_outside" ) );
 
-        std_dev = base_std_dev + reach_max.getCovariance()( 0, 0 ) + whole_arm_outside_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( reach_max.getCovariance()( 0, 0 ) + whole_arm_outside_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 6, cdf_unsigned_normal( mean, std_dev, reach_max ) -                          cdf_unsigned_normal( mean, std_dev, whole_arm_outside_max ), "reach" ) );
 
-        std_dev = base_std_dev + reach_outside_max.getCovariance()( 0, 0 ) + reach_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( reach_outside_max.getCovariance()( 0, 0 ) + reach_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 7, cdf_unsigned_normal( mean, std_dev, reach_outside_max ) -                  cdf_unsigned_normal( mean, std_dev, reach_max ),             "reach_outside" ) );
 
-        std_dev = base_std_dev + reach_outside_max.getCovariance()( 0, 0 );
+        std_dev = base_std_dev + sqrt( reach_outside_max.getCovariance()( 0, 0 ) );
         result.insert( SoftClassification( 8, 1 -                                                                        cdf_unsigned_normal( mean, std_dev, reach_outside_max ),     "outside" ) );
 
         return result;
@@ -474,9 +482,9 @@ public:
         auto const & from_joint = humanoid_["eyes"];
         auto const & to_joint = other.humanoid_["eyes"];
 
-        quickdev::start_stream_indented( "getting visual classification from ", humanoid_.name, " to ", other.humanoid_.name );
+//        quickdev::start_stream_indented( "getting visual classification from ", humanoid_.name, " to ", other.humanoid_.name );
         _SoftClassificationSet result = proxemics::psychophysical::getVisualClassification( from_joint, to_joint, params_["visual"] );
-        quickdev::end_stream_indented();
+//        quickdev::end_stream_indented();
 
         return result;
     }
@@ -488,7 +496,7 @@ public:
         auto const & from_joint = humanoid_[closest_pair.first];
         auto const & to_joint = other.humanoid_[closest_pair.second];
 
-        PRINT_INFO( "determining thermal classification from %s/%s -> %s/%s", humanoid_.name.c_str(), closest_pair.first.c_str(), other.humanoid_.name.c_str(), closest_pair.second.c_str() );
+//        PRINT_INFO( "determining thermal classification from %s/%s -> %s/%s", humanoid_.name.c_str(), closest_pair.first.c_str(), other.humanoid_.name.c_str(), closest_pair.second.c_str() );
 
         _SoftClassificationSet result = proxemics::psychophysical::getThermalClassification( from_joint, to_joint, params_["thermal"] );
 
@@ -502,7 +510,7 @@ public:
         // get the closest joint in other to our nose
         auto const closest_joint = _HumanoidFeatureRecognizer::getClosestJoint( "nose", other );
 
-        PRINT_INFO( "determining olfaction classification from %s/%s -> %s/%s", humanoid_.name.c_str(), "nose", other.humanoid_.name.c_str(), closest_joint.c_str() );
+//        PRINT_INFO( "determining olfaction classification from %s/%s -> %s/%s", humanoid_.name.c_str(), "nose", other.humanoid_.name.c_str(), closest_joint.c_str() );
 
         auto const & to_joint = other.humanoid_[closest_joint];
 
