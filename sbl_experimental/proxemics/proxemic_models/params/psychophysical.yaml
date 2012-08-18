@@ -2,15 +2,15 @@ sfp:
   intervals:
     [
       # interval 0 and 8 are the right and left halves of the same interval, respectively
-      { name: axis0, id: 0, min:   0.0,  max:  22.5 },
-      { name: axis1, id: 1, min:  22.5,  max:  67.5 },
-      { name: axis2, id: 2, min:  67.5,  max: 112.5 },
-      { name: axis3, id: 3, min: 112.5,  max: 157.5 },
-      { name: axis4, id: 4, min: 157.5,  max: 202.5 },
-      { name: axis5, id: 5, min: 202.5,  max: 247.5 },
-      { name: axis6, id: 6, min: 247.5,  max: 292.5 },
-      { name: axis7, id: 7, min: 292.5,  max: 337.5 },
-      { name: axis8, id: 8, min: 337.5,  max: 360.0 }
+      { name: axis0, id: 0, min:   0.0,  max:  20.0 },
+      { name: axis1, id: 1, min:  20.0,  max:  40.0 },
+      { name: axis2, id: 2, min:  40.0,  max:  60.0 },
+      { name: axis3, id: 3, min:  60.0,  max:  80.0 },
+      { name: axis4, id: 4, min:  80.0,  max: 100.0 },
+      { name: axis5, id: 5, min: 100.0,  max: 120.0 },
+      { name: axis6, id: 6, min: 120.0,  max: 140.0 },
+      { name: axis7, id: 7, min: 140.0,  max: 160.0 },
+      { name: axis8, id: 8, min: 160.0,  max: 180.0 }
     ]
   offset: 0.0
 

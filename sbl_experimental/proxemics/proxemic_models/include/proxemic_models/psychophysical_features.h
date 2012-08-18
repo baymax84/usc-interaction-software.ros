@@ -193,17 +193,17 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-        // note: angle from person 2 to person 1 used here because we're trying to find angular displacement from 0 -> 360 between the two people
+        // note: here, we want the angle from person2 (joint2) to person1 (joint1)
         auto const angle = proxemics::spatial::getAngle2DTo( joint2, joint1 );
         double const std_dev = sqrt( angle.getCovariance()( 0, 0 ) );
-        double const mean = fabs( angle.getFeature() + M_PI ) + Radian( Degree( offset ) );
+        double const mean = angle.getFeature() + Radian( Degree( offset ) );
 
         _SoftClassificationSet result;
 
         auto begin = &intervals[0];
         auto end = &intervals[0] + intervals.size();
 
-        double interval_0_8_probability;
+        double last_interval_value = 0;
 
         for( XmlRpc::XmlRpcValue * interval_it = begin; interval_it != end; ++interval_it )
         {
@@ -214,15 +214,12 @@ namespace psychophysical
             auto const interval_max = Radian( Degree( quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" ) ) );
             auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
 
-            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
+            double const interval_value = cdf_wrapped_normal( mean, std_dev, interval_max ) - cdf_wrapped_normal( mean, std_dev, -interval_max );
 
-            double const interval_value = cdf_wrapped_normal( mean, std_dev, interval_max ) - cdf_wrapped_normal( mean, std_dev, interval_min );
+            result.insert( SoftClassification( interval_id, interval_value - last_interval_value, interval_name ) );
 
-            if( interval_id == 0 || interval_id == 8 ) interval_0_8_probability += interval_value;
-            else result.insert( SoftClassification( interval_id, interval_value, interval_name ) );
+            last_interval_value = interval_value;
         }
-        result.insert( SoftClassification( quickdev::ParamReader::getXmlRpcValue<int>( intervals[0], "id" ), interval_0_8_probability, quickdev::ParamReader::getXmlRpcValue<std::string>( intervals[0], "name" ) ) );
-        result.insert( SoftClassification( quickdev::ParamReader::getXmlRpcValue<int>( intervals[8], "id" ), interval_0_8_probability, quickdev::ParamReader::getXmlRpcValue<std::string>( intervals[8], "name" ) ) );
 
         return result;
     }
@@ -246,14 +243,9 @@ namespace psychophysical
         auto & intervals = params["intervals"];
         auto const offset = quickdev::ParamReader::getXmlRpcValue<double>( params, "offset", 0 );
 
-//        quickdev::start_stream_indented( "calculating 2d angle from ", joint1.name, " to ", joint2.name );
         auto const angle = proxemics::spatial::getAngle2DTo( joint1, joint2 );
-//        quickdev::end_stream_indented();
-//        std::cout << "angle: " << angle.getFeature() << std::endl;
         double const std_dev = sqrt( angle.getCovariance()( 0, 0 ) );
         double const mean = angle.getFeature() + Radian( Degree( offset ) );
-
-        //return SoftClassification::sampleIntervals( &intervals[0], &intervals[0] + intervals.size(), mean, std_dev );
 
         _SoftClassificationSet result;
 
@@ -270,8 +262,6 @@ namespace psychophysical
             auto const interval_min = Radian( Degree( quickdev::ParamReader::getXmlRpcValue<double>( interval, "min" ) ) );
             auto const interval_max = Radian( Degree( quickdev::ParamReader::getXmlRpcValue<double>( interval, "max" ) ) );
             auto const interval_name = quickdev::ParamReader::getXmlRpcValue<std::string>( interval, "name" );
-
-            //PRINT_INFO( "evaluating interval %s (%i); u: %f, s: %f; [%f, %f]", interval_name.c_str(), interval_id, mean, std_dev, interval_min, interval_max );
 
             double const interval_value = cdf_wrapped_normal( mean, std_dev, interval_max ) - cdf_wrapped_normal( mean, std_dev, -interval_max );
 
