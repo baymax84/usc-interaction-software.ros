@@ -260,7 +260,7 @@ void
         publishTransform( user, XN_SKEL_HEAD,           frame_id, "head" );
         publishTransform( user, XN_SKEL_NECK,           frame_id, "neck" );
         publishTransform( user, XN_SKEL_TORSO,          frame_id, "torso" );
-        publishTransform( user, XN_SKEL_TORSO,          frame_id, "pelvis" );
+//        publishTransform( user, XN_SKEL_WAIST,          frame_id, "waist" );
 
         publishTransform( user, XN_SKEL_LEFT_SHOULDER,  frame_id, "left_shoulder" );
         publishTransform( user, XN_SKEL_LEFT_ELBOW,     frame_id, "left_elbow" );
