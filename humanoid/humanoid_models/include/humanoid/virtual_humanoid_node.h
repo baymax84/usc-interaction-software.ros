@@ -212,14 +212,27 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
             publishTransform( transform, from_frame_name, to_frame_name );
         }
 
+        // calculate additional frames (with covariance) given some minimum info (eyes, ears, nose, mouth, etc)
         humanoid_state_msg = _Humanoid::estimateExtraJoints( humanoid_state_msg );
-/*
-        _HumanoidJointMsg base_link_joint;
-        base_link_joint.name = "base_link";
-        base_link_joint.pose.pose = unit::implicit_convert( base_link_tf );
 
+        // calculate base link frame
+        btTransform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", config_.sensor_frame_name );
+        btTransform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
+
+        // publish base link tf frame
+        _TfTranceiverPolicy::publishTransform( sensor_to_base_link_tf, config_.sensor_frame_name, "/" + config_.name + "/base_link" );
+
+        // create base link joint
+        _HumanoidJointMsg base_link_joint;
+        base_link_joint.header.stamp = now;
+        base_link_joint.header.frame_id = config_.sensor_frame_name;
+        base_link_joint.name = "base_link";
+        base_link_joint.pose.pose = unit::implicit_convert( sensor_to_base_link_tf );
+
+        // append base link joint to list of joints
         humanoid_state_msg.joints.push_back( base_link_joint );
-*/
+
+        // append this humanoid to list of humanoids
         humanoid_state_array_msg.states.push_back( humanoid_state_msg );
 
         multi_pub_.publish( "humanoid_states", humanoid_state_array_msg );

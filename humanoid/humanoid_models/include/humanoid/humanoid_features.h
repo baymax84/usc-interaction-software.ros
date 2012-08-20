@@ -485,7 +485,7 @@ public:
     }
 
     // use world frame
-    btTransform calculateBaseLinkTransform( btTransform const & world_to_sensor_tf )
+    static btTransform calculateBaseLinkTransform( _HumanoidStateMsg const & state_msg, btTransform const & world_to_sensor_tf )
     {
         // given: [sensor -> { joints }]
         //        [world -> sensor]
@@ -494,8 +494,15 @@ public:
         //           angle = ( angle from left hip to right hip ) + 90 deg
         // result [sensor -> base_link] = [world -> base_link] * -[world -> sensor]
 
-        auto const sensor_to_left_hip_tf = unit::convert<btTransform>( operator[]( "left_hip" ) );
-        auto const sensor_to_right_hip_tf = unit::convert<btTransform>( operator[]( "right_hip" ) );
+        // build map from state message
+        std::map<std::string, _HumanoidJointMsg> joint_map;
+        for( auto joint = state_msg.joints.cbegin(); joint != state_msg.joints.cend(); ++joint )
+        {
+            joint_map[joint->name] = *joint;
+        }
+
+        auto const sensor_to_left_hip_tf = unit::convert<btTransform>( joint_map["left_hip"] );
+        auto const sensor_to_right_hip_tf = unit::convert<btTransform>( joint_map["right_hip"] );
 
         auto const world_to_left_hip_tf = world_to_sensor_tf * sensor_to_left_hip_tf;
         auto const world_to_right_hip_tf = world_to_sensor_tf * sensor_to_right_hip_tf;
@@ -509,13 +516,20 @@ public:
     }
 
     // assumes sensor has no roll with respect to the world
-    btTransform calculateBaseLinkTransform() const
+    static btTransform calculateBaseLinkTransform( _HumanoidStateMsg const & state_msg )
     {
+        // build map from state message
+        std::map<std::string, _HumanoidJointMsg> joint_map;
+        for( auto joint = state_msg.joints.cbegin(); joint != state_msg.joints.cend(); ++joint )
+        {
+            joint_map[joint->name] = *joint;
+        }
+
         // given: [sensor -> { joints }]
         // need: 2d pose of pelvis projected to the z-coordinate of the foot that is farthest from the pelvis
-        auto const sensor_to_left_foot_tf = unit::convert<btTransform>( operator[]( "left_foot" ) );
-        auto const sensor_to_right_foot_tf = unit::convert<btTransform>( operator[]( "right_foot" ) );
-        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( operator[]( "pelvis" ) );
+        auto const sensor_to_left_foot_tf = unit::convert<btTransform>( joint_map["left_foot"] );
+        auto const sensor_to_right_foot_tf = unit::convert<btTransform>( joint_map["right_foot"] );
+        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( joint_map["pelvis"] );
 
         auto const pelvis_to_left_foot_vec = sensor_to_left_foot_tf.getOrigin() - sensor_to_pelvis_tf.getOrigin();
         auto const pelvis_to_right_foot_vec = sensor_to_right_foot_tf.getOrigin() - sensor_to_pelvis_tf.getOrigin();
@@ -529,6 +543,9 @@ public:
 
     static _HumanoidStateMsg estimateExtraJoints( _HumanoidStateMsg const & state_msg )
     {
+        auto const & joint_dependency_map = humanoid::getJointDependencyMap();
+
+        // build map from state message
         std::map<std::string, _HumanoidJointMsg> joint_map;
         for( auto joint = state_msg.joints.cbegin(); joint != state_msg.joints.cend(); ++joint )
         {
@@ -536,6 +553,43 @@ public:
         }
 
         auto const now = state_msg.header.stamp;
+
+        // pelvis
+        if( joint_map.find( "pelvis" ) == joint_map.end() )
+        {
+            auto parent_joint_msg1_it = joint_map.find( "left_hip" );
+            auto parent_joint_msg2_it = joint_map.find( "right_hip" );
+
+            // if the parent joints don't exist, then we can't do anything here
+            if( parent_joint_msg1_it != joint_map.end() && parent_joint_msg1_it != joint_map.end() )
+            {
+                auto & parent_joint_msg1 = parent_joint_msg1_it->second;
+                auto & parent_joint_msg2 = parent_joint_msg2_it->second;
+
+                auto const sensor_to_left_hip_tf = unit::convert<btTransform>( parent_joint_msg1 );
+                auto const sensor_to_right_hip_tf = unit::convert<btTransform>( parent_joint_msg2 );
+
+                _HumanoidJointMsg joint_msg;
+
+                joint_msg.header = parent_joint_msg1.header;
+
+                joint_msg.name = "pelvis";
+                joint_msg.parent_name = "sensor";
+
+                auto const sensor_to_pelvis_tf = btTransform( ( sensor_to_left_hip_tf.getRotation() + sensor_to_right_hip_tf.getRotation() ) / 2, ( sensor_to_left_hip_tf.getOrigin() + sensor_to_right_hip_tf.getOrigin() ) / 2 );
+
+                joint_msg.pose.pose = unit::make_unit( sensor_to_pelvis_tf );
+
+                joint_msg.pose.covariance[0 * 6 + 0] = parent_joint_msg1.pose.covariance[0 * 6 + 0] + parent_joint_msg2.pose.covariance[0 * 6 + 0];
+                joint_msg.pose.covariance[1 * 6 + 1] = parent_joint_msg1.pose.covariance[1 * 6 + 1] + parent_joint_msg2.pose.covariance[1 * 6 + 1];
+                joint_msg.pose.covariance[2 * 6 + 2] = parent_joint_msg1.pose.covariance[2 * 6 + 2] + parent_joint_msg2.pose.covariance[2 * 6 + 2];
+                joint_msg.pose.covariance[3 * 6 + 3] = parent_joint_msg1.pose.covariance[3 * 6 + 3] + parent_joint_msg2.pose.covariance[3 * 6 + 3];
+                joint_msg.pose.covariance[4 * 6 + 4] = parent_joint_msg1.pose.covariance[4 * 6 + 4] + parent_joint_msg2.pose.covariance[4 * 6 + 4];
+                joint_msg.pose.covariance[5 * 6 + 5] = parent_joint_msg1.pose.covariance[5 * 6 + 5] + parent_joint_msg2.pose.covariance[5 * 6 + 5];
+
+                joint_map[joint_msg.name] = joint_msg;
+            }
+        }
 
         // head given pelvis
         {
@@ -694,43 +748,6 @@ public:
                 auto const head_to_mouth_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
 
                 joint_msg.pose.pose = unit::make_unit( head_to_mouth_tf );
-
-                joint_map[joint_msg.name] = joint_msg;
-            }
-        }
-
-        // pelvis
-        if( joint_map.find( "pelvis" ) == joint_map.end() )
-        {
-            auto parent_joint_msg1_it = joint_map.find( "left_hip" );
-            auto parent_joint_msg2_it = joint_map.find( "right_hip" );
-
-            // if the parent joints don't exist, then we can't do anything here
-            if( parent_joint_msg1_it != joint_map.end() && parent_joint_msg1_it != joint_map.end() )
-            {
-                auto & parent_joint_msg1 = parent_joint_msg1_it->second;
-                auto & parent_joint_msg2 = parent_joint_msg2_it->second;
-
-                auto const sensor_to_left_hip_tf = unit::convert<btTransform>( parent_joint_msg1 );
-                auto const sensor_to_right_hip_tf = unit::convert<btTransform>( parent_joint_msg2 );
-
-                _HumanoidJointMsg joint_msg;
-
-                joint_msg.header = parent_joint_msg1.header;
-
-                joint_msg.name = "pelvis";
-                joint_msg.parent_name = "";
-
-                auto const sensor_to_pelvis_tf = btTransform( ( sensor_to_left_hip_tf.getRotation() + sensor_to_right_hip_tf.getRotation() ) / 2, ( sensor_to_left_hip_tf.getOrigin() + sensor_to_right_hip_tf.getOrigin() ) / 2 );
-
-                joint_msg.pose.pose = unit::make_unit( sensor_to_pelvis_tf );
-
-                joint_msg.pose.covariance[0 * 6 + 0] = parent_joint_msg1.pose.covariance[0 * 6 + 0] + parent_joint_msg2.pose.covariance[0 * 6 + 0];
-                joint_msg.pose.covariance[1 * 6 + 1] = parent_joint_msg1.pose.covariance[1 * 6 + 1] + parent_joint_msg2.pose.covariance[1 * 6 + 1];
-                joint_msg.pose.covariance[2 * 6 + 2] = parent_joint_msg1.pose.covariance[2 * 6 + 2] + parent_joint_msg2.pose.covariance[2 * 6 + 2];
-                joint_msg.pose.covariance[3 * 6 + 3] = parent_joint_msg1.pose.covariance[3 * 6 + 3] + parent_joint_msg2.pose.covariance[3 * 6 + 3];
-                joint_msg.pose.covariance[4 * 6 + 4] = parent_joint_msg1.pose.covariance[4 * 6 + 4] + parent_joint_msg2.pose.covariance[4 * 6 + 4];
-                joint_msg.pose.covariance[5 * 6 + 5] = parent_joint_msg1.pose.covariance[5 * 6 + 5] + parent_joint_msg2.pose.covariance[5 * 6 + 5];
 
                 joint_map[joint_msg.name] = joint_msg;
             }

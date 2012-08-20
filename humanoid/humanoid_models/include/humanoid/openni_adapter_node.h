@@ -75,7 +75,7 @@ static _JointErrorMap generateJointErrorMap()
     joint_error_map["head"]             = { 0, 0, 0 };
     joint_error_map["neck"]             = { 0, 0, 0 };
     joint_error_map["torso"]            = { 0, 0, 0 };
-    joint_error_map["waist"]            = { 0, 0, 0 };
+//    joint_error_map["waist"]            = { 0, 0, 0 };
     joint_error_map["right_collar"]     = { 0, 0, 0 };
     joint_error_map["right_shoulder"]   = { 0, 0, 0 };
     joint_error_map["right_elbow"]      = { 0, 0, 0 };
@@ -108,7 +108,7 @@ static _JointErrorMap generateJointOffsetMap()
     joint_offset_map["head"]             = { 0, 0, 0 };
     joint_offset_map["neck"]             = { 0, 0, 0 };
     joint_offset_map["torso"]            = { 0, 0, 0 };
-    joint_offset_map["waist"]            = { 0, 0, 0 };
+//    joint_offset_map["waist"]            = { 0, 0, 0 };
     joint_offset_map["right_collar"]     = { 0, 0, 0 };
     joint_offset_map["right_shoulder"]   = { 0, 0, 0 };
     joint_offset_map["right_elbow"]      = { 0, 0, 0 };
@@ -140,7 +140,7 @@ static _JointNormMap generateJointNormMap()
     joint_norm_map["head"]             = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
     joint_norm_map["neck"]             = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
     joint_norm_map["torso"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["waist"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+//    joint_norm_map["waist"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
     joint_norm_map["right_collar"]     = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
     joint_norm_map["right_shoulder"]   = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
     joint_norm_map["right_elbow"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 0  ) ), Radian( Degree( -90  ) ) );
@@ -236,32 +236,35 @@ private:
         {
             if( !user_state->is_tracked ) continue;
 
-            _HumanoidStateMsg state_msg;
-            state_msg.header.stamp = now;
-            state_msg.header.frame_id = "openni_depth_tracking_frame";
+            _HumanoidStateMsg humanoid_state_msg;
+            humanoid_state_msg.header.stamp = now;
+            humanoid_state_msg.header.frame_id = "openni_depth_frame";
 
-            state_msg.name = user_state->name;
+            humanoid_state_msg.name = user_state->name;
 
             for( auto joint_name_it = humanoid::JOINT_NAMES_.begin(); joint_name_it != humanoid::JOINT_NAMES_.end(); ++joint_name_it )
             {
+
                 auto const & joint_name = *joint_name_it;
+                if( joint_name == "pelvis" ) continue;
+
                 auto const parent_joint_name = joint_dependency_map.find( joint_name )->second;
 
                 auto const joint_frame_name( "/" + user_state->name + "/" + joint_name );
                 //auto const parent_joint_frame_name( "/" + user_state->name + "/" + parent_joint_name );
 
-                if( transformExists( world_frame_, joint_frame_name ) )
+                if( transformExists( "/openni_depth_frame", joint_frame_name ) )
                 {
-                    auto const world_transform( lookupTransform( world_frame_, joint_frame_name ) );
+                    auto const sensor_to_current_joint_tf( lookupTransform( "/openni_depth_frame", joint_frame_name ) );
                     //auto const parent_transform( lookupTransform( parent_joint_frame_name, joint_frame_name ) );
 
                     auto const norm_rotation = joint_norm_map.find( joint_name )->second;
-                    btTransform const normalized_transform( world_transform.getRotation() * norm_rotation, world_transform.getOrigin() );
+                    btTransform const normalized_transform( sensor_to_current_joint_tf.getRotation() * norm_rotation, sensor_to_current_joint_tf.getOrigin() );
 
                     _HumanoidJointMsg joint_msg;
 
                     joint_msg.header.stamp = now;
-                    joint_msg.header.frame_id = "openni_depth_tracking_frame";
+                    joint_msg.header.frame_id = "openni_depth_frame";
 
                     joint_msg.name = joint_name;
                     joint_msg.parent_name = parent_joint_name;
@@ -287,14 +290,41 @@ private:
                         joint_msg.pose.covariance[5 * 6 + 5] = joint_error_model[5];
                     }
 
-                    state_msg.joints.push_back( joint_msg );
-                    publishTransform( normalized_transform, world_frame_, joint_frame_name + "_norm" );
+                    humanoid_state_msg.joints.push_back( joint_msg );
+                    _TfTranceiverPolicy::publishTransform( normalized_transform, "/openni_depth_frame", joint_frame_name + "_norm" );
                 }
             }
 
-            state_msg = _Humanoid::estimateExtraJoints( state_msg );
+            // calculate additional frames (with covariance) given some minimum info (eyes, ears, nose, mouth, etc)
+            humanoid_state_msg = _Humanoid::estimateExtraJoints( humanoid_state_msg );
 
-            state_array_msg.states.push_back( state_msg );
+            for( auto joint_msg_it = humanoid_state_msg.joints.cbegin(); joint_msg_it != humanoid_state_msg.joints.cend(); ++joint_msg_it )
+            {
+                if( joint_msg_it->name == "pelvis" )
+                {
+                    auto const & joint_msg = *joint_msg_it;
+                    _TfTranceiverPolicy::publishTransform( unit::convert<btTransform>( joint_msg ), "/openni_depth_frame", "/" + user_state->name + "/" + joint_msg.name );
+                }
+            }
+
+            // calculate base link frame
+            btTransform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", "/openni_depth_frame" );
+            btTransform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
+
+            // publish base link tf frame
+            _TfTranceiverPolicy::publishTransform( sensor_to_base_link_tf, "/openni_depth_frame", "/" + user_state->name + "/base_link" );
+
+            // create base link joint
+            _HumanoidJointMsg base_link_joint;
+            base_link_joint.header.stamp = now;
+            base_link_joint.header.frame_id = "openni_depth_frame";
+            base_link_joint.name = "base_link";
+            base_link_joint.pose.pose = unit::implicit_convert( sensor_to_base_link_tf );
+
+            // append base link joint to list of joints
+            humanoid_state_msg.joints.push_back( base_link_joint );
+
+            state_array_msg.states.push_back( humanoid_state_msg );
         }
 
         if( state_array_msg.states.size() > 0 ) multi_pub_.publish( "humanoid_states", quickdev::make_const_shared( state_array_msg ) );
