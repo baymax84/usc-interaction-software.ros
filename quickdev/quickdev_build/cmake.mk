@@ -29,8 +29,20 @@ force_remake:
 	@make clean && make
 	@echo "-- << Done rebuilding project"
 
-distclean:
-	@make clean
+debclean:
+	-rm -rf build
+
+distclean: clean
+	@echo "Removing any binary files"
+	@-rm -rf build
+	@-rm -rf lib
+	@-rm -rf bin
+
+test: all
+	@if [ ! -r build ]; then \
+		make init; \
+	fi
+	@make test-results
 
 #forward all other commands, calling 'init' first if necessary
 %:
@@ -38,7 +50,10 @@ distclean:
 	@if [ ! -r build ]; then \
 		make init; \
 	fi
-	@cd build && make $@ $(ROS_MAKE_FLAGS)
+	@cd build; \
+	if ( ! make $@ $(ROS_MAKE_FLAGS) ) && [ "$@" = "install" ]; then \
+		echo "Warning: explicit install target not found; ignoring"; \
+	fi
 	@echo "-- << Done forwarding target [ $@ ]"
 
 PACKAGE_NAME=$(shell basename $(PWD))
@@ -46,10 +61,6 @@ PACKAGE_NAME=$(shell basename $(PWD))
 clean:
 	@echo "-- >> Cleaning project..."
 	@-if [ -r build ]; then cd build && make clean; fi
-	@echo "Removing any binary files"
-	@-rm -rf build
-	@-rm -rf lib
-	@-rm -rf bin
 	@echo "Removing any auto-generated docs"
 	@-rm -rf docs
 	@echo "Removing any auto-generated messages"

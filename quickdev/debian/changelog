@@ -1,0 +1,5 @@
+ros-electric-interaction-quickdev-0 (0.1-0.0.1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 29 Aug 2012 19:45:27 -0700
