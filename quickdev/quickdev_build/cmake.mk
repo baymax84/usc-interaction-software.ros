@@ -30,7 +30,8 @@ force_remake:
 	@echo "-- << Done rebuilding project"
 
 debclean:
-	-rm -rf build
+	@-rm -rf build
+	@- touch ROS_NOBUILD
 
 distclean: clean
 	@echo "Removing any binary files"
