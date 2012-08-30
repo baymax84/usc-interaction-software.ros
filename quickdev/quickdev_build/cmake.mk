@@ -35,7 +35,6 @@ debclean:
 
 distclean: clean
 	@echo "Removing any binary files"
-	@-rm -rf build
 	@-rm -rf lib
 	@-rm -rf bin
 
@@ -62,6 +61,7 @@ PACKAGE_NAME=$(shell basename $(PWD))
 clean:
 	@echo "-- >> Cleaning project..."
 	@-if [ -r build ]; then cd build && make clean; fi
+	@-rm -rf build
 	@echo "Removing any auto-generated docs"
 	@-rm -rf docs
 	@echo "Removing any auto-generated messages"
