@@ -2,60 +2,64 @@
 CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=`rospack find rosbuild`/rostoolchain.cmake $(EXTRA_CMAKE_FLAGS)
 ROS_MAKE_FLAGS=$(ROS_PARALLEL_JOBS) $(ROS_OPTIMIZATION_LEVEL)
 
-# all:
-#
-# # setup cmake
-# any:
-#         @mkdir -p build
-#         cd build && cmake $(CMAKE_FLAGS) ..
-#
-# remake:
-#         make clean;
-#
-# #forward all other commands, calling 'any' first if necessary
-# %:
-#         if [ -r build ]; then cd build && make $@ $(ROS_MAKE_FLAGS); else make any && make $@; fi
-#
-###############################################################################################################################
-
-# make sure we default to all
 all:
-
-# setup cmake
-#any:
-#	@mkdir -p build
-#	cd build && cmake $(CMAKE_FLAGS) ..
+	@echo "-- >> Attempting to compile default target [ $@ $(ROS_MAKE_FLAGS) ]..."
+	@if [ ! -r build ]; then \
+		echo "-- >> Build dir not yet initialized..."; \
+		make init && make $@ $(ROS_MAKE_FLAGS); \
+	elif ! ( cd build && make $@ $(ROS_MAKE_FLAGS) ); then \
+		echo "-- >> Build dir broken; trying to recover... << --"; \
+		if ! ( make init && make $@ $(ROS_MAKE_FLAGS) ); then \
+			make force_remake; \
+		fi; \
+	fi
+	@echo "-- << Done attempting to compile default target"
 
 init:
+	@echo "-- >> Initializing build..."
 	@mkdir -p build
-	cd build && cmake $(CMAKE_FLAGS) ..
+	@cd build && cmake $(CMAKE_FLAGS) ..
+	@echo "-- << Done initializing build"
 
 remake:
-	make init && make $(ROS_MAKE_FLAGS)
+	@make init && make
 
 force_remake:
-	make clean && make $(ROS_MAKE_FLAGS)
+	@echo "-- >> Rebuilding project..."
+	@make clean && make
+	@echo "-- << Done rebuilding project"
 
-#forward all other commands, calling 'any' first if necessary
+distclean:
+	@make clean
+
+#forward all other commands, calling 'init' first if necessary
 %:
-	if [ -r build ]; then cd build && make $@ $(ROS_MAKE_FLAGS); else make remake; fi
+	@echo "-- >> Forwarding target [ $@ $(ROS_MAKE_FLAGS) ] to ./build ..."
+	@if [ ! -r build ]; then \
+		make init; \
+	fi
+	@cd build && make $@ $(ROS_MAKE_FLAGS)
+	@echo "-- << Done forwarding target [ $@ ]"
 
 PACKAGE_NAME=$(shell basename $(PWD))
 
 clean:
-	-if [ -r build ]; then cd build && make clean; fi
-	-rm -rf build
-	-rm -rf lib
-	-rm -rf bin
-	# clear out auto-generated docs
-	-rm -rf docs
-	# clear out auto-generated messages
-	-rm -rf msg/cpp
-	# clear out auto-generated services
-	-rm -rf srv/cpp
-	# clear out any auto-generated dynamic reconfigure stuff
-	-rm -rf cfg/cpp
-	-rm -rf cfg/*.cfgc
-	-rm -rf src/$(PACKAGE_NAME)
+	@echo "-- >> Cleaning project..."
+	@-if [ -r build ]; then cd build && make clean; fi
+	@echo "Removing any binary files"
+	@-rm -rf build
+	@-rm -rf lib
+	@-rm -rf bin
+	@echo "Removing any auto-generated docs"
+	@-rm -rf docs
+	@echo "Removing any auto-generated messages"
+	@-rm -rf msg/cpp
+	@echo "Removing any auto-generated services"
+	@-rm -rf srv/cpp
+	@echo "Removing any auto-generated dynamic reconfigure files"
+	@-rm -rf cfg/cpp
+	@-rm -rf cfg/*.cfgc
+	@-rm -rf src/$(PACKAGE_NAME)
+	@echo "-- << Done cleaning project"
 
 include $(shell rospack find mk)/buildtest.mk
