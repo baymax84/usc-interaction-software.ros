@@ -10,7 +10,7 @@ Homepage: <insert the upstream URL, if relevant>
 
 Package: ros-electric-interaction-quickdev-0
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-desktop-full, ros-electric-joystick-drivers, libgsl0ldbl
 Description: A package designed to speed up code implementation
  Provides:
  - Enhanced makefiles
