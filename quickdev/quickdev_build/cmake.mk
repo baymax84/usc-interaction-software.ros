@@ -4,15 +4,11 @@ ROS_MAKE_FLAGS=$(ROS_PARALLEL_JOBS) $(ROS_OPTIMIZATION_LEVEL)
 
 all:
 	@echo "-- >> Attempting to compile default target [ $@ $(ROS_MAKE_FLAGS) ]..."
-	@if [ ! -r build ]; then \
+	@if [ ! -r build/Makefile ]; then \
 		echo "-- >> Build dir not yet initialized..."; \
-		make init && make $@ $(ROS_MAKE_FLAGS); \
-	elif ! ( cd build && make $@ $(ROS_MAKE_FLAGS) ); then \
-		echo "-- >> Build dir broken; trying to recover... << --"; \
-		if ! ( make init && make $@ $(ROS_MAKE_FLAGS) ); then \
-			make force_remake; \
-		fi; \
+		make init; \
 	fi
+	@cd build && make $@ $(ROS_MAKE_FLAGS)
 	@echo "-- << Done attempting to compile default target"
 
 init:
