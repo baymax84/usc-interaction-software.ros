@@ -1,7 +1,13 @@
 # set EXTRA_CMAKE_FLAGS in the including Makefile in order to add tweaks
 CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=`rospack find rosbuild`/rostoolchain.cmake $(EXTRA_CMAKE_FLAGS)
 ROS_MAKE_FLAGS=$(ROS_PARALLEL_JOBS) $(ROS_OPTIMIZATION_LEVEL)
+NOBUILD := $(shell if [ -r ROS_NOBUILD ]; then echo 1; else echo 0; fi)
 
+ifeq ($(NOBUILD),1)
+all:
+%:
+	@echo "-- >> ROS_NOBUILD detected; ignoring package << --"
+else
 all:
 	@echo "-- >> Attempting to compile default target [ $@ $(ROS_MAKE_FLAGS) ]..."
 	@if [ ! -r build/Makefile ]; then \
@@ -10,6 +16,12 @@ all:
 	fi
 	@cd build && make $@ $(ROS_MAKE_FLAGS)
 	@echo "-- << Done attempting to compile default target"
+
+check_nobuild:
+	@if [ -r ROS_NOBUILD ]; then \
+		echo "-- >> ROS_NOBUILD detected. Aborting build << --"; \
+		export NOBUILD=0; \
+	fi
 
 init:
 	@echo "-- >> Initializing build..."
@@ -71,3 +83,4 @@ clean:
 	@echo "-- << Done cleaning project"
 
 include $(shell rospack find mk)/buildtest.mk
+endif
