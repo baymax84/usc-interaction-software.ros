@@ -1,14 +1,14 @@
-Source: ros-electric-interaction-quickdev-0
+Source: ros-electric-interaction-quickdev
 Section: unknown
 Priority: extra
 Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
 Build-Depends: debhelper (>= 7.0.50~), cmake, pkg-config, ros-electric-desktop-full, ros-electric-joystick-drivers, libgsl0-dev
 Standards-Version: 3.8.4
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/ros-electric-interaction-quickdev-0.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/ros-electric-interaction-quickdev-0.git;a=summary
+Homepage: http://robotics.usc.edu/~ekaszubski/projects/quickdev
+Vcs-Git: http://code.gogle.com/p/usc-interaction-software.ros
+Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?repo=ros
 
-Package: ros-electric-interaction-quickdev-0
+Package: ros-electric-interaction-quickdev
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-desktop-full, ros-electric-joystick-drivers, libgsl0ldbl
 Description: A package designed to speed up code implementation
