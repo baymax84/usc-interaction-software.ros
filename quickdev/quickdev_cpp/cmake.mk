@@ -17,12 +17,6 @@ all:
 	@cd build && make $@ $(ROS_MAKE_FLAGS)
 	@echo "-- << Done attempting to compile default target"
 
-check_nobuild:
-	@if [ -r ROS_NOBUILD ]; then \
-		echo "-- >> ROS_NOBUILD detected. Aborting build << --"; \
-		export NOBUILD=0; \
-	fi
-
 init:
 	@echo "-- >> Initializing build..."
 	@mkdir -p build

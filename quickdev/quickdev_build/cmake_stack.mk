@@ -11,12 +11,13 @@ remake:
 clean_stack:
 	@rm -rf build
 
-#forward all other commands, calling 'any' first if necessary
 %:
 	@echo "-- >> Building target [ $@ ] for all packages in stack [ $(STACK_NAME) ]..."
 	@for package in $$(rosstack contents $(STACK_NAME)); do \
 		echo "-- >> Building target [ $@ ] for package [ $$package ]"; \
-		cd $$(rospack find $$package) && make $@; \
+		if ! ( cd $$(rospack find $$package) && make $@ ); then \
+			exit 1; \
+		fi; \
 		echo "-- << Done building target [ $@ ] for package [ $$package ]"; \
 	done
 

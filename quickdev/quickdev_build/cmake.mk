@@ -17,12 +17,6 @@ all:
 	@cd build && make $@ $(ROS_MAKE_FLAGS)
 	@echo "-- << Done attempting to compile default target"
 
-check_nobuild:
-	@if [ -r ROS_NOBUILD ]; then \
-		echo "-- >> ROS_NOBUILD detected. Aborting build << --"; \
-		export NOBUILD=0; \
-	fi
-
 init:
 	@echo "-- >> Initializing build..."
 	@mkdir -p build
@@ -39,7 +33,9 @@ force_remake:
 
 debclean:
 	@-rm -rf build
-	@- touch ROS_NOBUILD
+
+debinstall:
+	@touch ROS_NOBUILD
 
 distclean: clean
 	@echo "Removing any binary files"
@@ -47,10 +43,12 @@ distclean: clean
 	@-rm -rf bin
 
 test: all
-	@if [ ! -r build ]; then \
-		make init; \
-	fi
 	@make test-results
+
+install: test
+	@-cd build && make $@ $(ROS_MAKE_FLAGS)
+	@make debclean
+	@make debinstall
 
 #forward all other commands, calling 'init' first if necessary
 %:
@@ -58,17 +56,15 @@ test: all
 	@if [ ! -r build ]; then \
 		make init; \
 	fi
-	@cd build; \
-	if ( ! make $@ $(ROS_MAKE_FLAGS) ) && [ "$@" = "install" ]; then \
-		echo "Warning: explicit install target not found; ignoring"; \
-	fi
+	@cd build && make $@ $(ROS_MAKE_FLAGS)
 	@echo "-- << Done forwarding target [ $@ ]"
 
 PACKAGE_NAME=$(shell basename $(PWD))
 
 clean:
 	@echo "-- >> Cleaning project..."
-	@-if [ -r build ]; then cd build && make clean; fi
+	@-if [ ! -r build ]; then make init; fi
+	@-cd build && make clean
 	@-rm -rf build
 	@echo "Removing any auto-generated docs"
 	@-rm -rf docs
