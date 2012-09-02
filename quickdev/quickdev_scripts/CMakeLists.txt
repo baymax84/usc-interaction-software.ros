@@ -11,4 +11,8 @@ include( $ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake )
 set( ROS_BUILD_TYPE RelWithDebInfo )
 
 rosbuild_init()
-install()
+
+#file( GLOB_RECURSE scripts_sources ${CMAKE_CURRENT_SOURCE_DIR} quickdev-* )
+#install( PROGRAMS ${scripts_sources} DESTINATION /usr/bin )
+
+install( PROGRAMS bash/quickdev-create-pkg bash/quickdev-add-license DESTINATION /usr/bin )
