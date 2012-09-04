@@ -1,0 +1,7 @@
+<library path="lib/libopenni_multitracker_nodelets">
+  <class name="openni_multitracker/openni_adapter" type="openni_multitracker::OpenNIAdapterNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>

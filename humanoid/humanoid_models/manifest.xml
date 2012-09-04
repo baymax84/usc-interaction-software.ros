@@ -9,8 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/humanoid_models</url>
   <depend package="quickdev_cpp"/>
+  <depend package="kdl"/>
   <depend package="nodelet"/>
-  <depend package="openni_multitracker"/>
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lhumanoid_models"/>
     <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>

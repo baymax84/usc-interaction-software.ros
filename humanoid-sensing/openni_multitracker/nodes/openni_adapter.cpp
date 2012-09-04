@@ -33,10 +33,10 @@
  *
  **************************************************************************/
 
-#include <humanoid/openni_adapter_node.h>
+#include <openni_multitracker/openni_adapter_node.h>
 
 // These are not the codes you're looking for...probably
-// This file was auto-generated; you probably want to modify ../include/humanoid/openni_adapter_node.h
+// This file was auto-generated; you probably want to modify ../include/openni_multitracker/openni_adapter_node.h
 
 // instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
 //
