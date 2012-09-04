@@ -10,7 +10,7 @@ Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?re
 
 Package: ros-electric-interaction-quickdev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-desktop-full, ros-electric-joystick-drivers, libgsl0ldbl
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-desktop-full, ros-electric-joystick-drivers, libgsl0-dev
 Description: A package designed to speed up code implementation
  Provides:
  - Enhanced makefiles
