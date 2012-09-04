@@ -1,5 +1,5 @@
 <launch>
-    <arg name="pkg" value="humanoid_models" />
+    <arg name="pkg" value="openni_multitracker" />
     <arg name="type" value="openni_adapter" />
     <arg name="name" default="$(arg type)" />
     <arg name="rate" default="30" />
