@@ -1,3 +1,24 @@
+ros-electric-interaction-humanoid (0.0.1-1346792286) unstable; urgency=low
+
+  * Commit ccedab41667d861ace0202e5c22f8c23f9b36802
+    + Added stack humanoid-sensing. Moved openni_multitracker into humanoid-sensing. Moved humanoid_models/openni_adapter_node to openni_multitracker.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 13:58:06 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346787934) unstable; urgency=low
+
+  * Commit 69aee4dd8dcd2eacaf9dcae80f311e52465dcfe2
+    + Added dependencies to humanoid/debian/control. Changed install dependency on libgsl0ldbl to libgsl0-dev in quickdev/debian/control.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 12:45:34 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346738557) unstable; urgency=low
+
+  * Commit 57a90712474e9f79a1002bd58239850dabb9c985
+    + Added debian folder and buildinfo to humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 3 Sep 2012 23:02:37 -0700
+
 ros-electric-interaction-humanoid (0.0.1-1346738052) unstable; urgency=low
 
   * Commit 6db659fe907ad22a39ea6c5f4c729df87ca867be
