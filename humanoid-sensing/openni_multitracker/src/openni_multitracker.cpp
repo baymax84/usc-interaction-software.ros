@@ -1,7 +1,9 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <tf/transform_broadcaster.h>
+#include <kdl/frames.hpp>
 
+#include <quickdev/openni_cpp11.h>
 #include <XnOpenNI.h>
 #include <XnCodecIDs.h>
 #include <XnCppWrapper.h>
