@@ -1,0 +1,14 @@
+Source: ros-electric-interaction-humanoid-sensing
+Section: unknown
+Priority: extra
+Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
+Build-Depends: debhelper (>= 7.0.50~), cmake, ros-electric-interaction-humanoid, ros-electric-openni-kinect
+Standards-Version: 3.8.4
+Homepage: http://code.google.com/p/usc-interaction-software.ros
+Vcs-Git: http://code.google.com/p/usc-interaction-software.ros
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/ros-electric-interaction-humanoid-sensing.git;a=summary
+
+Package: ros-electric-interaction-humanoid-sensing
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-interaction-humanoid, ros-electric-openni-kinect
+Description: Modules for sensing of humanoids.

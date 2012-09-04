@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/humanoid/openni_adapter_node.h
+ *  include/openni_multitracker/openni_adapter_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
