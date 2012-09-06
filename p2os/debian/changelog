@@ -1,3 +1,10 @@
+ros-electric-interaction-p2os (0.2.1-1346892391) unstable; urgency=low
+
+  * Commit 8435533687148ece62c456662f98e18b9fb7dd7b
+    + Added debian info to p2os.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 5 Sep 2012 17:46:31 -0700
+
 ros-electric-interaction-p2os (0.2.1-1341960805) unstable; urgency=low
 
   * Commit 09b7be18a66918879b36f557bef99ec94ab93538
