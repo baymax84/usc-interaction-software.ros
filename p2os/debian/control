@@ -4,12 +4,13 @@ Priority: extra
 Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
 Build-Depends: debhelper (>= 7.0.50~), cmake, ros-electric-interaction-quickdev
 Standards-Version: 3.8.4
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/ros-electric-interaction-p2os.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/ros-electric-interaction-p2os.git;a=summary
+Homepage: http://www.ros.org/wiki/p2os
+Vcs-Git: http://code.google.com/p/usc-interaction-software.ros
+Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?repo=ros&name=electric_unstable#git%2Fp2os
 
 Package: ros-electric-interaction-p2os
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-interaction-quickdev
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: Provides the p2os driver and urdf definitions.
+ - This stack provides the p2os driver supporting any robot that uses either P2OS or ARCOS firmware.
+ - This stack also includes urdf definitions for visualization and examples to control the robot.
