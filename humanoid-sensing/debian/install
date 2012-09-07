@@ -1,1 +1,1 @@
-openni_multitracker opt/ros/diamondback/stacks/humanoid-sensing/
+stack.xml openni_multitracker opt/ros/diamondback/stacks/humanoid-sensing/
