@@ -1,16 +1,16 @@
-Source: ros-electric-interaction-sbl
+Source: ros-diamondback-interaction-sbl
 Section: unknown
 Priority: extra
 Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, ros-electric-interaction-humanoid
+Build-Depends: debhelper (>= 7.0.50~), cmake, ros-diamondback-interaction-humanoid
 Standards-Version: 3.8.4
 Homepage: http://robotics.usc.edu/~ekaszubski/projects/sbl/
 Vcs-Git: http://code.google.com/p/usc-interaction-software.ros
-Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse?repo=ros&name=electric_unstable#git%2Fsbl
+Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse?repo=ros&name=diamondback_unstable#git%2Fsbl
 
-Package: ros-electric-interaction-sbl
+Package: ros-diamondback-interaction-sbl
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-interaction-humanoid
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-diamondback-interaction-humanoid
 Description: The Social Behavior Library
  SBL aims to provide a standard platform on which the HRI community can build the next generation of research applications for humanoid interaction as well as generic computational models of social behavior.
  Key research areas include:

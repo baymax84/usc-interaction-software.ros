@@ -1,1 +1,1 @@
-sbl_launch pythonAudio deictic_recognizers proxemic_models proxemic_controllers proxemic_recognizers oculesic_controllers opt/ros/electric/stacks/sbl/
+sbl_launch python_audio deictic_recognizers proxemic_models proxemic_controllers proxemic_recognizers oculesic_controllers opt/ros/diamondback/stacks/sbl/
