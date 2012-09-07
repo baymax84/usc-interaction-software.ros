@@ -1,0 +1,13 @@
+ros-electric-interaction-sbl (<version>-1346992101) unstable; urgency=low
+
+  * Commit 39ae9fd5de24fba00271645766fb7e41bb452cad
+    + Renamed pythonAudio to python_audio.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:28:21 -0700
+
+ros-electric-interaction-sbl (<version>-1346991837) unstable; urgency=low
+
+  * Commit 7346aa1760f7b5871ee30a095b242d5995803ec9
+    + Renamed sbl_experimental to sbl. Cleaned up various packages within sbl.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:23:57 -0700
