@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/deictic_recognizers/deictic_recognizer.h
+ *  include/deictic_recognizers/deictic_recognizer_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,14 +33,14 @@
  *
  **************************************************************************/
 
-#ifndef DEICTICRECOGNIZERS_DEICTICRECOGNIZER_H_
-#define DEICTICRECOGNIZERS_DEICTICRECOGNIZER_H_
+#ifndef DEICTICRECOGNIZERS_DEICTICRECOGNIZERNODE_H_
+#define DEICTICRECOGNIZERS_DEICTICRECOGNIZERNODE_H_
 
 #include <quickdev/node.h>
 
 #include <humanoid_recognizers/humanoid_recognizer_policy.h>
 
-typedef HumanoidRecognizerPolicy _HumanoidRecognizerPolicy;
+typedef HumanoidRecognizerPolicy<> _HumanoidRecognizerPolicy;
 QUICKDEV_DECLARE_NODE( DeicticRecognizer, _HumanoidRecognizerPolicy )
 
 typedef _HumanoidRecognizerPolicy::_HumanoidStateArrayMsg _HumanoidStateArrayMsg;
@@ -55,23 +55,27 @@ QUICKDEV_DECLARE_NODE_CLASS( DeicticRecognizer )
 
     QUICKDEV_SPIN_FIRST()
     {
-        initAll();
+        initPolicies<_HumanoidRecognizerPolicy>( "update_pairs_param", true );
+
+        initPolicies<quickdev::policy::ALL>();
     }
 
     QUICKDEV_SPIN_ONCE()
     {
-        QUICKDEV_LOCK_CACHE_AND_GET( states_cache_, states_msg );
-        if( !states_msg ) return;
+        _MarkerArrayMsg markers_msg;
 
-        _MarkerArrayMsg markers;
+        unsigned int marker_id = 0;
 
-        for( auto humanoid = states_msg->states.begin(); humanoid != states_msg->states.end(); ++humanoid )
+        // copy
+        auto const humanoid_pairs = _HumanoidRecognizerPolicy::getHumanoidPairs();
+
+        for( auto pair = humanoid_pairs.cbegin(); pair != humanoid_pairs.cend(); ++pair )
         {
-            //
+            PRINT_INFO( "analyzing pair [%s,%s]", pair->first.name.c_str(), pair->second.name.c_str() );
         }
 
-        _HumanoidRecognizerPolicy::update( markers );
+        _HumanoidRecognizerPolicy::updateMarkers( markers_msg );
     }
 };
 
-#endif // DEICTICRECOGNIZERS_DEICTICRECOGNIZER_H_
+#endif // DEICTICRECOGNIZERS_DEICTICRECOGNIZERNODE_H_
