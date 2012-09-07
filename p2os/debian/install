@@ -1,1 +1,1 @@
-p2os_urdf p2os_dashboard p2os_launch p2os_driver p2os_teleop opt/ros/electric/stacks/p2os
+stack.xml p2os_urdf p2os_dashboard p2os_launch p2os_driver p2os_teleop opt/ros/electric/stacks/p2os
