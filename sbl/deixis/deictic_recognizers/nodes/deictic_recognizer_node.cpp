@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodes/mcneil_recognizer.cpp
+ *  nodes/deictic_recognizer_node.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
@@ -33,5 +33,10 @@
  *
  **************************************************************************/
 
-#include <deictic_recognizers/mcneil_recognizer.h>
-QUICKDEV_INST_NODE( McNeilRecognizerNode, "mcneil_recognizer" )
+#include <deictic_recognizers/deictic_recognizer_node.h>
+
+// This file was auto-generated; the corresponding header file is ../include/proxemic_recognizers/deictic_recognizer_node.h
+
+// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
+QUICKDEV_INST_NODE( DeicticRecognizerNode, "deictic_recognizer" )

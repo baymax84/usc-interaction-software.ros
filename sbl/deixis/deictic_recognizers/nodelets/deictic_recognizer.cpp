@@ -34,8 +34,15 @@
  **************************************************************************/
 
 #include <quickdev/nodelet.h>
-#include <deictic_recognizers/deictic_recognizer.h>
+#include <deictic_recognizers/deictic_recognizer_node.h>
 
+// This file was auto-generated; the corresponding header file is ../include/proxemic_recognizers/deictic_recognizer_node.h
+
+// Declare DeicticRecognizer in namespace proxemic_recognizers
+//
 QUICKDEV_DECLARE_NODELET( deictic_recognizers, DeicticRecognizer )
 
+// Instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
+// registers our nodelet class proxemic_recognizers::DeicticRecognizer as proxemic_recognizers/deictic_recognizer
+//
 QUICKDEV_INST_NODELET( deictic_recognizers, DeicticRecognizer, deictic_recognizer )
