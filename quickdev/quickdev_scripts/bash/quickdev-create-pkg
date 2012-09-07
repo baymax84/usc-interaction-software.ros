@@ -562,8 +562,8 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
 
   echo -n "<launch>
     <arg name=\"pkg\" value=\"$package\" />
-    <arg name=\"name\" default=\"$node_file\" />
-    <arg name=\"type\" default=\"$node_file""_node\" />
+    <arg name=\"type\" default=\"$node_file\" />
+    <arg name=\"name\" default=\"\$(arg type)\" />
     <arg name=\"rate\" default=\"30\" />
     <arg name=\"args\" value=\"_loop_rate:=\$(arg rate)\" />" >> $node_launch_relpath
   if [ $has_nodelet == true ]; then
@@ -575,7 +575,7 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
         pkg=\"nodelet\"
         type=\"nodelet\"
         name=\"\$(arg name)\"
-        args=\"load \$(arg pkg)/\$(arg name) \$(arg manager) \$(arg args)\"
+        args=\"load \$(arg pkg)/\$(arg type) \$(arg manager) \$(arg args)\"
         output=\"screen\" />" >> $node_launch_relpath
   fi
   echo -n "
@@ -587,7 +587,7 @@ QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
   fi;
   echo "
         pkg=\"\$(arg pkg)\"
-        type=\"\$(arg type)\"
+        type=\"\$(arg type)_node\"
         name=\"\$(arg name)\"
         args=\"\$(arg args)\"
         output=\"screen\" />
