@@ -19,7 +19,7 @@
         unless="$(arg nodelet)"
         pkg="$(arg pkg)"
         type="$(arg type)"
-        name="$(arg name)"
+        name="$(arg name)_node"
         args="$(arg args)"
         output="screen" />
 </launch>
