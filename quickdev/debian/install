@@ -1,1 +1,1 @@
-cpp0x cpp11 gsl quickdev_build quickdev_cpp quickdev_examples quickdev_scripts opt/ros/electric/stacks/quickdev/
+stack.xml rosdep.yaml cpp0x cpp11 gsl quickdev_build quickdev_cpp quickdev_examples quickdev_scripts opt/ros/electric/stacks/quickdev/
