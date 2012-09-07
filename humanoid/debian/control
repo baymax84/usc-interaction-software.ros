@@ -11,4 +11,5 @@ Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?re
 Package: ros-diamondback-interaction-humanoid
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ros-diamondback-interaction-quickdev
+Suggests: ros-diamondback-interaction-humanoid-sensing
 Description: A framework designed to simplify the creation and analysis of humanoid data
