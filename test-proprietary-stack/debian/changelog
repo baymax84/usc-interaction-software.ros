@@ -1,0 +1,13 @@
+ros-diamondback-interaction-test-proprietary-stack (0.0.1-1347190653) unstable; urgency=low
+
+  * Commit 43a1c1a3207a828f55d591c2ff2d0cf784fdf725
+    + Added homepage, vcs, and description to test-proprietary-stack.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 9 Sep 2012 04:37:33 -0700
+
+ros-diamondback-interaction-test-proprietary-stack (0.0.1-1347178122) unstable; urgency=low
+
+  * Commit 0c63852bee6c6c984cf44e86aebe8e9e5c31775d
+    + Added test-proprietary-stack to verify functionality of proprietary build target.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 9 Sep 2012 01:08:42 -0700
