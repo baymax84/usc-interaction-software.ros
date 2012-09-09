@@ -48,10 +48,10 @@ distclean: clean
 	@-rm -rf lib
 	@-rm -rf bin
 
-test: all
+test:
 	@make test-results
 
-install: test
+install:
 	@-cd build && make $@ $(ROS_MAKE_FLAGS)
 	@make proprietary
 	@make debclean
