@@ -1,0 +1,8 @@
+<library path="lib/libtest_proprietary_package_nodelets">
+
+  <class name="test_proprietary_package/proprietary_driver" type="test_proprietary_package::ProprietaryDriverNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>
