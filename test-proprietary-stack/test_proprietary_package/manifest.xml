@@ -1,0 +1,16 @@
+<package>
+  <description brief="test_proprietary_package">
+
+     test_proprietary_package
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/test_proprietary_package</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="nodelet"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>
