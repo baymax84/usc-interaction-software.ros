@@ -34,8 +34,14 @@ force_remake:
 debclean:
 	@-rm -rf build
 
+proprietary:
+	@echo "-- >> Removing any proprietary content..."
+	@-cd build && make $@ $(ROS_MAKE_FLAGS)
+	@echo "-- << Done removing any proprietary content"
+
 debinstall:
 	@touch ROS_NOBUILD
+	@touch installed
 
 distclean: clean
 	@echo "Removing any binary files"
@@ -47,6 +53,7 @@ test: all
 
 install: test
 	@-cd build && make $@ $(ROS_MAKE_FLAGS)
+	@make proprietary
 	@make debclean
 	@make debinstall
 
