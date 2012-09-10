@@ -1,0 +1,15 @@
+Source: ros-electric-interaction-test-proprietary-stack
+Section: unknown
+Priority: extra
+Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
+Build-Depends: debhelper (>= 7.0.50~), cmake, ros-electric-interaction-quickdev
+Standards-Version: 3.8.4
+Homepage: http://code.google.com/p/usc-interaction-software
+Vcs-Git: http://code.google.com/p/usc-interaction-software.ros
+Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse?repo=ros
+
+Package: ros-electric-interaction-test-proprietary-stack
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-interaction-quickdev
+Description: An example of package with source code automatically removed
+ See the original source for more information about how to set up a similar "proprietary" package.

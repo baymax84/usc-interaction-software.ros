@@ -1,0 +1,9 @@
+<stack>
+  <description brief="test-proprietary-stack">test-proprietary-stack</description>
+  <author>Maintained by Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/test-proprietary-stack</url>
+  <depend stack="ros" />
+
+</stack>

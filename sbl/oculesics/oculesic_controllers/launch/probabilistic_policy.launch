@@ -1,0 +1,9 @@
+<launch>
+    <!--include file="$(find oculesic_controllers)/launch/test_frames.launch" /-->
+    <node
+        pkg="oculesic_controllers"
+        type="probabilistic_oculesic_controller"
+        name="probabilistic_oculesic_controller"
+        output="screen"
+        args="_world_frame_name:=/world _frame1_name:=/oculesic_target _frame1_probability:=1.0 _look_time/min:=0.01 _look_time/max:=0.01" />
+</launch>

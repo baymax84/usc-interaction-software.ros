@@ -1,0 +1,639 @@
+#!/bin/bash
+
+###########################################################################
+#  scripts/create_pkg.sh
+#  --------------------
+#
+#  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )
+#  All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are
+#  met:
+#
+#  * Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following disclaimer
+#    in the documentation and/or other materials provided with the
+#    distribution.
+#  * Neither the name of usc-ros-pkg nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+#  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+#  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+#  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+###########################################################################
+
+usage()
+{
+        echo ""
+        echo "Usage: create_pkg package [-u user1 -u user2 ...] [-d dependency1 -d dependency2 ...] [-P project] [-i include_dir] [-n Node1Class -n Node2Class ...] [-l Nodelet1Class -l Nodelet2Class ...] [-p Policy1Class -p Policy2Class ...] [-s Source1Class -s Source2Class ...]"
+        echo ""
+}
+
+addDep()
+{
+    if [ "$deps" == "" ]; then
+        deps=$1
+    else
+        deps="$deps $1"
+    fi
+}
+
+addSource()
+{
+    if [ "$sources" == "" ]; then
+        sources=$1
+    else
+        sources="$sources $1"
+    fi
+}
+
+addPolicy()
+{
+    if [ "$policies" == "" ]; then
+        policies=$1;
+    else
+        policies="$policies $1"
+    fi
+}
+
+addNode()
+{
+    if [ "$nodes" == "" ]; then
+        nodes=$1
+    else
+        nodes="$nodes $1"
+    fi
+}
+
+addNodelet()
+{
+    if [ "$nodelets" == "" ]; then
+        nodelets=$1
+    else
+        nodelets="$nodelets $1"
+    fi
+}
+
+if [ $# -le 0 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+        usage
+        exit
+fi
+
+manifest_file="manifest.xml"
+makefile_file="Makefile"
+cmakelists_file="CMakeLists.txt"
+doxygen_file="mainpage.dox"
+nodelet_plugins_file="nodelets/nodelet_plugins.xml"
+add_license_tool="quickdev-add-license"
+
+default_user=$ROS_USER;
+if [ "$default_user" == "" ]; then default_user=`whoami`; fi
+
+package=$1; shift
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -u )        shift
+                    if [ "$users" == "" ]; then
+                        users="$1"
+                        users_cmd="-u $1"
+                    else
+                        users="$users $1"
+                        users_cmd="$users -u $1"
+                    fi
+                    shift
+                    ;;
+        -d )        shift
+                    addDep "$1"
+                    shift
+                    ;;
+        -s )        shift
+                    addSource "$1"
+                    shift
+                    ;;
+        -p )        shift
+                    addPolicy "$1"
+                    shift
+                    ;;
+        -n )        shift
+                    addNode "$1"
+                    shift
+                    ;;
+        -l )        shift
+                    addNodelet "$1"
+                    shift
+                    ;;
+        -nl )       shift
+                    addNode "$1"
+                    addNodelet "$1"
+                    shift
+                    ;;
+        -i )        shift
+                    include_dir=$1
+                    shift
+                    ;;
+        --help )    usage
+                    exit
+                    ;;
+        -P )        shift
+                    project=$1
+                    shift
+                    ;;
+        * )         shift
+                    ;;
+    esac
+done
+
+if [ "$package" == "" ]; then usage; exit; fi
+if [ "$project" == "" ]; then project=$package; fi
+if [ "$users" == "" ]; then users=$default_user; fi
+if [ "$include_dir" == "" ]; then include_dir=$package; fi
+
+echo ""
+echo "Creating package \"$package\" with authors { $users }, dependencies { $deps }, sources { $sources }, policies { $policies }, nodes { $nodes }, and nodelets { $nodelets }."
+echo ""
+
+mkdir $package
+cd $package
+
+echo "<package>
+  <description brief=\"$package\">
+
+     $package
+
+  </description>
+  <author>$users</author>" >> $manifest_file
+
+#for user in $users; do
+#echo "
+#  <author>$user</author>" >> $manifest_file;
+#done
+
+echo "  <license>BSD</license>
+  <review status=\"unreviewed\" notes=\"\"/>
+  <url>http://ros.org/wiki/$package</url>" >> $manifest_file
+
+# if we have nodelets, add nodelet as a dependency
+if [ "$nodelets" != "" ]; then deps="nodelet $deps"; fi
+# if we have policies, nodes, or nodelets, add quickdev_cpp as a dependency
+if [ "$policies$nodes$nodelets" != "" ]; then deps="quickdev_cpp $deps"
+# if we only have sources, add quickdev_build as a dependency
+elif [ "$sources" != "" ]; then deps="quickdev_build $deps"; fi
+
+for dep in $deps; do
+  echo "  <depend package=\"$dep\"/>" >> $manifest_file
+done
+
+if [ "$sources$policies$nodelets" != "" ];
+then
+  echo "  <export>" >> $manifest_file
+
+  if [ "$sources$policies" != "" ]; then echo "    <cpp cflags=\"-I\${prefix}/include\" lflags=\"-Wl,-rpath,\${prefix}/lib -L\${prefix}/lib -l$package\"/>" >> $manifest_file; fi
+  if [ "$nodelets" != "" ]; then echo "    <nodelet plugin=\"\${prefix}/$nodelet_plugins_file\"/>" >> $manifest_file; fi
+
+  echo "  </export>" >> $manifest_file;
+fi
+
+echo "</package>" >> $manifest_file
+
+#if [ "$deps[0]" == "quickdev_cpp" ]; then
+    echo 'include $(shell rospack find quickdev_build)/cmake.mk' >> $makefile_file
+#else
+#   echo 'include $(shell rospack find mk)/cmake.mk' >> $makefile_file
+#fi
+
+echo 'cmake_minimum_required(VERSION 2.4.6)
+include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+
+# Set the build type.  Options are:
+#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
+#  Debug          : w/ debug symbols, w/o optimization
+#  Release        : w/o debug symbols, w/ optimization
+#  RelWithDebInfo : w/ debug symbols, w/ optimization
+#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
+#set(ROS_BUILD_TYPE RelWithDebInfo)
+
+rosbuild_init()' >> $cmakelists_file
+
+if [ "$sources$policies" != "" ]; then echo 'rosbuild_include( quickdev_build add_library_auto )' >> $cmakelists_file; fi
+
+echo '
+
+#set the default path for built executables to the "bin" directory
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#set the default path for built libraries to the "lib" directory
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+
+# uncomment if you have defined messages
+#rosbuild_genmsg()
+# uncomment if you have defined services
+#rosbuild_gensrv()
+# uncomment if you have defined dynamic reconfigure files
+# Note: requires "rosbuild_include( quickdev_build dynamic_reconfigure )"
+#quickdev_gencfg()
+' >> $cmakelists_file
+
+if [ "$sources$policies" != "" ]; then echo 'add_subdirectory( src )' >> $cmakelists_file; fi
+if [ "$nodes" != "" ]; then echo 'add_subdirectory( nodes )' >> $cmakelists_file; fi
+if [ "$nodelets" != "" ]; then echo 'add_subdirectory( nodelets )' >> $cmakelists_file; fi
+
+echo "/**
+\mainpage
+\htmlinclude manifest.html
+
+\b $package is ...
+
+<!--
+Provide an overview of your package.
+-->
+
+
+\section codeapi Code API
+
+<!--
+Provide links to specific auto-generated API documentation within your
+package that is of particular interest to a reader. Doxygen will
+document pretty much every part of your code, so do your best here to
+point the reader to the actual API.
+
+If your codebase is fairly large or has different sets of APIs, you
+should use the doxygen 'group' tag to keep these APIs together. For
+example, the roscpp documentation has 'libros' group.
+-->
+
+
+*/" >> $doxygen_file
+
+if [ "$sources$policies$nodes" != "" ]; then mkdir -p include/$include_dir; fi
+
+if [ "$sources$policies" != "" ]; then
+
+mkdir src
+echo 'add_library_auto( ${PROJECT_NAME} *.cpp *.cc *.c )' >> src/$cmakelists_file
+
+fi
+
+if [ "$nodes" != "" ]; then
+
+mkdir nodes
+echo "# gather all sources in current dir using relative filenames
+file( GLOB ALL_SOURCES RELATIVE \${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc *.c )
+
+foreach( source \${ALL_SOURCES} )
+    get_filename_component( source_name_base \${source} NAME_WE )
+    set( source_name \${source_name_base} )
+    set( source_src \${source} )
+
+    rosbuild_add_executable( \${source_name} \${source_src} )"  >> nodes/$cmakelists_file
+
+if [ "$sources" != "" ]; then echo "    target_link_libraries( \${source_name} \${PROJECT_NAME} )" >> nodes/$cmakelists_file; fi
+
+echo "
+endforeach( source )" >> nodes/$cmakelists_file
+
+mkdir launch
+
+fi
+
+if [ "$nodelets" != "" ]; then
+
+mkdir nodelets
+echo "# gather all sources in current dir using relative filenames
+file( GLOB NODELET_SOURCES RELATIVE \${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc *.c )
+rosbuild_add_library( \${PROJECT_NAME}_nodelets \${NODELET_SOURCES} )" >> nodelets/$cmakelists_file
+
+echo "<library path=\"lib/lib$package""_nodelets\">" >> $nodelet_plugins_file
+
+fi
+
+# convert SomeEXPRClassName to some_expr_class_name
+# convert [a][AA] -> [a]_[AA] (all); convert [Aa] -> _[Aa] (2nd occurance onward) | convert A -> a (all)
+#convert_camel_case_to_snake_case="sed 's:\([a-z]\)\([A-Z][A-Z]\):\1_\2:g; s:[A-Z][a-z]:_&:2g' | tr A-Z a-z"
+
+#convert_lower_to_upper="tr a-z A-Z"
+#convert_remove_underscores="tr -d _"
+
+#make everything upper-case and remove underscores
+#convert_filename_component_to_ifdef_component="$convert_lower_to_upper | $convert_remove_underscores"
+
+for source in $sources; do
+  source_file=`echo $source | sed 's:\([a-z 0-9]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z 0-9]\):\1_\2:g' | tr A-Z a-z`
+  source_h_relpath="include/$include_dir/$source_file.h"
+  source_cpp_relpath="src/$source_file.cpp"
+
+ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
+if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
+ifdef_string="$ifdef_string"`echo $source_file | tr a-z A-Z | tr -d _`"_H_"
+
+echo "#ifndef $ifdef_string
+#define $ifdef_string
+
+class $source
+{
+    //
+};
+
+#endif // $ifdef_string" >> $source_h_relpath
+  echo "#include <$include_dir/$source_file.h>" >> $source_cpp_relpath
+
+  license_files="$license_files $source_h_relpath $source_cpp_relpath"
+done
+
+for policy in $policies; do
+  policy_file=`echo "$policy" | sed 's:\([a-z 0-9]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z 0-9]\):\1_\2:g' | tr A-Z a-z`
+  policy_h_relpath="include/$include_dir/$policy_file""_policy.h"
+  policy_cpp_relpath="src/$policy_file""_policy.cpp"
+
+ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
+if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
+ifdef_string="$ifdef_string"`echo $policy_file | tr a-z A-Z | tr -d _`"POLICY_H_"
+
+  echo "#ifndef $ifdef_string
+#define $ifdef_string
+
+#include <quickdev/policy.h>
+
+// Declare private storage for our types, etc
+// This namespace can be retrieved later on using QUICKDEV_GET_POLICY_NS( $policy )
+//
+QUICKDEV_DECLARE_POLICY_NS( $policy )
+{
+    // Typedefs for parent policies should be declared here
+    // Say we had:
+    //
+    // typedef SomePolicy<SomeType> _SomePolicy;
+    //
+    // When we declare our policy, we can simply specify _SomePolicy as one of the policies we want to use
+    // When we want to get _SomePolicy anywhere else in the code:
+    //
+    // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy
+    //
+    // In the event that we need to make lots of calls to _SomePolicy, we can store a reference to it using:
+    //
+    // auto & some_policy = QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::getInstance();
+    // some_policy.someFunction();
+    // some_policy.someFunction2();
+    //
+    // Otherwise we'd have to do:
+    //
+    // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction();
+    // QUICKDEV_GET_POLICY_NS( $policy )::_SomePolicy::someFunction2();
+    //
+    typedef quickdev::Policy _Policy;
+}
+
+// Declare a policy called $policy""Policy; it will inherit the functionalify of all the policies that follow in the list of arguments
+// For example, to make a policy called SomePolicy that uses Policy1 and Policy2:
+//
+// QUICKDEV_DECLARE_POLICY( Some, Policy1, Policy2 )
+//
+// \"Policy\" is automatically appended to the first argument
+//
+QUICKDEV_DECLARE_POLICY( $policy, _Policy )
+
+// Declare a class called $policy""Policy
+//
+QUICKDEV_DECLARE_POLICY_CLASS( $policy )
+{
+    // Create utility functions for this policy
+    //
+    QUICKDEV_MAKE_POLICY_FUNCS( $policy )
+
+    // Variable initializations can be appended to this constructor as a comma-separated list:
+    //
+    // QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy ), member1_( some_value ), member2_( some_other_value ){}
+    //
+    // Most initialization will need to be done in init() ( QUICKDEV_ENABLE_INIT ) since a variadic template can't easily be passed through this
+    // constructor ( yet-unimplemented feature of g++ )
+    //
+    // Note that if QUICKDEV_ENABLE_INIT is used, a member, \"initialized_\", should be set to false during construction
+    //
+    QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( $policy )
+    {
+        //
+    }
+
+    /* Un-comment to enable initialization of this policy; this is the client's main means of passing compile-time args to a policy
+
+    QUICKDEV_ENABLE_INIT()
+    {
+        // A variadic template called \"args\" is available in this function
+        // Use getFirstOfType<Type>( args... ) to parse unnamed args
+        // Use getMetaParam<Type>( \"param_name\", args... ) or getMetaParamDef<Type>( \"param_name\", default, args... ) to parse named args
+        //
+        // Say we want to get a parameter of type \"__SomeType\" with the key \"some_value_param\"; if the key is not found, \"default_value\"
+        // will be returned
+        // Note that this will fail at compile time if \"__SomeType\" does not exist in the list of arguments passed to this function:
+        //
+        // const auto some_value_param = quickdev::getMetaParamDef<__SomeType>( \"some_value_param\", default_value, args... );
+        //
+        // After we've read all our parameters, we should be sure to set our policy's initialized state to true so that we can respond
+        // accordingly if the user fails to call init() for our policy
+        //
+        QUICKDEV_SET_INITIALIZED();
+    }*/
+
+    /* This is the client's main means of accessing and updating a policy; un-comment and change args as appropriate
+
+    void update( args... )
+    {
+        // When using init(), it's useful to be able to detect whether our init() function as been called
+        // One option is to simply read the member \"initialized_\"
+        // Alternatively, there are some simple macros for notifying/responding to situations where init() has not been called
+        // These macros can be used anywhere within our policy as long as our init() function has been declared with QUICKDEV_ENABLE_INIT{}
+        //
+        // If we're not initialized yet, warn and continue
+        // QUICKDEV_CHECK_INITIALIZED();
+        //
+        // If we're not initialized yet, warn and return immediately
+        // QUICKDEV_ASSERT_INITIALIZED();
+        //
+    }*/
+};
+
+#endif // $ifdef_string" >> $policy_h_relpath
+
+  echo "#include <$include_dir/$policy_file""_policy.h>" >> $policy_cpp_relpath
+
+  license_files="$license_files $policy_h_relpath $policy_cpp_relpath"
+done
+
+for node in $nodes; do
+  node_file=`echo "$node" | sed 's:\([a-z 0-9]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z 0-9]\):\1_\2:g' | tr A-Z a-z`
+  node_h_relpath="include/$include_dir/$node_file""_node.h"
+  node_cpp_relpath="nodes/$node_file""_node.cpp"
+  node_launch_relpath="launch/$node_file.launch"
+
+  has_nodelet=false
+  for nodelet in $nodelets; do
+    if [ "$node" == "$nodelet" ]; then
+      has_nodelet=true
+      break
+    fi
+  done
+
+ifdef_string=`echo $package | tr a-z A-Z | tr -d _`"_"
+if [ "$package" != "$include_dir" ]; then ifdef_string="$ifdef_string"`echo $include_dir | tr a-z A-Z | tr -d _`"_"; fi
+ifdef_string="$ifdef_string"`echo $node_file | tr a-z A-Z | tr -d _`"NODE_H_"
+
+  echo "#ifndef $ifdef_string
+#define $ifdef_string
+
+#include <quickdev/node.h>
+
+// Declare a node called $node""Node.
+// A quickdev::RunablePolicy is automatically prepended to the list of policies our node will use.
+// To use more policies, simply list them here:
+//
+// QUICKDEV_DECLARE_NODE( $node, SomePolicy1, SomePolicy2 )
+//
+QUICKDEV_DECLARE_NODE( $node )
+
+// Declare a class called $node""Node
+//
+QUICKDEV_DECLARE_NODE_CLASS( $node )
+{
+    // Variable initializations can be appended to this constructor as a comma-separated list:
+    //
+    // QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node ), member1_( some_value ), member2_( some_other_value ){}
+    //
+    QUICKDEV_DECLARE_NODE_CONSTRUCTOR( $node )
+    {
+        //
+    }
+
+    // This function is called by quickdev::RunablePolicy after all policies are constructed but just before the main loop is started.
+    // All policy initialization should be done here.
+    //
+    QUICKDEV_SPIN_FIRST()
+    {
+        // Say we had a policy called _SomePolicy that looked for the meta-parameter \"some_value1_param\" of type SomeType and
+        // \"some_value2_param\" of type SomeOtherType in its init function
+        // We can create those meta-params here and then pass them to all policies using initPolicies<...>():
+        //
+        // initPolicies<quickdev::policy::ALL>( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
+        //
+        // Or we can pass those meta-params only to _SomePolicy by specifying its type:
+        //
+        // initPolicies<_SomePolicy>( \"some_value1_param\", SomeType(), \"some_value2_param\", SomeOtherType() );
+        //
+        // If we want to initialize all policies and use their default values, we can simply call initPolicies<quickdev::policy::ALL>()
+        // with no arguments.
+        // Note that most initable policies won't function properly unless their init() functions are called directly or via initPolicies<...>().
+        // Furthermore, since each policy is required to track its initialization state, initPolicies<...>() is guaranteed to only call init()
+        // on policies that have yet to be initialized; therefore, calling initPolicies<quickdev::policy::ALL>() at the end of QUICKDEV_SPIN_FIRST()
+        // is always a safe operation.
+        // To instead force re-initialization, call forceInitPolicies<...>().
+        //
+        initPolicies<quickdev::policy::ALL>();
+    }
+
+    // This optional function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
+    // Most updateable policies should have their update( ... ) functions called within this context.
+    //
+    QUICKDEV_SPIN_ONCE()
+    {
+        //
+    }
+};
+
+#endif // $ifdef_string" >> $node_h_relpath
+
+  echo "#include <$include_dir/$node_file""_node.h>
+
+// This file was auto-generated; the corresponding header file is ../$node_h_relpath
+
+// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
+//
+QUICKDEV_INST_NODE( $node""Node, \"$node_file\" )" >> $node_cpp_relpath
+
+  echo -n "<launch>
+    <arg name=\"pkg\" value=\"$package\" />
+    <arg name=\"type\" default=\"$node_file\" />
+    <arg name=\"name\" default=\"\$(arg type)\" />
+    <arg name=\"rate\" default=\"30\" />
+    <arg name=\"args\" value=\"_loop_rate:=\$(arg rate)\" />" >> $node_launch_relpath
+  if [ $has_nodelet == true ]; then
+  echo -n "
+    <arg name=\"manager\" default=\"manager\" />
+    <arg name=\"nodelet\" default=\"false\" />
+    <node
+        if=\"\$(arg nodelet)\"
+        pkg=\"nodelet\"
+        type=\"nodelet\"
+        name=\"\$(arg name)\"
+        args=\"load \$(arg pkg)/\$(arg type) \$(arg manager) \$(arg args)\"
+        output=\"screen\" />" >> $node_launch_relpath
+  fi
+  echo -n "
+    <node" >> $node_launch_relpath
+
+  if [ $has_nodelet == true ]; then
+  echo -n "
+        unless=\"\$(arg nodelet)\"" >> $node_launch_relpath
+  fi;
+  echo "
+        pkg=\"\$(arg pkg)\"
+        type=\"\$(arg type)_node\"
+        name=\"\$(arg name)\"
+        args=\"\$(arg args)\"
+        output=\"screen\" />
+</launch>" >> $node_launch_relpath
+
+  license_files="$license_files $node_h_relpath $node_cpp_relpath"
+done
+
+for nodelet in $nodelets; do
+  nodelet_file=`echo "$nodelet" | sed 's:\([a-z 0-9]\)\([A-Z]\):\1_\2:g; s:\([A-Z]\)\([A-Z][a-z 0-9]\):\1_\2:g' | tr A-Z a-z`
+  nodelet_cpp_relpath="nodelets/$nodelet_file.cpp"
+
+  echo -n "#include <quickdev/nodelet.h>
+#include <$include_dir/$nodelet_file""_node.h>
+
+// This file was auto-generated; the corresponding header file is ../include/$include_dir/$nodelet_file""_node.h
+
+// Declare $nodelet in namespace $package
+//
+QUICKDEV_DECLARE_NODELET( $package, $nodelet )
+
+// Instantiate our nodelet; this macro expands to a call to PLUGINLIB_DECLARE_CLASS and
+// registers our nodelet class $package::$nodelet as $package/$nodelet_file
+//
+QUICKDEV_INST_NODELET( $package, $nodelet, $nodelet_file )" >> $nodelet_cpp_relpath
+
+echo "
+  <class name=\"$package/$nodelet_file\" type=\"$package::$nodelet""Nodelet\" base_class_type=\"nodelet::Nodelet\">
+    <description>
+      todo: fill this in
+    </description>
+  </class>" >> $nodelet_plugins_file
+
+  license_files="$license_files $nodelet_cpp_relpath"
+done
+
+if [ "$nodelets" != "" ]; then echo "</library>" >> $nodelet_plugins_file; fi
+
+if [ "$license_files" != "" ]; then
+
+echo ""
+echo "Using `which $add_license_tool`"
+echo ""
+
+$add_license_tool -p $project $users_cmd $license_files
+
+fi
+
+echo "done"

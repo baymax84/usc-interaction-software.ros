@@ -1,0 +1,21 @@
+<package>
+  <description brief="openni_multitracker">
+
+openni_multitracker broadcasts multiple OpenNI skeleton frame sets using tf.
+
+  </description>
+  <author>Edward T. Kaszubski, Tim Field</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/openni_multitracker</url>
+
+  <depend package="humanoid_models"/>
+  <depend package="nodelet"/>
+  <depend package="geometry_msgs"/>
+  <depend package="openni"/>
+  <depend package="nite"/>
+  <depend package="tf"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>

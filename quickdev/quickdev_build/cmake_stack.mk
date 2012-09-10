@@ -3,16 +3,29 @@ CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=`rospack find rosbuild`/rostoolchain.c
 
 # make sure we default to all
 all:
-	rosmake;
+	rosmake --no-rosdep
 
 remake:
-	make clean;
+	make clean && make
 
-#forward all other commands, calling 'any' first if necessary
+clean_stack:
+	@rm -rf build
+
 %:
-	for PACKAGE in $(shell rosstack contents $(STACK_NAME)); do if [ -r $$PACKAGE ]; then cd $$PACKAGE; make $@; cd ..; fi; done
+	@echo "-- >> Building target [ $@ ] for all packages in stack [ $(STACK_NAME) ]..."
+	@for package in $$(rosstack contents $(STACK_NAME)); do \
+		echo "-- >> Building target [ $@ ] for package [ $$package ]"; \
+		if ! ( cd $$(rospack find $$package) && make $@ ); then \
+			exit 1; \
+		fi; \
+		echo "-- << Done building target [ $@ ] for package [ $$package ]"; \
+	done
 
-STACK_NAME=$(shell basename $(PWD))
+	@if [ "$@" = "clean" ]; then make clean_stack; fi
+
+	@echo "-- << Done building target $@"
+
+STACK_NAME=$$( basename $(PWD))
 
 package_source: all
-	$(shell rospack find rosbuild)/bin/package_source.py $(CURDIR)
+	$$(rospack find rosbuild)/bin/package_source.py $(CURDIR)

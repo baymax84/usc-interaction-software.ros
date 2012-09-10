@@ -1,0 +1,7 @@
+<library path="lib/libdeictic_recognizers_nodelets">
+  <class name="deictic_recognizers/deictic_recognizer" type="deictic_recognizers::DeicticRecognizerNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>

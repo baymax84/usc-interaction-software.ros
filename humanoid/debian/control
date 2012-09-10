@@ -1,0 +1,15 @@
+Source: ros-electric-interaction-humanoid
+Section: unknown
+Priority: extra
+Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
+Build-Depends: debhelper (>= 7.0.50~), cmake, ros-electric-interaction-quickdev
+Standards-Version: 3.8.4
+Homepage: http://robotics.usc.edu/~ekaszubski/projects/humanoid
+Vcs-Git: http://code.google.com/p/usc-interaction-software.ros
+Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?repo=ros
+
+Package: ros-electric-interaction-humanoid
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-interaction-quickdev
+Suggests: ros-electric-interaction-humanoid-sensing
+Description: A framework designed to simplify the creation and analysis of humanoid data

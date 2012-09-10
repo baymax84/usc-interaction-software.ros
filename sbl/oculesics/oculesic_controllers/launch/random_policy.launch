@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="oculesic_controllers" type="random_oculesic_controller" name="random_oculesic_controller" output="screen"
+        args="_world_frame_name:=/world _look_duration/min:=0.5, _look_duration/max:=5.0
+        _target_bounds/x/min:=0.25 _target_bounds/x/max:=2.0
+        _target_bounds/y/min:=--1 _target_bounds/y/max:=1
+        _target_bounds/z/min:=0.25 _target_bounds/z/max:=1.5" />
+</launch>

@@ -490,9 +490,9 @@ public:
         // given: [sensor -> { joints }]
         //        [world -> sensor]
         // need: 2d pose of pelvis in world x-y plane, transformed back to the sensor
-        // solution: position = avg( [world -> left_hip], [world -> right_hip] )
-        //           angle = ( angle from left hip to right hip ) + 90 deg
-        // result [sensor -> base_link] = [world -> base_link] * -[world -> sensor]
+        // solution: position = [world -> pelvis], z = 0
+        //           angle = angle formed by x-y values of ( angle of [world->pelvis] * vec( 1, 0, 0 ) )
+        // result [sensor -> base_link] = -[world -> sensor] * position
 
         // build map from state message
         std::map<std::string, _HumanoidJointMsg> joint_map;
@@ -501,18 +501,21 @@ public:
             joint_map[joint->name] = *joint;
         }
 
-        auto const sensor_to_left_hip_tf = unit::convert<btTransform>( joint_map["left_hip"] );
-        auto const sensor_to_right_hip_tf = unit::convert<btTransform>( joint_map["right_hip"] );
+        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( joint_map["pelvis"] );
+        auto const world_to_pelvis_tf = world_to_sensor_tf * sensor_to_pelvis_tf;
 
-        auto const world_to_left_hip_tf = world_to_sensor_tf * sensor_to_left_hip_tf;
-        auto const world_to_right_hip_tf = world_to_sensor_tf * sensor_to_right_hip_tf;
+        btTransform const angle3d_tf( world_to_pelvis_tf.getRotation() );
+        btVector3 const unit_vec( 1, 0, 0 );
+        btVector3 const angle3d_vec = angle3d_tf * unit_vec;
+        btVector3 const angle2d_vec( angle3d_vec.getX(), angle3d_vec.getY(), 0 );
+        double const yaw = atan2( angle2d_vec.getY(), angle2d_vec.getX() );
 
-        double const angle = atan2( world_to_right_hip_tf.getOrigin().getY() - world_to_left_hip_tf.getOrigin().getY(), world_to_right_hip_tf.getOrigin().getX() - world_to_left_hip_tf.getOrigin().getX() );
-        btVector3 position = ( world_to_left_hip_tf.getOrigin() + world_to_right_hip_tf.getOrigin() ) / 2.0;
+        btVector3 position = world_to_pelvis_tf.getOrigin();
         position.setZ( 0 );
 
-        btTransform world_to_base_link_tf( btQuaternion( angle, 0, 0 ), position );
-        return world_to_base_link_tf * world_to_sensor_tf.inverse();
+        btTransform const world_to_base_link_tf( btQuaternion( yaw, 0, 0 ), position );
+
+        return world_to_sensor_tf.inverse() * world_to_base_link_tf;
     }
 
     // assumes sensor has no roll with respect to the world

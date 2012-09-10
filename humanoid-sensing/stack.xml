@@ -1,0 +1,10 @@
+<stack>
+  <description brief="humanoid-sensing">humanoid-sensing</description>
+  <author>Maintained by Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/humanoid-sensing</url>
+  <depend stack="ros"/>
+  <depend stack="common_msgs"/> <!-- visualization_msgs -->
+  <depend stack="humanoid"/> <!-- humanoid_models -->
+</stack>
