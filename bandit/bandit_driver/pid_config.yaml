@@ -1,0 +1,18 @@
+JointPIDs:
+- id: 0
+  p: 100
+  i: 0.1
+  d: 0.5
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0
+  
+- id: 1
+  p: 100
+  i: 0.5
+  d: 1
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0

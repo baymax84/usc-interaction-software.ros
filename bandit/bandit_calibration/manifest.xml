@@ -1,0 +1,17 @@
+<package>
+  <description brief="bandit_calibration">
+
+     bandit_calibration
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bandit_calibration</url>
+  <depend package="bandit_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="yaml_cpp"/>
+
+</package>
+
+

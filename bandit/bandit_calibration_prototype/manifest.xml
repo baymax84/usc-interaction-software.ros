@@ -1,0 +1,16 @@
+<package>
+  <description brief="bandit_calibration_prototype">
+
+     bandit_calibration_prototype
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bandit_calibration_prototype</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="nodelet"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>
