@@ -1,0 +1,6 @@
+ros-electric-interaction-bandit (0.0.1-1347402006) unstable; urgency=low
+
+  * Commit 03400ca6f0d8a8568c7e037f241dc186a25605b7
+    + Imported all bandit-related content (with the exception of meshes) from the internal SVN.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 11 Sep 2012 15:20:06 -0700
