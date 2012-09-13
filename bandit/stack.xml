@@ -3,7 +3,7 @@
 		This stack provides the bandit driver supporting the bandit robot. This stack also includes urdf definitions for visualization and examples to control the robot.
 
 	</description>
-	<author>Maintained by David Feil-Seifer (dfseifer@usc.edu)</author>
+	<author>Maintained by Edward T. Kaszubski (ekaszubski@gmail.com) and David Feil-Seifer (dfseifer@usc.edu)</author>
 	<license>GPLv2</license>
 	<review statues="unreviewed"/>
 	<url></url>

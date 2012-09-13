@@ -1,0 +1,3 @@
+rosbuild_add_executable(bandit_action_server bandit_action_server.cpp)
+rosbuild_add_executable(bandit_test_client bandit_test_client.cpp)
+rosbuild_add_executable(bandit_yaml bandit_yaml.cpp)
