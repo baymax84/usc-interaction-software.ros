@@ -1,0 +1,8 @@
+<library path="lib/libvirtual_camera_nodelets">
+
+  <class name="virtual_camera/simple_virtual_camera" type="virtual_camera::SimpleVirtualCameraNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      todo: fill this in
+    </description>
+  </class>
+</library>

@@ -1,0 +1,1 @@
+stack.xml bandit_ik bandit_driver_prototype bandit_calibration bandit_calibration_prototype bandit_actionlib bandit_smooth bandit_driver libbandit bandit_urdf fake_bandit bandit_arm_kinematics bandit_msgs bandit_mannequin_mode veltrobot_to_bandit bandit_mover opt/ros/electric/stacks/bandit/

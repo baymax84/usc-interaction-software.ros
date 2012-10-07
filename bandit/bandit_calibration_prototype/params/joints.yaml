@@ -1,0 +1,21 @@
+eyebrows_joint: {direction: 1, origin: 0.0}
+head_left_brow_joint: {origin: 0.0}
+head_pan_joint: {direction: -1, origin: -4.833984375}
+head_right_brow_joint: {origin: 0.0}
+head_tilt_joint: {direction: -1, origin: 2.9003906249999996}
+left_bicep_forearm_joint: {direction: -1, origin: -43.505859374999993}
+left_forearm_wrist_joint: {direction: 1, origin: -1.6699218749999976}
+left_hand_thumb_joint: {direction: 1, origin: 0.0}
+left_shoulder_bicep_joint: {direction: 1, origin: -23.818359375000011}
+left_shoulder_mounting_shoulder_joint: {direction: 1, origin: -87.451171875000014}
+left_torso_shoulder_mounting_joint: {direction: 1, origin: -62.9296875}
+left_wrist_hand_joint: {direction: 1, origin: 0.0}
+mouth_bottom_joint: {direction: 1, origin: 0.0}
+mouth_top_joint: {direction: 1, origin: 16.627010525365066}
+right_bicep_forearm_joint: {direction: 1, origin: 38.320312500000014}
+right_forearm_wrist_joint: {direction: -1, origin: -2.0214843750000089}
+right_hand_thumb_joint: {direction: 1, origin: 0.0}
+right_shoulder_bicep_joint: {direction: -1, origin: 28.564453125}
+right_shoulder_mounting_shoulder_joint: {direction: -1, origin: 89.648437500000014}
+right_torso_shoulder_mounting_joint: {direction: -1, origin: 64.072265625000028}
+right_wrist_hand_joint: {direction: 1, origin: 0.0}

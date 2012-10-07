@@ -33,7 +33,7 @@
 int main( int argc, char** argv )
 {
   ros::init(argc,argv, "p2os");
-  ros::NodeHandle n;
+  ros::NodeHandle n( "~" );
 
   P2OSNode *p = new P2OSNode(n);
 
@@ -46,7 +46,7 @@ int main( int argc, char** argv )
   p->ResetRawPositions();
 
   ros::Time lastTime;
-  
+
   while( ros::ok() )
   {
     p->check_and_set_vel();
@@ -58,8 +58,8 @@ int main( int argc, char** argv )
       ros::Time currentTime = ros::Time::now();
       ros::Duration pulseInterval = currentTime - lastTime;
       if( pulseInterval.toSec() > p->get_pulse() )
-      {	
-				ROS_DEBUG ("sending pulse" );
+      {
+                ROS_DEBUG ("sending pulse" );
         p->SendPulse();
         lastTime = currentTime;
       }

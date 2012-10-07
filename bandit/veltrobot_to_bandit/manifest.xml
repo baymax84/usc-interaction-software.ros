@@ -1,0 +1,15 @@
+<package>
+  <description brief="veltrobot_to_bandit">
+
+     veltrobot_to_bandit: a node to convert between the veltrobot joint_state msg to a bandit joint_state msg
+
+  </description>
+  <author>David Feil-Seifer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/veltrobot_to_bandit</url>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

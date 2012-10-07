@@ -1,0 +1,9 @@
+<stack>
+  <description brief="siumulated-sensing">simulated-sensing</description>
+  <author>Maintained by Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/simulated-sensing</url>
+  <depend stack="ros" />
+
+</stack>

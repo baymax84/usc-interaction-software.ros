@@ -1,0 +1,30 @@
+<launch>
+    <arg name="pkg" value="bandit_mannequin_mode" />
+    <arg name="name" default="mannequin_mode" />
+    <arg name="type" default="$(arg name)_node" />
+    <arg name="rate" default="30" />
+    <arg name="args" value="_loop_rate:=$(arg rate) ~joint_states:=/bandit_driver/joint_states ~joint_state_command:=/bandit_driver/joint_state_command" />
+    <arg name="manager" default="manager" />
+    <arg name="nodelet" default="false" />
+
+    <node
+        if="$(arg nodelet)"
+        pkg="nodelet"
+        type="nodelet"
+        name="$(arg name)"
+        args="load $(arg pkg)/$(arg name) $(arg manager) $(arg args)"
+        output="screen" />
+    <node
+        unless="$(arg nodelet)"
+        pkg="$(arg pkg)"
+        type="$(arg type)"
+        name="$(arg name)"
+        args="$(arg args)"
+        output="screen" />
+
+    <arg name="show_reconfigure" default="true" />
+    <include file="$(find quickdev_cpp)/launch/dynamic_reconfigure.launch" >
+        <arg name="enable" value="$(arg show_reconfigure)" />
+        <arg name="name" value="$(arg name)" />
+    </include>
+</launch>

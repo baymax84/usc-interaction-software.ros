@@ -1,0 +1,17 @@
+<package>
+  <description brief="bandit_smooth">
+
+     bandit_smooth
+
+  </description>
+  <author>jfasola</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bandit_smooth</url>
+  <depend package="bandit_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="roscpp"/>
+
+</package>
+
+

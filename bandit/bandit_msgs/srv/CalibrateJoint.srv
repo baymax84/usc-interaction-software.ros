@@ -1,0 +1,5 @@
+int8 Id
+float32 Angle_Increment
+---
+float32 MinAngle
+float32 MaxAngle
