@@ -29,7 +29,6 @@
   <depend package="joy"/>
   <depend package="actionlib"/>
   <depend package="urdf"/>
-  <depend package="tinyxml"/>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>

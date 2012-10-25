@@ -86,9 +86,9 @@ public:
 
     QUICKDEV_DECLARE_RECONFIGURE_CALLBACK( reconfigureCB, _PIDConfig )
     {
-        p_ = config.p;
-        i_ = config.i;
-        d_ = config.d;
+        p_ = config.p_gain;
+        i_ = config.i_gain;
+        d_ = config.d_gain;
         output_min_ = config.output_min;
         output_max_ = config.output_max;
         direction_ = config.output_dir;

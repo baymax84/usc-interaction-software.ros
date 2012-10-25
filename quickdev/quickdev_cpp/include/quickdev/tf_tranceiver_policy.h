@@ -150,7 +150,7 @@ public:
         bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f -> %f )...", from_frame_id.c_str(), to_frame_id.c_str(), from_frame_time.toSec(), to_frame_time.toSec() );
-        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( transformExists(
             from_frame_id,
@@ -237,7 +237,7 @@ public:
         bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f )...", from_frame_id.c_str(), to_frame_id.c_str(), frame_time.toSec() );
-        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( transformExists(
             from_frame_id,

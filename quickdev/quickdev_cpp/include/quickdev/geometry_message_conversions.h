@@ -43,8 +43,9 @@
 #include <LinearMath/btTransform.h>
 
 // we have to include this header because urdf/pose.h doesn't include it ಠ_ಠ
-#include <tinyxml.h>
-#include <urdf/pose.h>
+//#include <tinyxml.h>
+//#include <urdf/pose.h>
+#include <urdf_interface/pose.h>
 
 #include <quickdev/unit.h>
 
