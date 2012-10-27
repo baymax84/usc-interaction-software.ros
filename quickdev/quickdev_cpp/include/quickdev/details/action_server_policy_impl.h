@@ -131,10 +131,10 @@ void __ActionServerPolicy::sendFeedback( __Args&&... args )
 
 // =========================================================================================================================================
 __template_ACTION_SERVER_POLICY
-void __ActionServerPolicy::updateResult( __ActionServerPolicy::_ResultMsg && result, std::string && result_info )
+void __ActionServerPolicy::updateResult( __ActionServerPolicy::_ResultMsg const & result, std::string const & result_info )
 {
-    result_msg_ = std::forward<__ActionServerPolicy::_ResultMsg>( result );
-    result_info_ = std::forward<std::string>( result_info );
+    result_msg_ = result;
+    result_info_ = result_info;
 }
 
 // =========================================================================================================================================
