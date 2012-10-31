@@ -1,5 +1,5 @@
 /***************************************************************************
- *  nodes/arm_pose_recognizer.cpp
+ *  nodes/arm_pose_recognizer_node.cpp
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski ( ekaszubski@gmail.com )

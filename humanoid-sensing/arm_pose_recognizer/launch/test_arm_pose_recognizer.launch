@@ -1,9 +1,9 @@
 <launch>
     <arg name="pkg" value="arm_pose_recognizer" />
-    <arg name="type" default="arm_pose_recognizer" />
+    <arg name="type" default="test_arm_pose_recognizer" />
     <arg name="name" default="$(arg type)" />
     <arg name="rate" default="30" />
-    <arg name="args" value="_loop_rate:=$(arg rate)" />
+    <arg name="args" value="_loop_rate:=$(arg rate) ~evaluate_pose:=/arm_pose_recognizer/evaluate_pose" />
     <node
         pkg="$(arg pkg)"
         type="$(arg type)_node"
