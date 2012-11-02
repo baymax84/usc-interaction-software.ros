@@ -43,7 +43,7 @@
 #include <LinearMath/btTransform.h>
 
 // we have to include this header because urdf/pose.h doesn't include it ಠ_ಠ
-#include <tinyxml/tinyxml.h>
+#include <tinyxml.h>
 #include <urdf/pose.h>
 
 #include <quickdev/unit.h>
@@ -72,12 +72,12 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfRotation, _Vector3, rot, double r, p, y; ro
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Vector3, msg, return _Vector3( msg.x, msg.y, msg.z ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _PointMsg, vec, _PointMsg msg; msg.x = vec.x; msg.y = vec.y; msg.z = vec.z; return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _Quaternion, msg, return _Quaternion( msg.z, msg.y, msg.x ); )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _QuaternionMsg, vec, _Quaternion const quat = unit::make_unit( vec ); _QuaternionMsg msg; msg.x = quat.getX(); msg.y = quat.getY(); msg.z = quat.getZ(); msg.w = quat.getW(); return msg; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3Msg, _QuaternionMsg, vec, _Quaternion const quat = unit::implicit_convert( vec ); _QuaternionMsg msg; msg.x = quat.getX(); msg.y = quat.getY(); msg.z = quat.getZ(); msg.w = quat.getW(); return msg; )
 
 // Vector3 -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Vector3Msg, vec, _Vector3Msg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _PointMsg, vec, _PointMsg msg; msg.x = vec.getX(); msg.y = vec.getY(); msg.z = vec.getZ(); return msg; )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Quaternion, vec, return _Quaternion( vec.getX(), vec.getY(), vec.getZ() ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _Quaternion, vec, return _Quaternion( vec.getZ(), vec.getY(), vec.getX() ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _UrdfVector3, vec, return _UrdfVector3( vec.getX(), vec.getY(), vec.getZ() ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Vector3, _UrdfRotation, vec, _UrdfRotation rot; rot.setFromRPY( vec.getX(), vec.getY(), vec.getZ() ); return rot; )
 
@@ -95,22 +95,22 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Quaternion, msg, return _Quater
 DECLARE_UNIT_CONVERSION_LAMBDA( _QuaternionMsg, _Vector3Msg, msg, return unit::convert<_Vector3Msg>( _Quaternion( msg.x, msg.y, msg.z, msg.w ) ); )
 
 // Transform -> *
-DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, _TwistMsg res; res.angular = unit::make_unit( tf.getRotation() ); res.linear = unit::make_unit( tf.getOrigin() ); return res; )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _UrdfPose, tf, _UrdfPose res; res.rotation = unit::make_unit( tf.getRotation() ); res.position = unit::make_unit( tf.getOrigin() ); return res; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _TwistMsg, tf, _TwistMsg res; res.angular = unit::implicit_convert( tf.getRotation() ); res.linear = unit::implicit_convert( tf.getOrigin() ); return res; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _UrdfPose, tf, _UrdfPose res; res.rotation = unit::implicit_convert( tf.getRotation() ); res.position = unit::implicit_convert( tf.getOrigin() ); return res; )
 
 // TwistMsg -> *
-DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); _Vector3 const vec = unit::make_unit( twist.linear ); return _Transform( quat, vec ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _TwistMsg, _Transform, twist, const _Quaternion quat( unit::convert<_Quaternion>( twist.angular ).normalized() ); _Vector3 const vec = unit::implicit_convert( twist.linear ); return _Transform( quat, vec ); )
 
 // UrdfPose -> *
 DECLARE_UNIT_CONVERSION_LAMBDA( _UrdfPose, _Transform, pose, return _Transform( unit::convert<_Quaternion>( pose.rotation ), unit::convert<_Vector3>( pose.position ) ); )
 
 DECLARE_UNIT_CONVERSION_LAMBDA( _PoseMsg, _Transform, pose, return _Transform( unit::convert<_Quaternion>( pose.orientation ), unit::convert<_Vector3>( pose.position ) ); )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _PoseMsg, tf, _PoseMsg result; result.position = unit::make_unit( tf.getOrigin() ); result.orientation = unit::make_unit( tf.getRotation() ); return result; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Transform, _PoseMsg, tf, _PoseMsg result; result.position = unit::implicit_convert( tf.getOrigin() ); result.orientation = unit::implicit_convert( tf.getRotation() ); return result; )
 
 // Transform *= Scalar
 static void operator*=( _Transform & transform, double const & scale )
 {
-    _Vector3 angle_ypr = unit::make_unit( unit::convert<_Vector3Msg>( transform.getRotation() ) );
+    _Vector3 angle_ypr = unit::implicit_convert( unit::convert<_Vector3Msg>( transform.getRotation() ) );
     angle_ypr *= scale;
     transform.setRotation( unit::convert<_Quaternion>( unit::convert<_Vector3Msg>( angle_ypr ) ) );
     transform.getOrigin() *= scale;
