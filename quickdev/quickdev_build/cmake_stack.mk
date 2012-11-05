@@ -3,7 +3,7 @@ CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=`rospack find rosbuild`/rostoolchain.c
 
 # make sure we default to all
 all:
-	rosmake --no-rosdep
+	rosmake
 
 remake:
 	make clean && make
