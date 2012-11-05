@@ -34,11 +34,11 @@ ROS_PACKAGE_NAME=quickdev
 
 build:
 	export DEB_PACKAGE_NAME=$${PWD##*/} && cd .. && mkdir $(ROS_PACKAGE_NAME) && cp $$DEB_PACKAGE_NAME/* $(ROS_PACKAGE_NAME) -r && \
-	cd $(ROS_PACKAGE_NAME) && ln -s $$(pwd) /opt/ros/electric/stacks/$(ROS_PACKAGE_NAME) && ls && ls /opt/ros/electric/stacks/$(ROS_PACKAGE_NAME)
-	. /opt/ros/electric/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd $$(rosstack find $(ROS_PACKAGE_NAME)) && dh $@
+	cd $(ROS_PACKAGE_NAME) && ln -s $$(pwd) /opt/ros/fuerte/stacks/$(ROS_PACKAGE_NAME) && ls && ls /opt/ros/fuerte/stacks/$(ROS_PACKAGE_NAME)
+	. /opt/ros/fuerte/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd $$(rosstack find $(ROS_PACKAGE_NAME)) && dh $@
 
 binary:
-	. /opt/ros/electric/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd ~/$(ROS_PACKAGE_NAME) && dh $@
+	. /opt/ros/fuerte/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd ~/$(ROS_PACKAGE_NAME) && dh $@
 
 override_dh_shlibdeps:
 	dh_shlibdeps -- --ignore-missing-info
