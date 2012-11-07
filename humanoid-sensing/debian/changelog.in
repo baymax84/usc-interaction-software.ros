@@ -1,0 +1,41 @@
+ros-electric-interaction-humanoid-sensing (0.0.1-1352329954) @platform@; urgency=low
+
+  * Commit acad02061347f2a6252c0bae7f40862459919f97
+    + Normalized trunk and hand frames so that the x-axis is forward, y-axis is left, and z-axis is up.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 7 Nov 2012 15:12:34 -0800
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1349627739) @platform@; urgency=low
+
+  * Commit 29cd8911d71f480484ae54957212a79047cba471
+    + Fixed humanoid-sensing debian/rules file for new shared library patch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 7 Oct 2012 09:35:39 -0700
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1347003010) @platform@; urgency=low
+
+  * Commit 95f97ba96d4ebddc099c41bd0bfca59c3d9533b2
+    + Added stack.xml to debian/install for humanoid-sensing.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 7 Sep 2012 00:30:10 -0700
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1346798924) @platform@; urgency=low
+
+  * Commit 7138a0eaa1230a4568d323acab261132df52886c
+    + Moved openni_adapter.launch from humanoid_models to openni_multitracker.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 15:48:44 -0700
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1346795504) @platform@; urgency=low
+
+  * Commit 3c7affa45505e8a07901aaefa54356cde3aba5e5
+    + Fixed openni_multitracker to compile with -std=cpp0x/cpp11.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 14:51:44 -0700
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1346792286) @platform@; urgency=low
+
+  * Commit ccedab41667d861ace0202e5c22f8c23f9b36802
+    + Added stack humanoid-sensing. Moved openni_multitracker into humanoid-sensing. Moved humanoid_models/openni_adapter_node to openni_multitracker.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 13:58:06 -0700
