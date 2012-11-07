@@ -191,32 +191,16 @@ void
                   m[3], m[4], m[5],
                   m[6], m[7], m[8] );
 
-    double
-        qx,
-        qy,
-        qz,
-        qw;
+    double qx, qy, qz, qw;
 
-    rotation.GetQuaternion(
-        qx,
-        qy,
-        qz,
-        qw );
+    rotation.GetQuaternion( qx, qy, qz, qw );
 
-    tf::Transform
-        transform;
+    btQuaternion norm_ori( 0, M_PI_2, -M_PI_2 );
 
-    transform.setOrigin( tf::Vector3(
-        x,
-        y,
-        z ) );
+    btTransform transform( btQuaternion( qx, qy, qz, qw ) * norm_ori, btVector3( x, y, z ) );
 
-    transform.setRotation( tf::Quaternion(
-        qx,
-        qy,
-        qz,
-        qw ) );
-
+    //btTransform norm_ori_tf( norm_ori );
+/*
     double
         yaw,
         pitch,
@@ -224,7 +208,7 @@ void
     transform.getBasis().getEulerZYX( yaw, pitch, roll, 1 );
 //  transform.getBasis().setEulerYPR( yaw, pitch, roll - M_PI_2 );
     transform.getBasis().setEulerYPR( yaw, pitch, roll );
-
+*/
     br.sendTransform( tf::StampedTransform(
         transform,
         ros::Time::now(),
