@@ -1,578 +1,606 @@
-ros-electric-interaction-p2os (0.2.1-1346892391) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1349627763) @platform@; urgency=low
+
+  * Commit 2c7a137635bddacabaa5603137fbaa2d7ea0781a
+    + Fixed p2os debian/rules file for new shared library patch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 7 Oct 2012 09:36:03 -0700
+
+ros-electric-interaction-p2os (0.2.1-1347658207) @platform@; urgency=low
+
+  * Commit f02bd12257e53f23c6c4454fa6357119ae4ed1ad
+    + Added params for ps3 controller. Made primary nodehandle relative instead of global in p2osnode. Changed name of p2os driver from p2os to p2os_driver in p2os_driver.launch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 14 Sep 2012 14:30:07 -0700
+
+ros-electric-interaction-p2os (0.2.1-1347003023) @platform@; urgency=low
+
+  * Commit 477258ae1edfc40ea3863fb00bfd9f635cdbfbf2
+    + Added stack.xml to debian/install for p2os.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 7 Sep 2012 00:30:23 -0700
+
+ros-electric-interaction-p2os (0.2.1-1346910012) @platform@; urgency=low
+
+  * Commit 2f25ed61457b6f155a11df711eb4aca8b25cb73c
+    + Updated p2os debian description.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 5 Sep 2012 22:40:12 -0700
+
+ros-electric-interaction-p2os (0.2.1-1346892391) @platform@; urgency=low
 
   * Commit 8435533687148ece62c456662f98e18b9fb7dd7b
     + Added debian info to p2os.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 5 Sep 2012 17:46:31 -0700
 
-ros-electric-interaction-p2os (0.2.1-1341960805) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1341960805) @platform@; urgency=low
 
   * Commit 09b7be18a66918879b36f557bef99ec94ab93538
     + Added controller specific parameters, fixed condition in which robot would only move when run button is pressed, and made joystick params relative to node name.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 10 Jul 2012 22:53:25 +0000
 
-ros-electric-interaction-p2os (0.2.1-1340764636) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1340764636) @platform@; urgency=low
 
   * Commit 59a44a8f28d87248a1dfc165eecfe2d3ecb8c3f1
     + changes for fuerte compatibility: * changed ->get_axes_size() to ->axes.size() * changed ->get_buttons_size() to ->buttons.size()
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 27 Jun 2012 02:37:16 +0000
 
-ros-electric-interaction-p2os (0.2.1-1340309761) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1340309761) @platform@; urgency=low
 
   * Commit 6d12ff47a620eb979c3aba5891b503cb5ffc556c
     + fixed problem with p2os_teleop on electric (thanks George Brindeiro)
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 21 Jun 2012 20:16:01 +0000
 
-ros-electric-interaction-p2os (0.2.1-1309248865) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1309248865) @platform@; urgency=low
 
   * Commit bb0788d8e6b910972e6a13a3573bd8b628ea8ccf
     + p2os_urdf: chnaged publisher to publish transform for wheel pos
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 28 Jun 2011 08:14:25 +0000
 
-ros-electric-interaction-p2os (0.2.1-1308253045) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1308253045) @platform@; urgency=low
 
   * Commit 3b7324092a44358c9c0deeb6822501b4c0179582
     + added publishing of covariance to odometry
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 16 Jun 2011 19:37:25 +0000
 
-ros-electric-interaction-p2os (0.2.1-1303191869) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1303191869) @platform@; urgency=low
 
   * Commit 5c90f5d1d88168b8add0ea2c1679ce66deb29f06
     + p2os-trunk: verison bump
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 19 Apr 2011 05:44:29 +0000
 
-ros-electric-interaction-p2os (0.2.0-1303191649) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1303191649) @platform@; urgency=low
 
   * Commit d5fed32f846866275ef4670fbbdbf483fbeb68ed
     + p2os: corrected stack.xml file added makefile and cmakelists.txt
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 19 Apr 2011 05:40:49 +0000
 
-ros-electric-interaction-p2os (0.2.0-1287700790) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1287700790) @platform@; urgency=low
 
   * Commit 9fc55819686f6b470e362493a2001ce5014adb01
     + p2os_urdf: working pioneer model in gazebo
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 21 Oct 2010 22:39:50 +0000
 
-ros-electric-interaction-p2os (0.2.0-1287604088) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1287604088) @platform@; urgency=low
 
   * Commit cc8dd812d3dc49c0b6868501826640bb53120cec
     + working drivable urdf model for gazebo
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 20 Oct 2010 19:48:08 +0000
 
-ros-electric-interaction-p2os (0.2.0-1287528875) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1287528875) @platform@; urgency=low
 
   * Commit 525673d6a6081f6fa1e94a59d8c224f441b9df12
     + p2os_dashboard: fixed motorstatesub so that it subscribes to correct topic
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 19 Oct 2010 22:54:35 +0000
 
-ros-electric-interaction-p2os (0.2.0-1287528805) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1287528805) @platform@; urgency=low
 
   * Commit b4bf67c7c8f29137457dc173f0bcf30cdc35e599
     + p2os_urdf: lowered loop rate of publisher
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 19 Oct 2010 22:53:25 +0000
 
-ros-electric-interaction-p2os (0.2.0-1287528773) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1287528773) @platform@; urgency=low
 
   * Commit ef23c6ec5c975245771b2354053c7e3a88ab6ace
     + p2os_launch: fixed diagnostics so that sensors show up in correct category
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 19 Oct 2010 22:52:53 +0000
 
-ros-electric-interaction-p2os (0.1.0-1287471125) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1287471125) @platform@; urgency=low
 
   * Commit 3b4df4e76f59eb868dc244f95af5ebcf5e837915
     + p2os: re-ran roscreate-stack to get proper dependencies
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 19 Oct 2010 06:52:05 +0000
 
-ros-electric-interaction-p2os (0.1.0-1285959445) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1285959445) @platform@; urgency=low
 
   * Commit aa5dadcd5ac5c523b8cb3b2e87ffb83df661d1cc
     + Added teleop_keyboard.launch to control a pioneer with a keyboard. This launch file depends on the pr2_teleop package. Updated the default key for run mode in teleop_joy.launch.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 1 Oct 2010 18:57:25 +0000
 
-ros-electric-interaction-p2os (0.1.0-1282764434) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1282764434) @platform@; urgency=low
 
   * Commit 2fc3657ca41bd8b250d3b90e3d572a0694007a93
     + p2os_launch: added example launch files for diagnostic aggregator
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 25 Aug 2010 19:27:14 +0000
 
-ros-electric-interaction-p2os (0.1.0-1282764045) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1282764045) @platform@; urgency=low
 
   * Commit 517e22e173d89d2d30932f71e659c1e89482a1c8
     + p2os_driver: added status messages for stall and voltage
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 25 Aug 2010 19:20:45 +0000
 
-ros-electric-interaction-p2os (0.1.0-1281518132) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1281518132) @platform@; urgency=low
 
   * Commit 90905cb6f1dec06c8ec74d0df2653e33ac8d022a
     + made publisher node publish continuous joint values so that whole model shows up in rviz
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 11 Aug 2010 09:15:32 +0000
 
-ros-electric-interaction-p2os (0.1.0-1281397000) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1281397000) @platform@; urgency=low
 
   * Commit bd52cbfe374ed106c0b1517b5f291e46190e2964
     + put diagnostics button back into p2os_dashboard
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Mon, 9 Aug 2010 23:36:40 +0000
 
-ros-electric-interaction-p2os (0.1.0-1281388773) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1281388773) @platform@; urgency=low
 
   * Commit 4c85597d2e2f9ce402ee6e22674bb55ee3c9132a
     + tried to make it so that passthrough would work
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Mon, 9 Aug 2010 21:19:33 +0000
 
-ros-electric-interaction-p2os (0.1.0-1281120235) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1281120235) @platform@; urgency=low
 
   * Commit 78c6a4def0bbe533e392529a1bd1f6ef1eb990b8
     + p2os_driver: added diagnostic support to p2os_driver * diagnosed publisher on batt topic * added header to msg (probably will remove later) * hwid from name, type, subtype of pioneer
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 6 Aug 2010 18:43:55 +0000
 
-ros-electric-interaction-p2os (0.1.0-1279825995) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1279825995) @platform@; urgency=low
 
   * Commit 49c378eb1cd2680217ceeec491cf6f5e6cd010eb
     + p2os_urdf: added sonar rim for p3dx
 
  -- Dan Ho <daaango@gmail.com>  Thu, 22 Jul 2010 19:13:15 +0000
 
-ros-electric-interaction-p2os (0.1.0-1279055509) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1279055509) @platform@; urgency=low
 
   * Commit 797df66a7622a9a03e4edd3838f60417826db085
     + p2os_urdf: added launch file for pioneer3dx in gazebo
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 13 Jul 2010 21:11:49 +0000
 
-ros-electric-interaction-p2os (0.1.0-1279018009) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1279018009) @platform@; urgency=low
 
   * Commit cfc75867441fa3dd925b3353d7dcc4c8378d8a72
     + p2os_urdf: actuatable pioneer3dx in gazebo * needs tuning so it doesnt jump around as much * needs to fix colors of hubcaps * masses may not be right * inertial values are total guesses
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 13 Jul 2010 10:46:49 +0000
 
-ros-electric-interaction-p2os (0.1.0-1278710194) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1278710194) @platform@; urgency=low
 
   * Commit 7b705abb079aa56573e1defdd4c827218524f7fc
     + Updated launch file tree. Added launch file for sicklms.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 9 Jul 2010 21:16:34 +0000
 
-ros-electric-interaction-p2os (0.1.0-1278452674) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1278452674) @platform@; urgency=low
 
   * Commit 30598eb93c6ecb3417a56db65ccbac068edc17d1
     + updated p3dx.urdf
 
  -- Dan Ho <daaango@gmail.com>  Tue, 6 Jul 2010 21:44:34 +0000
 
-ros-electric-interaction-p2os (0.1.0-1278452293) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1278452293) @platform@; urgency=low
 
   * Commit 497a263e4bfd27c4af741a5dcb076711b3404a13
     + updated p3dx.urdf file
 
  -- Dan Ho <daaango@gmail.com>  Tue, 6 Jul 2010 21:38:13 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277944072) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277944072) @platform@; urgency=low
 
   * Commit d738d252b4b2df91e639611d0bc4e17e6bd0bb8b
     + updated p3at/p3dx models
 
  -- Dan Ho <daaango@gmail.com>  Thu, 1 Jul 2010 00:27:52 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277939132) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277939132) @platform@; urgency=low
 
   * Commit 32a2a1896fbfbad7c705c1f2026f510d26f40f30
     + working model
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 23:05:32 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277932255) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277932255) @platform@; urgency=low
 
   * Commit c2bd75be82278e9fdc2967a2ba6b478a76f27c04
     + p2os_urdf: some changes to make joints and visuals be in the correct place
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 30 Jun 2010 21:10:55 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277931190) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277931190) @platform@; urgency=low
 
   * Commit 8a10de6120dc0a5d6239a758efd7ccb6af5ceeed
     + p2os_urdf: removed unnecessary file
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 30 Jun 2010 20:53:10 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277930841) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277930841) @platform@; urgency=low
 
   * Commit 6b9e1779c44852f17430419a4bbdc0c9931848cb
     + added p3dx_meshes
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 20:47:21 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277930706) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277930706) @platform@; urgency=low
 
   * Commit 378edfb9f73ca0b779f9da12bde01a43224a85ab
     + deleting old files
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 20:45:06 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277930546) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277930546) @platform@; urgency=low
 
   * Commit 2fb83975dcdb63cf3ee26d1275eb2baeaf940cd4
     + deleting old directory
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 20:42:26 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277930453) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277930453) @platform@; urgency=low
 
   * Commit 977ab0712ca0bffa7a8151c3c33a46387114e3d5
     + deleting old directory
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 20:40:53 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277928053) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277928053) @platform@; urgency=low
 
   * Commit d3e23a548a1648219243e97ab9a714e2aefcf0f1
-    +
+    + 
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 20:00:53 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277857618) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277857618) @platform@; urgency=low
 
   * Commit a88f13c2c0915807efcc1e703b2e9fc6849d0515
     + updated defs
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 00:26:58 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277857391) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277857391) @platform@; urgency=low
 
   * Commit 3ca6e04b28c3cc53d2ef3ecd659cf67b64047bd1
     + new meshes
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 00:23:11 +0000
 
-ros-electric-interaction-p2os (0.1.0-1277857052) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277857052) @platform@; urgency=low
 
   * Commit 355fda97ec3a17c8e0253caaec13f17e9d220f64
     + p2os_urdf added correct version of pioneer 3dx model in correct directory
 
  -- Dan Ho <daaango@gmail.com>  Wed, 30 Jun 2010 00:17:32 +0000
 
-ros-electric-interaction-p2os (0.0.1-1277429281) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277429281) @platform@; urgency=low
 
   * Commit 1195983ca22a78950fe5b1366d2fe40bad556e81
     + p2os_dashboard: changed reset/halt to enable/disable
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 25 Jun 2010 01:28:01 +0000
 
-ros-electric-interaction-p2os (0.0.1-1277329439) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277329439) @platform@; urgency=low
 
   * Commit 5be2913130b225c635a6175b0f36b233de13fb27
     + Updated copyrights in p2os_ptz.cpp
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 23 Jun 2010 21:43:59 +0000
 
-ros-electric-interaction-p2os (0.0.1-1277252524) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1277252524) @platform@; urgency=low
 
   * Commit 673f5997da2ca2c523af58b26c813c7f7329ceea
     + Added GPLv2 licensing to p2os_dashboard and p2os_teleop.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 23 Jun 2010 00:22:04 +0000
 
-ros-electric-interaction-p2os (0.0.1-1276903644) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1276903644) @platform@; urgency=low
 
   * Commit 14c93f3f6daa9858804d9a5beca4211ee9f204a1
     + Added p2os_teleop
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 18 Jun 2010 23:27:24 +0000
 
-ros-electric-interaction-p2os (0.0.1-1276903531) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1276903531) @platform@; urgency=low
 
   * Commit 20f577409fe0189cbf4cc05175d3a518ba29a5b7
     + Added p2os_launch
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 18 Jun 2010 23:25:31 +0000
 
-ros-electric-interaction-p2os (0.0.1-1276646000) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1276646000) @platform@; urgency=low
 
   * Commit 97e6224aaca879af55161debdc3b14afcb7423a3
     + Updated dependencies in manifest.xml
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 15 Jun 2010 23:53:20 +0000
 
-ros-electric-interaction-p2os (0.0.1-1276642539) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1276642539) @platform@; urgency=low
 
   * Commit 7ca2839badded1df4f6ed23c47116ccc637342eb
     + Updated dependencies of p2os_dashboard
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 15 Jun 2010 22:55:39 +0000
 
-ros-electric-interaction-p2os (0.0.1-1276207317) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1276207317) @platform@; urgency=low
 
   * Commit 53f383b4cc6c81b3b7ac5cbf666bc1bfa7e00294
     + Moved p2os_dashboard out of sandbox. Finished basic functionality of p2os_dashboard, which includes displaying a rosout window, setting (but not checking) the state of the motors, and checking the battery status.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 10 Jun 2010 22:01:57 +0000
 
-ros-electric-interaction-p2os (0.0.1-1275331296) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1275331296) @platform@; urgency=low
 
   * Commit 435be2ce0f831f704cfacb654473fb7732b991b9
     + Changed char* to std::string in robot_params to get rid of the 100+ annoying compiler warnings
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Mon, 31 May 2010 18:41:36 +0000
 
-ros-electric-interaction-p2os (0.0.1-1274998249) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1274998249) @platform@; urgency=low
 
   * Commit d679ca149db9c223815fa36222cf096d1e5e94d3
     + * added p2os_urdf package to p2os stack > ** includes pioneer3dx urdf model and launch files ** includes pioneer3dx and pioneer3at blender projects which provide stl models for creating urdf model
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 27 May 2010 22:10:49 +0000
 
-ros-electric-interaction-p2os (0.0.1-1274996898) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1274996898) @platform@; urgency=low
 
   * Commit b8d11941fa0bda53454b5ce6195179f2ad1e6b21
     + * moved all .cpp and .cc to src * moved all .h files to include/p2os_drivers * changed all p2os:: namespaces to be p2os_driver:: for the new package name
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 27 May 2010 21:48:18 +0000
 
-ros-electric-interaction-p2os (0.0.1-1274995948) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1274995948) @platform@; urgency=low
 
   * Commit 31b2c9fa6113338ca1b63fa77dff83dadeb1781a
     + * renamed p2os package p2os_driver
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 27 May 2010 21:32:28 +0000
 
-ros-electric-interaction-p2os (0.0.1-1274995818) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1274995818) @platform@; urgency=low
 
   * Commit cae42cc81452a0b9c49a11b7f9c2f67861d0415d
     + * created p2os stack * moved p2os package to be inside p2os stack
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 27 May 2010 21:30:18 +0000
 
-ros-electric-interaction-p2os (0.0.1-1273278581) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1273278581) @platform@; urgency=low
 
   * Commit db9839a5d4095669ef6b7977bff533cf159a4720
     + p2os: fixed bug that p2os would occasionally report bad starting odometry (not 0,0,0) on start
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Sat, 8 May 2010 00:29:41 +0000
 
-ros-electric-interaction-p2os (0.0.1-1273267341) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1273267341) @platform@; urgency=low
 
   * Commit ccbcf8b7491a869fe53aff11f95d561eb20b9f10
     + p2os: more assorted cleanup: unnecessary newlines removed; unimportant ROS_INFO changed to ROS_DEBUG or ROS_WARN; changed remaining puts statements to ROS_INFO, ROS_WARN, or ROS_DEBUG where appropriate
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 7 May 2010 21:22:21 +0000
 
-ros-electric-interaction-p2os (0.0.1-1273266375) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1273266375) @platform@; urgency=low
 
   * Commit f9dbfbb24e23e9b498a6721fa6cc8ba895861994
     + p2os: code cleanup, moved all P2OSNode class code to p2os.cc; removed p->spin in favor of cleaner ROS code in main function; changed parameter lookup to ~ namespace; changed INFO msgs to WARN and DEBUG as necessary
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 7 May 2010 21:06:15 +0000
 
-ros-electric-interaction-p2os (0.0.1-1273261646) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1273261646) @platform@; urgency=low
 
   * Commit e09cd2c256ba06d61c0eb252d4b554331210aa5b
     + p2os: properly broadcasts both odometry messages and transforms with proper frame_ids, p2os now works with slam_gmapping node
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 7 May 2010 19:47:26 +0000
 
-ros-electric-interaction-p2os (0.0.1-1271799458) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1271799458) @platform@; urgency=low
 
   * Commit 3e9d88cad04f37f6c942328d11f7c7ffff90e763
     + Small change to get default tilt range to be correctly set.  Also changed packet printing so that it will print through ROS if called.
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Tue, 20 Apr 2010 21:37:38 +0000
 
-ros-electric-interaction-p2os (0.0.1-1271449158) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1271449158) @platform@; urgency=low
 
   * Commit b30db37402bd54fedb8da5de5acac4c3c4e3497c
     + Two small bug fixes caused from editing on multiple machines.
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Fri, 16 Apr 2010 20:19:18 +0000
 
-ros-electric-interaction-p2os (0.0.1-1271448432) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1271448432) @platform@; urgency=low
 
   * Commit bd56164659c2f245d03629aef2807e811b27a820
     + * Fixed GripperState to publish current state ** The underlying GripState and LiftState message types were changed to accomidate this ** We now store separate information about front and back ir breakbeams, as well as left and right paddle contacts * Added AIO and DIO output messages ** These are now output in case people want to use them directly * Discovered that motor status returned only tells if the motors are being used, not if they are enabled, thus I left it to currently on print if the user has enabled or disabled the motors.
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Fri, 16 Apr 2010 20:07:12 +0000
 
-ros-electric-interaction-p2os (0.0.1-1271347036) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1271347036) @platform@; urgency=low
 
   * Commit 0e5c6bda76b59e2b24e3dc124816033d48f1b0e8
     + * Sonar data is now published ** Sonar is turned off by default ** Can be turned on setting the private boolean parameter "use_sonar" * Changed output in sip to used ROS_ERROR and ROS_DEBUG
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Thu, 15 Apr 2010 15:57:16 +0000
 
-ros-electric-interaction-p2os (0.0.1-1271096639) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1271096639) @platform@; urgency=low
 
   * Commit 69755a2a438eabc8d0b6df3a4bd5bf846134ec83
     + Fixed some bugs in using relative command to the p2os PTZ
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Mon, 12 Apr 2010 18:23:59 +0000
 
-ros-electric-interaction-p2os (0.0.1-1269390785) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1269390785) @platform@; urgency=low
 
   * Commit 11b15163186df00926f3ceb639509ccf37b9b621
     + added battery message
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 24 Mar 2010 00:33:05 +0000
 
-ros-electric-interaction-p2os (0.0.1-1269307630) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1269307630) @platform@; urgency=low
 
   * Commit 01e527820be9d3b649e729c2dd8a60c532912047
     + created p2os::BatteryState msg (removed reliance on pr2 BatteryState); fixed BatteryState publication
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 23 Mar 2010 01:27:10 +0000
 
-ros-electric-interaction-p2os (0.0.1-1268180925) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1268180925) @platform@; urgency=low
 
   * Commit 05426169a66c4705785f1c7071ef4265b4471b82
     + PTZ control no works through p2os.  My camera does not respons so I have only tested when bidirectional_com_ is false.  Tested with camera turned off and other operations perform without error; startup time is a bit longer, could be changed by adding a PTZ present parameter.  Also changed p2os_data.motors.state to report what the last set motor_state was.
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Wed, 10 Mar 2010 00:28:45 +0000
 
-ros-electric-interaction-p2os (0.0.1-1267804128) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1267804128) @platform@; urgency=low
 
   * Commit 105164831e835cc12ec39c3b5c73a684ba3bb75f
     + Basics of pioneer gripper control
 
  -- Tucker Hermans <thermans@cc.gatech.edu>  Fri, 5 Mar 2010 15:48:48 +0000
 
-ros-electric-interaction-p2os (0.0.1-1267618342) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1267618342) @platform@; urgency=low
 
   * Commit 48adb3baa846adbc863992fadb8671af47db4022
     + updates so that it COMPILES on base_turtle, currently untested
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 3 Mar 2010 12:12:22 +0000
 
-ros-electric-interaction-p2os (0.0.1-1254382206) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1254382206) @platform@; urgency=low
 
   * Commit 7f483564c18322c4bf750ef6f48a09c085d236be
     + minor change from deprecated headers
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 1 Oct 2009 07:30:06 +0000
 
-ros-electric-interaction-p2os (0.0.1-1251277049) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1251277049) @platform@; urgency=low
 
   * Commit 7f8b9ca00a2c3aacb6763268e8a18cc19e06af0d
-    +
+    + 
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Wed, 26 Aug 2009 08:57:29 +0000
 
-ros-electric-interaction-p2os (0.0.1-1250833485) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1250833485) @platform@; urgency=low
 
   * Commit e84d4bf8a6274e17be289923480ca58dea164291
     + removed 2DOdom message
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 21 Aug 2009 05:44:45 +0000
 
-ros-electric-interaction-p2os (0.0.1-1249951934) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1249951934) @platform@; urgency=low
 
   * Commit 97e68f84059825df5a81efe4f77420d439fe16f5
     + changes to fit common_msgs stack
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 11 Aug 2009 00:52:14 +0000
 
-ros-electric-interaction-p2os (0.0.1-1249594048) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1249594048) @platform@; urgency=low
 
   * Commit 637efe0e39cb46187a712e1b335defbd8387b47f
     + p2os: changes for smoother (and more sparing) velocity message sending
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Thu, 6 Aug 2009 21:27:28 +0000
 
-ros-electric-interaction-p2os (0.0.1-1249341284) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1249341284) @platform@; urgency=low
 
   * Commit a1a2e50c19c63fabb324dfb78aab9e3c9cda5fca
     + updated to nodehandle API
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Mon, 3 Aug 2009 23:14:44 +0000
 
-ros-electric-interaction-p2os (0.0.1-1248096477) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1248096477) @platform@; urgency=low
 
   * Commit 4a1feddcecafb22b60322fcb4eb68c63b8a37d8f
     + poseTFToMsg line of the patch was apparently wrong in most recent tf.  Rolling back.
 
  -- Jeremy Leibs <leibs@usc.edu>  Mon, 20 Jul 2009 13:27:57 +0000
 
-ros-electric-interaction-p2os (0.0.1-1248096156) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1248096156) @platform@; urgency=low
 
   * Commit 6b45e36cf316161df07ffcd13d061caa75da4308
     + Applying patch from Srećko Jurić-Kavelj.  All looks perfectly legitimate.
 
  -- Jeremy Leibs <leibs@usc.edu>  Mon, 20 Jul 2009 13:22:36 +0000
 
-ros-electric-interaction-p2os (0.0.1-1246897237) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1246897237) @platform@; urgency=low
 
   * Commit 986a2e825cc8d157d1eeacb74bc37c83f1f2feda
     + motorstate fixes
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Mon, 6 Jul 2009 16:20:37 +0000
 
-ros-electric-interaction-p2os (0.0.1-1246862042) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1246862042) @platform@; urgency=low
 
   * Commit f001399a1d3ada01cdc4860daf38efedee8ab335
     + fix to comply with new TF API
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Mon, 6 Jul 2009 06:34:02 +0000
 
-ros-electric-interaction-p2os (0.0.1-1246346580) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1246346580) @platform@; urgency=low
 
   * Commit 94c5563902362192a1a9e1487dbc275427d82c4e
     + updates for proper motor state
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Tue, 30 Jun 2009 07:23:00 +0000
 
-ros-electric-interaction-p2os (0.0.1-1245481919) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1245481919) @platform@; urgency=low
 
   * Commit 301c2705ab8684dfd8feec266092f2e80e45d8bc
     + motor state addition
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Sat, 20 Jun 2009 07:11:59 +0000
 
-ros-electric-interaction-p2os (0.0.1-1245476294) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1245476294) @platform@; urgency=low
 
   * Commit 014961a7ebc41c31a1df83f330b7c876970223f0
     + fixes for battery monitor
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Sat, 20 Jun 2009 05:38:14 +0000
 
-ros-electric-interaction-p2os (0.0.1-1245390120) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1245390120) @platform@; urgency=low
 
   * Commit 86baf67bd7fad28fba6444eb9f77cb030ed9433e
     + battery fix
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Fri, 19 Jun 2009 05:42:00 +0000
 
-ros-electric-interaction-p2os (0.0.1-1244487250) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1244487250) @platform@; urgency=low
 
   * Commit 6d2c73e7b2bec463d532ee37c36009424016125f
     + teleop changes
 
  -- Dave Feil-Seifer <dfseifer@usc.edu>  Mon, 8 Jun 2009 18:54:10 +0000
 
-ros-electric-interaction-p2os (0.0.1-1243100980) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1243100980) @platform@; urgency=low
 
   * Commit dff966e0f3464c055b94c652fdd557d23611f038
     + Adding a proper makefile so that rosmake works
 
  -- Jeremy Leibs <leibs@usc.edu>  Sat, 23 May 2009 17:49:40 +0000
 
-ros-electric-interaction-p2os (0.0.1-1242710812) unstable; urgency=low
+ros-electric-interaction-p2os (0.2.1-1242710812) @platform@; urgency=low
 
   * Commit e1dec3f1fabd3b464b6520428575330520415d18
     + moved p2os to correct spot
