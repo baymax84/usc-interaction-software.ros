@@ -1,0 +1,62 @@
+ros-electric-interaction-sbl (0.0.1-1349627780) @platform@; urgency=low
+
+  * Commit 6dd30ff02d824f47b1391e9a569017e6d3b651c6
+    + Fixed sbl debian/rules file for new shared library patch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 7 Oct 2012 09:36:20 -0700
+
+ros-electric-interaction-sbl (0.0.1-1347002577) @platform@; urgency=low
+
+  * Commit 654d029b4248a0ad50ed617e1444716c451f51fc
+    + Added stack.xml and proper subdirectories to debian/install.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 7 Sep 2012 00:22:57 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346995937) @platform@; urgency=low
+
+  * Commit 2a8c8705d99ffb28d903ae8be00d8cdaa24a8336
+    + Updated Makefile for proxemic_controllers.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 22:32:17 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346995740) @platform@; urgency=low
+
+  * Commit 3c6196a25d7412698f836dd7f25014b1f2403380
+    + Fixed build errors in deictic_recognizers and removed McNeilRecognizer.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 22:29:00 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346994066) @platform@; urgency=low
+
+  * Commit 86828dcaf12d8eca3cff9015c27092c28918e6f5
+    + Added buildinfo to sbl.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 22:01:06 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346994046) @platform@; urgency=low
+
+  * Commit a8e38d7d1f582320dd10b2bfa7f257be4fb02839
+    + Fixed package names in debian/install.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 22:00:46 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346993133) @platform@; urgency=low
+
+  * Commit a95a44c44d40e38235c2d43be35c0fbefcd202c3
+    + Added debian folder to sbl.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:45:33 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346992101) @platform@; urgency=low
+
+  * Commit 39ae9fd5de24fba00271645766fb7e41bb452cad
+    + Renamed pythonAudio to python_audio.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:28:21 -0700
+
+ros-electric-interaction-sbl (0.0.1-1346991837) @platform@; urgency=low
+
+  * Commit 7346aa1760f7b5871ee30a095b242d5995803ec9
+    + Renamed sbl_experimental to sbl. Cleaned up various packages within sbl.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:23:57 -0700
