@@ -1,3 +1,52 @@
+ros-groovy-interaction-humanoid-sensing (0.0.1-1352939651) @platform@; urgency=low
+
+  * Commit e8d00bd56e5d6d148f112b33b6b24872bdeaf15e
+    + Import 'arm_pose_recognizer' into groovy_unstable : humanoid-sensing/
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 14 Nov 2012 16:34:11 -0800
+
+ros-groovy-interaction-humanoid-sensing (0.0.1-1352330599) @platform@; urgency=low
+
+  * Commit 58b8b993d6c3795b4c825497d4910f2454730dff
+    + Updated changelog to new spec and specified dists in buildinfo.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 7 Nov 2012 15:23:19 -0800
+
+ros-groovy-interaction-humanoid-sensing (0.0.1-1352329954) @platform@; urgency=low
+
+  * Commit acad02061347f2a6252c0bae7f40862459919f97
+    + Normalized trunk and hand frames so that the x-axis is forward, y-axis is left, and z-axis is up.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 7 Nov 2012 15:12:34 -0800
+
+ros-groovy-interaction-humanoid-sensing (0.0.1-1351726173) @platform@; urgency=low
+
+  * Commit b590a60e193f0791124aab54bd85ca0d459ebb0c
+    + Updated launch file for arm_pose_recognizer; added tester for arm_pose_recognizer.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 31 Oct 2012 23:29:33 +0000
+
+ros-groovy-interaction-humanoid-sensing (0.0.1-1349627739) @platform@; urgency=low
+
+  * Commit 29cd8911d71f480484ae54957212a79047cba471
+    + Fixed humanoid-sensing debian/rules file for new shared library patch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 7 Oct 2012 09:35:39 -0700
+
+ros-groovy-interaction-humanoid-sensing (0.0.1-1347003010) @platform@; urgency=low
+
+  * Commit 95f97ba96d4ebddc099c41bd0bfca59c3d9533b2
+    + Added stack.xml to debian/install for humanoid-sensing.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 7 Sep 2012 00:30:10 -0700
+
+ros-groovy-interaction-humanoid-sensing (0.0.1-1346798924) @platform@; urgency=low
+
+  * Commit 7138a0eaa1230a4568d323acab261132df52886c
+    + Moved openni_adapter.launch from humanoid_models to openni_multitracker.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 15:48:44 -0700
+
 ros-electric-interaction-humanoid-sensing (0.0.1-1346795504) @platform@; urgency=low
 
   * Commit 3c7affa45505e8a07901aaefa54356cde3aba5e5
@@ -11,3 +60,24 @@ ros-electric-interaction-humanoid-sensing (0.0.1-1346792286) @platform@; urgency
     + Added stack humanoid-sensing. Moved openni_multitracker into humanoid-sensing. Moved humanoid_models/openni_adapter_node to openni_multitracker.
 
  -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 13:58:06 -0700
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1336416906) @platform@; urgency=low
+
+  * Commit 5d8a1b3b9bf908d1994922c03a64185a2d321113
+    + Finished implementing arm_pose_recognizer_node; changed all result components to 3D vectors to expose per-axis gesture match quality. Commencing testing.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 7 May 2012 18:55:06 +0000
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1336180212) @platform@; urgency=low
+
+  * Commit 448a10c9ccd4776ff066cc09a14339f7effbc459
+    + Added fields to the EvaluatePose goal for desired and candidate frame names.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 5 May 2012 01:10:12 +0000
+
+ros-electric-interaction-humanoid-sensing (0.0.1-1336177681) @platform@; urgency=low
+
+  * Commit 743f88b698cd54dc54b580b67114decb9812484f
+    + Added arm_pose_recognizer with arm_pose_recognizer_node to return the match quality of a pose between two humanoids.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 5 May 2012 00:28:01 +0000
