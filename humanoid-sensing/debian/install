@@ -1,1 +1,1 @@
-stack.xml openni_multitracker opt/ros/electric/stacks/humanoid-sensing/
+stack.xml openni_multitracker arm_pose_recognizer opt/ros/electric/stacks/humanoid-sensing/
