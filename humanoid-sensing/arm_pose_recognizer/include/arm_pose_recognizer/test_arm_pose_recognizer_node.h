@@ -45,6 +45,7 @@
 
 typedef arm_pose_recognizer::EvaluatePoseAction _EvaluatePoseAction;
 typedef quickdev::ActionClientPolicy<_EvaluatePoseAction> _EvaluatePoseActionClientPolicy;
+typedef humanoid_sensing_msgs::MetaJoint _MetaJointMsg;
 
 QUICKDEV_DECLARE_NODE( TestArmPoseRecognizer, _EvaluatePoseActionClientPolicy )
 
@@ -75,8 +76,63 @@ QUICKDEV_DECLARE_NODE_CLASS( TestArmPoseRecognizer )
 
         _EvaluatePoseActionClientPolicy::_GoalMsg goal;
 
-        goal.desired_pose_frame_names = { "/user1/neck", "/user1/left_elbow", "/user1/right_elbow", "/user1/left_hand", "/user1/right_hand" };
-        goal.observed_pose_frame_names = { "/user2/neck", "/user2/left_elbow", "/user2/right_elbow", "/user2/left_hand", "/user2/right_hand" };
+
+        auto & meta_joints = goal.meta_joints;
+        meta_joints.resize( 10 );
+
+        meta_joints[0].name = "user1_neck";
+        meta_joints[0].parent_name = "";
+        meta_joints[0].start_frame_name = "/user1/neck";
+        meta_joints[0].end_frame_name = "/user1/neck";
+
+        meta_joints[1].name = "user1_elbow_r";
+        meta_joints[1].parent_name = "user1_neck";
+        meta_joints[1].start_frame_name = "/user1/right_elbow";
+        meta_joints[1].end_frame_name = "/user1/right_elbow";
+
+        meta_joints[2].name = "user1_elbow_l";
+        meta_joints[2].parent_name = "user1_neck";
+        meta_joints[2].start_frame_name = "/user1/left_elbow";
+        meta_joints[2].end_frame_name = "/user1/left_elbow";
+
+        meta_joints[3].name = "user1_hand_r";
+        meta_joints[3].parent_name = "user1_elbow_r";
+        meta_joints[3].start_frame_name = "/user1/right_hand";
+        meta_joints[3].end_frame_name = "/user1/right_hand";
+
+        meta_joints[4].name = "user1_hand_l";
+        meta_joints[4].parent_name = "user1_elbow_l";
+        meta_joints[4].start_frame_name = "/user1/left_hand";
+        meta_joints[4].end_frame_name = "/user1/left_hand";
+
+
+        meta_joints[5].name = "user2_neck";
+        meta_joints[5].parent_name = "";
+        meta_joints[5].start_frame_name = "/user2/neck";
+        meta_joints[5].end_frame_name = "/user2/neck";
+
+        meta_joints[6].name = "user2_elbow_r";
+        meta_joints[6].parent_name = "user2_neck";
+        meta_joints[6].start_frame_name = "/user2/right_elbow";
+        meta_joints[6].end_frame_name = "/user2/right_elbow";
+
+        meta_joints[7].name = "user2_elbow_l";
+        meta_joints[7].parent_name = "user2_neck";
+        meta_joints[7].start_frame_name = "/user2/left_elbow";
+        meta_joints[7].end_frame_name = "/user2/left_elbow";
+
+        meta_joints[8].name = "user2_hand_r";
+        meta_joints[8].parent_name = "user2_elbow_r";
+        meta_joints[8].start_frame_name = "/user2/right_hand";
+        meta_joints[8].end_frame_name = "/user2/right_hand";
+
+        meta_joints[9].name = "user2_hand_l";
+        meta_joints[9].parent_name = "user2_elbow_l";
+        meta_joints[9].start_frame_name = "/user2/left_hand";
+        meta_joints[9].end_frame_name = "/user2/left_hand";
+
+        goal.desired_joint_names = { "user1_neck", "user1_elbow_r", "user1_elbow_l", "user1_hand_r", "user1_hand_l" };
+        goal.observed_joint_names = { "user2_neck", "user2_elbow_r", "user2_elbow_l", "user2_hand_r", "user2_hand_l" };
         goal.variance.x = 0.2;
         goal.variance.y = 0.2;
         goal.variance.z = 0.2;
@@ -104,21 +160,13 @@ QUICKDEV_DECLARE_NODE_CLASS( TestArmPoseRecognizer )
     {
         PRINT_INFO( "client got goal result" );
 
-        PRINT_INFO( "l_hand x: %f\n", result->l_hand_match_quality.x );
-        PRINT_INFO( "l_hand y: %f\n", result->l_hand_match_quality.y );
-        PRINT_INFO( "l_hand z: %f\n", result->l_hand_match_quality.z );
+        auto const & match_qualities = result->match_qualities;
 
-        PRINT_INFO( "r_hand x: %f\n", result->r_hand_match_quality.x );
-        PRINT_INFO( "r_hand y: %f\n", result->r_hand_match_quality.y );
-        PRINT_INFO( "r_hand z: %f\n", result->r_hand_match_quality.z );
-
-        PRINT_INFO( "l_elbow x: %f\n", result->l_elbow_match_quality.x );
-        PRINT_INFO( "l_elbow y: %f\n", result->l_elbow_match_quality.y );
-        PRINT_INFO( "l_elbow z: %f\n", result->l_elbow_match_quality.z );
-
-        PRINT_INFO( "r_elbow x: %f\n", result->r_elbow_match_quality.x );
-        PRINT_INFO( "r_elbow y: %f\n", result->r_elbow_match_quality.y );
-        PRINT_INFO( "r_elbow z: %f\n", result->r_elbow_match_quality.z );
+        for( size_t i = 0; i < match_qualities.size(); ++i )
+        {
+            auto const & match_quality = match_qualities[i];
+            PRINT_INFO( "joint[%zu] match quality: ( %f, %f, %f )", i, match_quality.x, match_quality.y, match_quality.z );
+        }
 
         QUICKDEV_GET_RUNABLE_POLICY()::interrupt();
     }

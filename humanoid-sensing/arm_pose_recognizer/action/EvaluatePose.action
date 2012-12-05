@@ -1,16 +1,25 @@
 # goal
-# desired pose component names
-string[] desired_pose_frame_names
-# observed pose component names
-string[] observed_pose_frame_names
+
+# the list of meta joints to use for this evaluation
+humanoid_sensing_msgs/MetaJoint[] meta_joints
+
+# desired meta_joint names
+string[] desired_joint_names
+
+# observed meta_joint names
+string[] observed_joint_names
+
 # variance along each axis
 geometry_msgs/Vector3 variance
+
 ---
+
 # result
+
 # quality here is the number of standard deviations from the mean (along each axis)
-geometry_msgs/Vector3 l_hand_match_quality
-geometry_msgs/Vector3 l_elbow_match_quality
-geometry_msgs/Vector3 r_hand_match_quality
-geometry_msgs/Vector3 r_elbow_match_quality
+geometry_msgs/Vector3[] match_qualities
+
 ---
+
 # feedback
+# no feedback
