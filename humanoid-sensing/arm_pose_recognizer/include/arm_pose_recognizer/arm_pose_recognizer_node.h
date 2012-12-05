@@ -38,17 +38,27 @@
 
 #include <quickdev/node.h>
 
+// policies
 #include <quickdev/action_server_policy.h>
 #include <quickdev/tf_tranceiver_policy.h>
 
+// objects
 #include <arm_pose_recognizer/pose.h>
+#include <arm_pose_recognizer/meta_joint.h>
 
+// utils
+#include <quickdev/geometry_message_conversions.h>
+
+// actions
 #include <arm_pose_recognizer/EvaluatePoseAction.h>
 
 typedef arm_pose_recognizer::EvaluatePoseAction _EvaluatePoseAction;
 typedef quickdev::ActionServerPolicy<_EvaluatePoseAction> _EvaluatePoseActionServerPolicy;
 
 typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
+
+typedef MetaJoint _MetaJoint;
+typedef std::map<std::string, _MetaJoint> _UnitHumanoid;
 
 // Declare a node called ArmPoseRecognizerNode.
 // A quickdev::RunablePolicy is automatically prepended to the list of policies our node will use.
@@ -103,6 +113,35 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         initPolicies<quickdev::policy::ALL>();
     }
 
+    // climb our unit-humanoid "tree" from the start to the end (or topmost parent) joint, calculating the cumulative transform as we go
+    static btTransform lookupUnitHumanoidTransform( _UnitHumanoid const & unit_humanoid, std::string const & start, std::string const & end = "" )
+    {
+        // start with a zero transform
+        btTransform cumulative_tf( btQuaternion( 0, 0, 0, 1 ) );
+
+        // initialize our search with the starting joint
+        auto unit_humanoid_it = unit_humanoid.find( start );
+
+        // while the joint we're looking for exists
+        while( unit_humanoid_it != unit_humanoid.cend() )
+        {
+            // get a ref to the meta-joint
+            auto const & meta_joint = unit_humanoid_it->second;
+
+            // transform the cumulative tf by this meta-joint's inverse tf (since we're climbing up the tree, but the tfs are defined in the
+            // opposite order
+            cumulative_tf *= meta_joint.relative_transform_.inverse();
+
+            // if we've reached the given end joint, we're done traversing the tree
+            if( meta_joint.parent_name_ == end ) break;
+
+            // otherwise, grab the parent meta-joint
+            unit_humanoid_it = unit_humanoid.find( meta_joint.parent_name_ );
+        }
+
+        return cumulative_tf;
+    }
+
     // This optional function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
     // Most updateable policies should have their update( ... ) functions called within this context.
     //
@@ -114,56 +153,42 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 
         auto const & goal = _EvaluatePoseActionServerPolicy::getGoal();
 
+        auto const & meta_joints = goal.meta_joints;
+        auto const & desired_joint_names = goal.desired_joint_names;
+        auto const & observed_joint_names = goal.observed_joint_names;
         auto const & variance = goal.variance;
-        auto const & desired_frame_names = goal.desired_pose_frame_names;
-        auto const & observed_frame_names = goal.observed_pose_frame_names;
 
-        if( desired_frame_names.size() != observed_frame_names.size() )
+        if( desired_joint_names.size() != observed_joint_names.size() )
         {
-            PRINT_ERROR( "The number of desired frame names must be the same as the number of observed frame names; aborting action." );
+            PRINT_ERROR( "The number of desired meta-joints must be the same as the number of observed meta-joints; aborting action." );
             return abortAction();
         }
 
-        auto desired_frame_name_it = desired_frame_names.cbegin() + 1;
-        auto observed_frame_name_it = observed_frame_names.cbegin() + 1;
+        auto desired_joint_name_it = desired_joint_names.cbegin();
+        auto observed_joint_name_it = observed_joint_names.cbegin();
 
-        _Pose desired_pose;
-        _Pose observed_pose;
+        // build meta-joints by calculating rotation component of transform from start to end frame
+        // our unit-humanoid is just a map of these joints indexed by joint name
+        _UnitHumanoid unit_humanoid;
 
-        auto desired_pose_it = desired_pose.begin();
-        auto observed_pose_it = observed_pose.begin();
-
-        for( ; desired_frame_name_it != desired_frame_names.cend(); ++desired_frame_name_it, ++observed_frame_name_it, ++desired_pose_it, ++observed_pose_it )
+        for( auto meta_joint_it = meta_joints.cbegin(); meta_joint_it != meta_joints.cend(); ++meta_joint_it )
         {
-            auto const desired_tf = _TfTranceiverPolicy::lookupTransform( *desired_frame_names.cbegin(), *desired_frame_name_it );
-            auto const observed_tf = _TfTranceiverPolicy::lookupTransform( *observed_frame_names.cbegin(), *observed_frame_name_it );
-
-            *desired_pose_it = desired_tf.getOrigin();
-            *observed_pose_it = observed_tf.getOrigin();
+            auto const & meta_joint_msg = *meta_joint_it;
+            auto const chain_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, meta_joint_msg.end_frame_name );
+            unit_humanoid[meta_joint_msg.name] = _MetaJoint( chain_tf.getRotation(), meta_joint_msg.name, meta_joint_msg.parent_name );
         }
 
-        desired_pose.normalize();
-        observed_pose.normalize();
-
-        // perform distance calculation
-        auto pose_error = observed_pose - desired_pose;
-
         _EvaluatePoseActionServerPolicy::_ResultMsg result_msg;
-        result_msg.l_hand_match_quality.x = pose_error.l_hand.getX() / variance.x;
-        result_msg.l_hand_match_quality.y = pose_error.l_hand.getY() / variance.y;
-        result_msg.l_hand_match_quality.z = pose_error.l_hand.getZ() / variance.z;
 
-        result_msg.r_hand_match_quality.x = pose_error.r_hand.getX() / variance.x;
-        result_msg.r_hand_match_quality.y = pose_error.r_hand.getY() / variance.y;
-        result_msg.r_hand_match_quality.z = pose_error.r_hand.getZ() / variance.z;
+        // using our unit-humanoid and our lookupUnitHumanoidTransform function, calculate the distances between all the given meta-joints
+        btVector3 const variance_vec = unit::implicit_convert( variance );
+        for( ; desired_joint_name_it != desired_joint_names.cend(); ++desired_joint_name_it, ++observed_joint_name_it )
+        {
+            btTransform desired_tf = lookupUnitHumanoidTransform( unit_humanoid, *desired_joint_name_it );
+            btTransform observed_tf = lookupUnitHumanoidTransform( unit_humanoid, *observed_joint_name_it );
 
-        result_msg.l_elbow_match_quality.x = pose_error.l_elbow.getX() / variance.x;
-        result_msg.l_elbow_match_quality.y = pose_error.l_elbow.getY() / variance.y;
-        result_msg.l_elbow_match_quality.z = pose_error.l_elbow.getZ() / variance.z;
-
-        result_msg.r_elbow_match_quality.x = pose_error.r_elbow.getX() / variance.x;
-        result_msg.r_elbow_match_quality.y = pose_error.r_elbow.getY() / variance.y;
-        result_msg.r_elbow_match_quality.z = pose_error.r_elbow.getZ() / variance.z;
+            result_msg.match_qualities.push_back( unit::implicit_convert( ( observed_tf.getOrigin() - desired_tf.getOrigin() ) / variance_vec ) );
+        }
 
         // complete action
         _EvaluatePoseActionServerPolicy::completeAction( result_msg );

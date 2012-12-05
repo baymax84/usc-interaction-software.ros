@@ -9,4 +9,5 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/arm_pose_recognizer</url>
   <depend package="quickdev_cpp"/>
+  <depend package="humanoid_sensing_msgs"/>
 </package>

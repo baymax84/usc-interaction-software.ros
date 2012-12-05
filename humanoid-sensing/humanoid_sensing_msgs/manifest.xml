@@ -1,0 +1,13 @@
+<package>
+  <description brief="humanoid_sensing_msgs">
+
+     humanoid_sensing_msgs
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/humanoid_sensing_msgs</url>
+  <depend package="std_msgs"/>
+  <depend package="geometry_msgs"/>
+</package>
