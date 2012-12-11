@@ -1,0 +1,7 @@
+# - name: right_arm
+#   target:
+#      begin: r_shoulder_lift_link
+#      end:   r_upper_arm_link
+#   source: 
+#      begin: right_shoulder
+#      end:   right_wrist

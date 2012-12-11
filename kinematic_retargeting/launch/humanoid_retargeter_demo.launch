@@ -1,0 +1,45 @@
+<launch>
+
+  <arg name="simulate" default="true" />
+  <arg name="fake_bandit" default="false" />
+  <arg name="show_reconfigure" default="true" />
+  <arg name="aggregate" default="false" />
+  <arg name="sleep" default="100"/>
+  <arg name="world_frame_name" default="/world" />
+  
+  <param name="world_frame_name" value="$(arg world_frame_name)" />
+  
+  <remap from="/humanoid_retargeter/humanoid_states" to="/humanoid_aggregator/humanoid_states" />
+  
+  <group unless="$(arg simulate)">
+    <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_sensor_tf" args="0 0 0 3.14159 0 0  $(arg world_frame_name) /openni_camera 20" /> -->
+    <include file="$(find openni_multitracker)/launch/openni_multitracker_standalone.launch" /> 
+    <include file="$(find openni_multitracker)/launch/openni_adapter.launch" />
+    <node pkg="image_view" type="image_view" name="kinect_rgb_view" args="image:=/camera/rgb/image_color" />  
+  </group>
+
+  <group if="$(arg simulate)">
+    <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_sensor_tf" args="0 0 0 3.14159 0 0 $(arg world_frame_name) /virtual_humanoid_sensor $(arg sleep)" />-->
+    <node pkg="tf" type="static_transform_publisher" name="world_to_sensor_tf" args="0 0 0 0 0 0 $(arg world_frame_name) /virtual_humanoid_sensor $(arg sleep)" />
+    <include file="$(find humanoid_models)/launch/virtual_humanoid.launch" />
+  </group>
+  
+  <include if="$(arg aggregate)" file="$(find humanoid_recognizers)/launch/humanoid_aggregator.launch">
+  </include>
+  
+  <include file="$(find kinematic_retargeting)/launch/humanoid_retargeter.launch" >
+    <arg if="$(arg simulate)" name="chain_defs" value="$(find kinematic_retargeting)/params/bandit_both_arms_virtual.yaml" />
+    <arg unless="$(arg simulate)" name="chain_defs" value="$(find kinematic_retargeting)/params/bandit_both_arms_kinect.yaml" />
+  </include>
+
+  <group if="$(arg fake_bandit)" >
+    <include file="$(find fake_bandit)/launch/bandit.launch" />
+  </group>
+  
+  <group unless="$(arg fake_bandit)" >
+    <node pkg="rviz" type="rviz" name="rviz" />
+  </group>
+  
+  <node if="$(arg show_reconfigure)" pkg="dynamic_reconfigure" type="reconfigure_gui" name="humanoid_reconfigure" />
+  
+</launch>

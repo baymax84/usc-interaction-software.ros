@@ -1,0 +1,22 @@
+<package>
+  <description brief="kinematic_retargeting">
+
+     kinematic_retargeting
+
+  </description>
+  <author>Dylan J. Foster</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kinematic_retargeting</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="humanoid_models"/>
+  <depend package="humanoid_recognizers"/>
+  <depend package="krt"/>
+  <depend package="kdl"/>
+  <depend package="kdl_parser"/>
+  <depend package="urdf"/>
+  <depend package="yaml_cpp"/>
+  <depend package="tf_conversions"/>
+  <depend package="visualization_msgs"/>
+  <depend package="sensor_msgs"/>
+</package>

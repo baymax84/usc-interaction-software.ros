@@ -1,0 +1,18 @@
+- name: right_arm
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 3.1415926 }
+  target:
+     begin: left_shoulder_mounting_link
+     end:   left_hand_link
+  source: 
+    parent: torso
+    begin:  right_shoulder
+    end:    right_hand
+- name: left_arm
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 3.1415926 }
+  target:
+     begin: right_shoulder_mounting_link
+     end:   right_hand_link
+  source:
+    parent: torso
+    begin:  left_shoulder
+    end:    left_hand

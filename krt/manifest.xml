@@ -1,0 +1,18 @@
+<package>
+  <description brief="krt">
+
+     Kinematic Retargeting Toolkit
+
+  </description>
+  <author>Dylan J. Foster</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/krt</url>
+  <depend package="quickdev_build"/>
+  <depend package="cpp11" />
+  <depend package="kdl"/>
+  <depend package="gsl"/>
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lkrt"/>
+  </export>
+</package>

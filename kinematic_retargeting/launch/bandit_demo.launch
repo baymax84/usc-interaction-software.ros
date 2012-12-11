@@ -1,0 +1,35 @@
+<launch>
+
+  <arg name="bandit_id" default="4" />
+  <arg name="bandit_mover" default="false" />
+  <arg name="simulate" default="true" />
+  <arg name="show_reconfigure" default="true" />
+  <arg name="aggregate" default="false" />
+  <arg name="sleep" default="100"/>
+  <arg name="world_frame_name" default="/world" />
+  
+  <param name="world_frame_name" value="$(arg world_frame_name)" />
+  
+  <include if="$(arg bandit_mover)" file="$(find bandit_mover)/launch/bandit_mover.launch" />
+  
+  <remap from="/bandit_driver/joint_state_command" to="/humanoid_retargeter/joint_states" />
+
+  <group unless="$(arg bandit_mover)" >
+
+  </group>
+
+  <include unless="$(arg bandit_mover)" file="$(find kinematic_retargeting)/launch/humanoid_retargeter_demo.launch" >
+    <arg name="simulate" value="$(arg simulate)" />
+    <arg name="show_reconfigure" value="$(arg show_reconfigure)" />
+    <arg name="aggregate" value="$(arg aggregate)" />
+    <arg name="sleep" value="$(arg sleep)" />
+    <arg name="world_frame_name" value="$(arg world_frame_name)" />
+  </include>
+  
+  <include file="$(find bandit_driver_prototype)/launch/bandit_driver.launch" >
+    <arg name="bandit_id" value="$(arg bandit_id)" />
+  </include>
+  
+  <node pkg="tf" type="static_transform_publisher" name="world_to_bandit_tf" args="0 0 0 0 0 0 $(arg world_frame_name) /bandit/torso_link $(arg sleep)" />
+  
+</launch>
