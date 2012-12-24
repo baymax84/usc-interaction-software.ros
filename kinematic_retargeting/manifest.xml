@@ -19,4 +19,6 @@
   <depend package="tf_conversions"/>
   <depend package="visualization_msgs"/>
   <depend package="sensor_msgs"/>
+  <depend package="bandit_urdf" />
+  
 </package>
