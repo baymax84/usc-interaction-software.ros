@@ -1,7 +1,6 @@
 <launch>
 
   <arg name="simulate" default="true" />
-  <arg name="fake_bandit" default="false" />
   <arg name="show_reconfigure" default="true" />
   <arg name="aggregate" default="false" />
   <arg name="sleep" default="100"/>
@@ -32,14 +31,8 @@
     <arg unless="$(arg simulate)" name="chain_defs" value="$(find kinematic_retargeting)/params/bandit_both_arms_kinect.yaml" />
   </include>
 
-  <group if="$(arg fake_bandit)" >
-    <include file="$(find fake_bandit)/launch/bandit.launch" />
-  </group>
-  
-  <group unless="$(arg fake_bandit)" >
-    <node pkg="rviz" type="rviz" name="rviz" />
-  </group>
-  
+  <node pkg="rviz" type="rviz" name="rviz" />
+    
   <node if="$(arg show_reconfigure)" pkg="dynamic_reconfigure" type="reconfigure_gui" name="humanoid_reconfigure" />
   
 </launch>
