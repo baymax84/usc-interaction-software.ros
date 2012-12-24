@@ -63,7 +63,7 @@ namespace krt
   /** 
    * @brief This class represents an algorithm to retarget a target kinematic chain to match 
    * a source kinematic chain as closely as possible in a least-squared error sense.
-x   * 
+   * 
    */
   class PoseSolverLsq
   {
@@ -91,7 +91,7 @@ x   *
     /** 
      * Default constructor
      * 
-     * @param target_chain The chain that this pose solver instance will bet retargeting 
+     * @param target_chain The chain that this pose solver instance will be retargeting 
      */
     PoseSolverLsq(_Chain const & target_chain);
     
@@ -106,13 +106,14 @@ x   *
      * composing a source chain.
      * 
      * @param source_pose Target chain will be retargeted to match this pose
-     * 
-     * @return Zero if retargeting was sucessful, zero otherwise
+     * @param ee_weight Additional weight placed on end effector during minimization
+     * @param epsilon Minimization will stop if simplex search step size drops below this value
+     * @param max_iterations Minimization will stop if this number of iterations is exceeded
+     * @return  True if retargeting was sucessful, false otherwise
      */
     int update(const _FrameArray & source_pose, double const & ee_weight = 5.0, 
 	       double const & epsilon = .1, 
 	       unsigned int const & max_iterations = 500);
-	/* int update(const _FrameArray & source_chain); */
     
     /** 
      * Get the target chain's pose using current joint angles (not guaranteed to be solved)

@@ -131,8 +131,6 @@ namespace krt
     else
       solved_ = false;
     
-    // Retarget here
-    
     return solved_;
   }
 

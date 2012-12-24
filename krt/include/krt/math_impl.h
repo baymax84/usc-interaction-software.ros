@@ -44,28 +44,41 @@
 
 namespace krt
 {
-  // Not actually sure where the best place to put these typedefs is
-
-  
+  // Not actually sure what the best place to put this typedef is
   typedef std::vector<_Frame> _FrameArray;
     
   namespace spatial
   {
+
+    /** Get a vector representing the difference between two vectors 
+     * 
+     * @param vec1 vector from which return value originates 
+     * @param vec2 vector to which return value points
+     * 
+     * @return Vector from vec1 to vec2
+     */
+    _Vector getDistance(const _Vector & vec1, const _Vector & vec2);
     
-    static _Vector getDistance(const _Vector & vec1, const _Vector & vec2)
-    {
-      return vec2 - vec1;
-    }
+
+    /** Get euclidian distance between two points in 3d space (represented as vectors)
+     * 
+     * @param vec1 First point
+     * @param vec2 Second point
+     * 
+     * @return Euclidian distance between the two points
+     */
+    double getDistanceBetween(const _Vector & vec1, const _Vector & vec2);
     
-    static double getDistanceBetween(const _Vector & vec1, const _Vector & vec2)
-    {
-      return getDistance(vec1, vec2).Norm();
-    }
+
+    /**  Get euclidian distance squared between two points in 3d space (represented as vectors)
+     * 
+     * @param vec1 First point
+     * @param vec2 Second point
+     * 
+     * @return Euclidian distance between the two points, squared
+     */
+    double getDistanceBetween2(const _Vector & vec1, const _Vector & vec2);
     
-    static double getDistanceBetween2(const _Vector & vec1, const _Vector & vec2)
-    {
-      return pow(getDistanceBetween(vec1, vec2), 2);
-    }
     
     /** Returns the length of a chain, calculated by adding together the lengths of the segments
      * 
@@ -73,19 +86,9 @@ namespace krt
      * 
      * @return returns the length of the chain in meters
      */
-    static double getLength(const _Chain & chain)
-    {
-      const unsigned int nr_segments = chain.getNrOfSegments();
-      double length = 0.0;
-    
-      for(unsigned int i = 0; i < nr_segments; ++i)
-	{
-	  length += chain.getSegment(i).getFrameToTip().p.Norm();
-	}
-    
-      return length;
-    }
-   
+    double getLength(const _Chain & chain);
+
+       
     /** Multiply the length of a chain by a scalar (segment-wise). 
      * 
      * @param lhs Chain to be scaled
@@ -93,24 +96,8 @@ namespace krt
      * 
      * @return Scaled chain
      */
-    static _Chain operator * (const _Chain& lhs, const double & rhs)
-      {
-	_Chain tmp;
-      
-	const unsigned int nr_segments = lhs.getNrOfSegments();
-      
-	for(unsigned int i = 0; i < nr_segments; ++i)
-	  {
-	    _Segment segment = tmp.getSegment(i);
-	    _Frame frame_scaled = segment.getFrameToTip();
-	    frame_scaled.p = frame_scaled.p * rhs;
-	    
-	    tmp.addSegment( _Segment(segment.getJoint(), 
-				     frame_scaled, 
-				     segment.getInertia()) );
-	  }
-	return tmp;
-      }
+    _Chain operator * (const _Chain& lhs, const double & rhs);
+
 
     /** Normalize a chain to unit length
      * 
@@ -118,11 +105,7 @@ namespace krt
      * 
      * @return Normalized chain
      */
-    static _Chain normalize(const _Chain& chain)
-    {
-      const double length = getLength(chain);
-      return chain * (1/length);
-    }
+    _Chain normalize(const _Chain& chain);
     
     
     /** Returns the length of a chain (represented as an array of frames), calculated by adding together the lengths of the segments
@@ -131,15 +114,8 @@ namespace krt
      * 
      * @return returns the length of the chain in meters
      */
-    static double getLength(const _FrameArray & chain)
-    {
-      double length = 0.0;
-      for(auto chain_it = ++chain.begin(); chain_it != chain.end(); ++chain_it)
-	{
-	  length += getDistanceBetween(chain_it->p, (chain_it-1)->p);
-	}
-      return length;
-    }
+    double getLength(const _FrameArray & chain);
+
     
     /** Multiply the length of a chain by a scalar (segment-wise). 
      * 
@@ -148,59 +124,33 @@ namespace krt
      * 
      * @return Scaled chain
      */
-    static _FrameArray operator * (const _FrameArray & lhs, const double & rhs)
-    {
-	_FrameArray tmp = lhs;
-	
-	for(auto chain_it = tmp.begin(); chain_it != tmp.end(); ++chain_it)
-	  {
-	    chain_it->p = chain_it->p * rhs;
-	  }
-	
-	return tmp;
-    }
+    _FrameArray operator * (const _FrameArray & lhs, const double & rhs);
 
+      
     /** Normalize a chain to unit length
      * 
      * @param chain Chain to be normalized (represented as an array of Frames)
      * 
      * @return Normalized chain
      */
-    static _FrameArray normalize(const _FrameArray & chain)
-    {
-      const double length = getLength(chain);
-      return chain * (1/length);
-    }
+    _FrameArray normalize(const _FrameArray & chain);
+
     
     /** 
      * Apply a transformation (Frame) to every frame in an array of frames
      * 
      * @param chain Chain (represented as an array of frames) to which transformation is applied
-     * @param transform Transform to apply
+     * @param transform_frame Transform to apply
      */
-    static void transform(_FrameArray & chain, const _Frame & transform_frame)
-    {
-      for(auto chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
-	{
-	  _Frame & element = *chain_it;
-	  element = transform_frame * element;
-	}
-    }
+    void transform(_FrameArray & chain, const _Frame & transform_frame);
+
 
     /** Translated a chain such that the most parent joint is located at the origin (0,0,0)
      * 
      * @param chain Chain (represented as an array of frames) to be translated
      */
-    static void translateToOrigin(_FrameArray & chain)
-    {
-      _Vector offset = chain.front().p;
-      
-      for(auto chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
-	{
-	  chain_it->p = chain_it->p - offset;
-	}
-    }
-    
+    void translateToOrigin(_FrameArray & chain);
+
     
     /** Perform forward kinematics on a chain using a set of joint angles
      * 
@@ -210,27 +160,8 @@ namespace krt
      *
      * @return Non-zero if error, zero otherwise.
      */
-    static int forwardKinematics(const _Chain & chain, const _JntArray & angles, _FrameArray & solved_pose)
-    {
-      unsigned int nr_joints = chain.getNrOfJoints();
-      
-      _Frame joint_frame;
-      
-      // Is it more expensive to allocate this with default frames, or to leave it empty and force it to resize when I push back frames during the next loop?
-      solved_pose = _FrameArray(nr_joints);
-      
-      KDL::ChainFkSolverPos_recursive fksolver(chain);
-      
-      for(unsigned int i = 0; i < nr_joints; ++i)
-	{
-	  int error = fksolver.JntToCart(angles, joint_frame, i);
-	  if(error) return error;
+    int forwardKinematics(const _Chain & chain, const _JntArray & angles, _FrameArray & solved_pose);
 
-	  solved_pose[i] = joint_frame;	  
-	}
-      
-      return 0;
-    }
     
     /** Calculated Sum of squared-distances between all of the frames in two arrays.
      * 
@@ -239,49 +170,17 @@ namespace krt
      * 
      * @return Distance between the two arrays of frames in a squared-distance sense;
      */
-    static double totalSquaredDistance(const _FrameArray & pose1, const _FrameArray & pose2)
-    {
-      double distance = 0.0;
+    double totalSquaredDistance(const _FrameArray & pose1, const _FrameArray & pose2);
 
-      // Test
-      return distance;
-
-      // Ignore the most parent frame in each segment. It is assumed that these
-      // chains start at the same location
-      for(auto pose1_it = pose1.begin(); pose1_it != pose1.end(); ++pose1_it)
-	{
-	  for(auto pose2_it = pose2.begin(); pose2_it != pose2.end(); ++pose2_it)
-	    {
-	      distance += getDistanceBetween2(pose1_it->p, pose2_it->p);
-	    }
-	}
-      
-      return distance;
-    }
 
     /** Given an array of frames, compute the center-of-mass of their positions
      * All frames are given the same weight
      * 
-     * @param pose The array of frames of which centroid will be computed
+     * @param frames The array of frames of which centroid will be computed
      * 
      * @return Frame to the centroid (unit rotation)
      */
-    static _Frame getCentroid(const _FrameArray & frames)
-    {
-      unsigned int nr_frames = frames.size();
-      // Zero vector
-      _Vector centroid = KDL::Vector::Zero();
-      
-      
-      for(auto frame_it = frames.begin(); frame_it != frames.end(); ++frame_it)
-	{
-	  centroid += frame_it->p;
-	}
-      
-      centroid = centroid * (1.0/double(nr_frames));
-      
-      return _Frame(centroid);
-    }
+    _Frame getCentroid(const _FrameArray & frames);
 
     
   } // spatial
