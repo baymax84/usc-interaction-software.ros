@@ -55,19 +55,19 @@
 #include <tf_conversions/tf_kdl.h>
 
 // kinematic retargeting toolkit
-#include <krt/math_impl.h>
+#include <rtk/math_impl.h>
 
 using humanoid::_HumanoidStateMsg;
 
-using krt::_Joint;
-using krt::_Segment;
-using krt::_Frame;
-using krt::_JntArray;
-using krt::_Vector;
-using krt::_Rotation;
-using krt::_Chain;
+using rtk::_Joint;
+using rtk::_Segment;
+using rtk::_Frame;
+using rtk::_JntArray;
+using rtk::_Vector;
+using rtk::_Rotation;
+using rtk::_Chain;
 
-typedef krt::_FrameArray _FrameArray;
+typedef rtk::_FrameArray _FrameArray;
 
 typedef humanoid::_JointName _JointName;
 typedef humanoid::Humanoid _Humanoid;

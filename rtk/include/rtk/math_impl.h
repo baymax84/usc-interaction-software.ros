@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/krt/math_impl.h
+ *  include/rtk/math_impl.h
  *  --------------------
  *
  *  Copyright (c) 2012, Dylan J. Foster
@@ -15,7 +15,7 @@
  *    copyright notice, this list of conditions and the following disclaimer
  *    in the documentation and/or other materials provided with the
  *    distribution.
- *  * Neither the name of krt nor the names of its
+ *  * Neither the name of rtk nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
  *
@@ -33,16 +33,16 @@
  *
  **************************************************************************/
 
-#ifndef KRT_MATHIMPL_H_
-#define KRT_MATHIMPL_H_
+#ifndef RTK_MATHIMPL_H_
+#define RTK_MATHIMPL_H_
 
 #include <math.h>
 
 #include <vector>
 
-#include <krt/krt.h>
+#include <rtk/rtk.h>
 
-namespace krt
+namespace rtk
 {
   // Not actually sure what the best place to put this typedef is
   typedef std::vector<_Frame> _FrameArray;
@@ -184,6 +184,6 @@ namespace krt
 
     
   } // spatial
-} // krt
+} // rtk
 
-#endif // KRT_MATHIMPL_H_
+#endif // RTK_MATHIMPL_H_

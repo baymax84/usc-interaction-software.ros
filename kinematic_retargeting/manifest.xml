@@ -11,7 +11,7 @@
   <depend package="quickdev_cpp"/>
   <depend package="humanoid_models"/>
   <depend package="humanoid_recognizers"/>
-  <depend package="krt"/>
+  <depend package="rtk"/>
   <depend package="kdl"/>
   <depend package="kdl_parser"/>
   <depend package="urdf"/>

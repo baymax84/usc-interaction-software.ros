@@ -1,11 +1,11 @@
-#ifndef KRT_KRT_H_
-#define KRT_KRT_H_
+#ifndef RTK_RTK_H_
+#define RTK_RTK_H_
 
 #include <kdl/frames.hpp>
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 
-namespace krt
+namespace rtk
 {
   typedef KDL::Vector   _Vector;
   typedef KDL::Rotation _Rotation;
@@ -16,4 +16,4 @@ namespace krt
   typedef KDL::JntArray _JntArray;
 }
 
-#endif // KRT_KRT_H_
+#endif // RTK_RTK_H_

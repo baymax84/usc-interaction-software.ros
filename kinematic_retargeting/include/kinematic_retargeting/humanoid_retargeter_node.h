@@ -58,8 +58,8 @@
 #include <quickdev/reconfigure_policy.h>
 
 // kinematic retargeting toolkit
-#include <krt/math_impl.h>
-#include <krt/pose_solver_lsq.h>
+#include <rtk/math_impl.h>
+#include <rtk/pose_solver_lsq.h>
 
 // minimization library
 #include <gsl/gsl_multimin.h>
@@ -433,7 +433,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
     _PoseMsg marker_pose;
 
-    _Frame pose_centroid = krt::spatial::getCentroid(pose);
+    _Frame pose_centroid = rtk::spatial::getCentroid(pose);
     
     _MarkerArrayMsg markers;
     _MarkerMsg joint_marker(joints_marker_template_);
@@ -720,14 +720,14 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 	   * the origin
 	   */
 
-	  krt::spatial::transform(source_frames, retargeting_it->target_to_source_);
-	  krt::spatial::translateToOrigin(source_frames);
+	  rtk::spatial::transform(source_frames, retargeting_it->target_to_source_);
+	  rtk::spatial::translateToOrigin(source_frames);
 	  
-	  visualizeFrameArray(krt::spatial::normalize(source_frames), chain_name + "_source", red_template_);
+	  visualizeFrameArray(rtk::spatial::normalize(source_frames), chain_name + "_source", red_template_);
 	  
 	  ROS_INFO("Retargeting... [ %s ]", chain_name.c_str());
 	  
-	  krt::PoseSolverLsq retargeter(*chain_it);
+	  rtk::PoseSolverLsq retargeter(*chain_it);
 
 	  if(!retargeter.update(source_frames, config_.ee_weight, 
 				config_.step_threshold, 
@@ -741,7 +741,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 	  _JntArray   retargeted_angles = retargeter.getTargetAngles();
 	  _FrameArray retargeted_frames = retargeter.getTargetPose();
 	  
-	  visualizeFrameArray(krt::spatial::normalize(retargeted_frames), chain_name + "_retargeted", blue_template_);
+	  visualizeFrameArray(rtk::spatial::normalize(retargeted_frames), chain_name + "_retargeted", blue_template_);
 
 	  /* Publish retargeted joint angles -------------------- */
 	  
