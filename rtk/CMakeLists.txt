@@ -10,7 +10,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_init()
-rosbuild_include( quickdev_build add_library_auto )
+# rosbuild_include( quickdev_build add_library_auto )
 
 
 #set the default path for built executables to the "bin" directory

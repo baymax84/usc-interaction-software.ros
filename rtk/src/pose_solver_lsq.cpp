@@ -47,6 +47,8 @@ namespace rtk
     target_angles_ = _JntArray(nr_angles_);
   }
 
+  PoseSolverLsq::~PoseSolverLsq(){}
+
   int PoseSolverLsq::update(const _FrameArray & source_pose, double const & ee_weight, 
 			    double const & epsilon, 
 			    unsigned int const & max_iterations)

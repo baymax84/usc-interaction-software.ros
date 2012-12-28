@@ -89,7 +89,7 @@ namespace rtk
     friend double costHelper(const gsl_vector * angles, void * params);
     
     /** 
-     * Default constructor
+     * Construct the pose solver from a target chain
      * 
      * @param target_chain The chain that this pose solver instance will be retargeting 
      */
@@ -99,7 +99,7 @@ namespace rtk
      * Default destructor
      * 
      */
-    ~PoseSolverLsq() = default;
+    ~PoseSolverLsq();
 
     /** 
      * Retarget the target chain using given source a set of positions 

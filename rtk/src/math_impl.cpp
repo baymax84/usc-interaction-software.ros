@@ -103,7 +103,7 @@ namespace rtk
     double getLength(const _FrameArray & chain)
     {
       double length = 0.0;
-      for(auto chain_it = ++chain.begin(); chain_it != chain.end(); ++chain_it)
+      for(_FrameArray::const_iterator chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
 	{
 	  length += getDistanceBetween(chain_it->p, (chain_it-1)->p);
 	}
@@ -115,7 +115,7 @@ namespace rtk
     {
       _FrameArray tmp = lhs;
 	
-      for(auto chain_it = tmp.begin(); chain_it != tmp.end(); ++chain_it)
+      for(_FrameArray::iterator chain_it = tmp.begin(); chain_it != tmp.end(); ++chain_it)
 	{
 	  chain_it->p = chain_it->p * rhs;
 	}
@@ -133,7 +133,7 @@ namespace rtk
   
     void transform(_FrameArray & chain, const _Frame & transform_frame)
     {
-      for(auto chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
+      for(_FrameArray::iterator chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
 	{
 	  _Frame & element = *chain_it;
 	  element = transform_frame * element;
@@ -145,7 +145,7 @@ namespace rtk
     {
       _Vector offset = chain.front().p;
       
-      for(auto chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
+      for(_FrameArray::iterator chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
 	{
 	  chain_it->p = chain_it->p - offset;
 	}
@@ -179,9 +179,9 @@ namespace rtk
     {
       double distance = 0.0;
 
-      for(auto pose1_it = pose1.begin(); pose1_it != pose1.end(); ++pose1_it)
+      for(_FrameArray::const_iterator pose1_it = pose1.begin(); pose1_it != pose1.end(); ++pose1_it)
 	{
-	  for(auto pose2_it = pose2.begin(); pose2_it != pose2.end(); ++pose2_it)
+	  for(_FrameArray::const_iterator pose2_it = pose2.begin(); pose2_it != pose2.end(); ++pose2_it)
 	    {
 	      distance += getDistanceBetween2(pose1_it->p, pose2_it->p);
 	    }
@@ -198,7 +198,7 @@ namespace rtk
       _Vector centroid = KDL::Vector::Zero();
       
       
-      for(auto frame_it = frames.begin(); frame_it != frames.end(); ++frame_it)
+      for(_FrameArray::const_iterator frame_it = frames.begin(); frame_it != frames.end(); ++frame_it)
 	{
 	  centroid += frame_it->p;
 	}

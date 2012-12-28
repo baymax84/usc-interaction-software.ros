@@ -8,8 +8,8 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/rtk</url>
-  <depend package="quickdev_build"/>
-  <depend package="cpp11" />
+  <!-- <depend package="quickdev_build"/> -->
+  <!-- <depend package="cpp11" /> -->
   <depend package="kdl"/>
   <depend package="gsl"/>
   <export>

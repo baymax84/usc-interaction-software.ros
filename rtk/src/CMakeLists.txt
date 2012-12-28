@@ -1,1 +1,1 @@
-add_library_auto( ${PROJECT_NAME} *.cpp *.cc *.c )
+rosbuild_add_library(rtk rtk.cpp math_impl.cpp pose_solver_lsq.cpp)
