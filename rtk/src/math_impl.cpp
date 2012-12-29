@@ -103,7 +103,7 @@ namespace rtk
     double getLength(const _FrameArray & chain)
     {
       double length = 0.0;
-      for(_FrameArray::const_iterator chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)
+      for(_FrameArray::const_iterator chain_it = ++chain.begin(); chain_it != chain.end(); ++chain_it)
 	{
 	  length += getDistanceBetween(chain_it->p, (chain_it-1)->p);
 	}
@@ -195,7 +195,7 @@ namespace rtk
     {
       unsigned int nr_frames = frames.size();
       // Zero vector
-      _Vector centroid = KDL::Vector::Zero();
+      _Vector centroid = _Vector::Zero();
       
       
       for(_FrameArray::const_iterator frame_it = frames.begin(); frame_it != frames.end(); ++frame_it)
@@ -207,6 +207,29 @@ namespace rtk
       
       return _Frame(centroid);
     }
-  }
 
-}
+    _FrameArray straightenFrameArray(const _FrameArray & frames)
+    {
+      _FrameArray straight;
+      _Rotation identity = _Rotation::Identity();
+    
+      straight.push_back(_Frame(identity, _Vector::Zero()));
+    
+      double length = 0.0;
+      
+      for(_FrameArray::const_iterator frame_it = ++frames.begin(); frame_it != frames.end(); ++frame_it)
+	{
+	   length += getDistanceBetween(frame_it->p, (frame_it-1)->p);
+	  
+	   /// Arbitrarily lay the chain along the positive x axis 
+	   
+	  _Vector distance = _Vector(length, 0.0, 0.0);
+
+	  straight.push_back(_Frame(identity, distance));
+	}
+
+      return straight;
+    }
+
+  } // spatial
+} // rtk

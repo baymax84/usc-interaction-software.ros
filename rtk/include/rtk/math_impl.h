@@ -55,7 +55,7 @@ namespace rtk
      * @param vec1 vector from which return value originates 
      * @param vec2 vector to which return value points
      * 
-     * @return Vector from vec1 to vec2
+     * @return Vector from vec1 to vec2 (vec2 - vec1)
      */
     _Vector getDistance(const _Vector & vec1, const _Vector & vec2);
     
@@ -145,7 +145,7 @@ namespace rtk
     void transform(_FrameArray & chain, const _Frame & transform_frame);
 
 
-    /** Translated a chain such that the most parent joint is located at the origin (0,0,0)
+    /** Translate a chain such that the most parent joint is located at the origin (0,0,0)
      * 
      * @param chain Chain (represented as an array of frames) to be translated
      */
@@ -182,6 +182,15 @@ namespace rtk
      */
     _Frame getCentroid(const _FrameArray & frames);
 
+    /** Take a chain represented as an array of Frames and lie it straight   
+     * along the x axis
+     * 
+     * @param frames The array of Frames being straightened
+     * 
+     * @return FrameArray The straightened chain
+     */
+    _FrameArray straightenFrameArray(const _FrameArray & frames);
+    
     
   } // spatial
 } // rtk
