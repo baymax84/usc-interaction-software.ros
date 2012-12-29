@@ -14,6 +14,9 @@ namespace rtk
   typedef KDL::Segment  _Segment;
   typedef KDL::Chain    _Chain;
   typedef KDL::JntArray _JntArray;
+  
+  typedef std::vector<double> _WeightArray;
+  typedef std::vector<_Frame> _FrameArray;
 }
 
 #endif // RTK_RTK_H_

@@ -44,9 +44,6 @@
 
 namespace rtk
 {
-  // Not actually sure what the best place to put this typedef is
-  typedef std::vector<_Frame> _FrameArray;
-    
   namespace spatial
   {
 
