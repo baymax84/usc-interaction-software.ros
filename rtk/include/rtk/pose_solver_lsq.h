@@ -43,6 +43,7 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 
 #include <rtk/math_impl.h>
+#include <rtk/cost.h>
 
 namespace rtk
 {

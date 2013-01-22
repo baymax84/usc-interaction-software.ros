@@ -155,9 +155,9 @@ namespace rtk
   {
     // TODO: get ee_cost from a config or weight function
     // const double ee_weight = 5.0;
-    double ee_distance2 = 0.0;
+    // double ee_distance2 = 0.0;
     
-    double cost = 0.0;
+    // double cost = 0.0;
     
     _FrameArray target_pose;
 
@@ -177,16 +177,18 @@ namespace rtk
     source_pose_ = spatial::normalize(source_pose_);
     // printf("target length %f, source length %f\n",spatial::getLength(target_pose), spatial::getLength(source_pose_));
     
-    cost += spatial::totalSquaredDistance(target_pose, source_pose_);
+    // cost += spatial::totalSquaredDistance(target_pose, source_pose_);
     
-    // Add cost from end effector weight
-    ee_distance2 += spatial::getDistanceBetween2(target_pose.back().p, 
-						 source_pose_.back().p);
+    // // Add cost from end effector weight
+    // ee_distance2 += spatial::getDistanceBetween2(target_pose.back().p, 
+    // 						 source_pose_.back().p);
 
-    // TODO: this should really be nr_joints to make conceptual sense, but the value of nr_angles is the same
-    cost += ee_distance2*ee_weight_*(nr_angles_-1);
+    // // TODO: this should really be nr_joints to make conceptual sense, but the value of nr_angles is the same
+    // cost += ee_distance2*ee_weight_*(nr_angles_-1);
    
-    return cost;
+    // return cost;
+
+    return cost::LSQWeightedPairsSimilar(source_pose_, target_pose);
   }
   
 

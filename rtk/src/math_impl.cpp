@@ -154,16 +154,20 @@ namespace rtk
   
     int forwardKinematics(const _Chain & chain, const _JntArray & angles, _FrameArray & solved_pose)
     {
+      unsigned int nr_segments = chain.getNrOfSegments();
       unsigned int nr_joints = chain.getNrOfJoints();
+
+      /// There should be one angle for every segment in the chain (even if the joint type for a segment is KDL::Joint::NONE)
+      assert( nr_joints == angles.rows() );
       
       _Frame joint_frame;
       
       // Is it more expensive to allocate this with default frames, or to leave it empty and force it to resize when I push back frames during the next loop?
-      solved_pose = _FrameArray(nr_joints);
+      solved_pose = _FrameArray(nr_segments);
       
       KDL::ChainFkSolverPos_recursive fksolver(chain);
       
-      for(unsigned int i = 0; i < nr_joints; ++i)
+      for(unsigned int i = 0; i < nr_segments; ++i)
 	{
 	  int error = fksolver.JntToCart(angles, joint_frame, i);
 	  if(error) return error;
