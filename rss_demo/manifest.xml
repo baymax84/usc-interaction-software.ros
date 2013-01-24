@@ -1,0 +1,19 @@
+<package>
+  <description brief="rss_demo">
+
+     rss_demo
+
+  </description>
+  <author>Dylan J. Foster</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rss_demo</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="rtk" />
+  <depend package="kdl" />
+  <depend package="kdl_parser" />
+  <depend package="xmlrpcpp" />
+  <depend package="urdf" />
+  <depend package="cpp11" />
+  
+</package>

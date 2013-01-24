@@ -1,0 +1,4 @@
+left_arm: { 
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 3.1415926 }, 
+  source: {begin: l_shoulder_pan_link, end: l_wrist_roll_link}, 
+  target: {begin:  left_shoulder_mounting_link, end: left_wrist_link} }

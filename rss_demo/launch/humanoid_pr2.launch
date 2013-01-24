@@ -1,0 +1,25 @@
+<launch>
+
+  <arg name="show_reconfigure" default="true" />
+
+  <arg name="sleep" default="100"/>
+  <arg name="world_frame_name" default="/world" />
+  
+  <param name="world_frame_name" value="$(arg world_frame_name)" />
+  
+  <remap from="/humanoid_retargeter/humanoid_states" to="/humanoid_aggregator/humanoid_states" />
+  
+  <node pkg="tf" type="static_transform_publisher" name="world_to_sensor_tf" args="0 0 0 0 0 0 $(arg world_frame_name) /virtual_humanoid_sensor $(arg sleep)" />
+  
+  <include file="$(find humanoid_models)/launch/virtual_humanoid.launch" />
+
+  <include file="$(find kinematic_retargeting)/launch/humanoid_retargeter.launch" >
+    <arg name="chain_defs" value="$(find kinematic_retargeting)/params/pr2_left_arm_virtual.yaml" />
+    <arg name="urdf_filename" value="$(find rss_demo)/pr2_urdf/pr2.urdf" />
+  </include>
+
+  <node pkg="rviz" type="rviz" name="rviz" />
+    
+  <node if="$(arg show_reconfigure)" pkg="dynamic_reconfigure" type="reconfigure_gui" name="humanoid_reconfigure" />
+  
+</launch>
