@@ -131,8 +131,8 @@ QUICKDEV_DECLARE_NODE_CLASS( TestArmPoseRecognizer )
         meta_joints[9].start_frame_name = "/user2/left_hand";
         meta_joints[9].end_frame_name = "/user2/left_hand";
 
-        goal.desired_joint_names = { "user1_neck", "user1_elbow_r", "user1_elbow_l", "user1_hand_r", "user1_hand_l" };
-        goal.observed_joint_names = { "user2_neck", "user2_elbow_r", "user2_elbow_l", "user2_hand_r", "user2_hand_l" };
+        goal.desired_joint_names = { "user1_hand_r", "user1_hand_l" };
+        goal.observed_joint_names = { "user2_hand_r", "user2_hand_l" };
         goal.variance.x = 0.2;
         goal.variance.y = 0.2;
         goal.variance.z = 0.2;
