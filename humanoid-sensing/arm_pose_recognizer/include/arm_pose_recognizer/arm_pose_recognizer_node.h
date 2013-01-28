@@ -60,6 +60,8 @@ typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
 typedef MetaJoint _MetaJoint;
 typedef std::map<std::string, _MetaJoint> _UnitHumanoid;
 
+typedef humanoid_sensing_msgs::MetaJoint _MetaJointMsg;
+
 // Declare a node called ArmPoseRecognizerNode.
 // A quickdev::RunablePolicy is automatically prepended to the list of policies our node will use.
 // To use more policies, simply list them here:
@@ -141,7 +143,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             if( meta_joint.parent_name_ == end ) break;
 
             // otherwise, update the cumulative translation tf
-            cumulative_translation_tf *= meta_joint.parent_transform_;
+            cumulative_translation_tf *= meta_joint.transform_to_parent_;
             // and grab the parent meta-joint
             unit_humanoid_it = unit_humanoid.find( meta_joint.parent_name_ );
         }
@@ -215,8 +217,6 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         {
             auto const & meta_joint_msg = meta_joint_it->second;
 
-            auto const internal_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, meta_joint_msg.end_frame_name );
-
             // the iterator for the parent meta-joint
             auto const parent_meta_joint_it = meta_joint_map.find( meta_joint_msg.parent_name );
 
@@ -232,7 +232,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 //                parent_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, parent_meta_joint_msg.end_frame_name );
             }
 
-            unit_humanoid[meta_joint_msg.name] = _MetaJoint( internal_tf, parent_tf, meta_joint_msg.name, meta_joint_msg.parent_name );
+            unit_humanoid[meta_joint_msg.name] = _MetaJoint( parent_tf, meta_joint_msg.name, meta_joint_msg.parent_name );
         }
 
         _EvaluatePoseActionServerPolicy::_ResultMsg result_msg;
