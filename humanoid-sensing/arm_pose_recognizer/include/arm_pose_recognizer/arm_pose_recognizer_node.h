@@ -117,7 +117,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
     static btTransform lookupUnitHumanoidTransform( _UnitHumanoid const & unit_humanoid, std::string const & start, std::string const & end = "" )
     {
         // start with a zero transform
-        btTransform cumulative_tf( btQuaternion( 0, 0, 0, 1 ) );
+        btTransform cumulative_translation_tf( btQuaternion( 0, 0, 0, 1 ) );
 
         // initialize our search with the starting joint
         auto unit_humanoid_it = unit_humanoid.find( start );
@@ -128,18 +128,25 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             // get a ref to the meta-joint
             auto const & meta_joint = unit_humanoid_it->second;
 
-            // transform the cumulative tf by this meta-joint's inverse tf (since we're climbing up the tree, but the tfs are defined in the
-            // opposite order
-            cumulative_tf *= meta_joint.relative_transform_.inverse();
+            // split up the current tf (which will necessarily be normalized) into its translation and rotation components
+//            tf::Transform const & current_tf = meta_joint.internal_transform_;
+//            tf::Transform const current_rotation_tf = btTransform( current_tf.getRotation() );
+//            tf::Transform const current_translation_tf = btTransform( btQuaternion( 0, 0, 0, 1 ), current_tf.getTranslation() );
+
+            // transform the current joint's translation into the parent frame's coordinate frame using the inverse of the cumulative rotation transform
+            // additionally, since the
+//            cumulative_translation_tf = current_translation_tf * ( current_rotation_tf * cumulative_translation_tf );
 
             // if we've reached the given end joint, we're done traversing the tree
             if( meta_joint.parent_name_ == end ) break;
 
-            // otherwise, grab the parent meta-joint
+            // otherwise, update the cumulative translation tf
+            cumulative_translation_tf *= meta_joint.parent_transform_;
+            // and grab the parent meta-joint
             unit_humanoid_it = unit_humanoid.find( meta_joint.parent_name_ );
         }
 
-        return cumulative_tf;
+        return cumulative_translation_tf;
     }
 
     // This optional function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
@@ -170,12 +177,62 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         // build meta-joints by calculating rotation component of transform from start to end frame
         // our unit-humanoid is just a map of these joints indexed by joint name
         _UnitHumanoid unit_humanoid;
+        std::map<std::string, _MetaJointMsg> meta_joint_map;
 
+        // build meta-joint map
         for( auto meta_joint_it = meta_joints.cbegin(); meta_joint_it != meta_joints.cend(); ++meta_joint_it )
         {
             auto const & meta_joint_msg = *meta_joint_it;
-            auto const chain_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, meta_joint_msg.end_frame_name );
-            unit_humanoid[meta_joint_msg.name] = _MetaJoint( chain_tf.getRotation(), meta_joint_msg.name, meta_joint_msg.parent_name );
+            meta_joint_map[meta_joint_msg.name] = meta_joint_msg;
+        }
+
+        // find topmost parent
+        _MetaJointMsg root_meta_joint_msg;
+        {
+            auto meta_joint_it = meta_joint_map.cbegin();
+            while( meta_joint_it != meta_joint_map.cend() )
+            {
+                root_meta_joint_msg = meta_joint_it->second;
+                meta_joint_it = meta_joint_map.find( root_meta_joint_msg.parent_name );
+            }
+        }
+
+        // a map of transforms from the root meta joint's end frame to the frame stored in the key
+        std::map<std::string, btTransform> transforms_map;
+        transforms_map[root_meta_joint_msg.end_frame_name] = btTransform( btQuaternion( 0, 0, 0, 1 ) );
+
+        // look up all the transforms we'll need, relative to topmost parent; we may not actually need all of these
+        for( auto meta_joint_it = meta_joint_map.cbegin(); meta_joint_it != meta_joint_map.cend(); ++meta_joint_it )
+        {
+            auto const & meta_joint_msg = meta_joint_it->second;
+            // we want a transform without any rotation here
+            transforms_map[meta_joint_msg.start_frame_name] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( root_meta_joint_msg.end_frame_name, meta_joint_msg.start_frame_name ).getOrigin() );
+            transforms_map[meta_joint_msg.end_frame_name] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( root_meta_joint_msg.end_frame_name, meta_joint_msg.end_frame_name ).getOrigin() );
+        }
+
+        // look up transforms and build our unit-humanoid
+        for( auto meta_joint_it = meta_joint_map.cbegin(); meta_joint_it != meta_joint_map.cend(); ++meta_joint_it )
+        {
+            auto const & meta_joint_msg = meta_joint_it->second;
+
+            auto const internal_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, meta_joint_msg.end_frame_name );
+
+            // the iterator for the parent meta-joint
+            auto const parent_meta_joint_it = meta_joint_map.find( meta_joint_msg.parent_name );
+
+            auto parent_tf = btTransform( btQuaternion( 0, 0, 0, 1 ) );
+
+            // does the parent exist?
+            if( parent_meta_joint_it != meta_joint_map.cend() )
+            {
+                auto const & parent_meta_joint_msg = parent_meta_joint_it->second;
+                // the "parent transform" is the transform from the child's start frame to the parent's end frame (ie it points back up to the parent,
+                // whereas the "internal transform" points in the opposite direction)
+                parent_tf = transforms_map[parent_meta_joint_msg.end_frame_name].inverse() * transforms_map[meta_joint_msg.start_frame_name];
+//                parent_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, parent_meta_joint_msg.end_frame_name );
+            }
+
+            unit_humanoid[meta_joint_msg.name] = _MetaJoint( internal_tf, parent_tf, meta_joint_msg.name, meta_joint_msg.parent_name );
         }
 
         _EvaluatePoseActionServerPolicy::_ResultMsg result_msg;

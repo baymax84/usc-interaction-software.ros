@@ -43,25 +43,31 @@
 class MetaJoint
 {
 public:
-    btQuaternion rotation_;
-    btTransform relative_transform_;
+    // cumulative rotation from this start -> this end
+    btTransform internal_transform_;
+    // parent end <- this start
+    btTransform parent_transform_;
+    // this name
     std::string name_;
+    // parent name
     std::string parent_name_;
 
     MetaJoint( MetaJoint const & other )
     :
-        rotation_( other.rotation_ ),
-        relative_transform_( other.relative_transform_ ),
+        internal_transform_( other.internal_transform_ ),
+        parent_transform_( other.parent_transform_ ),
         name_( other.name_ ),
         parent_name_( other.parent_name_ )
     {
         //
     }
 
-    MetaJoint( btQuaternion const & rotation = btQuaternion( 0, 0, 0, 1 ), std::string const & name = "", std::string const & parent_name = "" )
+    MetaJoint( btTransform const & internal_transform, btTransform const & parent_transform, std::string const & name = "", std::string const & parent_name = "" )
     :
-        rotation_( rotation ),
-        relative_transform_( rotation, btVector3( 1, 0, 0 ) ),
+        // the interal transform only needs rotation
+        internal_transform_( internal_transform.getRotation() ),
+        // the parent transform needs rotation and the unit vector of translation
+        parent_transform_( parent_transform.getRotation(), parent_transform.getOrigin().normalized() ),
         name_( name ),
         parent_name_( parent_name )
     {
