@@ -1,9 +1,12 @@
 <launch>
+    <arg name="humanoid_name" default="virtual_humanoid" />
+    <arg name="scale" default="1.0" />
+
     <arg name="pkg" value="humanoid_models" />
-    <arg name="name" default="virtual_humanoid" />
+    <arg name="name" default="$(arg humanoid_name)" />
     <arg name="type" value="virtual_humanoid" />
     <arg name="rate" default="30" />
-    <arg name="args" value="_loop_rate:=$(arg rate) ~humanoid_states:=/humanoid_aggregator/humanoid_states" />
+    <arg name="args" value="_loop_rate:=$(arg rate) _segment_scale:=$(arg scale) ~humanoid_states:=/humanoid_aggregator/humanoid_states" />
     <arg name="manager" default="manager" />
     <arg name="nodelet" default="false" />
 
@@ -21,4 +24,10 @@
         name="$(arg name)"
         args="$(arg args)"
         output="screen" />
+
+    <arg name="show_reconfigure" default="true" />
+    <include file="$(find quickdev_cpp)/launch/dynamic_reconfigure.launch" >
+        <arg name="enable" value="$(arg show_reconfigure)" />
+        <arg name="name" value="$(arg name)" />
+    </include>
 </launch>
