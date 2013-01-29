@@ -419,7 +419,7 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	  /* rtk::spatial::translateToOrigin(source_frames); */
 	  
 	  /// TODO: Get these values (and maybe retargeting algorithm) from config
-	  if( !retargeter_it->retargeter_.update(source_frames, 5, 0.001, 1000) )
+	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 1000) )
 	    {
 	      ROS_WARN("KR solver failed. [ %s ]", chain_name.c_str() );
 	      ROS_WARN("Skipping chain...");
@@ -439,6 +439,11 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	      info_msg.target_state.position.push_back(retargeted_angles(i));
 	    }
 
+	  /// Run the cost function again and publish the final results
+	  _FrameArray retargeted_frames;
+	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
+
+	  info_msg.cost = rtk::cost::LSQWeightedEndEffector(source_frames, retargeted_frames, ee_weight_);
 	  multi_pub_.publish( "retargeting_info", info_msg );
 	  
 	  ++nr_success;
@@ -453,8 +458,7 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	  ROS_INFO("visualizing untargeted chain...");
 	  visualizeKDLChain(target_chain, target_zero,chain_name + "_untargeted", red_template_);
 	  ROS_INFO("visualizing retargeted chain...");
-	  _FrameArray retargeted_frames;
-	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
+
 	  visualizeFrameArray(retargeted_frames, chain_name + "_retargeted", red_template_);
 	  visualizeFrameArray(rtk::spatial::normalize(retargeted_frames),
 			      chain_name + "_retargeted_normalized", red_template_);

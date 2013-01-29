@@ -189,7 +189,7 @@ namespace rtk
     // return cost;
 
     // return cost::LSQWeightedPairsSimilar(source_pose_, target_pose);
-    return cost::LSQWeightedEndEffector(source_pose_, target_pose, 10.0);
+    return cost::LSQWeightedEndEffector(source_pose_, target_pose, ee_weight_);
   }
   
 
