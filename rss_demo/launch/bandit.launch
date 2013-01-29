@@ -1,0 +1,51 @@
+<launch>
+  
+  <arg name="simulate" default="true" />
+  <arg name="visualize" default="true" />
+  <arg name="teleop" default="true" />
+  <arg name="bandit-id" default="4" />
+
+
+  <!-- Real mode -->
+  <group unless="$(arg simulate)">
+
+    <!-- Bandit driver -->
+    <include file="$(find bandit_driver_prototype)/launch/bandit_driver.launch" >
+      <arg name="bandit_id" value="$(arg bandit-id)" />
+    </include>
+    <remap from="/bandit_driver/joint_state_command" to="/joint_state_retargeter/retargeted_joint_states"/>
+
+  </group>
+  
+  <!-- Simulator mode -->
+  <group if="$(arg simulate)">
+    
+    <!-- Bandit simulation -->
+    <include file="$(find bandit_urdf)/launch/upload_bandit.launch" />
+    <include file="$(find bandit_urdf)/controller.launch" />
+    <node name="fake_bandit" pkg="fake_bandit" type="fake_bandit" />
+    <node pkg="robot_state_publisher" type="bandit_state_publisher" name="robot_state_publisher">
+      <remap from="joint_state" to="joint_state"/>
+      <param name="publish_frequency" type="double" value="15.0"/>
+      <param name="tf_prefix" type="string" value=""/>
+    </node>
+
+  </group>
+
+  <!-- Teleop -->
+  <group if="$(arg teleop)" >
+    <node name="mover" pkg="bandit_mover" type="bandit_mover" />
+  </group>  
+
+  <!-- Visualization -->
+  <group if="$(arg visualize)" >
+
+    <!-- Gazebo simulator -->
+    <include file="$(find gazebo_worlds)/launch/empty_world.launch" />
+    
+    <!-- RVIZ -->
+    <node pkg="rviz" name="rviz" type="rviz" />
+
+  </group>
+
+</launch>

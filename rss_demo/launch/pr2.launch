@@ -1,0 +1,48 @@
+<launch>
+  <env name="ROBOT" value="sim" />
+  
+  <arg name="simulate" default="true" />
+  <arg name="visualize" default="true" />
+  <arg name="interactive" default="true" />
+  <arg name="teleop" default="true" />
+  
+
+
+  <!-- Real mode -->
+  <group unless="$(arg simulate)">
+    
+  </group>
+  
+  <!-- Simulator mode -->
+  <group if="$(arg simulate)">
+    
+    <!-- Gazebo simulator -->
+    <include file="$(find gazebo_worlds)/launch/empty_world.launch" />
+    
+    <!-- PR2 simulation -->
+    <include file="$(find pr2_gazebo)/pr2.launch" />
+    <!-- <remap from="/joint_state_retargeter/source_joint_states" to="/joint_states" />  -->
+   
+    
+    
+    
+  </group>
+  
+  <!-- Teleop -->
+  <group if="$(arg teleop)" >
+    <include file="$(find pr2_teleop)/teleop_keyboard.launch" />
+  </group>
+  
+  <!-- Interactive Mode -->
+  <group>
+
+    <include file="$(find pr2_interactive_manipulation)/launch/pr2_interactive_manipulation_desktop.launch" />
+
+    <include file="$(find pr2_interactive_manipulation)/launch/pr2_interactive_manipulation_robot.launch" >    
+
+    </include>
+
+  </group>
+
+
+</launch>

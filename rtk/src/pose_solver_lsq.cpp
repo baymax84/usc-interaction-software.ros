@@ -109,17 +109,17 @@ namespace rtk
 
 	// minimize_status = gsl_multimin_test_gradient(minimizer->gradient, epsilon);
 	
-	if(minimize_status == GSL_SUCCESS)
-	  printf("Pose solver converged to minimum at:\n");
+	// if(minimize_status == GSL_SUCCESS)
+	// printf("Pose solver converged to minimum at:\n");
 	
-	std::stringstream angle_string;
+	  std::stringstream angle_string;
 	for(unsigned int i = 0; i < nr_angles_; i++)
 	  {
 	    angle_string << i+1 << ". " << gsl_vector_get(minimizer->x, i) << '\t';
 	  }
 	
-	printf("Iteration: %u, error: %.4f, step: %.4f\n", iteration, minimizer->fval, step_size);
-	printf("Angles: %s\n", angle_string.str().c_str());
+	// printf("Iteration: %u, error: %.4f, step: %.4f\n", iteration, minimizer->fval, step_size);
+	// printf("Angles: %s\n", angle_string.str().c_str());
 		 
       }
     while(minimize_status == GSL_CONTINUE && iteration < max_iterations);
@@ -188,7 +188,8 @@ namespace rtk
    
     // return cost;
 
-    return cost::LSQWeightedPairsSimilar(source_pose_, target_pose);
+    // return cost::LSQWeightedPairsSimilar(source_pose_, target_pose);
+    return cost::LSQWeightedEndEffector(source_pose_, target_pose, 10.0);
   }
   
 

@@ -25,4 +25,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 # Note: requires "rosbuild_include( quickdev_build dynamic_reconfigure )"
 #quickdev_gencfg()
 
+add_definitions(-DRSSDEMO_JOINTSTATERETARGETERNODE_DEBUG=1)
+
 add_subdirectory( nodes )

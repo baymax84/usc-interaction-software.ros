@@ -12,8 +12,10 @@
   <depend package="rtk" />
   <depend package="kdl" />
   <depend package="kdl_parser" />
+  <depend package="tf_conversions" />
   <depend package="xmlrpcpp" />
   <depend package="urdf" />
   <depend package="cpp11" />
+  <depend package="visualization_msgs" />
   
 </package>

@@ -96,7 +96,7 @@ namespace rtk
     _Chain normalize(const _Chain& chain)
     {
       const double length = getLength(chain);
-      return chain * (1/length);
+      return chain * (1.0/length);
     }
     
     
@@ -127,7 +127,7 @@ namespace rtk
     _FrameArray normalize(const _FrameArray & chain)
     {
       const double length = getLength(chain);
-      return chain * (1/length);
+      return chain * (1.0/length);
     }
     
   
@@ -151,9 +151,12 @@ namespace rtk
 	}
     }
     
-  
+    
+    /// TODO: Modify this function so that it can handle 1-segment chains
     int forwardKinematics(const _Chain & chain, const _JntArray & angles, _FrameArray & solved_pose)
     {
+      int error;
+
       unsigned int nr_segments = chain.getNrOfSegments();
       unsigned int nr_joints = chain.getNrOfJoints();
 
@@ -163,19 +166,57 @@ namespace rtk
       _Frame joint_frame;
       
       // Is it more expensive to allocate this with default frames, or to leave it empty and force it to resize when I push back frames during the next loop?
-      solved_pose = _FrameArray(nr_segments);
+      solved_pose = _FrameArray();
       
       KDL::ChainFkSolverPos_recursive fksolver(chain);
       
-      for(unsigned int i = 0; i < nr_segments; ++i)
-	{
-	  int error = fksolver.JntToCart(angles, joint_frame, i);
-	  if(error) return error;
+      /// We explicilty work in the chain's frame
+      _Frame w2c;
 
-	  solved_pose[i] = joint_frame;	  
+      error = fksolver.JntToCart(angles, w2c, 1);
+      if (error) return error;
+
+      _Vector c2w = -w2c.p;
+      
+      for(unsigned int i = 1; i < nr_segments; ++i)
+	{
+	  error = fksolver.JntToCart(angles, joint_frame, i);
+	  if(error) return error;
+	  
+	  joint_frame.p += c2w;
+	  
+	  solved_pose.push_back( joint_frame);	  
 	}
+      /// Get the end effector pose
+      solved_pose.push_back( joint_frame * chain.segments.back().getFrameToTip() );
       
       return 0;
+      
+      // unsigned int nr_segments = chain.getNrOfSegments();
+      // unsigned int nr_joints = chain.getNrOfJoints();
+
+      // /// There should be one angle for every segment in the chain (even if the joint type for a segment is KDL::Joint::NONE)
+      // assert( nr_joints == angles.rows() );
+      
+      // _Frame joint_frame;
+      
+      // // Is it more expensive to allocate this with default frames, or to leave it empty and force it to resize when I push back frames during the next loop?
+      // solved_pose = _FrameArray(nr_segments+1);
+      
+      // KDL::ChainFkSolverPos_recursive fksolver(chain);
+      
+      // for(unsigned int i = 0; i < nr_segments; ++i)
+      // 	{
+      // 	  int error = fksolver.JntToCart(angles, joint_frame, i);
+      // 	  if(error) return error;
+	  
+      // 	  solved_pose[i] = joint_frame;	  
+      // 	}
+      // /// Get the end effector pose
+      // solved_pose[nr_segments] = joint_frame * chain.segments.back().getFrameToTip();
+      
+      // return 0;
+      
     }
     
   

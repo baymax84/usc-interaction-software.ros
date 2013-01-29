@@ -42,7 +42,6 @@
 
 /// data
 #include <map>
-/* #include <xmlrpcpp/XmlRpc.h> */
 
 /// robot model
 #include <urdf/model.h>
@@ -55,6 +54,13 @@
 #include <rtk/math_impl.h>
 #include <rtk/pose_solver_lsq.h>
 
+/// visualization
+#include <visualization_msgs/MarkerArray.h>
+#include <tf_conversions/tf_kdl.h>
+#include <geometry_msgs/Pose.h>
+#include <std_msgs/ColorRGBA.h>
+
+
 typedef sensor_msgs::JointState _JointStateMsg;
 
 typedef KDL::Joint _Joint;
@@ -66,9 +72,16 @@ typedef KDL::Chain _Chain;
 typedef KDL::Tree _Tree;
 typedef KDL::JntArray _JntArray;
 
+typedef std::map<std::string, int> _JointOrderMap;
+
 using rtk::_FrameArray;
 
-typedef std::map<std::string, int> _JointOrderMap;
+/// visualization-related typedefs
+typedef visualization_msgs::Marker      _MarkerMsg;
+typedef visualization_msgs::MarkerArray _MarkerArrayMsg;
+typedef std_msgs::ColorRGBA _ColorMsg;
+typedef geometry_msgs::Pose _PoseMsg;
+
 
 struct Retargeter
 {
@@ -100,6 +113,11 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
   /// Using deque instead of vector because std::vector requires that its storage type have a default constructor and an assignment operator
   std::deque<Retargeter> retargeters_;
   
+  /// For visualization
+  _ColorMsg
+    red_template_,
+    blue_template_;
+
  QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JointStateRetargeter )
   {
   }
@@ -109,10 +127,20 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
     {
       QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
       
+      red_template_.a = 1.0;
+      red_template_.r = 1.0;
+      red_template_.b = 0.0;
+      red_template_.g = 0.0;
+      blue_template_.a = 1.0;
+      blue_template_.r = 0.0;
+      blue_template_.b = 1.0;
+      blue_template_.g = 0.0;
+	
+
       /// Initialize communications
       multi_sub_.addSubscriber( nh_rel, "source_joint_states",
 				&JointStateRetargeterNode::sourceJointStateCB, this );
-      multi_pub_.addPublishers<_JointStateMsg>( nh_rel, { "retargeted_joint_states" } );
+      multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
       
       /// Get URDF path
       std::string source_urdf_path, target_urdf_path;
@@ -364,7 +392,7 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	    }
 	  
 	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
-	  rtk::spatial::translateToOrigin(source_frames);
+	  /* rtk::spatial::translateToOrigin(source_frames); */
 	  
 	  /// TODO: Get these values (and maybe retargeting algorithm) from config
 	  if( !retargeter_it->retargeter_.update(source_frames, 5, 0.001, 1000) )
@@ -385,6 +413,25 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	    }
 
 	  ++nr_success;
+	  
+#if RSSDEMO_JOINTSTATERETARGETERNODE_DEBUG
+	  ROS_INFO("visualizing source chain...");
+	  visualizeFrameArray(source_frames, chain_name + "_source", blue_template_);
+	  visualizeFrameArray(rtk::spatial::normalize(source_frames), 
+			      chain_name + "_source_normalized", blue_template_);
+	  _JntArray target_zero(target_chain.getNrOfJoints());
+
+	  ROS_INFO("visualizing untargeted chain...");
+	  visualizeKDLChain(target_chain, target_zero,chain_name + "_untargeted", red_template_);
+	  ROS_INFO("visualizing retargeted chain...");
+	  _FrameArray retargeted_frames;
+	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
+	  visualizeFrameArray(retargeted_frames, chain_name + "_retargeted", red_template_);
+	  visualizeFrameArray(rtk::spatial::normalize(retargeted_frames),
+			      chain_name + "_retargeted_normalized", red_template_);
+	  /// visualize all of the chains involved in this algorithm
+#endif
+	  
 	}
 
       if(nr_success > 0)
@@ -413,6 +460,140 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 			 << ", " << f2t.p.z() << " )" );
       }
   }
+
+int visualizeKDLChain(const KDL::Chain & chain , const KDL::JntArray & angles, const std::string & marker_namespace, _ColorMsg const & color)
+{
+  _FrameArray chain_pose;
+  
+  rtk::spatial::forwardKinematics(chain, angles, chain_pose);
+  
+  visualizeFrameArray(chain_pose, marker_namespace, color);
+  
+  return 0;
+}
+
+int visualizeFrameArray(_FrameArray pose, const std::string & marker_namespace, _ColorMsg const & color)
+{
+  QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+  
+  _MarkerMsg 
+    marker_template,
+    joints_marker_template,
+    text_marker_template,
+    line_marker_template;
+  
+
+  
+  std::string world_frame_name;
+  nh_rel.param<std::string>("world_frame_name", world_frame_name, "/world");
+  
+  /* red_template.a = 1.0; */
+  /* red_template.r = 1.0; */
+  /* red_template.b = 0.0; */
+  /* red_template.g = 0.0; */
+  /* blue_template.a = 1.0; */
+  /* blue_template.r = 0.0; */
+  /* blue_template.b = 1.0; */
+  /* blue_template.g = 0.0 */;
+  
+  marker_template.header.frame_id = world_frame_name;
+  
+  marker_template.type = visualization_msgs::Marker::SPHERE_LIST;
+  marker_template.action = visualization_msgs::Marker::ADD;
+  marker_template.lifetime = ros::Duration(1.0);
+  marker_template.pose.orientation.w = 1.0;
+  marker_template.color = color;
+  marker_template.scale.x = 
+    marker_template.scale.y = 
+    marker_template.scale.z = .05;
+  
+  joints_marker_template = marker_template;
+  joints_marker_template.type = visualization_msgs::Marker::SPHERE_LIST;
+  /* joints_marker_template.scale.x =  */
+  /* 	joints_marker_template.scale.y =  */
+  /* 	joints_marker_template.scale.z = .05; */
+  
+  text_marker_template = marker_template;
+  text_marker_template.type= visualization_msgs::Marker::TEXT_VIEW_FACING;
+  text_marker_template.scale.z = 0.1;
+  
+  line_marker_template = marker_template;
+  line_marker_template.type = visualization_msgs::Marker::LINE_STRIP;
+  line_marker_template.scale.x = 0.02;
+  
+  auto now = ros::Time::now();
+  
+  _PoseMsg marker_pose;
+  
+  KDL::Frame pose_centroid = rtk::spatial::getCentroid(pose);
+  
+  _MarkerArrayMsg markers;
+  _MarkerMsg joint_marker(joints_marker_template);
+  _MarkerMsg text_marker(text_marker_template);
+  _MarkerMsg chain_name_marker(text_marker_template);
+  _MarkerMsg segment_marker(line_marker_template);
+  _MarkerMsg ee_marker(marker_template);
+  unsigned int id = 0;
+  
+  /* marker = joints_marker_template; */
+  joint_marker.header.stamp = now;
+  joint_marker.ns = marker_namespace;
+  joint_marker.id = id++;
+  joint_marker.color = color;
+  
+  text_marker.header.stamp = now;
+  text_marker.ns = marker_namespace;
+  text_marker.color = color;
+  
+  chain_name_marker.header.stamp = now;
+  chain_name_marker.ns = marker_namespace;
+  chain_name_marker.id = id++;
+  chain_name_marker.color = color;
+  
+  segment_marker.header.stamp = now;
+  segment_marker.ns = marker_namespace;
+  segment_marker.id = id++;
+  segment_marker.color = color;
+  
+    // TODO: Chamnge end effector marker to an arrow pointing along the segment to the end effector
+    
+    ee_marker.header.stamp = now;
+    ee_marker.type = visualization_msgs::Marker::CUBE;
+    ee_marker.ns = marker_namespace;
+    ee_marker.id = id++;
+    ee_marker.color = color;
+
+    
+    for(auto frame_it = pose.begin(); frame_it != pose.end(); ++frame_it, ++id)
+      {
+	tf::PoseKDLToMsg(*frame_it, marker_pose);
+	
+	joint_marker.points.push_back(marker_pose.position);
+	segment_marker.points.push_back(marker_pose.position);
+	
+     }
+    markers.markers.push_back(joint_marker);
+    markers.markers.push_back(segment_marker);
+
+    tf::PoseKDLToMsg(pose.back(), marker_pose);
+    
+    ee_marker.pose = marker_pose;
+    
+    markers.markers.push_back(ee_marker);
+
+    chain_name_marker.text = marker_namespace;
+    
+    tf::PoseKDLToMsg(pose_centroid, marker_pose);
+    chain_name_marker.pose = marker_pose;
+    chain_name_marker.pose.position.z += 0.4;
+    
+    markers.markers.push_back(chain_name_marker);
+    
+    multi_pub_.publish("visualization_marker_array", markers );
+        
+    return 0;
+  }
+
   
 };
 

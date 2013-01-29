@@ -1,7 +1,0 @@
-<launch>
-  
-  <!-- Kinematic retargeter node  -->
-  <include file="$(find rss_demo)/joint_state_retargeter.launch" />
-  
-
-</launch>
