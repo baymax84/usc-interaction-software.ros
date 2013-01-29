@@ -92,6 +92,13 @@ namespace rtk
       return tmp;
     }
 
+    _Chain scaleChain(const _Chain & chain, const double & scale)
+    {
+      _Chain temp = chain;
+      
+      return temp * scale;
+    }
+    
 
     _Chain normalize(const _Chain& chain)
     {

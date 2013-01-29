@@ -95,6 +95,10 @@ namespace rtk
      */
     _Chain operator * (const _Chain& lhs, const double & rhs);
 
+    
+    /* TODO: Add a description or remove this function */
+    _Chain scaleChain (const _Chain & chain, const double & scale);
+
 
     /** Normalize a chain to unit length
      * 

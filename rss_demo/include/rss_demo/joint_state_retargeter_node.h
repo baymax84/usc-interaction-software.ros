@@ -419,7 +419,7 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	  /* rtk::spatial::translateToOrigin(source_frames); */
 	  
 	  /// TODO: Get these values (and maybe retargeting algorithm) from config
-	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 1000) )
+	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 5000) )
 	    {
 	      ROS_WARN("KR solver failed. [ %s ]", chain_name.c_str() );
 	      ROS_WARN("Skipping chain...");

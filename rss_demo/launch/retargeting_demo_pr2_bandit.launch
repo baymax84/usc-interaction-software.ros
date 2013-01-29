@@ -6,13 +6,22 @@
   <arg name="teleop" default="true" />  
   <arg name="enable-pr2" default="true" />
   <arg name="enable-bandit" default="true" />
+  <arg name="ik" default="false" />
 
-    <!-- Remappings -->
+  <!-- Remappings -->
   <remap from="/joint_state_retargeter/source_joint_states" to="/joint_states" />
-  <remap from="/bandit/target_joints" to="/joint_state_retargeter/retargeted_joint_states"/>
+  <remap from="/joint_state_ik/source_joint_states" to="/joint_states" />
+
   
   <!-- Kinematic retargeter node  -->
-  <include file="$(find rss_demo)/launch/joint_state_retargeter.launch" />
+  <group unless="$(arg ik)" >
+    <include file="$(find rss_demo)/launch/joint_state_retargeter.launch" />
+  </group>
+  
+  <!-- Inverse kinematics node -->
+  <group if="$(arg ik)" >
+    <include file="$(find rss_demo)/launch/joint_state_ik.launch" />
+  </group>
 
   <!-- Transforms between the robots -->
   <node pkg="tf" type="static_transform_publisher" name="world_to_pr2_tf" args="0 0 0 0 0 0 /world /odom_combined 100" />
@@ -33,11 +42,27 @@
   
   <!-- Bandit -->
   <group ns="bandit" if="$(arg enable-bandit)" >
-    <include file="$(find rss_demo)/launch/bandit.launch" >
-      <arg name="simulate" value="$(arg simulate)" />
-      <arg name="visualize" value="false" />
-      <arg name="teleop" value="$(arg teleop)" />
-    </include>
+
+    <group if="$(arg ik)" >
+      <remap from="/bandit/target_joints" to="/joint_state_ik/retargeted_joint_states"/>
+            
+      <include file="$(find rss_demo)/launch/bandit.launch" >
+	<arg name="simulate" value="$(arg simulate)" />
+	<arg name="visualize" value="false" />
+	<arg name="teleop" value="$(arg teleop)" />
+      </include>
+    </group>
+
+    <group unless="$(arg ik)" >
+      <remap from="/bandit/target_joints" to="/joint_state_retargeter/retargeted_joint_states"/>
+      
+      <include file="$(find rss_demo)/launch/bandit.launch" >
+	<arg name="simulate" value="$(arg simulate)" />
+	<arg name="visualize" value="false" />
+	<arg name="teleop" value="$(arg teleop)" />
+      </include>
+    </group>
+
   </group>
   
   <group if="$(arg visualize)" >

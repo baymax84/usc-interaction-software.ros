@@ -365,14 +365,20 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
 	      continue;
 	    }
 	  
+	  /// TODO: Figure out why adding chain scaling broke program
 	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
-	  
+	  double source_length = rtk::spatial::getLength(source_frames);
+	  double target_length = rtk::spatial::getLength(target_chain);
+	  double ratio = target_length / source_length;
+	  _Chain scaled_target_chain = rtk::spatial::scaleChain(target_chain, ratio);
+
+
 	  /// The IK solver we will use
-	  	  /// TODO: Get these values (and maybe retargeting algorithm) from config
-	  KDL::ChainIkSolverPos_NR_JL ik_solver(target_chain, retargeter_it->target_limits_lower_,
+	  /// TODO: Get these values (and maybe retargeting algorithm) from config
+	  KDL::ChainIkSolverPos_NR_JL ik_solver(scaled_target_chain, retargeter_it->target_limits_lower_,
 				      retargeter_it->target_limits_upper_,
 				      retargeter_it->target_fk_, retargeter_it->target_ik_vel_,
-				      1000, 0.001);
+				      100000, 0.001);
 	  
 	  int nr_joints = target_chain.getNrOfJoints();
 	  _JntArray ik_in(nr_joints), ik_out(nr_joints);
@@ -381,11 +387,13 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
 	  std::string ee_name = (target_chain.segments.end() -1)->getJoint().getName();
 	  ROS_INFO("Using end effector %s", ee_name.c_str());
 
-	  if( ik_solver.CartToJnt(ik_in, ee_frame, ik_out) )
+	  int ik_error = ik_solver.CartToJnt(ik_in, ee_frame, ik_out);
+
+	  if( ik_error )
 	    {
-	      ROS_WARN("IK Solver failed.");
-	      ROS_WARN("Skipping chain...");
-	      continue;
+	      ROS_WARN("IK Solver failed (error code %d).", ik_error);
+	      /* ROS_WARN("Skipping chain..."); */
+	      /* continue; */
 	    }
 	  
 	  for(unsigned int i = 0; i < target_chain.getNrOfSegments(); ++i)
