@@ -1,0 +1,13 @@
+right_arm: { 
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 0.0 }, 
+  #source: {begin: r_shoulder_pan_link, end: r_wrist_roll_link}, 
+  #target: {begin:  right_shoulder_mounting_link, end: right_wrist_link} }
+  # Note that the "begin" link is the parent of the base joint used.
+  # The "end" link is link that is the parent of the end effector.
+  source: {begin: torso_lift_link, end: r_wrist_roll_link}, 
+  target: {begin:  torso_link, end: right_wrist_link} }
+
+left_arm: { 
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 0.0 }, 
+  source: {begin: torso_lift_link, end: l_wrist_roll_link}, 
+  target: {begin:  torso_link, end: left_wrist_link} }

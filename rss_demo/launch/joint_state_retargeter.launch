@@ -15,7 +15,7 @@
 			    _target_urdf:=$(arg target_urdf)" />
 
     <!-- Load the endpoints for the chains that we will be retargeting -->
-    <rosparam param="/$(arg name)/chain_info" command="load" file="$(find rss_demo)/params/pr2_right_bandit_right.yaml" />
+    <rosparam param="/$(arg name)/chain_info" command="load" file="$(find rss_demo)/params/pr2_both_bandit_both.yaml" />
 
     <node
         pkg="$(arg pkg)"
