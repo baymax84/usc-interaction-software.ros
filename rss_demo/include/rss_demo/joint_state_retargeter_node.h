@@ -428,7 +428,12 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 
 	  _JntArray retargeted_angles = retargeter_it->retargeter_.getTargetAngles();
 
-	  for(unsigned int i = 0; i < target_chain.getNrOfSegments(); ++i)
+	  /* for(unsigned int i = 0; i < target_chain.getNrOfSegments(); ++i) */
+
+	  /// A bad way of ignoring the joint state of the end effector
+	  /// The algorith currently optimizes over this angle, which it shoulnd't do as it doesn't affect the position of any
+	  /// joints in the chain
+	  for(unsigned int i = 0; i < target_chain.getNrOfSegments()-1; ++i)
 	    {
 	      std::string joint_name = target_chain.getSegment(i).getJoint().getName();
 	            
