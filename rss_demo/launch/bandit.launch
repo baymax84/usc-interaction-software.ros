@@ -24,7 +24,7 @@
     <include file="$(find bandit_urdf)/launch/upload_bandit.launch" />
     <include file="$(find bandit_urdf)/controller.launch" />
     <node name="fake_bandit" pkg="fake_bandit" type="fake_bandit" />
-    <node pkg="robot_state_publisher" type="bandit_state_publisher" name="robot_state_publisher">
+    <node pkg="robot_state_publisher" type="state_publisher" name="bandit_state_publisher">
       <remap from="joint_state" to="joint_state"/>
       <param name="publish_frequency" type="double" value="15.0"/>
       <param name="tf_prefix" type="string" value=""/>

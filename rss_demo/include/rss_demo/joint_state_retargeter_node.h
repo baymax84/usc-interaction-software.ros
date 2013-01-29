@@ -60,6 +60,10 @@
 #include <geometry_msgs/Pose.h>
 #include <std_msgs/ColorRGBA.h>
 
+/// diagnostics and data acquisition
+#include <rss_demo/RetargetingInfo.h>
+
+typedef rss_demo::RetargetingInfo _RetargetingInfoMsg;
 
 typedef sensor_msgs::JointState _JointStateMsg;
 
@@ -118,8 +122,12 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
     red_template_,
     blue_template_;
 
- QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JointStateRetargeter )
+  /// Used in retargeting algorithm 
+  double ee_weight_;
+
+  QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JointStateRetargeter )
   {
+
   }
   
   
@@ -140,7 +148,10 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
       /// Initialize communications
       multi_sub_.addSubscriber( nh_rel, "source_joint_states",
 				&JointStateRetargeterNode::sourceJointStateCB, this );
-      multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
+      multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg, _RetargetingInfoMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array", "retargeting_info" } );
+
+      /// Get end effector weight
+      nh_rel.param<double>("ee_weight", ee_weight_, 5.0);
       
       /// Get URDF path
       std::string source_urdf_path, target_urdf_path;
@@ -227,7 +238,7 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 			   << " ----> "
 			   << source_endpoints["end"]);
 	  ROS_INFO_STREAM( "target:" );
-	  ROS_INFO_STREAM( target_endpoints["begin"]
+	  ROS_INFO_STREAM( "\t" << target_endpoints["begin"]
 			   << " ----> "
 			   << target_endpoints["end"] );
 	  ROS_INFO("--------------------");
@@ -331,17 +342,19 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
   
   QUICKDEV_SPIN_ONCE()
     {
-      //
+      QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+      
+      nh_rel.param<double>("ee_weight", ee_weight_, 5.0);
     }
 
   /// joint_state_msg is a boost::shared_ptr to a JointState message
   QUICKDEV_DECLARE_MESSAGE_CALLBACK2( sourceJointStateCB, _JointStateMsg, joint_state_msg )
     {
-      /// TODO: Process the new joint state an retarget here
+      ros::Time now = ros::Time::now();
       
       std::vector<std::string> const & names = joint_state_msg->name;
       std::vector<double> const & positions = joint_state_msg->position;
-
+      
       /// The message with the retargeted chain joint state that we will publish
       _JointStateMsg retargeted_joint_state;
       int nr_success = 0;
@@ -349,8 +362,15 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
       /// Time to retarget
       for(auto retargeter_it = retargeters_.begin(); retargeter_it != retargeters_.end(); ++retargeter_it)
 	{
+	  /// retargeting metadata
+	  _RetargetingInfoMsg info_msg;
+	  info_msg.header.stamp = now;
+
+	  info_msg.ee_weight = ee_weight_;
 
 	  std::string const & chain_name = retargeter_it->name_;
+	  info_msg.chain_name = chain_name;
+
 	  _JointOrderMap const & joint_order_map = retargeter_it->source_joint_order_map_;
 	  
 	  _Chain const & source_chain = retargeter_it->source_chain_;
@@ -372,6 +392,10 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 		{
 		  source_state( match_it->second ) = *position_it;
 		  ++nr_matches;
+		  
+		  /// populate the metadata message
+		  info_msg.source_state.name.push_back( *name_it );
+		  info_msg.source_state.position.push_back( *position_it );
 		}
 	    }
 	  if( nr_matches != nr_source_joints )
@@ -410,8 +434,13 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	            
 	      retargeted_joint_state.name.push_back(joint_name);
 	      retargeted_joint_state.position.push_back(retargeted_angles(i));
+
+	      info_msg.target_state.name.push_back(joint_name);
+	      info_msg.target_state.position.push_back(retargeted_angles(i));
 	    }
 
+	  multi_pub_.publish( "retargeting_info", info_msg );
+	  
 	  ++nr_success;
 	  
 #if RSSDEMO_JOINTSTATERETARGETERNODE_DEBUG

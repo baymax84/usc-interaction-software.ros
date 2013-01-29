@@ -17,5 +17,7 @@
   <depend package="urdf" />
   <depend package="cpp11" />
   <depend package="visualization_msgs" />
+  <depend package="sensor_msgs" />
+  <depend package="std_msgs" />
   
 </package>
