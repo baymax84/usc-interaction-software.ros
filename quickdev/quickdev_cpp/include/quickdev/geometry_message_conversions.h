@@ -40,18 +40,19 @@
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose.h>
-#include <LinearMath/btTransform.h>
+#include <tf/LinearMath/Transform.h>
 
 // we have to include this header because urdf/pose.h doesn't include it ಠ_ಠ
 //#include <tinyxml.h>
 //#include <urdf/pose.h>
-#include <urdf_interface/pose.h>
+#include <urdf_model/pose.h>
 
 #include <quickdev/unit.h>
 
-typedef btVector3 _Vector3;
-typedef btQuaternion _Quaternion;
-typedef btTransform _Transform;
+typedef tf::Vector3 _Vector3;
+typedef tf::Quaternion _Quaternion;
+typedef tf::Transform _Transform;
+
 typedef urdf::Vector3 _UrdfVector3;
 typedef urdf::Rotation _UrdfRotation;
 typedef urdf::Pose _UrdfPose;
@@ -87,8 +88,8 @@ DECLARE_UNIT_CONVERSION_LAMBDA( _PointMsg, _Vector3Msg, point, _Vector3Msg msg; 
 DECLARE_UNIT_CONVERSION_LAMBDA( _PointMsg, _Vector3, point, return _Vector3( point.x, point.y, point.z ); )
 
 // Quaternion -> *
-DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3Msg, quat, _Vector3Msg msg; const btMatrix3x3 rot_mat( quat ); rot_mat.getEulerYPR( msg.z, msg.y, msg.x ); return msg; )
-DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3, quat, double x, y, z; btMatrix3x3 const rot_mat( quat ); rot_mat.getEulerYPR( z, y, x ); return _Vector3( x, y, z ); )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3Msg, quat, _Vector3Msg msg; const tf::Matrix3x3 rot_mat( quat ); rot_mat.getEulerYPR( msg.z, msg.y, msg.x ); return msg; )
+DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _Vector3, quat, double x, y, z; tf::Matrix3x3 const rot_mat( quat ); rot_mat.getEulerYPR( z, y, x ); return _Vector3( x, y, z ); )
 DECLARE_UNIT_CONVERSION_LAMBDA( _Quaternion, _QuaternionMsg, quat, _QuaternionMsg msg; msg.x = quat.getX(); msg.y = quat.getY(); msg.z = quat.getZ(); msg.w = quat.getW(); return msg; )
 
 // QuaternionMsg -> *

@@ -17,6 +17,7 @@
   <depend package="std_msgs"/>
   <depend package="std_srvs"/>
   <depend package="geometry_msgs"/>
+  <depend package="bullet"/>
   <depend package="tf"/>
   <depend package="dynamic_reconfigure"/>
   <depend package="sensor_msgs"/>

@@ -50,7 +50,7 @@
 // for image utilities like imread()
 #include <opencv/highgui.h>
 //for CvBridge
-#include <cv_bridge/CvBridge.h>
+#include <cv_bridge/cv_bridge.h>
 #include <quickdev/param_reader.h>
 
 class ImageLoader

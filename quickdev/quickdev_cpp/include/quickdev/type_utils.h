@@ -357,7 +357,7 @@ Usage:
     {
         static bool const value = boost::is_base_of<ros::Message, __Message>::value;
     };
-#elif QUICKDEV_ROS_VERSION == ROS_VERSION_ELECTRIC
+#elif QUICKDEV_ROS_VERSION >= ROS_VERSION_ELECTRIC
 // =============================================================================================================================================
     // adapter for electric
     template<class __Message>

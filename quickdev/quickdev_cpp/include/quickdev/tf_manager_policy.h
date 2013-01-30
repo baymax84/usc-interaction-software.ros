@@ -162,8 +162,8 @@ public:
     void resetFrames( TfManager::_TfFrameId const & frame_id, __Args&&... args )
     {
         auto transform = tf_manager_[frame_id];
-        transform.setOrigin( btVector3( 0, 0, 0 ) );
-        transform.setRotation( btQuaternion( 0, 0, 0, 1 ) );
+        transform.setOrigin( tf::Vector3( 0, 0, 0 ) );
+        transform.setRotation( tf::Quaternion( 0, 0, 0, 1 ) );
         updateFrames( transform );
         resetFrames( std::forward<__Args>( args )... );
     }
@@ -229,7 +229,7 @@ public:
         else
         {
             PRINT_INFO( "Registering transform [ %s -> %s ]", from_frame_id.c_str(), to_frame_id.c_str() );
-            tf_manager_.updateTransforms( TfManager::_Transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time( 0 ), from_frame_id, to_frame_id ) );
+            tf_manager_.updateTransforms( TfManager::_Transform( tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) ), ros::Time( 0 ), from_frame_id, to_frame_id ) );
         }
         registerFrames( std::forward<__Rest>( rest )... );
     }
@@ -245,7 +245,7 @@ public:
     {
         auto transform = tf_manager_[frame_id];
 
-        btTransform velocity_tf( unit::convert<btTransform>( *msg ) );
+        tf::Transform velocity_tf( unit::convert<tf::Transform>( *msg ) );
         velocity_tf *= dt;
 
         transform.setData( transform * velocity_tf );

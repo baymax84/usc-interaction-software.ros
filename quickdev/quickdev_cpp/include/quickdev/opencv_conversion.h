@@ -39,7 +39,6 @@
 #include <quickdev/type_utils.h>
 
 #include <cv_bridge/cv_bridge.h>
-#include <cv_bridge/CvBridge.h>
 #include <sensor_msgs/image_encodings.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()

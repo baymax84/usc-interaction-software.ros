@@ -40,10 +40,10 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
 {
     cv_bridge::CvImage image_wrapper;
 
-    image_wrapper.image = mat;
-    image_wrapper.encoding = encoding;
     image_wrapper.header.frame_id = frame_id;
     image_wrapper.header.stamp = ros::Time::now();
+    image_wrapper.encoding = encoding;
+    image_wrapper.image = mat;
 
     return image_wrapper.toImageMsg();
 }
@@ -65,11 +65,13 @@ sensor_msgs::Image::Ptr QUICKDEV_GET_INTERNAL_NAMESPACE()::opencv_conversion::fr
         return sensor_msgs::Image::Ptr();
     }
 
-    auto result = sensor_msgs::CvBridge::cvToImgMsg( image_ptr );
-    result->header.frame_id = frame_id;
-    result->header.stamp = ros::Time::now();
-    result->encoding = encoding;
-    return result;
+    cv_bridge::CvImage image_wrapper;
+    image_wrapper.header.frame_id = frame_id;
+    image_wrapper.header.stamp = ros::Time::now();
+    image_wrapper.encoding = encoding;
+    image_wrapper.image = cv::Mat( image_ptr );
+
+    return image_wrapper.toImageMsg();
 }
 
 // =============================================================================================================================================

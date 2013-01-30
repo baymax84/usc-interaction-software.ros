@@ -59,7 +59,7 @@ protected:
 public:
     typedef std::string _TfFrameId;
     typedef tf::StampedTransform _StampedTransform;
-    typedef btTransform _Transform;
+    typedef tf::Transform _Transform;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( TfTranceiver )
     {
@@ -150,7 +150,7 @@ public:
         bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f -> %f )...", from_frame_id.c_str(), to_frame_id.c_str(), from_frame_time.toSec(), to_frame_time.toSec() );
-        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( transformExists(
             from_frame_id,
@@ -237,7 +237,7 @@ public:
         bool const & default_to_latest = true ) const
     {
         PRINT_DEBUG( "Looking up transform:\n [ %s-> %s ]\n( %f )...", from_frame_id.c_str(), to_frame_id.c_str(), frame_time.toSec() );
-        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( transformExists(
             from_frame_id,
@@ -325,7 +325,7 @@ public:
         auto const & from_frame_id = QUICKDEV_GET_ARG( 0, __Args, args );
         auto const & to_frame_id = QUICKDEV_GET_ARG( 1, __Args, args );
 
-        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         try
         {
@@ -346,7 +346,7 @@ public:
         auto const check_rate = QUICKDEV_GET_ARG( 2, __Args, args );
         auto const max_attempts = QUICKDEV_GET_ARG( 3, __Args, args );
 
-        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( waitForTransform( from_frame_id, to_frame_id, check_rate, max_attempts ) )
         {
