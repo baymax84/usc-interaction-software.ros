@@ -1,5 +1,5 @@
 # set EXTRA_CMAKE_FLAGS in the including Makefile in order to add tweaks
-CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=`rospack find rosbuild`/rostoolchain.cmake $(EXTRA_CMAKE_FLAGS)
+CMAKE_FLAGS= -Wdev -DCMAKE_TOOLCHAIN_FILE=$(ROS_ROOT)/core/rosbuild/rostoolchain.cmake $(EXTRA_CMAKE_FLAGS)
 ROS_MAKE_FLAGS=$(ROS_PARALLEL_JOBS) $(ROS_OPTIMIZATION_LEVEL)
 NOBUILD := $(shell if [ -r ROS_NOBUILD ]; then echo 1; else echo 0; fi)
 
