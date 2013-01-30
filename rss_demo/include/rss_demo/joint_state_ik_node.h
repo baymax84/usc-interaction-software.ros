@@ -53,8 +53,16 @@
 #include <kdl/jntarray.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <kdl/chainiksolverpos_nr.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainiksolvervel_wdls.hpp>
 #include <rtk/math_impl.h>
+
+/// visualization
+#include <visualization_msgs/MarkerArray.h>
+#include <tf_conversions/tf_kdl.h>
+#include <geometry_msgs/Pose.h>
+#include <std_msgs/ColorRGBA.h>
 
 typedef sensor_msgs::JointState _JointStateMsg;
 
@@ -69,6 +77,12 @@ typedef KDL::JntArray _JntArray;
 
 using rtk::_FrameArray;
 
+/// visualization-related typedefs
+typedef visualization_msgs::Marker      _MarkerMsg;
+typedef visualization_msgs::MarkerArray _MarkerArrayMsg;
+typedef std_msgs::ColorRGBA _ColorMsg;
+typedef geometry_msgs::Pose _PoseMsg;
+
 typedef std::map<std::string, int> _JointOrderMap;
 
 struct Retargeter
@@ -80,12 +94,16 @@ struct Retargeter
   _Chain target_chain_;
 
   _JointOrderMap source_joint_order_map_;
+  _JointOrderMap target_joint_order_map_;
+  _JntArray target_state_;
+
   _JntArray target_limits_upper_;
   _JntArray target_limits_lower_;
 
   KDL::ChainFkSolverPos_recursive source_fk_;
   KDL::ChainFkSolverPos_recursive target_fk_;
-  KDL::ChainIkSolverVel_pinv target_ik_vel_;
+  /* KDL::ChainIkSolverVel_pinv target_ik_vel_; */
+  KDL::ChainIkSolverVel_wdls target_ik_vel_;
 };
 
 QUICKDEV_DECLARE_NODE( JointStateIK )
@@ -101,7 +119,13 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
   /// Using deque instead of vector because std::vector requires that its storage type have a default constructor and an assignment operator
   std::deque<Retargeter> retargeters_;
   
- QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JointStateIK )
+    /// For visualization
+  _ColorMsg
+    red_template_,
+    blue_template_;
+
+  
+  QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JointStateIK )
   {
   }
   
@@ -109,11 +133,25 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
   QUICKDEV_SPIN_FIRST()
     {
       QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+
+      srand(time(NULL));
+      
+      red_template_.a = 1.0;
+      red_template_.r = 1.0;
+      red_template_.b = 0.0;
+      red_template_.g = 0.0;
+      blue_template_.a = 1.0;
+      blue_template_.r = 0.0;
+      blue_template_.b = 1.0;
+      blue_template_.g = 0.0;
+
       
       /// Initialize communications
       multi_sub_.addSubscriber( nh_rel, "source_joint_states",
 				&JointStateIKNode::sourceJointStateCB, this );
-      multi_pub_.addPublishers<_JointStateMsg>( nh_rel, { "retargeted_joint_states" } );
+      multi_sub_.addSubscriber( nh_rel, "target_joint_states",
+				&JointStateIKNode::targetJointStateCB, this );
+      multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
       
       /// Get URDF path
       std::string source_urdf_path, target_urdf_path;
@@ -169,15 +207,15 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
       
       /// TODO: find a better place to put this
       std::map<int, std::string> joint_type_text_map
-	    {
-	      {urdf::Joint::UNKNOWN, "unknown"},
-	      {urdf::Joint::REVOLUTE, "revolute"},
-	      {urdf::Joint::CONTINUOUS, "continuous"},
-	      {urdf::Joint::PRISMATIC, "prismatic"},
-      	      {urdf::Joint::FLOATING, "floating"},	
-	      {urdf::Joint::PLANAR, "planar"},
-      	      {urdf::Joint::FIXED, "fixed"}
-	    };
+	{
+	  {urdf::Joint::UNKNOWN, "unknown"},
+	  {urdf::Joint::REVOLUTE, "revolute"},
+	  {urdf::Joint::CONTINUOUS, "continuous"},
+	  {urdf::Joint::PRISMATIC, "prismatic"},
+	  {urdf::Joint::FLOATING, "floating"},	
+	  {urdf::Joint::PLANAR, "planar"},
+	  {urdf::Joint::FIXED, "fixed"}
+	};
 
       /// Get data for each chain that will be retargeted
       for(auto chain_it = chain_info.begin(); chain_it != chain_info.end(); ++chain_it)
@@ -232,6 +270,18 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
 		}
 	    }
 
+	  _JointOrderMap target_joint_order_map;
+	  order = 0;
+	  for(auto segment_it = target_chain.segments.begin(); segment_it != target_chain.segments.end(); ++segment_it)
+	    {
+	      _Joint const & joint = segment_it->getJoint();
+	      
+	      if( joint.getType() != _Joint::None )
+		{
+		  target_joint_order_map[joint.getName()] = order++;
+		}
+	    }
+
 	  /// TIME TO LOAD THE JOINT LIMITS FOR THE TARGET! (We don't actually use these right now)
 	  /// Number excludes fixed joints
 	  unsigned int nr_target_joints = target_chain.getNrOfJoints();
@@ -280,38 +330,77 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
       	      link = target_model.getLink(link->getParent()->name);
       	    }
 	  
+	  /// normalize the target chain to 1 meter
+	  /* target_chain = rtk::spatial::normalize(target_chain); */
+	  
 	  /// Let's initialize the retargeter using our good friend aggregate initialization.
 	  Retargeter retargeter
 	  {
 	    chain_name, target_to_source, source_chain, 
-	    target_chain, source_joint_order_map,
-	    target_limits_upper, target_limits_lower,
-	    KDL::ChainFkSolverPos_recursive(source_chain),
-	    KDL::ChainFkSolverPos_recursive(target_chain),
-	    KDL::ChainIkSolverVel_pinv(target_chain)
-	  };
+	      target_chain, source_joint_order_map, 
+	      target_joint_order_map, _JntArray(target_chain.getNrOfJoints()),
+	      target_limits_upper, target_limits_lower,
+	      KDL::ChainFkSolverPos_recursive(source_chain),
+	      KDL::ChainFkSolverPos_recursive(target_chain),
+	      /* KDL::ChainIkSolverVel_pinv(target_chain) */
+	      KDL::ChainIkSolverVel_wdls(target_chain, .01, 10000)
+	      };
 	  
 	  retargeters_.push_back(retargeter);
-      }
+	}
 
-  if ( !(retargeters_.size()) > 0 )
-  {
-    ROS_WARN("No retargeters could be loaded successfully.");
-  }
+      if ( !(retargeters_.size()) > 0 )
+	{
+	  ROS_WARN("No retargeters could be loaded successfully.");
+	}
  
-  initPolicies<quickdev::policy::ALL>();
-}
+      initPolicies<quickdev::policy::ALL>();
+    }
   
   
   QUICKDEV_SPIN_ONCE()
     {
-      //
+      ROS_INFO("IK Node is spinning...");
+    }
+
+  QUICKDEV_DECLARE_MESSAGE_CALLBACK2( targetJointStateCB, _JointStateMsg, joint_state_msg )
+    {
+      ROS_INFO("Got a bandit joint state..." );
+      
+      std::vector<std::string> const & names = joint_state_msg->name;
+      std::vector<double> const & positions = joint_state_msg->position;
+     
+      for(auto retargeter_it = retargeters_.begin(); retargeter_it != retargeters_.end(); ++retargeter_it)
+	{
+	  _JointOrderMap const & joint_order_map = retargeter_it->target_joint_order_map_;
+	  _JntArray & target_state = retargeter_it->target_state_;
+	  
+	  int nr_target_joints = retargeter_it->target_chain_.getNrOfJoints();
+	  
+	  target_state = _JntArray(nr_target_joints);
+	  
+	  int nr_matches = 0;
+	  auto name_it = names.begin();
+	  for(auto position_it = positions.begin(); position_it != positions.end(); ++position_it, ++name_it)
+	    {
+	      /// Check if the current joint is part of this chain
+	      auto match_it = joint_order_map.find( *name_it );
+	      
+	      if ( match_it != joint_order_map.end() )
+		{
+		  target_state( match_it->second ) = *position_it;
+		  ++nr_matches;
+		}
+	    }
+	  if( nr_matches != nr_target_joints )
+	    target_state = _JntArray(nr_target_joints);
+	}
     }
 
   /// joint_state_msg is a boost::shared_ptr to a JointState message
   QUICKDEV_DECLARE_MESSAGE_CALLBACK2( sourceJointStateCB, _JointStateMsg, joint_state_msg )
     {
-      /// TODO: Process the new joint state an retarget here
+      ros::Time now = ros::Time::now();
       
       std::vector<std::string> const & names = joint_state_msg->name;
       std::vector<double> const & positions = joint_state_msg->position;
@@ -323,12 +412,18 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
       /// Time to retarget
       for(auto retargeter_it = retargeters_.begin(); retargeter_it != retargeters_.end(); ++retargeter_it)
 	{
-
+	  
+	  /* if( retargeter_it->target_state_.rows() == 0 ) */
+	  /*   continue; */
+	  
+	  
 	  std::string const & chain_name = retargeter_it->name_;
 	  _JointOrderMap const & joint_order_map = retargeter_it->source_joint_order_map_;
 	  
 	  _Chain const & source_chain = retargeter_it->source_chain_;
+	  /* _Chain const target_chain = rtk::spatial::normalize(retargeter_it->target_chain_); */
 	  _Chain const & target_chain = retargeter_it->target_chain_;
+	  ROS_INFO( "Normalized length for target chain is %f.", rtk::spatial::getLength(target_chain) );
 	  int nr_source_joints = source_chain.getNrOfJoints();
 	  _JntArray source_state( nr_source_joints );
 
@@ -365,29 +460,92 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
 	      continue;
 	    }
 	  
+	  /* source_frames = rtk::spatial::normalize(source_frames); */
+
 	  /// TODO: Figure out why adding chain scaling broke program
 	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
+
+	  _JntArray target_zero(target_chain.getNrOfJoints());
+	  _FrameArray target_straight;
+	  rtk::spatial::forwardKinematics(target_chain, target_zero, target_straight);
+	  
 	  double source_length = rtk::spatial::getLength(source_frames);
-	  double target_length = rtk::spatial::getLength(target_chain);
-	  double ratio = target_length / source_length;
-	  _Chain scaled_target_chain = rtk::spatial::scaleChain(target_chain, ratio);
+	  double target_length = rtk::spatial::getLength(target_straight);
+	  double target_to_source_ratio = target_length / source_length;
 
-
+	  source_frames = rtk::spatial::scaleChain(source_frames, target_to_source_ratio);
+	  
 	  /// The IK solver we will use
 	  /// TODO: Get these values (and maybe retargeting algorithm) from config
-	  KDL::ChainIkSolverPos_NR_JL ik_solver(scaled_target_chain, retargeter_it->target_limits_lower_,
-				      retargeter_it->target_limits_upper_,
-				      retargeter_it->target_fk_, retargeter_it->target_ik_vel_,
-				      100000, 0.001);
+	  /* KDL::ChainIkSolverPos_NR_JL ik_solver(target_chain, retargeter_it->target_limits_lower_, retargeter_it->target_limits_upper_, */
+	  /* 					retargeter_it->target_fk_, retargeter_it->target_ik_vel_, 10000, 0.01); */
+
+	  KDL::ChainIkSolverPos_NR ik_solver(target_chain, retargeter_it->target_fk_, retargeter_it->target_ik_vel_, 10000, 0.0000001);
 	  
 	  int nr_joints = target_chain.getNrOfJoints();
 	  _JntArray ik_in(nr_joints), ik_out(nr_joints);
-				      
+	  
+	  
+	  /// Attempt to provide a non-singular initial joint state
+	  for(int i = 0 ; i < nr_joints; ++i)
+	    {
+	      ik_in(i) = rand() % 100 / (M_PI * 100);
+	    }
+	  
+	  
 	  _Frame ee_frame = source_frames.back();
+	  ROS_INFO("EE frame is (%f, %f, %f)", ee_frame.p.x(), ee_frame.p.y(), ee_frame.p.z());
+	  
+	  _MarkerMsg ee_marker;
+	  _MarkerArrayMsg markers;
+	  ee_marker.header.frame_id = "/world";
+	  ee_marker.header.stamp = now;
+	  ee_marker.ns = "end_effector";
+	  ee_marker.type = visualization_msgs::Marker::SPHERE;
+	  ee_marker.action = visualization_msgs::Marker::ADD;
+	  ee_marker.lifetime = ros::Duration(1.0);
+	  tf::PoseKDLToMsg(ee_frame, ee_marker.pose);
+	  /* ee_marker.pose.orientation.w = 1.0; */
+	  ee_marker.color = blue_template_;
+	  ee_marker.scale.x = 
+	    ee_marker.scale.y = 
+	    ee_marker.scale.z = 0.1;
+	  markers.markers.push_back(ee_marker);
+
+	  multi_pub_.publish("visualization_marker_array", markers);
+
+
+	  
+	  /// Scale the desired end effector pose so that the target chain can reach it
+	  /* ee_frame.p = ee_frame.p * target_to_source_ratio; */
+
 	  std::string ee_name = (target_chain.segments.end() -1)->getJoint().getName();
 	  ROS_INFO("Using end effector %s", ee_name.c_str());
 
 	  int ik_error = ik_solver.CartToJnt(ik_in, ee_frame, ik_out);
+	  /* int ik_error = ik_solver.CartToJnt(retargeter_it->target_state_, ee_frame, ik_out); */
+
+#if RSSDEMO_JOINTSTATEIKNODE_DEBUG
+	  ROS_INFO("visualizing source chain...");
+	  visualizeFrameArray( source_frames, chain_name + "_source_normalized", blue_template_);
+	  /* visualizeFrameArray( rtk::spatial::scaleChain(source_frames, target_to_source_ratio), */
+	  /* 		       chain_name + "_source_scaled", blue_template_); */
+
+	  /* _JntArray target_zero(target_chain.getNrOfJoints()); */
+	  
+	  ROS_INFO("visualizing untargeted chain...");
+	  visualizeKDLChain(target_chain, target_zero, chain_name + "_untargeted_normalized", red_template_);
+
+	  _FrameArray retargeted_frames;
+	  rtk::spatial::forwardKinematics(target_chain, ik_out, retargeted_frames);
+
+	  ROS_INFO("visualizing retargeted chain...");
+	  visualizeFrameArray(retargeted_frames, chain_name + "_retargeted_normalized", red_template_);
+	  /* visualizeFrameArray(rtk::spatial::normalize(retargeted_frames), */
+	  /* 		      chain_name + "_retargeted_normalized", red_template_); */
+	  /// visualize all of the chains involved in this algorithm
+#endif	  
+
 
 	  if( ik_error )
 	    {
@@ -437,6 +595,138 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateIK )
       }
   }
   
+  int visualizeKDLChain(const KDL::Chain & chain , const KDL::JntArray & angles, const std::string & marker_namespace, _ColorMsg const & color)
+  {
+    _FrameArray chain_pose;
+  
+    rtk::spatial::forwardKinematics(chain, angles, chain_pose);
+  
+    visualizeFrameArray(chain_pose, marker_namespace, color);
+  
+    return 0;
+  }
+
+  int visualizeFrameArray(_FrameArray pose, const std::string & marker_namespace, _ColorMsg const & color)
+  {
+    QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+  
+    _MarkerMsg 
+      marker_template,
+      joints_marker_template,
+      text_marker_template,
+      line_marker_template;
+  
+
+  
+    std::string world_frame_name;
+    nh_rel.param<std::string>("world_frame_name", world_frame_name, "/world");
+  
+    /* red_template.a = 1.0; */
+    /* red_template.r = 1.0; */
+    /* red_template.b = 0.0; */
+    /* red_template.g = 0.0; */
+    /* blue_template.a = 1.0; */
+    /* blue_template.r = 0.0; */
+    /* blue_template.b = 1.0; */
+    /* blue_template.g = 0.0 */;
+  
+    marker_template.header.frame_id = world_frame_name;
+  
+    marker_template.type = visualization_msgs::Marker::SPHERE_LIST;
+    marker_template.action = visualization_msgs::Marker::ADD;
+    marker_template.lifetime = ros::Duration(1.0);
+    marker_template.pose.orientation.w = 1.0;
+    marker_template.color = color;
+    marker_template.scale.x = 
+      marker_template.scale.y = 
+      marker_template.scale.z = .05;
+  
+    joints_marker_template = marker_template;
+    joints_marker_template.type = visualization_msgs::Marker::SPHERE_LIST;
+    /* joints_marker_template.scale.x =  */
+    /* 	joints_marker_template.scale.y =  */
+    /* 	joints_marker_template.scale.z = .05; */
+  
+    text_marker_template = marker_template;
+    text_marker_template.type= visualization_msgs::Marker::TEXT_VIEW_FACING;
+    text_marker_template.scale.z = 0.1;
+  
+    line_marker_template = marker_template;
+    line_marker_template.type = visualization_msgs::Marker::LINE_STRIP;
+    line_marker_template.scale.x = 0.02;
+  
+    auto now = ros::Time::now();
+  
+    _PoseMsg marker_pose;
+  
+    KDL::Frame pose_centroid = rtk::spatial::getCentroid(pose);
+  
+    _MarkerArrayMsg markers;
+    _MarkerMsg joint_marker(joints_marker_template);
+    _MarkerMsg text_marker(text_marker_template);
+    _MarkerMsg chain_name_marker(text_marker_template);
+    _MarkerMsg segment_marker(line_marker_template);
+    _MarkerMsg ee_marker(marker_template);
+    unsigned int id = 0;
+  
+    /* marker = joints_marker_template; */
+    joint_marker.header.stamp = now;
+    joint_marker.ns = marker_namespace;
+    joint_marker.id = id++;
+    joint_marker.color = color;
+  
+    text_marker.header.stamp = now;
+    text_marker.ns = marker_namespace;
+    text_marker.color = color;
+  
+    chain_name_marker.header.stamp = now;
+    chain_name_marker.ns = marker_namespace;
+    chain_name_marker.id = id++;
+    chain_name_marker.color = color;
+  
+    segment_marker.header.stamp = now;
+    segment_marker.ns = marker_namespace;
+    segment_marker.id = id++;
+    segment_marker.color = color;
+  
+  
+    ee_marker.header.stamp = now;
+    ee_marker.type = visualization_msgs::Marker::CUBE;
+    ee_marker.ns = marker_namespace;
+    ee_marker.id = id++;
+    ee_marker.color = color;
+    
+  
+    for(auto frame_it = pose.begin(); frame_it != pose.end(); ++frame_it, ++id)
+      {
+	tf::PoseKDLToMsg(*frame_it, marker_pose);
+      
+	joint_marker.points.push_back(marker_pose.position);
+	segment_marker.points.push_back(marker_pose.position);
+      
+      }
+    markers.markers.push_back(joint_marker);
+    markers.markers.push_back(segment_marker);
+
+    tf::PoseKDLToMsg(pose.back(), marker_pose);
+    
+    ee_marker.pose = marker_pose;
+    
+    markers.markers.push_back(ee_marker);
+
+    chain_name_marker.text = marker_namespace;
+    
+    tf::PoseKDLToMsg(pose_centroid, marker_pose);
+    chain_name_marker.pose = marker_pose;
+    chain_name_marker.pose.position.z += 0.4;
+    
+    markers.markers.push_back(chain_name_marker);
+    
+    multi_pub_.publish("visualization_marker_array", markers );
+        
+    return 0;
+  }
+
 };
 
 #endif // RSSDEMO_JOINTSTATEIKNODE_H_

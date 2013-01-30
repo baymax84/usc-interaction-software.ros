@@ -34,6 +34,7 @@
  **************************************************************************/
 
 #include <rtk/math_impl.h>
+#include <cmath>
 
 namespace rtk
 {
@@ -66,7 +67,10 @@ namespace rtk
     
       for(unsigned int i = 0; i < nr_segments; ++i)
 	{
-	  length += chain.getSegment(i).getFrameToTip().p.Norm();
+	  _Vector const & vec = chain.getSegment(i).getFrameToTip().p;
+	  length += sqrt( pow(vec.x(), 2) + pow(vec.y(), 2) + pow(vec.z(), 2) );
+
+	  // length += chain.getSegment(i).getFrameToTip().p.Norm();
 	}
     
       return length;
@@ -81,7 +85,7 @@ namespace rtk
     
       for(unsigned int i = 0; i < nr_segments; ++i)
 	{
-	  _Segment segment = tmp.getSegment(i);
+	  _Segment segment = lhs.getSegment(i);
 	  _Frame frame_scaled = segment.getFrameToTip();
 	  frame_scaled.p = frame_scaled.p * rhs;
 	    
@@ -98,6 +102,8 @@ namespace rtk
       
       return temp * scale;
     }
+
+    
     
 
     _Chain normalize(const _Chain& chain)
@@ -136,8 +142,12 @@ namespace rtk
       const double length = getLength(chain);
       return chain * (1.0/length);
     }
+
+    _FrameArray scaleChain(const _FrameArray & chain, const double & scale)
+    {
+      return chain * scale;
+    }
     
-  
     void transform(_FrameArray & chain, const _Frame & transform_frame)
     {
       for(_FrameArray::iterator chain_it = chain.begin(); chain_it != chain.end(); ++chain_it)

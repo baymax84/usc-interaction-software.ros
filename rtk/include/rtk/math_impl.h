@@ -136,6 +136,8 @@ namespace rtk
      */
     _FrameArray normalize(const _FrameArray & chain);
 
+    /// TODO: Write a full description or remove this function
+    _FrameArray scaleChain(const _FrameArray & chain, const double & scale);
     
     /** 
      * Apply a transformation (Frame) to every frame in an array of frames

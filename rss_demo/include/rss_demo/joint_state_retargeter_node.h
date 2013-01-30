@@ -124,7 +124,8 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 
   /// Used in retargeting algorithm 
   double ee_weight_;
-
+  double cost_weight_;
+  
   QUICKDEV_DECLARE_NODE_CONSTRUCTOR( JointStateRetargeter )
   {
 
@@ -151,7 +152,8 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
       multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg, _RetargetingInfoMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array", "retargeting_info" } );
 
       /// Get end effector weight
-      nh_rel.param<double>("ee_weight", ee_weight_, 5.0);
+      nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
+      nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
       
       /// Get URDF path
       std::string source_urdf_path, target_urdf_path;
@@ -344,7 +346,8 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
     {
       QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
       
-      nh_rel.param<double>("ee_weight", ee_weight_, 5.0);
+      nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
+      nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
     }
 
   /// joint_state_msg is a boost::shared_ptr to a JointState message
@@ -447,8 +450,9 @@ QUICKDEV_DECLARE_NODE_CLASS( JointStateRetargeter )
 	  /// Run the cost function again and publish the final results
 	  _FrameArray retargeted_frames;
 	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
-
-	  info_msg.cost = rtk::cost::LSQWeightedEndEffector(source_frames, retargeted_frames, ee_weight_);
+	  
+	  info_msg.cost = rtk::cost::LSQWeightedEndEffector(source_frames, retargeted_frames, cost_weight_);
+	  /* info_msg.cost = rtk::cost::LSQUniform(source_frames, retargeted_frames); */
 	  multi_pub_.publish( "retargeting_info", info_msg );
 	  
 	  ++nr_success;

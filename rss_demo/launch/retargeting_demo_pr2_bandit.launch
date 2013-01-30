@@ -11,7 +11,7 @@
   <!-- Remappings -->
   <remap from="/joint_state_retargeter/source_joint_states" to="/joint_states" />
   <remap from="/joint_state_ik/source_joint_states" to="/joint_states" />
-
+  <remap from="/joint_state_ik/target_joint_states" to="/bandit/joint_states" />
   
   <!-- Kinematic retargeter node  -->
   <group unless="$(arg ik)" >

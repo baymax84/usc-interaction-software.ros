@@ -3,7 +3,8 @@
     <arg name="type" default="joint_state_retargeter" />
     <arg name="name" default="$(arg type)" />
     <arg name="rate" default="30" />
-    <arg name="ee_weight" default="30" />
+    <arg name="ee_weight" default="50" />
+    <arg name="cost_weight" default="50" />
     
     <!-- Node subscribes to /joint_state_retargeter/source_joint_states -->
     <!-- Node publishes to /joint_state_retargeter/target_joint_states -->
@@ -14,7 +15,8 @@
     <arg name="args" value="_loop_rate:=$(arg rate)
 			    _source_urdf:=$(arg source_urdf) 
 			    _target_urdf:=$(arg target_urdf)
-			    _ee_weight:=$(arg ee_weight)" />
+			    _ee_weight:=$(arg ee_weight)
+			    _cost_weight:=$(arg cost_weight)" />
 
     <!-- Load the endpoints for the chains that we will be retargeting -->
     <rosparam param="/$(arg name)/chain_info" command="load" file="$(find rss_demo)/params/pr2_both_bandit_both.yaml" />

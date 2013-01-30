@@ -26,5 +26,6 @@ rosbuild_genmsg()
 #quickdev_gencfg()
 
 add_definitions(-DRSSDEMO_JOINTSTATERETARGETERNODE_DEBUG=1)
+add_definitions(-DRSSDEMO_JOINTSTATEIKNODE_DEBUG=1)
 
 add_subdirectory( nodes )
