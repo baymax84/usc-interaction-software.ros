@@ -1,16 +1,16 @@
-Source: ros-fuerte-interaction-quickdev
+Source: ros-groovy-interaction-quickdev
 Section: unknown
 Priority: extra
 Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, pkg-config, ros-fuerte-desktop-full, ros-fuerte-joystick-drivers, libgsl0-dev, libopencv2.4-dev
+Build-Depends: debhelper (>= 7.0.50~), cmake, pkg-config, ros-groovy-desktop-full, ros-groovy-joystick-drivers, libgsl0-dev
 Standards-Version: 3.8.4
 Homepage: http://robotics.usc.edu/~ekaszubski/projects/quickdev
 Vcs-Git: http://code.gogle.com/p/usc-interaction-software.ros
 Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?repo=ros
 
-Package: ros-fuerte-interaction-quickdev
+Package: ros-groovy-interaction-quickdev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ros-fuerte-desktop-full, ros-fuerte-joystick-drivers, libgsl0-dev, libopencv2.4
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-desktop-full, ros-groovy-joystick-drivers, libgsl0-dev
 Description: A package designed to speed up code implementation
  Provides:
  - Enhanced makefiles
