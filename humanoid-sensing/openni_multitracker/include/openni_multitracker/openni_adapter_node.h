@@ -64,7 +64,7 @@ using humanoid::_HumanoidStateArrayMsg;
 using humanoid::_HumanoidStateMsg;
 using humanoid::_HumanoidJointMsg;
 using humanoid::_JointName;
-typedef std::map<_JointName, btQuaternion> _JointNormMap;
+typedef std::map<_JointName, tf::Quaternion> _JointNormMap;
 typedef std::map<_JointName, std::vector<double> > _JointErrorMap;
 
 static _JointErrorMap generateJointErrorMap()
@@ -137,30 +137,30 @@ static _JointNormMap generateJointNormMap()
 {
     _JointNormMap joint_norm_map;
 
-    joint_norm_map["head"]             = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["neck"]             = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["torso"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-//    joint_norm_map["waist"]            = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["right_collar"]     = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["right_shoulder"]   = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
-    joint_norm_map["right_elbow"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 0  ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["right_wrist"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["right_hand"]       = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["right_finger_tip"] = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["left_collar"]      = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["left_shoulder"]    = btQuaternion( Radian( Degree( 90  ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
-    joint_norm_map["left_elbow"]       = btQuaternion( Radian( Degree( 90  ) ), Radian( Degree( 0  ) ), Radian( Degree( -180 ) ) );
-    joint_norm_map["left_wrist"]       = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["left_hand"]        = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["left_finger_tip"]  = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["right_hip"]        = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
-    joint_norm_map["right_knee"]       = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
-    joint_norm_map["right_ankle"]      = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
-    joint_norm_map["right_foot"]       = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
-    joint_norm_map["left_hip"]         = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
-    joint_norm_map["left_knee"]        = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
-    joint_norm_map["left_ankle"]       = btQuaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
-    joint_norm_map["left_foot"]        = btQuaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["head"]             = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["neck"]             = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["torso"]            = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+//    joint_norm_map["waist"]            = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_collar"]     = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_shoulder"]   = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
+    joint_norm_map["right_elbow"]      = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 0  ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_wrist"]      = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_hand"]       = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_finger_tip"] = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_collar"]      = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_shoulder"]    = tf::Quaternion( Radian( Degree( 90  ) ), Radian( Degree( 90 ) ), Radian( Degree( -180 ) ) );
+    joint_norm_map["left_elbow"]       = tf::Quaternion( Radian( Degree( 90  ) ), Radian( Degree( 0  ) ), Radian( Degree( -180 ) ) );
+    joint_norm_map["left_wrist"]       = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_hand"]        = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_finger_tip"]  = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["right_hip"]        = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["right_knee"]       = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["right_ankle"]      = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["right_foot"]       = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
+    joint_norm_map["left_hip"]         = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["left_knee"]        = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["left_ankle"]       = tf::Quaternion( Radian( Degree( -90 ) ), Radian( Degree( 90 ) ), Radian( Degree( 90   ) ) );
+    joint_norm_map["left_foot"]        = tf::Quaternion( Radian( Degree( 0   ) ), Radian( Degree( 90 ) ), Radian( Degree( -90  ) ) );
 
     return joint_norm_map;
 }
@@ -259,7 +259,7 @@ private:
                     //auto const parent_transform( lookupTransform( parent_joint_frame_name, joint_frame_name ) );
 
                     auto const norm_rotation = joint_norm_map.find( joint_name )->second;
-                    btTransform const normalized_transform( sensor_to_current_joint_tf.getRotation() * norm_rotation, sensor_to_current_joint_tf.getOrigin() );
+                    tf::Transform const normalized_transform( sensor_to_current_joint_tf.getRotation() * norm_rotation, sensor_to_current_joint_tf.getOrigin() );
 
                     _HumanoidJointMsg joint_msg;
 
@@ -303,13 +303,13 @@ private:
                 if( joint_msg_it->name == "pelvis" )
                 {
                     auto const & joint_msg = *joint_msg_it;
-                    _TfTranceiverPolicy::publishTransform( unit::convert<btTransform>( joint_msg ), "/openni_depth_frame", "/" + user_state->name + "/" + joint_msg.name );
+                    _TfTranceiverPolicy::publishTransform( unit::convert<tf::Transform>( joint_msg ), "/openni_depth_frame", "/" + user_state->name + "/" + joint_msg.name );
                 }
             }
 
             // calculate base link frame
-            btTransform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", "/openni_depth_frame" );
-            btTransform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
+            tf::Transform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", "/openni_depth_frame" );
+            tf::Transform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
 
             // publish base link tf frame
             _TfTranceiverPolicy::publishTransform( sensor_to_base_link_tf, "/openni_depth_frame", "/" + user_state->name + "/base_link" );

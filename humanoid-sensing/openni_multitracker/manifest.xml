@@ -12,8 +12,7 @@ openni_multitracker broadcasts multiple OpenNI skeleton frame sets using tf.
   <depend package="humanoid_models"/>
   <depend package="nodelet"/>
   <depend package="geometry_msgs"/>
-  <depend package="openni"/>
-  <depend package="nite"/>
+  <depend package="openni_tracker"/>
   <depend package="tf"/>
   <export>
     <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>

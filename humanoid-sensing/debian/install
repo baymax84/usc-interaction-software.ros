@@ -1,1 +1,1 @@
-stack.xml openni_multitracker opt/ros/electric/stacks/humanoid-sensing/
+stack.xml openni_multitracker opt/ros/groovy/stacks/humanoid-sensing/
