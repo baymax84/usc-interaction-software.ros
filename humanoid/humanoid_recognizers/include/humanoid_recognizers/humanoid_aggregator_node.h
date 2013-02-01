@@ -166,7 +166,7 @@ private:
                     // the sensor should exist somewhere in the world; look up that transform
                     auto const world_to_sensor_tf = _TfTranceiverPolicy::waitForAndLookupTransform( world_frame_name_, joint.header.frame_id, 10, 10 );
 
-                    joint.pose.pose = unit::implicit_convert( ( world_to_sensor_tf * sensor_to_joint_tf ) );
+                    joint.pose.pose = unit::implicit_convert( world_to_sensor_tf * sensor_to_joint_tf );
                     joint.header.frame_id = world_frame_name_;
                 }
             }

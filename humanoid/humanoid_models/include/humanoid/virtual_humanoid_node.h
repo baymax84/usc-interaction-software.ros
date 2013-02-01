@@ -70,6 +70,8 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
     double zero_angle_;
     _VirtualHumanoidJointRelOriMap const rel_ori_map_;
 
+    double segment_scale_;
+
     // regex to match any std::make_pair(...) multi-line block below:
     // std::make_pair(\s)(\s+)\($\s+("\w+"),$\s+.+$\s+\{$\s+(&\S+).*$\s+(&\S+).*$\s+(&\S+).*$\s+\}$\s+\)(.*)
     // \1 = newline; \2 = indentation; \3 = key; \4 = ori1; \5 = ori2; \6 = ori3; \7 = (<block separator>)
@@ -116,6 +118,8 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
 
         QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
         multi_pub_.addPublishers<_HumanoidStateArrayMsg>( nh_rel, { "humanoid_states" } );
+
+        segment_scale_ = quickdev::ParamReader::readParam<double>( nh_rel, "segment_scale", 1.0 );
     }
 
     static _VirtualHumanoidJointRelPosMap generateVirtualHumanoidJointRelPosMap()
@@ -191,7 +195,7 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
             auto const & ori_map_entry = rel_ori_map_.find( to_joint_name )->second;
             tf::Quaternion const joint_rel_ori = tf::Quaternion( Radian( Degree( *ori_map_entry[0] ) ), Radian( Degree( *ori_map_entry[1] ) ), Radian( Degree( *ori_map_entry[2] ) ) );
 
-            tf::Transform transform( joint_rel_ori, joint_rel_pos );
+            tf::Transform transform( joint_rel_ori, joint_rel_pos * segment_scale_ );
 
             _HumanoidJointMsg joint_msg;
             joint_msg.header.stamp = now;

@@ -1,0 +1,391 @@
+ros-electric-interaction-humanoid (0.0.1-1352267028) @platform@; urgency=low
+
+  * Commit 3e3f58c5eff22cd5a5171450687886ccad584a2c
+    + Merge latest changes from fuerte_unstable '7b2f101850af' into electric_unstable
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 6 Nov 2012 21:43:48 -0800
+
+ros-electric-interaction-humanoid (0.0.1-1351642515) @platform@; urgency=low
+
+  * Commit 16ee78eab0e443c8975de85471aa2cc523e1d919
+    + Fixed some issues related to conversions between tf::Transform/btTransform.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 30 Oct 2012 17:15:15 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1351642474) @platform@; urgency=low
+
+  * Commit f9ee1a8087e111bf85a514522933abd2a949d8d7
+    + Fixed some issues in .cfg files related to new bugs in fuerte + dynamic_reconfigure.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 30 Oct 2012 17:14:34 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1349627666) @platform@; urgency=low
+
+  * Commit d74def0c87106e1a2202e6d7ec4e693a385d168c
+    + Fixed humanoid debian/rules file for new shared library patch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 7 Oct 2012 09:34:26 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1347003001) @platform@; urgency=low
+
+  * Commit 9fcd4de0e68cf789f554956a45a8d488af5c15d1
+    + Added stack.xml to debian/install for humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 7 Sep 2012 00:30:01 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346992992) @platform@; urgency=low
+
+  * Commit 4bfab88fa0e474ca3fd96ae4ae7415fcaf7b9d32
+    + Added suggestion for humanoid-sensing to debian/control.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:43:12 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346979790) @platform@; urgency=low
+
+  * Commit 255f2a17ef827402c7865618c33a9852c3385512
+    + Fixed calculation of base_link frame for virtual_humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 18:03:10 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346798924) @platform@; urgency=low
+
+  * Commit 7138a0eaa1230a4568d323acab261132df52886c
+    + Moved openni_adapter.launch from humanoid_models to openni_multitracker.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 15:48:44 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346792286) @platform@; urgency=low
+
+  * Commit ccedab41667d861ace0202e5c22f8c23f9b36802
+    + Added stack humanoid-sensing. Moved openni_multitracker into humanoid-sensing. Moved humanoid_models/openni_adapter_node to openni_multitracker.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 13:58:06 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346787934) @platform@; urgency=low
+
+  * Commit 69aee4dd8dcd2eacaf9dcae80f311e52465dcfe2
+    + Added dependencies to humanoid/debian/control. Changed install dependency on libgsl0ldbl to libgsl0-dev in quickdev/debian/control.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 12:45:34 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346738557) @platform@; urgency=low
+
+  * Commit 57a90712474e9f79a1002bd58239850dabb9c985
+    + Added debian folder and buildinfo to humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 3 Sep 2012 23:02:37 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346738052) @platform@; urgency=low
+
+  * Commit 6db659fe907ad22a39ea6c5f4c729df87ca867be
+    + Made humanoid makefile load cmake_stack.mk from quickdev_build. Removed unnecessary Readme.txt.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 3 Sep 2012 22:54:12 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1346319577) @platform@; urgency=low
+
+  * Commit 842d2e951a9785aca76564cfb963c8c065cd1569
+    + Switched humanoid_models and humanoid_recognizers to quickdev_build cmake.mk and added ROS_NOBUILD to debclean target.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 30 Aug 2012 02:39:37 -0700
+
+ros-electric-interaction-humanoid (0.0.1-1345489532) @platform@; urgency=low
+
+  * Commit acac629ce8ab81e9ead663062e9aa356831b350a
+    + First attempt at fixing orientation of humanoid built by openni_adapter.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 20 Aug 2012 19:05:32 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1345254211) @platform@; urgency=low
+
+  * Commit 582323c1097aae5056cbbded78574b18f5f5deb1
+    + Changed minor comment formatting.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 18 Aug 2012 01:43:31 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1344989052) @platform@; urgency=low
+
+  * Commit d775a99ee7ca40adab2c148704c63478d03e8446
+    + Added calculations for base_link frame.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 15 Aug 2012 00:04:12 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1344905861) @platform@; urgency=low
+
+  * Commit 74ee9c2c1aa27cce9e417158e5f2f02bef3576bd
+    + Added unsigned_normal to SoftClassification and update visualization for humanoid_aggregator_node.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 14 Aug 2012 00:57:41 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1344628873) @platform@; urgency=low
+
+  * Commit aacac9b8362774b10c42e2cc055d6aeb71553023
+    + inserted readme for future programmers (commit for Matias Altman)
+
+ -- Aaron St. Clair <abstclair@gmail.com>  Fri, 10 Aug 2012 20:01:13 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341807616) @platform@; urgency=low
+
+  * Commit 388520345d4b1f112540078074eec63b5978c239
+    + Fixed calculation of extra joints in humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 9 Jul 2012 04:20:16 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341794990) @platform@; urgency=low
+
+  * Commit 56c408576eddd539053e7724201da233cbad38cc
+    + Fixed lots of bugs in various aspects of humanoid. Temporarily removed functionality dependent on TimeMessageCache until the bugs with that implementation are squashed.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 9 Jul 2012 00:49:50 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341707672) @platform@; urgency=low
+
+  * Commit de1ef4c410e33e1f205e5ab53b0201b5565b4898
+    + Removed publishing of JointState messagse in HumanoidAggregatorNode. Fixed issue that would prevent a callback from being invoked in HumanoidRecognizerPolicy. Prevented OpenniAdapterNode from publishing an empty list of humanoids.
+
+ -- Ross Mead <qbitai@gmail.com>  Sun, 8 Jul 2012 00:34:32 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341705183) @platform@; urgency=low
+
+  * Commit 53d1b93397f3e593b244e70d42cb05818313cf81
+    + Fixed type mismatch in publisher declaration and call to publish().
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 7 Jul 2012 23:53:03 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341669324) @platform@; urgency=low
+
+  * Commit 06ebba25bf410b3be3d3eb8fd60eedb7a07e8112
+    + Added calculation of pelvis joint from left and right hip joints.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 7 Jul 2012 13:55:24 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341629617) @platform@; urgency=low
+
+  * Commit 969e59c02810fadbcda0bf7a96146b13a5e70b8a
+    + Added publishing of eyes, nose, and ear frames to openni_adapter.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 7 Jul 2012 02:53:37 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341538620) @platform@; urgency=low
+
+  * Commit 0e713c1987029f7854adb4dfc8139f8fc472c11d
+    + Moved soft_classification from proxemic_models to humanoid_models.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 6 Jul 2012 01:37:00 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341531875) @platform@; urgency=low
+
+  * Commit cccc3d903a936e88ef64a2791d7ebdec02aad556
+    + Changed waist joint name to pelvis. Updated conditional variance calculations in openni_adapter_node.h.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 5 Jul 2012 23:44:35 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341524187) @platform@; urgency=low
+
+  * Commit 30218ec9520c908802d978ce28f1417d3c58d990
+    + Limited additional head and eyes variance calculations to only orientation.z.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 5 Jul 2012 21:36:27 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341523736) @platform@; urgency=low
+
+  * Commit a30973efa540b4916a4bcf2b2b3625bad54ff039
+    + Added conditional variance calulations for all relevant joints. Added publishing of eyes joint.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 5 Jul 2012 21:28:56 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341375481) @platform@; urgency=low
+
+  * Commit c6e11846dcfb02ab98a497f80ffd8325d6ab8ac1
+    + Changed pose type from humanoid_models/PoseWithConfidence to geometry_msgs/PoseWithCovariance; updated references.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 4 Jul 2012 04:18:01 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1341027284) @platform@; urgency=low
+
+  * Commit 0c4fef7f74223d95b8441a5424212f925ee2e1bf
+    + Updated humanoid to working (compiling) state.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 30 Jun 2012 03:34:44 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1340134095) @platform@; urgency=low
+
+  * Commit 3879cdb27a23c9df34d227546906609f335ba46c
+    + Committing some sketchy changes.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 19 Jun 2012 19:28:15 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1332805900) @platform@; urgency=low
+
+  * Commit da2aec827f3ef10deb1a6e8c5df71f998513ed12
+    + Added humanoid_retargeter in partially functioning state; updated references. Removed nodelets from build to speed up compile time.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 26 Mar 2012 23:51:40 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1332805789) @platform@; urgency=low
+
+  * Commit 8c529e1808705f206030a2f187afdd41fb936cee
+    + Temporarily removed nodelets from compilation to speed up compile time.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 26 Mar 2012 23:49:49 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1332805712) @platform@; urgency=low
+
+  * Commit dd5c8fd980b940736ab74b672658195b3f194a23
+    + Moved spatial_metrics from proxemics to humanoid. Clarified comments in virtuan_humanoid_node. Optimized some maps in humanoid_features.h; added a few basic functions pertaining to joint dependencies.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 26 Mar 2012 23:48:32 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1329408709) @platform@; urgency=low
+
+  * Commit efd0fdcf7a68fc87ee6116d40b4750ca63cff4eb
+    + Updated formatting and comments in several nodes.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 16 Feb 2012 16:11:49 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1329312636) @platform@; urgency=low
+
+  * Commit d1df1eb3abb20af1071d1fe16baf567e233e00a9
+    + Added parent_name field to HumanoidJoint message; added map from each joint name to the corresponding parent joint's name in humanoid_features.h; added map from joint names to the corresponding normalizing quaternion (ie the quaternion that normalizes the transform from /world to the current frame) to openni_adapter_node. Added virtual_humanoid_node and corresponding dynamic_reconfigure parameters so that humanoids can be roughly simulated.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 15 Feb 2012 13:30:36 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328964189) @platform@; urgency=low
+
+  * Commit f2bcee3db40c7732853aa9961a18e296dba8b51e
+    + Added default template type to HumanoidRecognizerPolicy; added conditional enable to updateFeatures() to disable the function if __FeatureArrayMsg is void. Changed typedef for _HumanoidRecognizerPolicy in PoseMatcherNode to the empty (default) value.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 11 Feb 2012 12:43:09 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328826927) @platform@; urgency=low
+
+  * Commit 77a8e633e40374312a9a9d157b8260467acac606
+    + Further refined kinect-to-humanoid mapping (this is going to change soon). Changed feature distance mode from EUCLIDIAN to EUCLIDIAN_CIRCULAR with range -pi, pi in PoseMatcher.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 9 Feb 2012 22:35:27 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328702361) @platform@; urgency=low
+
+  * Commit 6591d412e21aa8b4484cf108a592c5e6df938d74
+    + Added pose_matcher; updated references.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 8 Feb 2012 11:59:21 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328660341) @platform@; urgency=low
+
+  * Commit 8321f86e89b8b9a44d31b660bd7a25b7f94dadd4
+    + Added JointStateArray message to humanoid_models. Fixed typedef for JoinStateArrayMsg in humanoid_features.h. Made humanoid_aggregator publish JointStateArray messages.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 8 Feb 2012 00:19:01 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328600719) @platform@; urgency=low
+
+  * Commit 1d1b0f0d03457692fb0ec3c214649449c675f79a
+    + Added joint orientation constraints and conversion to JointState message in Humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 7 Feb 2012 07:45:19 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328590258) @platform@; urgency=low
+
+  * Commit 5e6425c55f3303acf662d109e65d427307c3a36b
+    + Updated naming scheme in humanoid_recognizers.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 7 Feb 2012 04:50:58 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1328589164) @platform@; urgency=low
+
+  * Commit 94197c6dd03b1ec8da4f3783e39e004849a3f2b7
+    + Fixed some naming conventions in humanoid_recognizer_policy.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 7 Feb 2012 04:32:44 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1327354975) @platform@; urgency=low
+
+  * Commit ceab059fdfc561470e051e0745d0e4dbfa1c772e
+    + Fixed ambiguous size() function in Humanoid object; fixed behavior of eraseOld() for Humanoid.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 23 Jan 2012 21:42:55 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1323787879) @platform@; urgency=low
+
+  * Commit f0dab93030dd8f3912859a9dc2625c460ce785e2
+    + Added parentheses to QUICKDEV_ENABLE_UPDATE macro; updated references. Improved naming conventions in geometry_message_conversions; added conversion for geometry_msgs::Quaternion <-> btQuaternion. Added messages for SpatialFeature and PsychophysicalFeature. Updated implementation of SpatialFeature; this implementation will be used as a model for all other features; added conversion for proxemics::SpatialFeature -> proxemic_models::SpatialFeature; updated references. Updated implementation of PsychophysicalFeature; updated references. Added '__FeatureArrayMsg' template parameter to HumanoidRecognizerPolicy so that all derived nodes can publish (possibly)unique features; added 'features' channel to multi-publisher in HumanoidRecognizerPolicy; renamed marker update function from 'update' to 'updateMarkers'; added 'updateFeatures' function to accomidate new functionality as mentioned above; updated references. HumanoidRecognizer now naturally publishes HumanoidStateArray messages as its features; updated humanoid_recognizer.launch to remap ~features->~humanoid_states_agg so as to preserve previous functionality. 'psychophysical_features' was spelled incorrectly; corrected title of header and sources; updated references. Removed proxemic_recognizer.h/.cpp due to lack of current and expected future utility.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 13 Dec 2011 14:51:19 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1323392707) @platform@; urgency=low
+
+  * Commit 19c03d1638f179f58aa0972eb170b68538fe1f66
+    + Optimized iterator const-ness and removed comment block containing old implementation of main loop.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 9 Dec 2011 01:05:07 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1323170899) @platform@; urgency=low
+
+  * Commit c7d4894fcba23261019278ef7435f9566ba42e04
+    + Added proxemic_models with spatial_features.h; updated references.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 6 Dec 2011 11:28:19 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1323114930) @platform@; urgency=low
+
+  * Commit f59724067d1fb9850d4e714741282698897cb11f
+    + Updated humanoid models and recognizers to work with the new message_array_cache in quickdev. Added timestamps to messages where appropriate.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 5 Dec 2011 19:55:30 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1322697140) @platform@; urgency=low
+
+  * Commit 15efbd8a1377273d8179448905e46a9b0efd3d60
+    + Renamed kinect_adapter to openni_adapter; updated references. Renamed humanoid.h to humanoid_features.h; updated references.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 30 Nov 2011 23:52:20 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1322612185) @platform@; urgency=low
+
+  * Commit 0eb01f92872f85982e6e3630f4bf6fa9712d31d4
+    + Added buildPairs function to humanoid_recognizer_policy to create a vector of pairs of users. Updated references, specifically hall and mehrabian.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 30 Nov 2011 00:16:25 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1322609764) @platform@; urgency=low
+
+  * Commit c9b0a0afab6ce1e8310b8739cb7a304a3d600845
+    + Fixed launch files for recognizers and update time-to-live for marker-publishing recognizers to fix rviz-related compatibility problems. Updated pairing algorithm in mehrabian_recognizer. Added debug channel for markers 'marker_array' (can also be used functionally as a marker_array topic) to humanoid_recognizer_policy.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 29 Nov 2011 23:36:04 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1322519410) @platform@; urgency=low
+
+  * Commit f0ec708035a5b40815f3ee3023cbb6748b7d2c97
+    + Updated threading and threading-related macros; updated references.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 28 Nov 2011 22:30:10 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1321941481) @platform@; urgency=low
+
+  * Commit d17557357b2b2cd83409ad1ced83fd087b472672
+    + Updated references for macro changes in quickdev_cpp
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 22 Nov 2011 05:58:01 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1321489878) @platform@; urgency=low
+
+  * Commit acc87f848b5eadf205f1900e89b02e2fc97326e3
+    + Updated references for new threading macros in quickdev.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 17 Nov 2011 00:31:18 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1321437990) @platform@; urgency=low
+
+  * Commit 64a9d6e6baa7fc23fc01d582a31f764263964ec1
+    + Added message mutexing to humanoid_recognizer_policy and updated references. Added message mutexing to kinect_adapter. Added launch files for all nodes and nodelets.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 16 Nov 2011 10:06:30 +0000
+
+ros-electric-interaction-humanoid (0.0.1-1321387987) @platform@; urgency=low
+
+  * Commit d53b947d288d31badcfc29ca8de40efeabd71322
+    + Moved humanoid stack out of sandbox.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 15 Nov 2011 20:13:07 +0000
