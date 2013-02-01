@@ -358,8 +358,8 @@ public:
             //   { [-180:180], [-180:180], [-180:180] }
             // }
             auto const & joint_state_entry = joint_state_map.find(joint->name)->second;
-            // convert: btVector3 <- btQuaternion <- geometry_msgs::Quaternion
-            btVector3 const position_vec = unit::make_unit( unit::convert<btQuaternion>( joint->pose.pose.orientation ) );
+            // convert: tf::Vector3 <- tf::Quaternion <- geometry_msgs::Quaternion
+            tf::Vector3 const position_vec = unit::make_unit( unit::convert<tf::Quaternion>( joint->pose.pose.orientation ) );
 
             // a joint state entry stores a plane ID and an offset for each component of rotation
             auto const & plane_ids = joint_state_entry.at( 0 );
@@ -416,8 +416,8 @@ public:
             //   { [-180:180], [-180:180], [-180:180] }
             // }
             auto const & joint_state_entry = joint_state_map.find(joint->name)->second;
-            // convert: btVector3 <- btQuaternion <- geometry_msgs::Quaternion
-            btVector3 const position_vec = unit::make_unit( unit::convert<btQuaternion>( joint->pose.pose.orientation ) );
+            // convert: tf::Vector3 <- tf::Quaternion <- geometry_msgs::Quaternion
+            tf::Vector3 const position_vec = unit::make_unit( unit::convert<tf::Quaternion>( joint->pose.pose.orientation ) );
 
             // a joint state entry stores a plane ID and an offset for each component of rotation
             auto const & plane_ids = joint_state_entry.at( 0 );
@@ -485,7 +485,7 @@ public:
     }
 
     // use world frame
-    static btTransform calculateBaseLinkTransform( _HumanoidStateMsg const & state_msg, btTransform const & world_to_sensor_tf )
+    static tf::Transform calculateBaseLinkTransform( _HumanoidStateMsg const & state_msg, tf::Transform const & world_to_sensor_tf )
     {
         // given: [sensor -> { joints }]
         //        [world -> sensor]
@@ -501,25 +501,25 @@ public:
             joint_map[joint->name] = *joint;
         }
 
-        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( joint_map["pelvis"] );
+        auto const sensor_to_pelvis_tf = unit::convert<tf::Transform>( joint_map["pelvis"] );
         auto const world_to_pelvis_tf = world_to_sensor_tf * sensor_to_pelvis_tf;
 
-        btTransform const angle3d_tf( world_to_pelvis_tf.getRotation() );
-        btVector3 const unit_vec( 1, 0, 0 );
-        btVector3 const angle3d_vec = angle3d_tf * unit_vec;
-        btVector3 const angle2d_vec( angle3d_vec.getX(), angle3d_vec.getY(), 0 );
+        tf::Transform const angle3d_tf( world_to_pelvis_tf.getRotation() );
+        tf::Vector3 const unit_vec( 1, 0, 0 );
+        tf::Vector3 const angle3d_vec = angle3d_tf * unit_vec;
+        tf::Vector3 const angle2d_vec( angle3d_vec.getX(), angle3d_vec.getY(), 0 );
         double const yaw = atan2( angle2d_vec.getY(), angle2d_vec.getX() );
 
-        btVector3 position = world_to_pelvis_tf.getOrigin();
+        tf::Vector3 position = world_to_pelvis_tf.getOrigin();
         position.setZ( 0 );
 
-        btTransform const world_to_base_link_tf( btQuaternion( yaw, 0, 0 ), position );
+        tf::Transform const world_to_base_link_tf( tf::Quaternion( yaw, 0, 0 ), position );
 
         return world_to_sensor_tf.inverse() * world_to_base_link_tf;
     }
 
     // assumes sensor has no roll with respect to the world
-    static btTransform calculateBaseLinkTransform( _HumanoidStateMsg const & state_msg )
+    static tf::Transform calculateBaseLinkTransform( _HumanoidStateMsg const & state_msg )
     {
         // build map from state message
         std::map<std::string, _HumanoidJointMsg> joint_map;
@@ -530,18 +530,18 @@ public:
 
         // given: [sensor -> { joints }]
         // need: 2d pose of pelvis projected to the z-coordinate of the foot that is farthest from the pelvis
-        auto const sensor_to_left_foot_tf = unit::convert<btTransform>( joint_map["left_foot"] );
-        auto const sensor_to_right_foot_tf = unit::convert<btTransform>( joint_map["right_foot"] );
-        auto const sensor_to_pelvis_tf = unit::convert<btTransform>( joint_map["pelvis"] );
+        auto const sensor_to_left_foot_tf = unit::convert<tf::Transform>( joint_map["left_foot"] );
+        auto const sensor_to_right_foot_tf = unit::convert<tf::Transform>( joint_map["right_foot"] );
+        auto const sensor_to_pelvis_tf = unit::convert<tf::Transform>( joint_map["pelvis"] );
 
         auto const pelvis_to_left_foot_vec = sensor_to_left_foot_tf.getOrigin() - sensor_to_pelvis_tf.getOrigin();
         auto const pelvis_to_right_foot_vec = sensor_to_right_foot_tf.getOrigin() - sensor_to_pelvis_tf.getOrigin();
 
         auto const sensor_to_farthest_foot_vec = fabs( pelvis_to_left_foot_vec.length() ) > fabs( pelvis_to_right_foot_vec.length() ) ? pelvis_to_left_foot_vec : pelvis_to_right_foot_vec;
 
-        auto const sensor_to_pelvis_ori = unit::convert<btVector3>( sensor_to_pelvis_tf.getRotation() );
+        auto const sensor_to_pelvis_ori = unit::convert<tf::Vector3>( sensor_to_pelvis_tf.getRotation() );
 
-        return btTransform( btQuaternion( sensor_to_pelvis_ori.getZ(), 0, 0 ), btVector3( sensor_to_pelvis_tf.getOrigin().getX(), sensor_to_pelvis_tf.getOrigin().getY(), sensor_to_farthest_foot_vec.getZ() ) );
+        return tf::Transform( tf::Quaternion( sensor_to_pelvis_ori.getZ(), 0, 0 ), tf::Vector3( sensor_to_pelvis_tf.getOrigin().getX(), sensor_to_pelvis_tf.getOrigin().getY(), sensor_to_farthest_foot_vec.getZ() ) );
     }
 
     static _HumanoidStateMsg estimateExtraJoints( _HumanoidStateMsg const & state_msg )
@@ -569,8 +569,8 @@ public:
                 auto & parent_joint_msg1 = parent_joint_msg1_it->second;
                 auto & parent_joint_msg2 = parent_joint_msg2_it->second;
 
-                auto const sensor_to_left_hip_tf = unit::convert<btTransform>( parent_joint_msg1 );
-                auto const sensor_to_right_hip_tf = unit::convert<btTransform>( parent_joint_msg2 );
+                auto const sensor_to_left_hip_tf = unit::convert<tf::Transform>( parent_joint_msg1 );
+                auto const sensor_to_right_hip_tf = unit::convert<tf::Transform>( parent_joint_msg2 );
 
                 _HumanoidJointMsg joint_msg;
 
@@ -579,7 +579,7 @@ public:
                 joint_msg.name = "pelvis";
                 joint_msg.parent_name = "sensor";
 
-                auto const sensor_to_pelvis_tf = btTransform( ( sensor_to_left_hip_tf.getRotation() + sensor_to_right_hip_tf.getRotation() ) / 2, ( sensor_to_left_hip_tf.getOrigin() + sensor_to_right_hip_tf.getOrigin() ) / 2 );
+                auto const sensor_to_pelvis_tf = tf::Transform( ( sensor_to_left_hip_tf.getRotation() + sensor_to_right_hip_tf.getRotation() ) / 2, ( sensor_to_left_hip_tf.getOrigin() + sensor_to_right_hip_tf.getOrigin() ) / 2 );
 
                 joint_msg.pose.pose = unit::make_unit( sensor_to_pelvis_tf );
 
@@ -630,9 +630,9 @@ public:
                 // copy parent pose
                 joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
-                auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+                auto const sensor_to_head_tf = unit::convert<tf::Transform>( parent_joint_msg );
                 // the eyes are 0.039 m along the head's x-axis
-                auto const sensor_to_eyes_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+                auto const sensor_to_eyes_tf = sensor_to_head_tf * tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), tf::Vector3( 0.039, 0, 0 ) );
 
                 joint_msg.pose.pose = unit::make_unit( sensor_to_eyes_tf );
 
@@ -653,7 +653,7 @@ public:
             {
                 auto & parent_joint_msg = parent_joint_msg_it->second;
 
-                auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+                auto const sensor_to_head_tf = unit::convert<tf::Transform>( parent_joint_msg );
 
                 // left ear
                 {
@@ -667,7 +667,7 @@ public:
                     // copy parent pose
                     joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
-                    auto const head_to_left_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( M_PI_2, 0, 0 ), btVector3( 0, -0.039, 0 ) );
+                    auto const head_to_left_ear_tf = sensor_to_head_tf * tf::Transform( tf::Quaternion( M_PI_2, 0, 0 ), tf::Vector3( 0, -0.039, 0 ) );
 
                     joint_msg.pose.pose = unit::make_unit( head_to_left_ear_tf );
 
@@ -687,7 +687,7 @@ public:
                     joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
                     // the eyes are 0.039 m along the head's x-axis
-                    auto const head_to_right_ear_tf = sensor_to_head_tf * btTransform( btQuaternion( -M_PI_2, 0, 0 ), btVector3( 0, 0.039, 0 ) );
+                    auto const head_to_right_ear_tf = sensor_to_head_tf * tf::Transform( tf::Quaternion( -M_PI_2, 0, 0 ), tf::Vector3( 0, 0.039, 0 ) );
 
                     joint_msg.pose.pose = unit::make_unit( head_to_right_ear_tf );
 
@@ -706,7 +706,7 @@ public:
             {
                 auto & parent_joint_msg = parent_joint_msg_it->second;
 
-                auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+                auto const sensor_to_head_tf = unit::convert<tf::Transform>( parent_joint_msg );
 
                 _HumanoidJointMsg joint_msg;
 
@@ -718,7 +718,7 @@ public:
                 // copy parent pose
                 joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
-                auto const head_to_nose_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+                auto const head_to_nose_tf = sensor_to_head_tf * tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), tf::Vector3( 0.039, 0, 0 ) );
 
                 joint_msg.pose.pose = unit::make_unit( head_to_nose_tf );
 
@@ -736,7 +736,7 @@ public:
             {
                 auto & parent_joint_msg = parent_joint_msg_it->second;
 
-                auto const sensor_to_head_tf = unit::convert<btTransform>( parent_joint_msg );
+                auto const sensor_to_head_tf = unit::convert<tf::Transform>( parent_joint_msg );
 
                 _HumanoidJointMsg joint_msg;
 
@@ -748,7 +748,7 @@ public:
                 // copy parent pose
                 joint_msg.pose.covariance = parent_joint_msg.pose.covariance;
 
-                auto const head_to_mouth_tf = sensor_to_head_tf * btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0.039, 0, 0 ) );
+                auto const head_to_mouth_tf = sensor_to_head_tf * tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), tf::Vector3( 0.039, 0, 0 ) );
 
                 joint_msg.pose.pose = unit::make_unit( head_to_mouth_tf );
 
@@ -802,7 +802,7 @@ public:
                 auto const & joint1 = *joint1_it;
                 auto const & joint2 = *joint2_it;
 
-                double const distance = unit::convert<btVector3>( joint1 ).distance( unit::convert<btVector3>( joint2 ) );
+                double const distance = unit::convert<tf::Vector3>( joint1 ).distance( unit::convert<tf::Vector3>( joint2 ) );
                 if( distance < closest_distance )
                 {
                     closest_distance = distance;
@@ -829,7 +829,7 @@ public:
             auto const & joint1 = *joint1_it;
             auto const & joint2 = *joint2_it;
 
-            double const distance = unit::convert<btVector3>( joint1 ).distance( unit::convert<btVector3>( joint2 ) );
+            double const distance = unit::convert<tf::Vector3>( joint1 ).distance( unit::convert<tf::Vector3>( joint2 ) );
             if( distance < closest_distance )
             {
                 closest_distance = distance;
@@ -840,11 +840,11 @@ public:
         return joint2_name;
     }
 
-    quickdev::FeatureWithCovariance<btVector3, 3> getOrigin( std::string const & joint_name = "pelvis" ) const
+    quickdev::FeatureWithCovariance<tf::Vector3, 3> getOrigin( std::string const & joint_name = "pelvis" ) const
     {
         auto const & joint = humanoid_[joint_name];
 
-        quickdev::FeatureWithCovariance<btVector3, 3> result( unit::convert<btVector3>( joint ) );
+        quickdev::FeatureWithCovariance<tf::Vector3, 3> result( unit::convert<tf::Vector3>( joint ) );
 
         result.getCovariance()( 0, 0 ) = joint.pose.covariance[0 * 6 + 0];
         result.getCovariance()( 1, 1 ) = joint.pose.covariance[1 * 6 + 1];
@@ -857,7 +857,7 @@ public:
     {
         auto const & joint = humanoid_[joint_name];
 
-        quickdev::FeatureWithCovariance<double, 1> result( unit::convert<btVector3>( unit::convert<btQuaternion>( humanoid_[joint_name] ) ).getZ() );
+        quickdev::FeatureWithCovariance<double, 1> result( unit::convert<tf::Vector3>( unit::convert<tf::Quaternion>( humanoid_[joint_name] ) ).getZ() );
 
         result.getCovariance()( 0, 0 ) = joint.pose.covariance[5 * 6 + 5];
 
@@ -867,12 +867,12 @@ public:
 
 } // humanoid
 
-//! conversion: _HumanoidJointMsg -> btVector3
-DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, btVector3, msg, return btVector3( msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z ); )
-//! conversion: _HumanoidJointMsg -> btQuaternion
-DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, btQuaternion, msg, return btQuaternion( msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w ); )
-//! conversion: _HumanoidJointMsg -> btTransform
-DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, btTransform, msg, return btTransform( btQuaternion( msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w ), btVector3( msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z ) ); )
+//! conversion: _HumanoidJointMsg -> tf::Vector3
+DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, tf::Vector3, msg, return tf::Vector3( msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z ); )
+//! conversion: _HumanoidJointMsg -> tf::Quaternion
+DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, tf::Quaternion, msg, return tf::Quaternion( msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w ); )
+//! conversion: _HumanoidJointMsg -> tf::Transform
+DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_HumanoidJointMsg, tf::Transform, msg, return tf::Transform( tf::Quaternion( msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w ), tf::Vector3( msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z ) ); )
 //! conversion: _JointStateMsg -> KDL::JntArray
 //DECLARE_UNIT_CONVERSION_LAMBDA( humanoid::_JointStateMsg, humanoid::_JntArray, msg, humanoid::_JntArray joints( msg.positions.size() ); std::copy( &joints( 0 ), &joints( joints.rows() - 1 ), msg.positions.begin() ); return joints; )
 

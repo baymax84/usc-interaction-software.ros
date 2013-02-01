@@ -1,1 +1,1 @@
-stack.xml humanoid_recognizers humanoid_models opt/ros/electric/stacks/humanoid/
+stack.xml humanoid_recognizers humanoid_models opt/ros/groovy/stacks/humanoid/

@@ -91,7 +91,7 @@ struct IkChainSolver
         ik_vel_solver_( target_chain_ ),
         ik_pos_solver_( target_chain_, q_min, q_max, fk_pos_solver_, ik_vel_solver_, target_chain_.getNrOfJoints(), args... )
     {
-        // 
+        //
     }
 
     static KDL::Chain getChainFromTree( KDL::Tree const & tree, std::string const & start_frame, std::string const & end_frame )
@@ -129,11 +129,11 @@ struct HumanoidChainRetargeter : __IkChainSolver
 
     _JointStateMsg solvePose( Humanoid const & humanoid )
     {
-        static btQuaternion const zero_quat( 0, 0, 0, 1 );
+        static tf::Quaternion const zero_quat( 0, 0, 0, 1 );
         auto const target_pos = humanoid::spatial::getDistance( humanoid[from_joint_], humanoid[to_joint_] );
 
         KDL::Frame target_frame;
-        tf::TransformTFToKDL( btTransform( zero_quat, target_pos ), target_frame );
+        tf::TransformTFToKDL( tf::Transform( zero_quat, target_pos ), target_frame );
 
         // needs to be implemented
 //        auto const current_state = humanoid.getJointStateChain( from_joint_, to_joint_ );
@@ -186,13 +186,13 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
         if(!model_.initFile("/home/matias/ros_workspace/stacks/nao_common/nao_description/urdf/nao_v4.urdf"))
         {
           ROS_ERROR("Failed to Parse URDF");
-        } 
- 
+        }
+
         std::cout << "Loading URDF File" << std::endl;
 
         // get uri of urdf file
         /**auto const urdf_uri = ros::ParamReader<std::string, 1>::readParam( nh_rel, "urdf_uri", "" );
-        std::cout << "URDI: " << urdf_uri << std::endl; 
+        std::cout << "URDI: " << urdf_uri << std::endl;
 
         // load and parse document at specified uri
         std::cout << "Loading xml document" << std::endl;
@@ -205,12 +205,12 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
         std::cout << "Read " << model_.joints_.size() << " joints" << std::endl;
         for( auto joint_it = model_.joints_.cbegin(); joint_it != model_.joints_.cend(); ++joint_it )
-        {     
+        {
             std::cout << joint_it->first << std::endl;
         }
         std::cout << "--------------------" << std::endl;
 
-        
+
 
 
         /**for(int i = 0; i < model_.joints_.size(); i++)
@@ -274,12 +274,12 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
         //Resize q_min array and q_max array
         R_qmin_.resize(6);//Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
-        R_qmax_.resize(6);   
+        R_qmax_.resize(6);
 
-        boost::shared_ptr<const urdf::Link> link = model_.getLink("RWristYaw_link"); 
+        boost::shared_ptr<const urdf::Link> link = model_.getLink("RWristYaw_link");
         boost::shared_ptr<const urdf::Joint> joint = model_.getJoint(link->parent_joint->name);
 
-        std::cout <<"For loop initializes" << std::endl;      
+        std::cout <<"For loop initializes" << std::endl;
         for(unsigned int i = 0; i < 6; i++) //Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
         {
             joint = model_.getJoint(link->parent_joint->name);
@@ -293,7 +293,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
                 std::cout << joint->name.c_str() << ": " << joint->limits->lower << " to " << joint->limits->upper << std::endl;
 
                 float lower, upper;
-                if ( joint->type != urdf::Joint::CONTINUOUS ) 
+                if ( joint->type != urdf::Joint::CONTINUOUS )
                 {
                     lower = joint->limits->lower;
                     upper = joint->limits->upper;
@@ -310,7 +310,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
                 R_qmax_.data[index] = upper;
             }
 
-            std::cout << "Made it through if statement!" << std::endl;       
+            std::cout << "Made it through if statement!" << std::endl;
 
             link = model_.getLink(link->getParent()->name);
 
@@ -326,11 +326,11 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
         L_qmin_.resize(6);
         L_qmax_.resize(6);  //Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
 
-        link = model_.getLink("LWristYaw_link"); 
+        link = model_.getLink("LWristYaw_link");
         joint = model_.getJoint(link->parent_joint->name);
 
-        std::cout <<"For loop initializes" << std::endl; 
-        
+        std::cout <<"For loop initializes" << std::endl;
+
         for(unsigned int i = 0; i < 6; i++) //Hard coded 6 for speed and simplicity.  Later dynamic sizing should be used
         {
             joint = model_.getJoint(link->parent_joint->name);
@@ -344,7 +344,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
                 std::cout << joint->name.c_str() << ": " << joint->limits->lower << " to " << joint->limits->upper << std::endl;
 
                 float lower, upper;
-                if ( joint->type != urdf::Joint::CONTINUOUS ) 
+                if ( joint->type != urdf::Joint::CONTINUOUS )
                 {
                     lower = joint->limits->lower;
                     upper = joint->limits->upper;
@@ -361,7 +361,7 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
                 L_qmax_.data[index] = upper;
             }
 
-            std::cout << "Made it through if statement!" << std::endl;       
+            std::cout << "Made it through if statement!" << std::endl;
 
             link = model_.getLink(link->getParent()->name);
 
@@ -372,10 +372,10 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
 
         // for each pair of joints { left_shoulder -> left_elbow, left_elbow -> left_wrist, right_shoulder -> right_elbow,
         // right_elbow -> right_wrist }
-        // set up an ik solver for the target platform's corresponding joint (in this version we only care about angles 
+        // set up an ik solver for the target platform's corresponding joint (in this version we only care about angles
         // so we need to normalize the link lengths on one platform)
 
-       
+
         // Torso_link -> [L/R]ShoulderPitch -> [L/R]ShoulderPitch_link -> [L/R]ShoulderRoll -> [L/R]ShoulderRoll_link -> [L/R]ElbowYaw -> ...
         /**retargeters_["l_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "left_shoulder", "left_elbow", kinematic_tree_, "LShoulderPitch_link", "LShoulderRoll_link" ) );
         retargeters_["r_shoulder_ori"] = quickdev::make_shared( new _HumanoidChainRetargeter( "right_shoulder", "right_elbow", kinematic_tree_, "RShoulderPitch_link", "RShoulderRoll_link" ) );**/

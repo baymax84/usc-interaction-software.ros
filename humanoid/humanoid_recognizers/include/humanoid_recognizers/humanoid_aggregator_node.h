@@ -162,11 +162,11 @@ private:
                     // otherwise, transform the joint into the coordinate frame specified
 
                     // the joint was measured with respect to some sensor; get that transform
-                    auto const sensor_to_joint_tf = unit::convert<btTransform>( joint.pose.pose );
+                    auto const sensor_to_joint_tf = unit::convert<tf::Transform>( joint.pose.pose );
                     // the sensor should exist somewhere in the world; look up that transform
                     auto const world_to_sensor_tf = _TfTranceiverPolicy::waitForAndLookupTransform( world_frame_name_, joint.header.frame_id, 10, 10 );
 
-                    joint.pose.pose = unit::implicit_convert( ( world_to_sensor_tf * sensor_to_joint_tf ).asBt() );
+                    joint.pose.pose = unit::implicit_convert( ( world_to_sensor_tf * sensor_to_joint_tf ) );
                     joint.header.frame_id = world_frame_name_;
                 }
             }

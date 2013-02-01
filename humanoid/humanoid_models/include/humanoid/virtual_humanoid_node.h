@@ -63,7 +63,7 @@ QUICKDEV_DECLARE_NODE( VirtualHumanoid, _VirtualHumanoidLiveParams, _TfTranceive
 
 QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
 {
-    typedef std::map<_JointName, btVector3> _VirtualHumanoidJointRelPosMap;
+    typedef std::map<_JointName, tf::Vector3> _VirtualHumanoidJointRelPosMap;
     typedef std::map<_JointName, std::vector<double *> > _VirtualHumanoidJointRelOriMap;
 
     ros::MultiPublisher<> multi_pub_;
@@ -123,30 +123,30 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         _VirtualHumanoidJointRelPosMap virtual_humanoid_joint_rel_pos_map;
 
         //                                ["parent->child"]
-        virtual_humanoid_joint_rel_pos_map["neck->head"]                   = btVector3( 0,     0,     0.15 );
-        virtual_humanoid_joint_rel_pos_map["torso->neck"]                  = btVector3( 0,     0,     0.4  );
-        virtual_humanoid_joint_rel_pos_map["pelvis->torso"]                = btVector3( 0,     0,     0.2  );
-        virtual_humanoid_joint_rel_pos_map["sensor->pelvis"]               = btVector3( 0,     0,     0    );
-        virtual_humanoid_joint_rel_pos_map["torso->right_collar"]          = btVector3( 0,    -0.15,  0.3  );
-        virtual_humanoid_joint_rel_pos_map["right_collar->right_shoulder"] = btVector3( 0,     0,     0    );
-        virtual_humanoid_joint_rel_pos_map["right_shoulder->right_elbow"]  = btVector3( 0,    -0.3,   0    );
-        virtual_humanoid_joint_rel_pos_map["right_elbow->right_wrist"]     = btVector3( 0.3,   0,     0    );
-        virtual_humanoid_joint_rel_pos_map["right_wrist->right_hand"]      = btVector3( 0.03,  0,     0    );
-        virtual_humanoid_joint_rel_pos_map["right_hand->right_finger_tip"] = btVector3( 0.03,  0,     0    );
-        virtual_humanoid_joint_rel_pos_map["torso->left_collar"]           = btVector3( 0,     0.15,  0.3  );
-        virtual_humanoid_joint_rel_pos_map["left_collar->left_shoulder"]   = btVector3( 0,     0,     0    );
-        virtual_humanoid_joint_rel_pos_map["left_shoulder->left_elbow"]    = btVector3( 0,     0.3,   0    );
-        virtual_humanoid_joint_rel_pos_map["left_elbow->left_wrist"]       = btVector3( 0.3,   0,     0    );
-        virtual_humanoid_joint_rel_pos_map["left_wrist->left_hand"]        = btVector3( 0.03,  0,     0    );
-        virtual_humanoid_joint_rel_pos_map["left_hand->left_finger_tip"]   = btVector3( 0.03,  0,     0    );
-        virtual_humanoid_joint_rel_pos_map["pelvis->right_hip"]            = btVector3( 0,    -0.15,  0    );
-        virtual_humanoid_joint_rel_pos_map["right_hip->right_knee"]        = btVector3( 0,     0,    -0.4  );
-        virtual_humanoid_joint_rel_pos_map["right_knee->right_ankle"]      = btVector3( 0,     0,    -0.6  );
-        virtual_humanoid_joint_rel_pos_map["right_ankle->right_foot"]      = btVector3( 0.06,  0,    -0.03 );
-        virtual_humanoid_joint_rel_pos_map["pelvis->left_hip"]             = btVector3( 0,     0.15,  0    );
-        virtual_humanoid_joint_rel_pos_map["left_hip->left_knee"]          = btVector3( 0,     0,    -0.4  );
-        virtual_humanoid_joint_rel_pos_map["left_knee->left_ankle"]        = btVector3( 0,     0,    -0.6  );
-        virtual_humanoid_joint_rel_pos_map["left_ankle->left_foot"]        = btVector3( 0.06,  0,    -0.03 );
+        virtual_humanoid_joint_rel_pos_map["neck->head"]                   = tf::Vector3( 0,     0,     0.15 );
+        virtual_humanoid_joint_rel_pos_map["torso->neck"]                  = tf::Vector3( 0,     0,     0.4  );
+        virtual_humanoid_joint_rel_pos_map["pelvis->torso"]                = tf::Vector3( 0,     0,     0.2  );
+        virtual_humanoid_joint_rel_pos_map["sensor->pelvis"]               = tf::Vector3( 0,     0,     0    );
+        virtual_humanoid_joint_rel_pos_map["torso->right_collar"]          = tf::Vector3( 0,    -0.15,  0.3  );
+        virtual_humanoid_joint_rel_pos_map["right_collar->right_shoulder"] = tf::Vector3( 0,     0,     0    );
+        virtual_humanoid_joint_rel_pos_map["right_shoulder->right_elbow"]  = tf::Vector3( 0,    -0.3,   0    );
+        virtual_humanoid_joint_rel_pos_map["right_elbow->right_wrist"]     = tf::Vector3( 0.3,   0,     0    );
+        virtual_humanoid_joint_rel_pos_map["right_wrist->right_hand"]      = tf::Vector3( 0.03,  0,     0    );
+        virtual_humanoid_joint_rel_pos_map["right_hand->right_finger_tip"] = tf::Vector3( 0.03,  0,     0    );
+        virtual_humanoid_joint_rel_pos_map["torso->left_collar"]           = tf::Vector3( 0,     0.15,  0.3  );
+        virtual_humanoid_joint_rel_pos_map["left_collar->left_shoulder"]   = tf::Vector3( 0,     0,     0    );
+        virtual_humanoid_joint_rel_pos_map["left_shoulder->left_elbow"]    = tf::Vector3( 0,     0.3,   0    );
+        virtual_humanoid_joint_rel_pos_map["left_elbow->left_wrist"]       = tf::Vector3( 0.3,   0,     0    );
+        virtual_humanoid_joint_rel_pos_map["left_wrist->left_hand"]        = tf::Vector3( 0.03,  0,     0    );
+        virtual_humanoid_joint_rel_pos_map["left_hand->left_finger_tip"]   = tf::Vector3( 0.03,  0,     0    );
+        virtual_humanoid_joint_rel_pos_map["pelvis->right_hip"]            = tf::Vector3( 0,    -0.15,  0    );
+        virtual_humanoid_joint_rel_pos_map["right_hip->right_knee"]        = tf::Vector3( 0,     0,    -0.4  );
+        virtual_humanoid_joint_rel_pos_map["right_knee->right_ankle"]      = tf::Vector3( 0,     0,    -0.6  );
+        virtual_humanoid_joint_rel_pos_map["right_ankle->right_foot"]      = tf::Vector3( 0.06,  0,    -0.03 );
+        virtual_humanoid_joint_rel_pos_map["pelvis->left_hip"]             = tf::Vector3( 0,     0.15,  0    );
+        virtual_humanoid_joint_rel_pos_map["left_hip->left_knee"]          = tf::Vector3( 0,     0,    -0.4  );
+        virtual_humanoid_joint_rel_pos_map["left_knee->left_ankle"]        = tf::Vector3( 0,     0,    -0.6  );
+        virtual_humanoid_joint_rel_pos_map["left_ankle->left_foot"]        = tf::Vector3( 0.06,  0,    -0.03 );
 
         return virtual_humanoid_joint_rel_pos_map;
     }
@@ -184,14 +184,14 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
             auto const from_frame_name = is_sensor_frame ? sensor_frame_name : "/" + user_name + "/" + from_joint_name;
             auto const to_frame_name = "/" + user_name + "/" + to_joint_name;
 
-            btVector3 const & joint_rel_pos = virtual_humanoid_joint_rel_pos_map.find( from_joint_name + "->" + to_joint_name )->second;
+            tf::Vector3 const & joint_rel_pos = virtual_humanoid_joint_rel_pos_map.find( from_joint_name + "->" + to_joint_name )->second;
 
             //printf( "looking up rotation for joint %s\n", to_joint_name.c_str() );
 
             auto const & ori_map_entry = rel_ori_map_.find( to_joint_name )->second;
-            btQuaternion const joint_rel_ori = btQuaternion( Radian( Degree( *ori_map_entry[0] ) ), Radian( Degree( *ori_map_entry[1] ) ), Radian( Degree( *ori_map_entry[2] ) ) );
+            tf::Quaternion const joint_rel_ori = tf::Quaternion( Radian( Degree( *ori_map_entry[0] ) ), Radian( Degree( *ori_map_entry[1] ) ), Radian( Degree( *ori_map_entry[2] ) ) );
 
-            btTransform transform( joint_rel_ori, joint_rel_pos );
+            tf::Transform transform( joint_rel_ori, joint_rel_pos );
 
             _HumanoidJointMsg joint_msg;
             joint_msg.header.stamp = now;
@@ -216,8 +216,8 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         humanoid_state_msg = _Humanoid::estimateExtraJoints( humanoid_state_msg );
 
         // calculate base link frame
-        btTransform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", config_.sensor_frame_name ).asBt();
-        btTransform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
+        tf::Transform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", config_.sensor_frame_name );
+        tf::Transform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
 
         // publish base link tf frame
         _TfTranceiverPolicy::publishTransform( sensor_to_base_link_tf, config_.sensor_frame_name, "/" + config_.humanoid_name + "/base_link" );

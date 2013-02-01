@@ -41,7 +41,7 @@
 
 #include <humanoid/humanoid_features.h>
 
-#include <LinearMath/btVector3.h>
+#include <tf/LinearMath/Vector3.h>
 
 namespace humanoid
 {
@@ -53,44 +53,44 @@ namespace spatial
 
     static double getDistanceBetween( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        btVector3 joint1_pos = unit::make_unit( joint1 );
-        btVector3 joint2_pos = unit::make_unit( joint2 );
+        tf::Vector3 joint1_pos = unit::make_unit( joint1 );
+        tf::Vector3 joint2_pos = unit::make_unit( joint2 );
 
         return joint1_pos.distance( joint2_pos );
     }
 
-    static btVector3 getDistance( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    static tf::Vector3 getDistance( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        btVector3 joint1_pos = unit::make_unit( joint1 );
-        btVector3 joint2_pos = unit::make_unit( joint2 );
+        tf::Vector3 joint1_pos = unit::make_unit( joint1 );
+        tf::Vector3 joint2_pos = unit::make_unit( joint2 );
 
         return joint2_pos - joint1_pos;
     }
 
-    static btVector3 getMidpoint( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    static tf::Vector3 getMidpoint( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        btVector3 joint1_pos = unit::make_unit( joint1 );
-        btVector3 joint2_pos = unit::make_unit( joint2 );
+        tf::Vector3 joint1_pos = unit::make_unit( joint1 );
+        tf::Vector3 joint2_pos = unit::make_unit( joint2 );
 
         return 0.5 * ( joint1_pos + joint2_pos );
     }
 
-    static btTransform getTransformTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    static tf::Transform getTransformTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        btTransform joint1_tf = unit::make_unit( joint1 );
-        btTransform joint2_tf = unit::make_unit( joint2 );
+        tf::Transform joint1_tf = unit::make_unit( joint1 );
+        tf::Transform joint2_tf = unit::make_unit( joint2 );
 
         return joint1_tf.inverse() * joint2_tf;
     }
 
-    static btQuaternion getAngleTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    static tf::Quaternion getAngleTo( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
         return getTransformTo( joint1, joint2 ).getRotation();
     }
 
-    static btVector3 getAngleToRPY( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
+    static tf::Vector3 getAngleToRPY( _HumanoidJointMsg const & joint1, _HumanoidJointMsg const & joint2 )
     {
-        return unit::convert<btVector3>( getAngleTo( joint1, joint2 ) );
+        return unit::convert<tf::Vector3>( getAngleTo( joint1, joint2 ) );
     }
 } // spatial
 } // humanoid
