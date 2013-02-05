@@ -1,13 +1,18 @@
 # goal
 
-# the list of meta joints to use for this evaluation
-humanoid_sensing_msgs/MetaJoint[] meta_joints
+# the list of meta joints to use for this evaluation, separated into desired/observed
+humanoid_sensing_msgs/MetaJoint[] desired_meta_joints
+humanoid_sensing_msgs/MetaJoint[] observed_meta_joints
 
 # desired meta_joint names
 string[] desired_joint_names
 
 # observed meta_joint names
 string[] observed_joint_names
+
+# look up all transforms relative to these tf frames
+string root_desired_frame
+string root_observed_frame
 
 # variance along each axis
 geometry_msgs/Vector3 variance
