@@ -118,6 +118,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
     // climb our unit-humanoid "tree" from the start to the end (or topmost parent) joint, calculating the cumulative transform as we go
     static btTransform lookupUnitHumanoidTransform( _UnitHumanoid const & unit_humanoid, std::string const & start, std::string const & end = "" )
     {
+        PRINT_INFO( "Looking up unit-humanoid transform [ %s ] -> [ %s ]", start.c_str(), end.c_str() );
+
         // start with a zero transform
         btTransform cumulative_translation_tf( btQuaternion( 0, 0, 0, 1 ) );
 
@@ -140,7 +142,15 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 //            cumulative_translation_tf = current_translation_tf * ( current_rotation_tf * cumulative_translation_tf );
 
             // if we've reached the given end joint, we're done traversing the tree
-            if( meta_joint.parent_name_ == end ) break;
+            if( meta_joint.parent_name_ == end )
+            {
+                PRINT_INFO( "Reached end of chain" );
+                break;
+            }
+
+            auto const & cumulative_translation = cumulative_translation_tf.getOrigin();
+            auto const & current_translation = meta_joint.transform_to_parent_.getOrigin();
+            PRINT_INFO( "[ %s ] -> [ %s ] ( %f, %f, %f ) * ( %f, %f, %f )", meta_joint.name_.c_str(), meta_joint.parent_name_.c_str(), cumulative_translation.x(), cumulative_translation.y(), cumulative_translation.z(), current_translation.x(), current_translation.y(), current_translation.z() );
 
             // otherwise, update the cumulative translation tf
             cumulative_translation_tf *= meta_joint.transform_to_parent_;
@@ -148,8 +158,36 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             unit_humanoid_it = unit_humanoid.find( meta_joint.parent_name_ );
         }
 
+        auto const & cumulative_translation = cumulative_translation_tf.getOrigin();
+        PRINT_INFO( "Cumulative translation: ( %f, %f, %f )", cumulative_translation.x(), cumulative_translation.y(), cumulative_translation.z() );
+
         return cumulative_translation_tf;
     }
+
+    static _MetaJointMsg const & findTopmostParentJoint( std::string const & joint, std::map<std::string, _MetaJointMsg> const & meta_joint_map )
+    {
+        PRINT_INFO( "Looking for topmost parent joint of [ %s ]", joint.c_str() );
+        auto current_meta_joint_it = meta_joint_map.find( joint );
+        while( true )
+        {
+            auto const & meta_joint = current_meta_joint_it->second;
+            auto new_meta_joint_it = meta_joint_map.find( meta_joint.parent_name );
+
+            if( new_meta_joint_it == meta_joint_map.cend() )
+            {
+                break;
+            }
+
+            current_meta_joint_it = new_meta_joint_it;
+        }
+
+        auto const & meta_joint = current_meta_joint_it->second;
+
+        PRINT_INFO( "Found [ %s ]", meta_joint.name.c_str() );
+
+        return meta_joint;
+    }
+
 
     // This optional function is called by quickdev::RunablePolicy at a fixed rate (defined by the ROS param _loop_rate).
     // Most updateable policies should have their update( ... ) functions called within this context.
@@ -162,10 +200,15 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 
         auto const & goal = _EvaluatePoseActionServerPolicy::getGoal();
 
-        auto const & meta_joints = goal.meta_joints;
+        auto const & desired_meta_joints = goal.desired_meta_joints;
+        auto const & observed_meta_joints = goal.observed_meta_joints;
         auto const & desired_joint_names = goal.desired_joint_names;
         auto const & observed_joint_names = goal.observed_joint_names;
         auto const & variance = goal.variance;
+        auto const & root_desired_frame = goal.root_desired_frame;
+        auto const & root_observed_frame = goal.root_observed_frame;
+        //auto const root_desired_frame = root_desired_joint.data;
+        //auto const root_observed_frame = root_observed_joint.data;
 
         if( desired_joint_names.size() != observed_joint_names.size() )
         {
@@ -173,46 +216,82 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             return abortAction();
         }
 
-        auto desired_joint_name_it = desired_joint_names.cbegin();
-        auto observed_joint_name_it = observed_joint_names.cbegin();
-
         // build meta-joints by calculating rotation component of transform from start to end frame
         // our unit-humanoid is just a map of these joints indexed by joint name
+        // note: this data structure holds the unit-vectors for *both* the observed and desired humanoid
         _UnitHumanoid unit_humanoid;
         std::map<std::string, _MetaJointMsg> meta_joint_map;
 
+        std::map<std::string, _MetaJointMsg> desired_meta_joint_map;
+        std::map<std::string, _MetaJointMsg> observed_meta_joint_map;
+
         // build meta-joint map
-        for( auto meta_joint_it = meta_joints.cbegin(); meta_joint_it != meta_joints.cend(); ++meta_joint_it )
+        PRINT_INFO( "Building meta-joint map" );
+        for( auto meta_joint_it = desired_meta_joints.cbegin(); meta_joint_it != desired_meta_joints.cend(); ++meta_joint_it )
         {
             auto const & meta_joint_msg = *meta_joint_it;
+            PRINT_INFO( "Saving meta-joint with name [ %s ]", meta_joint_msg.name.c_str() );
             meta_joint_map[meta_joint_msg.name] = meta_joint_msg;
+            desired_meta_joint_map[meta_joint_msg.name] = meta_joint_msg;
+        }
+        for( auto meta_joint_it = observed_meta_joints.cbegin(); meta_joint_it != observed_meta_joints.cend(); ++meta_joint_it )
+        {
+            auto const & meta_joint_msg = *meta_joint_it;
+            PRINT_INFO( "Saving meta-joint with name [ %s ]", meta_joint_msg.name.c_str() );
+            meta_joint_map[meta_joint_msg.name] = meta_joint_msg;
+            observed_meta_joint_map[meta_joint_msg.name] = meta_joint_msg;
         }
 
-        // find topmost parent
-        _MetaJointMsg root_meta_joint_msg;
+        PRINT_INFO( "Root meta-joints; desired: [ %s ] observed: [ %s ]", root_desired_frame.c_str(), root_observed_frame.c_str() );
+
+        // map from joint name to topmost-parent meta-joint
+        std::map<std::string, _MetaJointMsg> root_meta_joint_map;
+        for( auto meta_joint_it = meta_joint_map.cbegin(); meta_joint_it != meta_joint_map.cend(); ++meta_joint_it )
         {
-            auto meta_joint_it = meta_joint_map.cbegin();
-            while( meta_joint_it != meta_joint_map.cend() )
-            {
-                root_meta_joint_msg = meta_joint_it->second;
-                meta_joint_it = meta_joint_map.find( root_meta_joint_msg.parent_name );
-            }
+            auto const & meta_joint_msg = meta_joint_it->second;
+            root_meta_joint_map[meta_joint_msg.name] = findTopmostParentJoint( meta_joint_msg.name, meta_joint_map );
         }
 
         // a map of transforms from the root meta joint's end frame to the frame stored in the key
         std::map<std::string, btTransform> transforms_map;
-        transforms_map[root_meta_joint_msg.end_frame_name] = btTransform( btQuaternion( 0, 0, 0, 1 ) );
+        transforms_map[root_desired_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ) );
+        transforms_map[root_observed_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ) );
 
-        // look up all the transforms we'll need, relative to topmost parent; we may not actually need all of these
+        // look up all the transforms we'll need, relative to topmost parent; we may not actually use all of these depending on the meta-joints
+        PRINT_INFO( "Looking up transforms" );
         for( auto meta_joint_it = meta_joint_map.cbegin(); meta_joint_it != meta_joint_map.cend(); ++meta_joint_it )
         {
             auto const & meta_joint_msg = meta_joint_it->second;
             // we want a transform without any rotation here
-            transforms_map[meta_joint_msg.start_frame_name] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( root_meta_joint_msg.end_frame_name, meta_joint_msg.start_frame_name ).getOrigin() );
-            transforms_map[meta_joint_msg.end_frame_name] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( root_meta_joint_msg.end_frame_name, meta_joint_msg.end_frame_name ).getOrigin() );
+
+            auto const & joint_start_to_frame = meta_joint_msg.start_frame_name;
+            auto const & joint_end_to_frame = meta_joint_msg.end_frame_name;
+
+            // if a root desired/observed joint name is not defined, use the calculated root from our root_meta_joint map
+            std::string joint_from_frame;
+
+            bool const is_desired_joint = desired_meta_joint_map.count( meta_joint_msg.name ) > 0;
+            bool const is_observed_joint = observed_meta_joint_map.count( meta_joint_msg.name ) > 0;
+
+            if( ( is_desired_joint && root_desired_frame.empty() ) || ( is_observed_joint && root_observed_frame.empty() ) )
+            {
+                joint_from_frame = root_meta_joint_map.find( meta_joint_msg.name )->second.end_frame_name;
+            }
+            // otherwise, use the given frame as the transform source
+            else
+            {
+                if( is_desired_joint && !is_observed_joint ) joint_from_frame = root_desired_frame;
+                if( !is_desired_joint && is_observed_joint ) joint_from_frame = root_observed_frame;
+            }
+
+            PRINT_INFO( "Saving transform [ %s ] -> [ %s ]", joint_from_frame.c_str(), joint_start_to_frame.c_str() );
+            PRINT_INFO( "Saving transform [ %s ] -> [ %s ]", joint_from_frame.c_str(), joint_end_to_frame.c_str() );
+            transforms_map[joint_start_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( joint_from_frame, joint_start_to_frame ).getOrigin() );
+            transforms_map[joint_end_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( joint_from_frame, joint_end_to_frame ).getOrigin() );
         }
 
-        // look up transforms and build our unit-humanoid
+        // pull transforms and build our unit-humanoids
+        PRINT_INFO( "Building unit humanoids" );
         for( auto meta_joint_it = meta_joint_map.cbegin(); meta_joint_it != meta_joint_map.cend(); ++meta_joint_it )
         {
             auto const & meta_joint_msg = meta_joint_it->second;
@@ -232,6 +311,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 //                parent_tf = _TfTranceiverPolicy::lookupTransform( meta_joint_msg.start_frame_name, parent_meta_joint_msg.end_frame_name );
             }
 
+            PRINT_INFO( "Adding entry to unit-humanoid: [ %s ] -> [ %s ]", meta_joint_msg.name.c_str(), meta_joint_msg.parent_name.c_str() );
             unit_humanoid[meta_joint_msg.name] = _MetaJoint( parent_tf, meta_joint_msg.name, meta_joint_msg.parent_name );
         }
 
@@ -239,10 +319,14 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 
         // using our unit-humanoid and our lookupUnitHumanoidTransform function, calculate the distances between all the given meta-joints
         btVector3 const variance_vec = unit::implicit_convert( variance );
+        auto desired_joint_name_it = desired_joint_names.cbegin();
+        auto observed_joint_name_it = observed_joint_names.cbegin();
         for( ; desired_joint_name_it != desired_joint_names.cend(); ++desired_joint_name_it, ++observed_joint_name_it )
         {
-            btTransform desired_tf = lookupUnitHumanoidTransform( unit_humanoid, *desired_joint_name_it );
-            btTransform observed_tf = lookupUnitHumanoidTransform( unit_humanoid, *observed_joint_name_it );
+            auto const & desired_joint_name = *desired_joint_name_it;
+            auto const & observed_joint_name = *observed_joint_name_it;
+            btTransform desired_tf = lookupUnitHumanoidTransform( unit_humanoid, desired_joint_name );
+            btTransform observed_tf = lookupUnitHumanoidTransform( unit_humanoid, observed_joint_name );
 
             result_msg.match_qualities.push_back( unit::implicit_convert( ( observed_tf.getOrigin() - desired_tf.getOrigin() ) / variance_vec ) );
         }

@@ -67,11 +67,15 @@ public:
     MetaJoint( btTransform const & transform_to_parent, std::string const & name = "", std::string const & parent_name = "" )
     :
         // the parent transform needs rotation and the unit vector of translation
+        // note that if the translation component is ( 0, 0, 0 ) then the normalized translation will be ( nan, nan, nan )
+        // this is the desired behavior, as the referenced link has a length of 0, and should never be used
         transform_to_parent_( transform_to_parent.getRotation(), transform_to_parent.getOrigin().normalized() ),
         name_( name ),
         parent_name_( parent_name )
     {
-        //
+        btVector3 const & vec_to_parent = transform_to_parent_.getOrigin();
+        printf( "Created meta-joint [ %s ] with parent [ %s ]\n", name_.c_str(), parent_name_.c_str() );
+        printf( "and transform [ %f ][ %f ][ %f ]\n", vec_to_parent.x(), vec_to_parent.y(), vec_to_parent.z() );
     }
 };
 

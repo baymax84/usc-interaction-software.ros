@@ -77,62 +77,88 @@ QUICKDEV_DECLARE_NODE_CLASS( TestArmPoseRecognizer )
         _EvaluatePoseActionClientPolicy::_GoalMsg goal;
 
 
-        auto & meta_joints = goal.meta_joints;
-        meta_joints.resize( 10 );
+        auto & des_meta_joints = goal.desired_meta_joints;
+        auto & obs_meta_joints = goal.observed_meta_joints;
+        des_meta_joints.resize( 7 );
+        obs_meta_joints.resize( 7 );
 
-        meta_joints[0].name = "user1_neck";
-        meta_joints[0].parent_name = "";
-        meta_joints[0].start_frame_name = "/user1/neck";
-        meta_joints[0].end_frame_name = "/user1/neck";
+        des_meta_joints[0].name = "user1_neck";
+//        des_meta_joints[0].parent_name = "";
+        des_meta_joints[0].start_frame_name = "/user1/neck";
+        des_meta_joints[0].end_frame_name = "/user1/neck";
 
-        meta_joints[1].name = "user1_elbow_r";
-        meta_joints[1].parent_name = "user1_neck";
-        meta_joints[1].start_frame_name = "/user1/right_elbow";
-        meta_joints[1].end_frame_name = "/user1/right_elbow";
+        des_meta_joints[1].name = "user1_shoulder_r";
+//        des_meta_joints[1].parent_name = "user1_neck";
+        des_meta_joints[1].start_frame_name = "/user1/right_shoulder";
+        des_meta_joints[1].end_frame_name = "/user1/right_shoulder";
 
-        meta_joints[2].name = "user1_elbow_l";
-        meta_joints[2].parent_name = "user1_neck";
-        meta_joints[2].start_frame_name = "/user1/left_elbow";
-        meta_joints[2].end_frame_name = "/user1/left_elbow";
+        des_meta_joints[2].name = "user1_shoulder_l";
+//        des_meta_joints[2].parent_name = "user1_neck";
+        des_meta_joints[2].start_frame_name = "/user1/left_shoulder";
+        des_meta_joints[2].end_frame_name = "/user1/left_shoulder";
 
-        meta_joints[3].name = "user1_hand_r";
-        meta_joints[3].parent_name = "user1_elbow_r";
-        meta_joints[3].start_frame_name = "/user1/right_hand";
-        meta_joints[3].end_frame_name = "/user1/right_hand";
+        des_meta_joints[3].name = "user1_elbow_r";
+        des_meta_joints[3].parent_name = "user1_shoulder_r";
+        des_meta_joints[3].start_frame_name = "/user1/right_elbow";
+        des_meta_joints[3].end_frame_name = "/user1/right_elbow";
 
-        meta_joints[4].name = "user1_hand_l";
-        meta_joints[4].parent_name = "user1_elbow_l";
-        meta_joints[4].start_frame_name = "/user1/left_hand";
-        meta_joints[4].end_frame_name = "/user1/left_hand";
+        des_meta_joints[4].name = "user1_elbow_l";
+        des_meta_joints[4].parent_name = "user1_shoulder_l";
+        des_meta_joints[4].start_frame_name = "/user1/left_elbow";
+        des_meta_joints[4].end_frame_name = "/user1/left_elbow";
+
+        des_meta_joints[5].name = "user1_hand_r";
+        des_meta_joints[5].parent_name = "user1_elbow_r";
+        des_meta_joints[5].start_frame_name = "/user1/right_hand";
+        des_meta_joints[5].end_frame_name = "/user1/right_hand";
+
+        des_meta_joints[6].name = "user1_hand_l";
+        des_meta_joints[6].parent_name = "user1_elbow_l";
+        des_meta_joints[6].start_frame_name = "/user1/left_hand";
+        des_meta_joints[6].end_frame_name = "/user1/left_hand";
 
 
-        meta_joints[5].name = "user2_neck";
-        meta_joints[5].parent_name = "";
-        meta_joints[5].start_frame_name = "/user2/neck";
-        meta_joints[5].end_frame_name = "/user2/neck";
+        obs_meta_joints[0].name = "user2_neck";
+//        obs_meta_joints[0].parent_name = "";
+        obs_meta_joints[0].start_frame_name = "/user2/neck";
+        obs_meta_joints[0].end_frame_name = "/user2/neck";
 
-        meta_joints[6].name = "user2_elbow_r";
-        meta_joints[6].parent_name = "user2_neck";
-        meta_joints[6].start_frame_name = "/user2/right_elbow";
-        meta_joints[6].end_frame_name = "/user2/right_elbow";
+        obs_meta_joints[1].name = "user2_shoulder_r";
+//        obs_meta_joints[1].parent_name = "user2_neck";
+        obs_meta_joints[1].start_frame_name = "/user2/right_shoulder";
+        obs_meta_joints[1].end_frame_name = "/user2/right_shoulder";
 
-        meta_joints[7].name = "user2_elbow_l";
-        meta_joints[7].parent_name = "user2_neck";
-        meta_joints[7].start_frame_name = "/user2/left_elbow";
-        meta_joints[7].end_frame_name = "/user2/left_elbow";
+        obs_meta_joints[2].name = "user2_shoulder_l";
+//        obs_meta_joints[2].parent_name = "user2_neck";
+        obs_meta_joints[2].start_frame_name = "/user2/left_shoulder";
+        obs_meta_joints[2].end_frame_name = "/user2/left_shoulder";
 
-        meta_joints[8].name = "user2_hand_r";
-        meta_joints[8].parent_name = "user2_elbow_r";
-        meta_joints[8].start_frame_name = "/user2/right_hand";
-        meta_joints[8].end_frame_name = "/user2/right_hand";
+        obs_meta_joints[3].name = "user2_elbow_r";
+        obs_meta_joints[3].parent_name = "user2_shoulder_r";
+        obs_meta_joints[3].start_frame_name = "/user2/right_elbow";
+        obs_meta_joints[3].end_frame_name = "/user2/right_elbow";
 
-        meta_joints[9].name = "user2_hand_l";
-        meta_joints[9].parent_name = "user2_elbow_l";
-        meta_joints[9].start_frame_name = "/user2/left_hand";
-        meta_joints[9].end_frame_name = "/user2/left_hand";
+        obs_meta_joints[4].name = "user2_elbow_l";
+        obs_meta_joints[4].parent_name = "user2_shoulder_l";
+        obs_meta_joints[4].start_frame_name = "/user2/left_elbow";
+        obs_meta_joints[4].end_frame_name = "/user2/left_elbow";
+
+        obs_meta_joints[5].name = "user2_hand_r";
+        obs_meta_joints[5].parent_name = "user2_elbow_r";
+        obs_meta_joints[5].start_frame_name = "/user2/right_hand";
+        obs_meta_joints[5].end_frame_name = "/user2/right_hand";
+
+        obs_meta_joints[6].name = "user2_hand_l";
+        obs_meta_joints[6].parent_name = "user2_elbow_l";
+        obs_meta_joints[6].start_frame_name = "/user2/left_hand";
+        obs_meta_joints[6].end_frame_name = "/user2/left_hand";
 
         goal.desired_joint_names = { "user1_elbow_r", "user1_elbow_l", "user1_hand_r", "user1_hand_l" };
         goal.observed_joint_names = { "user2_elbow_r", "user2_elbow_l", "user2_hand_r", "user2_hand_l" };
+
+        goal.root_desired_frame = "/user1/neck";
+        goal.root_observed_frame = "/user2/neck";
+
         goal.variance.x = 0.2;
         goal.variance.y = 0.2;
         goal.variance.z = 0.2;
