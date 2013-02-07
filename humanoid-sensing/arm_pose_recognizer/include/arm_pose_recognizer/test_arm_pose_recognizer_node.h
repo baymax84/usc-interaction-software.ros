@@ -66,6 +66,10 @@ QUICKDEV_DECLARE_NODE_CLASS( TestArmPoseRecognizer )
 
     QUICKDEV_SPIN_FIRST()
     {
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+
+        auto const mirror = quickdev::ParamReader::readParam<bool>( nh_rel, "mirror", false );
+
         _EvaluatePoseActionClientPolicy::registerActiveCB( quickdev::auto_bind( &TestArmPoseRecognizerNode::evaluatePoseActionActiveCB, this ) );
         _EvaluatePoseActionClientPolicy::registerFeedbackCB( quickdev::auto_bind( &TestArmPoseRecognizerNode::evaluatePoseActionFeedbackCB, this ) );
         _EvaluatePoseActionClientPolicy::registerDoneCB( quickdev::auto_bind( &TestArmPoseRecognizerNode::evaluatePoseActionDoneCB, this ) );
@@ -154,10 +158,12 @@ QUICKDEV_DECLARE_NODE_CLASS( TestArmPoseRecognizer )
         obs_meta_joints[6].end_frame_name = "/user2/left_hand";
 
         goal.desired_joint_names = { "user1_elbow_r", "user1_elbow_l", "user1_hand_r", "user1_hand_l" };
-        goal.observed_joint_names = { "user2_elbow_r", "user2_elbow_l", "user2_hand_r", "user2_hand_l" };
+        goal.observed_joint_names = { "user2_elbow_l", "user2_elbow_r", "user2_hand_l", "user2_hand_r" };
 
         goal.root_desired_frame = "/user1/neck";
         goal.root_observed_frame = "/user2/neck";
+
+        goal.mirror = mirror;
 
         goal.variance.x = 0.2;
         goal.variance.y = 0.2;

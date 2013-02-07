@@ -17,6 +17,8 @@ string root_observed_frame
 # variance along each axis
 geometry_msgs/Vector3 variance
 
+bool mirror
+
 ---
 
 # result

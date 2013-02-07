@@ -207,8 +207,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         auto const & variance = goal.variance;
         auto const & root_desired_frame = goal.root_desired_frame;
         auto const & root_observed_frame = goal.root_observed_frame;
-        //auto const root_desired_frame = root_desired_joint.data;
-        //auto const root_observed_frame = root_observed_joint.data;
+        auto const & mirror = goal.mirror;
 
         if( desired_joint_names.size() != observed_joint_names.size() )
         {
@@ -286,8 +285,17 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 
             PRINT_INFO( "Saving transform [ %s ] -> [ %s ]", joint_from_frame.c_str(), joint_start_to_frame.c_str() );
             PRINT_INFO( "Saving transform [ %s ] -> [ %s ]", joint_from_frame.c_str(), joint_end_to_frame.c_str() );
-            transforms_map[joint_start_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( joint_from_frame, joint_start_to_frame ).getOrigin() );
-            transforms_map[joint_end_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), _TfTranceiverPolicy::lookupTransform( joint_from_frame, joint_end_to_frame ).getOrigin() );
+
+            tf::Vector3 vec1 = _TfTranceiverPolicy::lookupTransform( joint_from_frame, joint_start_to_frame ).getOrigin();
+            tf::Vector3 vec2 = _TfTranceiverPolicy::lookupTransform( joint_from_frame, joint_end_to_frame ).getOrigin();
+            // if the client wants mirroring enabled, invert the y-components of the vectors for observed joints
+            if( mirror && is_observed_joint )
+            {
+                vec1.setY( -vec1.getY() );
+                vec2.setY( -vec2.getY() );
+            }
+            transforms_map[joint_start_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), vec1 );
+            transforms_map[joint_end_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), vec2 );
         }
 
         // pull transforms and build our unit-humanoids
