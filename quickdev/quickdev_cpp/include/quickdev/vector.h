@@ -266,7 +266,11 @@ public:
         std::copy( args.begin(), args.end(), this->begin() );
     }
 
-    template<class... __Args>
+    template
+    <
+        class... __Args,
+        typename std::enable_if<(sizeof...(__Args) > 1), int>::type = 0
+    >
     void init( __Args&&... args )
     {
         init( { std::forward<__Args>( args )... } );
