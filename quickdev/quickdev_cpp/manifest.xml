@@ -33,7 +33,7 @@
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
-    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lquickdev_cpp"/>
+    <cpp cflags="-I${prefix}/include -I${prefix}/cfg/cpp -D TF_DEFAULT_EULER_ZYX=1" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lquickdev_cpp"/>
     <!-- cmake files exported for backwards compatibility; new packages should be using quickdev_build for this functionality -->
     <rosbuild cmake_directory="${prefix}/cmake"/>
   </export>

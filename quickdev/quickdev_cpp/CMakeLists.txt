@@ -20,6 +20,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 quickdev_gencfg()
 
+# ensure constructor for tf::Quaternion sets axes in YPR order
+add_definitions( "-D TF_DEFAULT_EULER_ZYX=1" )
+
 include_directories( ${PROJECT_SOURCE_DIR}/cfg/cpp )
 
 add_subdirectory( src )
