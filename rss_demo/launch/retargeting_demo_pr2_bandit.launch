@@ -33,7 +33,7 @@
   <group if="$(arg enable-pr2)" >
 
     <include file="$(find rss_demo)/launch/pr2.launch" >
-      <arg name="simulate" value="$(arg simulate)" />
+      <arg name="simulate" value="true" />
       <arg name="visualize" value="$(arg visualize)" />
       <arg name="interactive" value="$(arg interactive)" />  
       <arg name="teleop" value="$(arg teleop)" />
@@ -55,7 +55,7 @@
 
     <group unless="$(arg ik)" >
       <remap from="/bandit/target_joints" to="/joint_state_retargeter/retargeted_joint_states"/>
-      
+      <remap from="/bandit/bandit_driver/joint_state_command" to="/joint_state_retargeter/retargeted_joint_states" />     
       <include file="$(find rss_demo)/launch/bandit.launch" >
 	<arg name="simulate" value="$(arg simulate)" />
 	<arg name="visualize" value="false" />

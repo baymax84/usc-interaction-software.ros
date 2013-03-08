@@ -29,9 +29,9 @@
   </group>
   
   <!-- Teleop -->
-  <group if="$(arg teleop)" >
-    <include file="$(find pr2_teleop)/teleop_keyboard.launch" />
-  </group>
+  <!-- <group if="$(arg teleop)" > -->
+  <!--   <include file="$(find pr2_teleop)/teleop_keyboard.launch" /> -->
+  <!-- </group> -->
   
   <!-- Interactive Mode -->
   <group>
