@@ -33,24 +33,24 @@
 ROS_PACKAGE_NAME=bandit
 
 build:
-    export DEB_PACKAGE_NAME=$${PWD##*/} && cd .. && mkdir $(ROS_PACKAGE_NAME) && cp $$DEB_PACKAGE_NAME/* $(ROS_PACKAGE_NAME) -r && \
-    cd $(ROS_PACKAGE_NAME) && ln -s $$(pwd) /opt/ros/groovy/stacks/$(ROS_PACKAGE_NAME)
-    rosdep update
-    . /opt/ros/groovy/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd $$(rosstack find $(ROS_PACKAGE_NAME)) && dh $@
+	export DEB_PACKAGE_NAME=$${PWD##*/} && cd .. && mkdir $(ROS_PACKAGE_NAME) && cp $$DEB_PACKAGE_NAME/* $(ROS_PACKAGE_NAME) -r && \
+	cd $(ROS_PACKAGE_NAME) && ln -s $$(pwd) /opt/ros/groovy/stacks/$(ROS_PACKAGE_NAME)
+	rosdep update
+	. /opt/ros/groovy/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd $$(rosstack find $(ROS_PACKAGE_NAME)) && dh $@
 
 binary:
-    . /opt/ros/groovy/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd ~/$(ROS_PACKAGE_NAME) && dh $@
+	. /opt/ros/groovy/setup.sh && export ROS_PARALLEL_JOBS=-j$$(cat /proc/cpuinfo | grep -c processor) && cd ~/$(ROS_PACKAGE_NAME) && dh $@
 
 override_dh_shlibdeps:
-    dh_shlibdeps -- --ignore-missing-info
+	dh_shlibdeps -- --ignore-missing-info
 
 override_dh_builddeb:
-    cd .. && export DEB_PACKAGE_NAME=$(shell cd .. && find -maxdepth 1 -mindepth 1 -type d -not -name "$(ROS_PACKAGE_NAME)" -not -name "\.*" -exec basename {} \;) && rm $$DEB_PACKAGE_NAME/* -r && cp $(ROS_PACKAGE_NAME)/* $$DEB_PACKAGE_NAME -r
-    dh_builddeb $@
+	cd .. && export DEB_PACKAGE_NAME=$(shell cd .. && find -maxdepth 1 -mindepth 1 -type d -not -name "$(ROS_PACKAGE_NAME)" -not -name "\.*" -exec basename {} \;) && rm $$DEB_PACKAGE_NAME/* -r && cp $(ROS_PACKAGE_NAME)/* $$DEB_PACKAGE_NAME -r
+	dh_builddeb $@
 
 override_dh_usrlocal:
-    rm -rf debian/*/usr/local
-    dh_usrlocal $@
+	rm -rf debian/*/usr/local
+	dh_usrlocal $@
 
 %:
-    dh $@
+	dh $@

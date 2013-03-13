@@ -1,14 +1,14 @@
-Source: ros-electric-interaction-bandit
+Source: ros-groovy-interaction-bandit
 Section: unknown
 Priority: extra
 Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, ros-electric-interaction-quickdev
+Build-Depends: debhelper (>= 7.0.50~), cmake, ros-groovy-interaction-quickdev
 Standards-Version: 3.8.4
 Homepage: http://code.google.com/p/usc-interaction-software/
 Vcs-Git: https://code.google.com/p/usc-interaction-software.ros/
-Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?repo=ros&name=electric_unstable#git%2Fbandit
+Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?repo=ros&name=groovy_unstable#git%2Fbandit
 
-Package: ros-electric-interaction-bandit
+Package: ros-groovy-interaction-bandit
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ros-electric-interaction-quickdev
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-interaction-quickdev
 Description: Drivers and controllers for the Bandit robots
