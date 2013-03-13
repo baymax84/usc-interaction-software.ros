@@ -1,1 +1,2 @@
 -s quickdev -t build
+-s bandit -t build
