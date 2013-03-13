@@ -1,0 +1,27 @@
+ros-electric-interaction-bandit (0.0.1-1349627711) @platform@; urgency=low
+
+  * Commit 120e8ecbd929b283114ceaca47bda265c0edeeec
+    + Fixed bandit debian/rules file for new shared library patch.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 7 Oct 2012 09:35:11 -0700
+
+ros-electric-interaction-bandit (0.0.1-1347568835) @platform@; urgency=low
+
+  * Commit 2ad0d933599f28f474b36bfb861bc0c724310788
+    + Imported latest calibration for bandit2 from internal svn.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 13 Sep 2012 13:40:35 -0700
+
+ros-electric-interaction-bandit (0.0.1-1347568391) @platform@; urgency=low
+
+  * Commit 8b7166cde2d964eb2a97eb22070f0f8eaf96f45d
+    + Debianized bandit stack. Added ROS_NOBUILD to bandit_driver, bandit_ik, and bandit_arm_kinematics because their dependencies are not currently satisfiable via debian packages. Fixed bugs in bandit_actionlib CMakeLists.txt.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 13 Sep 2012 13:33:11 -0700
+
+ros-electric-interaction-bandit (0.0.1-1347402006) @platform@; urgency=low
+
+  * Commit 03400ca6f0d8a8568c7e037f241dc186a25605b7
+    + Imported all bandit-related content (with the exception of meshes) from the internal SVN.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 11 Sep 2012 15:20:06 -0700
