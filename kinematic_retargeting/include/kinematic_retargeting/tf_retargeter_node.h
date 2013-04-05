@@ -88,6 +88,8 @@ class TFCache
   typedef std::map<std::string, tf::Transform> NameTransformMap;
   NameTransformMap name_frame_map_;
   
+  tf::TransformListener tf_listener_;
+  
  public:
 
   /** 
@@ -98,24 +100,90 @@ class TFCache
    * 
    * @return Zero if successful, non-zero otherwise
    */
-  int fromXmlRpc(XmlRpc::XmlRpcValue xml_names, int wait_time = 5)
+  int fromXmlRpc(XmlRpc::XmlRpcValue const & xml_names, int const & wait_time = 5)
   {
-    
+    for(unsigned int idx = 0; idx < xml_names.size(); ++idx)
+      {
+	const std::string & tf_name = xml_names[ idx ];
+	
+	if (tf_listener_.waitForTransform( "/world", tf_name, ros::Time(0), ros::Duration( wait_time )))
+	  {
+	    tf::StampedTransform world_to_joint_tf;
+	    
+	    try
+	      {
+		tf_listener_.lookupTransform( "/world", tf_name, ros::Time(0), world_to_joint_tf);
+	      }
+	    catch
+	      {
+		ROS_ERROR( "%s", ex.what() );
+		return -1;
+	      }
+	  
+	    name_frame_map_[ tf_name ] = world_to_joint_tf;
+	    ROS_INFO( "Loaded source frame [ %s ]", tf_name.c_str() );
+	    
+	  }
+	else
+	  {
+	    ROS_ERROR( "Lookup of [ %s ] failed.", tf_name.c_str() );
+	    return -1;
+	  }
+      }
+	
+    return 0;
   }
 
   int update()
   {
+    int error = 0;
+
     /// Get newer versions of all of the transforms if they are available
+    for( NameTransformMap::iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
+      {
+	
+	try
+	  {
+	    tf_listener_.lookupTransform( "/world", tf_it->first, ros::Time(0), tf_it->second);
+	  }
+	catch
+	  {
+	    ROS_ERROR( "%s", ex.what() );
+	    error = -1;
+	  }
+	
+      }
+    
+    return error;
   }
+
   
   int getFrame(std::string const & frame_name, tf::Transform & out) const 
     {
-      /// Get the frame, if it's in the map
+      NameTransformMap::iterator tf_it  =name_frame_map_.find( frame_name );
+
+      if(  tf_it == name_frame_map_.end() )
+	return -1;
+      else
+	{
+	  out = tf_it->second;
+	  return 0;
+	}
     }
 
+  /// return all of the frames as an rtk::_FrameArray
   operator _FrameArray() const
   {
-    /// return all of the frames as an rtk::_FrameArray
+    _FrameArray output;
+    
+    for( NameTransformMap::const_iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
+      {
+	
+
+	
+      }
+
+    return output;
   }
 
 };
