@@ -1,8 +1,8 @@
 /***************************************************************************
- *  nodes/humanoid_pose_matcher_node.cpp
+ *  tf_retargeter_node.cpp
  *  --------------------
  *
- *  Copyright (c) 2012, Dylan J. Foster
+ *  Copyright (c) 2013, Dylan J. Foster
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
  *    copyright notice, this list of conditions and the following disclaimer
  *    in the documentation and/or other materials provided with the
  *    distribution.
- *  * Neither the name of kinematic_retargeting nor the names of its
+ *  * Neither the name of rtk nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
  *
@@ -33,10 +33,7 @@
  *
  **************************************************************************/
 
-#include <kinematic_retargeting/humanoid_pose_matcher_node.h>
+#include <kinematic_retargeting/tf_retargeter_node.h>
 
-// This file was auto-generated; the corresponding header file is ../include/kinematic_retargeting/humanoid_pose_matcher_node.h
-
-// Instantiate our node; this macro expands to an int main( ... ) in which an instance of our node is created and started
 //
-QUICKDEV_INST_NODE( HumanoidPoseMatcherNode, "humanoid_pose_matcher" )
+QUICKDEV_INST_NODE( TFRetargeterNode, "tf_retargeter" )
