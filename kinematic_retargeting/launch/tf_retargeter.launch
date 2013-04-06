@@ -6,14 +6,18 @@
     <arg name="ee_weight" default="50" />
     <arg name="cost_weight" default="50" />
     
+    <arg name="dummy_tf" default="false" />
+    
+    <include if="$(arg dummy_tf)" file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
+    
     <!-- Node subscribes to /joint_state_retargeter/source_joint_states -->
     <!-- Node publishes to /joint_state_retargeter/target_joint_states -->
+    
 
-    <!-- TODO: Load Sparky URDF -->
-    <arg name="target_urdf" default="$(find bandit_urdf)/urdf/bandit_defs.urdf"/>
+
+    <arg name="target_urdf" default="$(find kinematic_retargeting)/urdf/sparky_gazebo.urdf"/>
     
     <arg name="args" value="_loop_rate:=$(arg rate)
-			    _source_urdf:=$(arg source_urdf) 
 			    _target_urdf:=$(arg target_urdf)
 			    _ee_weight:=$(arg ee_weight)
 			    _cost_weight:=$(arg cost_weight)" />

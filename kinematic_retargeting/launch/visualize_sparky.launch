@@ -1,0 +1,7 @@
+<launch>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="sparky_state_publisher" />
+  
+  <param name="robot_description" textfile="$(find kinematic_retargeting)/urdf/sparky_gazebo.urdf" />
+  
+</launch>
