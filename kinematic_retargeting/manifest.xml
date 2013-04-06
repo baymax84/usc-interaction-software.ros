@@ -16,7 +16,8 @@
   <depend package="kdl"/>
   <depend package="kdl_parser"/>
   <depend package="urdf"/>
-  <depend package="tf_conversions"/>
+  <depend package="tf" />
+  <depend package="kdl_conversions"/>
   <depend package="visualization_msgs"/>
   <depend package="sensor_msgs"/>
   <depend package="bandit_urdf" />
