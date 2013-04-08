@@ -536,8 +536,8 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	  
 	  /// Retarget ------------------------------------
       	  	  
-      	  /* rtk::spatial::transform(source_frames, retargeter_it->target_to_source_); */
-      	  /* rtk::spatial::translateToOrigin(source_frames); */
+      	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
+      	  rtk::spatial::translateToOrigin(source_frames);
 	  
       	  /// TODO: Get these values (and maybe retargeting algorithm) from config
       	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 5000) )
@@ -707,16 +707,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
     ee_marker.id = id++;
     ee_marker.color = color;
 
-    
-    /* int ii = 0; */
-    
     for(auto frame_it = pose.begin(); frame_it != pose.end(); ++frame_it, ++id)
       {
-	/* ii++; */
 
-	/* if (ii != 2) */
-	/*   continue; */
-	
 	/* tf::poseKDLToMsg(*frame_it, marker_pose); */
 	POSE_KDL_TO_MSG( *frame_it, marker_pose );
 	
