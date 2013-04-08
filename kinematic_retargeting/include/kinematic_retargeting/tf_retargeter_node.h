@@ -56,13 +56,29 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <rtk/math_impl.h>
 #include <rtk/pose_solver_lsq.h>
-#include <kdl_conversions/kdl_msg.h>
+
+/* This is version 1.9.44, Groovy. I'm not sure if this should actually have the Fuerte version */
+#if ROS_VERSION_MINIMUM(1, 9, 44)
+  
+  #include <kdl_conversions/kdl_msg.h>
+
+  #define POSE_KDL_TO_MSG(__KDLFRAME, __POSEMSG) tf::poseKDLToMsg((__KDLFRAME), (__POSEMSG));
+  #define TRANSFORM_TF_TO_KDL(__TFTRANSFORM, __KDLFRAME) tf::transformTFToKDL((__TFTRANSFORM), (__KDLFRAME))
+
+#else
+
+  #define POSE_KDL_TO_MSG(__KDLFRAME, __POSEMSG) tf::PoseKDLToMsg((__KDLFRAME), (__POSEMSG));
+  #define TRANSFORM_TF_TO_KDL(__TFTRANSFORM, __KDLFRAME) tf::TransformTFToKDL((__TFTRANSFORM), (__KDLFRAME))
+
+#endif
+
 #include <tf_conversions/tf_kdl.h>
 
 /// visualization
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/Pose.h>
 #include <std_msgs/ColorRGBA.h>
+
 
 typedef sensor_msgs::JointState _JointStateMsg;
 
@@ -214,7 +230,8 @@ class TFCache
       {
 	_Frame world_to_joint_kdl;
 	
-	tf::transformTFToKDL( tf_it->second, world_to_joint_kdl );
+	/* tf::transformTFToKDL( tf_it->second, world_to_joint_kdl ); */
+	TRANSFORM_TF_TO_KDL( tf_it->second, world_to_joint_kdl );
 	
 	output.push_back( world_to_joint_kdl );
 	
@@ -667,7 +684,8 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
     
     for(auto frame_it = pose.begin(); frame_it != pose.end(); ++frame_it, ++id)
       {
-	tf::poseKDLToMsg(*frame_it, marker_pose);
+	/* tf::poseKDLToMsg(*frame_it, marker_pose); */
+	POSE_KDL_TO_MSG( *frame_it, marker_pose );
 	
 	joint_marker.points.push_back(marker_pose.position);
 	segment_marker.points.push_back(marker_pose.position);
@@ -676,7 +694,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
     markers.markers.push_back(joint_marker);
     markers.markers.push_back(segment_marker);
 
-    tf::poseKDLToMsg(pose.back(), marker_pose);
+   /* tf::poseKDLToMsg(pose.back(), marker_pose); */
+    POSE_KDL_TO_MSG( pose.back(), marker_pose );
+
     
     ee_marker.pose = marker_pose;
     
@@ -684,7 +704,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
     chain_name_marker.text = marker_namespace;
     
-    tf::poseKDLToMsg(pose_centroid, marker_pose);
+    /* tf::poseKDLToMsg(pose_centroid, marker_pose); */
+    POSE_KDL_TO_MSG( pose_centroid, marker_pose );
+    
     chain_name_marker.pose = marker_pose;
     chain_name_marker.pose.position.z += 0.4;
     

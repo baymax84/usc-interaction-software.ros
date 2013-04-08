@@ -1,13 +1,29 @@
-<launch>
+ <launch>
 
-  <arg name="dummy_tf" default="true" />
+  <arg name="dummy_tf" default="false" />
+  <arg name="openni" default="false" />
   
-  <include if="$(arg dummy_tf)" file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
-  
-  <!-- Load structural information for the chains that we will be retargeting -->
-  <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_all.yaml" />
+  <group if="$(arg dummy_tf)" >
+    <include file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
+    
+    <!-- Load structural information for the chains that we will be retargeting -->
+    <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_kinect_bridge.yaml" />
 
+  </group>
   
+  <group if="$(arg openni)" >
+    
+    <include file="$(find openni_launch)/launch/openni.launch" />
+
+    <node pkg="openni_tracker" type="openni_tracker" name="openni_tracker" />
+    
+  </group>
+
+  <!-- Retargeting node -->  
   <include file="$(find kinematic_retargeting)/launch/tf_retargeter.launch" />
 
+  <group if="$(arg visualize)" >
+    <node pkg="rviz" type="rviz" name="retargeter_visualization" />
+  </group>
+  
 </launch>
