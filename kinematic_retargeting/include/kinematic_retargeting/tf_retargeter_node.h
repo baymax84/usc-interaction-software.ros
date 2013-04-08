@@ -79,7 +79,6 @@
 #include <geometry_msgs/Pose.h>
 #include <std_msgs/ColorRGBA.h>
 
-
 typedef sensor_msgs::JointState _JointStateMsg;
 
 typedef KDL::Joint _Joint;
@@ -105,7 +104,8 @@ class TFCache
 {
  public:
   
-  typedef std::map<std::string, tf::Transform> NameTransformMap;
+  // Map from the transform name to the transform and a bool representing whether or not the transform has successfully been loaded so far.
+  typedef std::map<std::string, std::pair<bool, tf::Transform> > NameTransformMap;
   NameTransformMap name_frame_map_;
   
   tf::TransformListener tf_listener_;
@@ -146,13 +146,13 @@ class TFCache
    * @return Zero if successful, non-zero otherwise
    */
   /// TODO: take const XmlRpcValue & instead of normal ref
-  int fromXmlRpc(XmlRpc::XmlRpcValue & xml_names, int const & wait_time = 5)
+  int fromXmlRpc(XmlRpc::XmlRpcValue & xml_names, int const & wait_time = 0.5)
   {
     for(int idx = 0; idx < xml_names.size(); ++idx)
       {
 	std::string const tf_name = xml_names[ idx ];
 	
-	if (tf_listener_.waitForTransform( "/world", tf_name, ros::Time(0), ros::Duration( wait_time )))
+	if (tf_listener_.canTransform( "/world", tf_name, ros::Time(0) ) )
 	  {
 	    tf::StampedTransform world_to_joint_tf;
 	    
@@ -163,17 +163,22 @@ class TFCache
 	    catch(tf::TransformException ex)
 	      {
 		ROS_ERROR( "%s", ex.what() );
-		return -1;
+
+		name_frame_map_[ tf_name ] = std::make_pair(false, tf::Transform::getIdentity() );
+		continue;
 	      }
 	  
-	    name_frame_map_[ tf_name ] = world_to_joint_tf;
+	    name_frame_map_[ tf_name ] = std::make_pair<bool, tf::Transform>(true, world_to_joint_tf);
+
+	    
 	    ROS_INFO( "Loaded source frame [ %s ]", tf_name.c_str() );
 	    
 	  }
 	else
 	  {
-	    ROS_ERROR( "Lookup of [ %s ] failed.", tf_name.c_str() );
-	    return -1;
+	    ROS_WARN( "Initial lookup of [ %s ] failed.", tf_name.c_str() );
+	    name_frame_map_[ tf_name ] = std::make_pair(false, tf::Transform::getIdentity() );
+	    continue;
 	  }
       }
 	
@@ -188,23 +193,40 @@ class TFCache
     for( NameTransformMap::iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
       {
 	
-	try
+	if( tf_listener_.canTransform( "/world", tf_it->first, ros::Time(0) ))
 	  {
-	    tf::StampedTransform world_to_joint_tf;
+	    try
+	      {
+		tf::StampedTransform world_to_joint_tf;
 	    
-	    tf_listener_.lookupTransform( "/world", tf_it->first, ros::Time(0), world_to_joint_tf);
+		tf_listener_.lookupTransform( "/world", tf_it->first, ros::Time(0), world_to_joint_tf);
 
-	    tf_it->second = world_to_joint_tf;
+		tf_it->second = std::make_pair( true, world_to_joint_tf );
+	      }
+	    catch(tf::TransformException ex)
+	      {
+		ROS_ERROR( "%s", ex.what() );
+		error = -1;
+	      }
 	  }
-	catch(tf::TransformException ex)
-	  {
-	    ROS_ERROR( "%s", ex.what() );
-	    error = -1;
-	  }
+	/* else */
+	/*   ROS_WARN(" STILL CANT TRANSFORM %s", tf_it->first.c_str() ); */
 	
       }
     
     return error;
+  }
+
+  bool allAvailable()
+  {
+    bool available = true;
+
+    for( NameTransformMap::const_iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it)
+      {
+	available &= tf_it->second.first;
+      }
+    
+    return available;
   }
 
   
@@ -216,8 +238,8 @@ class TFCache
       return -1;
     else
       {
-	out = tf_it->second;
-	return 0;
+	out = tf_it->second.second;
+	return (tf_it->second.first) ? 0 : -1;
       }
   }
 
@@ -231,7 +253,7 @@ class TFCache
 	_Frame world_to_joint_kdl;
 	
 	/* tf::transformTFToKDL( tf_it->second, world_to_joint_kdl ); */
-	TRANSFORM_TF_TO_KDL( tf_it->second, world_to_joint_kdl );
+	TRANSFORM_TF_TO_KDL( tf_it->second.second, world_to_joint_kdl );
 	
 	output.push_back( world_to_joint_kdl );
 	
@@ -494,13 +516,19 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	  
 	  retargeter_it->source_frames_.update();
 
+	  if ( !retargeter_it->source_frames_.allAvailable() )
+	    {
+	      ROS_WARN( "TF frames for source chain [ %s ] are unavailable.", chain_name.c_str() );
+	      continue;
+	    }
+
 	  _FrameArray source_frames = retargeter_it->source_frames_;
 
 	  
 	  /// Retarget ------------------------------------
       	  	  
       	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
-      	  /* rtk::spatial::translateToOrigin(source_frames); */
+      	  rtk::spatial::translateToOrigin(source_frames);
 	  
       	  /// TODO: Get these values (and maybe retargeting algorithm) from config
       	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 5000) )

@@ -7,7 +7,7 @@
     <include file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
     
     <!-- Load structural information for the chains that we will be retargeting -->
-    <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_kinect_bridge.yaml" />
+     <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_kinect_bridge.yaml" />
 
   </group>
   
@@ -16,7 +16,12 @@
     <include file="$(find openni_launch)/launch/openni.launch" />
 
     <node pkg="openni_tracker" type="openni_tracker" name="openni_tracker" />
-    
+
+    <node pkg="tf" type="static_transform_publisher" name="world_to_openni_tf"
+    	  args="0 0 0 0 0 0 /world /openni_depth_frame 100" />
+
+    <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_openni.yaml" /> 
+
   </group>
 
   <!-- Retargeting node -->  
