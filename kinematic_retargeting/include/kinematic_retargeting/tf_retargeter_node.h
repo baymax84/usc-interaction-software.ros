@@ -1,5 +1,5 @@
 /***************************************************************************
- *  tf_state_retargeter_node.h
+ *  tf_retargeter_node.h
  *  --------------------
  *
  *  Copyright (c) 2013, Dylan J. Foster
@@ -42,6 +42,7 @@
 
 /// data
 #include <map>
+#include <tuple>
 
 /// tf
 #include <tf/transform_listener.h>
@@ -58,6 +59,7 @@
 #include <rtk/pose_solver_lsq.h>
 
 /* This is version 1.9.44, Groovy. I'm not sure if this should actually have the Fuerte version */
+/* The bottom line is that tf is changing around a bunch */
 #if ROS_VERSION_MINIMUM(1, 9, 44)
   
   #include <kdl_conversions/kdl_msg.h>
@@ -90,8 +92,6 @@ typedef KDL::Chain _Chain;
 typedef KDL::Tree _Tree;
 typedef KDL::JntArray _JntArray;
 
-typedef std::map<std::string, int> _JointOrderMap;
-
 using rtk::_FrameArray;
 
 /// visualization-related typedefs
@@ -105,8 +105,8 @@ class TFCache
  public:
   
   // Map from the transform name to the transform and a bool representing whether or not the transform has successfully been loaded so far.
-  typedef std::map<std::string, std::pair<bool, tf::Transform> > NameTransformMap;
-  NameTransformMap name_frame_map_;
+  typedef std::vector< std::tuple< std::string, bool, tf::Transform> > NamedTfStatArray;
+  NamedTfStatArray name_frame_map_;
   
   tf::TransformListener tf_listener_;
   
@@ -164,12 +164,13 @@ class TFCache
 	      {
 		ROS_ERROR( "%s", ex.what() );
 
-		name_frame_map_[ tf_name ] = std::make_pair(false, tf::Transform::getIdentity() );
+		/* name_frame_map_[ tf_name ] = std::make_pair(false, tf::Transform::getIdentity() ); */
+		name_frame_map_.push_back( std::make_tuple( tf_name, false, tf::Transform::getIdentity() ) );
 		continue;
 	      }
 	  
-	    name_frame_map_[ tf_name ] = std::make_pair<bool, tf::Transform>(true, world_to_joint_tf);
-
+	    /* name_frame_map_[ tf_name ] = std::make_pair<bool, tf::Transform>(true, world_to_joint_tf); */
+	    name_frame_map_.push_back( std::make_tuple( tf_name, true, tf::Transform(world_to_joint_tf) ) );
 	    
 	    ROS_INFO( "Loaded source frame [ %s ]", tf_name.c_str() );
 	    
@@ -177,11 +178,12 @@ class TFCache
 	else
 	  {
 	    ROS_WARN( "Initial lookup of [ %s ] failed.", tf_name.c_str() );
-	    name_frame_map_[ tf_name ] = std::make_pair(false, tf::Transform::getIdentity() );
+	    /* name_frame_map_[ tf_name ] = std::make_pair(false, tf::Transform::getIdentity() ); */
+	    name_frame_map_.push_back( std::make_tuple( tf_name, false, tf::Transform::getIdentity() ) );
 	    continue;
 	  }
       }
-	
+
     return 0;
   }
 
@@ -190,18 +192,25 @@ class TFCache
     int error = 0;
 
     /// Get newer versions of all of the transforms if they are available
-    for( NameTransformMap::iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
+    for( NamedTfStatArray::iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
       {
+
+	ROS_INFO("update reached frame: [ %s ]", std::get<0>( *tf_it).c_str());
 	
-	if( tf_listener_.canTransform( "/world", tf_it->first, ros::Time(0) ))
+	if( tf_listener_.canTransform( "/world", std::get<0>(*tf_it), ros::Time(0) ))
 	  {
+	    ROS_INFO("update can transform: [ %s ]", std::get<0>(*tf_it).c_str());
 	    try
 	      {
 		tf::StampedTransform world_to_joint_tf;
 	    
-		tf_listener_.lookupTransform( "/world", tf_it->first, ros::Time(0), world_to_joint_tf);
+		tf_listener_.lookupTransform( "/world", std::get<0>(*tf_it), ros::Time(0), world_to_joint_tf);
 
-		tf_it->second = std::make_pair( true, world_to_joint_tf );
+		/* tf_it->second = std::make_pair( true, world_to_joint_tf ); */
+		
+		std::get<1>(*tf_it) = true;
+		std::get<2>(*tf_it) = world_to_joint_tf;
+		
 	      }
 	    catch(tf::TransformException ex)
 	      {
@@ -221,39 +230,42 @@ class TFCache
   {
     bool available = true;
 
-    for( NameTransformMap::const_iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it)
+    for( NamedTfStatArray::const_iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it)
       {
-	available &= tf_it->second.first;
+	available &= std::get<1>( *tf_it );
       }
     
     return available;
   }
 
-  
-  int getFrame(std::string const & frame_name, tf::Transform & out) const 
-  {
-    NameTransformMap::const_iterator tf_it = name_frame_map_.find( frame_name );
+  // TODO: Fix this to use new data structure
+  /* int getFrame(std::string const & frame_name, tf::Transform & out) const  */
+  /* { */
+  /*   NameTransformMap::const_iterator tf_it = name_frame_map_.find( frame_name ); */
 
-    if(  tf_it == name_frame_map_.end() )
-      return -1;
-    else
-      {
-	out = tf_it->second.second;
-	return (tf_it->second.first) ? 0 : -1;
-      }
-  }
+  /*   if(  tf_it == name_frame_map_.end() ) */
+  /*     return -1; */
+  /*   else */
+  /*     { */
+  /* 	out = tf_it->second.second; */
+  /* 	return (tf_it->second.first) ? 0 : -1; */
+  /*     } */
+  /* } */
 
   /// return all of the frames as an rtk::_FrameArray
   operator _FrameArray() const
   {
     _FrameArray output;
     
-    for( NameTransformMap::const_iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
+    for( NamedTfStatArray::const_iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
       {
 	_Frame world_to_joint_kdl;
 	
+	ROS_INFO("FrameArray output joint: [ %s ]", std::get<0>(*tf_it).c_str() );
+
 	/* tf::transformTFToKDL( tf_it->second, world_to_joint_kdl ); */
-	TRANSFORM_TF_TO_KDL( tf_it->second.second, world_to_joint_kdl );
+	/* TRANSFORM_TF_TO_KDL( tf_it->second.second, world_to_joint_kdl ); */
+	TRANSFORM_TF_TO_KDL( std::get<2>(*tf_it), world_to_joint_kdl );
 	
 	output.push_back( world_to_joint_kdl );
 	
@@ -273,7 +285,6 @@ struct Retargeter
   TFCache source_frames_;
   _Chain target_chain_;
 
-  /* _JointOrderMap source_joint_order_map_; */
   _JntArray target_limits_upper_;
   _JntArray target_limits_lower_;
 
@@ -496,7 +507,6 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
       nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
 
-      /// TODO: Update TF cache
       ros::Time now = ros::Time::now();
       
       /// The message with the retargeted chain joint state that we will publish
@@ -508,8 +518,6 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       	{
       	  std::string const & chain_name = retargeter_it->name_;
 
-	  ROS_INFO("Retargeting [ %s ]", chain_name.c_str());
-	  
 	  _Chain const & target_chain = retargeter_it->target_chain_;
 	  
 	  /// Update the source tf frames ------------------------------------
@@ -524,11 +532,12 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
 	  _FrameArray source_frames = retargeter_it->source_frames_;
 
+	  ROS_INFO("Retargeting [ %s ]", chain_name.c_str());
 	  
 	  /// Retarget ------------------------------------
       	  	  
-      	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
-      	  rtk::spatial::translateToOrigin(source_frames);
+      	  /* rtk::spatial::transform(source_frames, retargeter_it->target_to_source_); */
+      	  /* rtk::spatial::translateToOrigin(source_frames); */
 	  
       	  /// TODO: Get these values (and maybe retargeting algorithm) from config
       	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 5000) )
@@ -627,20 +636,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       joints_marker_template,
       text_marker_template,
       line_marker_template;
-  
-
-  
+    
     std::string world_frame_name;
     nh_rel.param<std::string>("world_frame_name", world_frame_name, "/world");
-  
-    /* red_template.a = 1.0; */
-    /* red_template.r = 1.0; */
-    /* red_template.b = 0.0; */
-    /* red_template.g = 0.0; */
-    /* blue_template.a = 1.0; */
-    /* blue_template.r = 0.0; */
-    /* blue_template.b = 1.0; */
-    /* blue_template.g = 0.0 */;
   
     marker_template.header.frame_id = world_frame_name;
   
@@ -710,8 +708,15 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
     ee_marker.color = color;
 
     
+    /* int ii = 0; */
+    
     for(auto frame_it = pose.begin(); frame_it != pose.end(); ++frame_it, ++id)
       {
+	/* ii++; */
+
+	/* if (ii != 2) */
+	/*   continue; */
+	
 	/* tf::poseKDLToMsg(*frame_it, marker_pose); */
 	POSE_KDL_TO_MSG( *frame_it, marker_pose );
 	

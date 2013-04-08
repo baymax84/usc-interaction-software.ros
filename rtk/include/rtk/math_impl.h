@@ -149,6 +149,7 @@ namespace rtk
 
 
     /** Translate a chain such that the most parent joint is located at the origin (0,0,0)
+     * Note: This function assumes that the first joint in the array is the most parent joint
      * 
      * @param chain Chain (represented as an array of frames) to be translated
      */

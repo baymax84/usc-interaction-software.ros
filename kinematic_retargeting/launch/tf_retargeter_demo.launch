@@ -2,12 +2,13 @@
 
   <arg name="dummy_tf" default="false" />
   <arg name="openni" default="false" />
-  
+  <arg name="visualize" default="false" />
+
   <group if="$(arg dummy_tf)" >
     <include file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
     
     <!-- Load structural information for the chains that we will be retargeting -->
-     <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_kinect_bridge.yaml" />
+     <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_dummy.yaml" />
 
   </group>
   

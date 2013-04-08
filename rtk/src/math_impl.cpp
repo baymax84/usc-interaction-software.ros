@@ -103,9 +103,6 @@ namespace rtk
       return temp * scale;
     }
 
-    
-    
-
     _Chain normalize(const _Chain& chain)
     {
       const double length = getLength(chain);
@@ -156,7 +153,6 @@ namespace rtk
 	  element = transform_frame * element;
 	}
     }
-
   
     void translateToOrigin(_FrameArray & chain)
     {
