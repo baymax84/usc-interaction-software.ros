@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="dummy_tf" default="true" />
+  
+  <include if="$(arg dummy_tf)" file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
+  
+  <!-- Load structural information for the chains that we will be retargeting -->
+  <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_all.yaml" />
+
+  
+  <include file="$(find kinematic_retargeting)/launch/tf_retargeter.launch" />
+
+</launch>

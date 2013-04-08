@@ -124,7 +124,7 @@ class TFCache
   /** 
    * Expects a list of transform names.
    * 
-   * @param xml_names 
+   * @param xml_names
    * @param wait_time 
    * 
    * @return Zero if successful, non-zero otherwise
@@ -285,8 +285,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	
 
       /// Initialize communications
-      /* multi_sub_.addSubscriber( nh_rel, "source_joint_states", */
-      /* 				&TFRetargeterNode::sourceJointStateCB, this ); */
+      multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
 
       /// Get end effector weight
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);

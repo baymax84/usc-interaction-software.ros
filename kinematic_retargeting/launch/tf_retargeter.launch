@@ -1,34 +1,28 @@
 <launch>
-    <arg name="pkg" value="kinematic_retargeting" />
-    <arg name="type" default="tf_retargeter" />
-    <arg name="name" default="$(arg type)" />
-    <arg name="rate" default="30" />
-    <arg name="ee_weight" default="50" />
-    <arg name="cost_weight" default="50" />
-    
-    <arg name="dummy_tf" default="false" />
-    
-    <include if="$(arg dummy_tf)" file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
-    
-    <!-- Node subscribes to /joint_state_retargeter/source_joint_states -->
-    <!-- Node publishes to /joint_state_retargeter/target_joint_states -->
-    
+  <arg name="pkg" value="kinematic_retargeting" />
+  <arg name="type" default="tf_retargeter" />
+  <arg name="name" default="$(arg type)" />
+  <arg name="rate" default="2" />
+  <arg name="ee_weight" default="50" />
+  <arg name="cost_weight" default="50" />
+  
+  <!-- Node publishes to /tf_retargeter/target_joint_states -->
+  
+  <arg name="target_urdf" default="$(find kinematic_retargeting)/urdf/sparky_gazebo.urdf"/>
+  
+  <arg name="args" value="_loop_rate:=$(arg rate)
+			  _target_urdf:=$(arg target_urdf)
+			  _ee_weight:=$(arg ee_weight)
+			  _cost_weight:=$(arg cost_weight)" />
 
+  
 
-    <arg name="target_urdf" default="$(find kinematic_retargeting)/urdf/sparky_gazebo.urdf"/>
-    
-    <arg name="args" value="_loop_rate:=$(arg rate)
-			    _target_urdf:=$(arg target_urdf)
-			    _ee_weight:=$(arg ee_weight)
-			    _cost_weight:=$(arg cost_weight)" />
-
-    <!-- Load the endpoints for the chains that we will be retargeting -->
-    <rosparam param="/$(arg name)/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_all.yaml" />
-
-    <node
-        pkg="$(arg pkg)"
-        type="$(arg type)_node"
-        name="$(arg name)"
-        args="$(arg args)"
-        output="screen" />
+  
+  <node
+      pkg="$(arg pkg)"
+      type="$(arg type)_node"
+      name="$(arg name)"
+      args="$(arg args)"
+      output="screen" />
+  
 </launch>
