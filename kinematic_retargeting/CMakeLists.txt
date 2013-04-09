@@ -25,6 +25,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 # uncomment if you have defined dynamic reconfigure files
 # Note: requires "rosbuild_include( quickdev_build dynamic_reconfigure )"
 
-add_definitions( -DRSSDEMO_TFRETARGETERNODE_DEBUG )
+#add_definitions( -DKINEMATICRETARGETING_TFRETARGETERNODE_DEBUG_ALL )
+add_definitions( -DKINEMATICRETARGETING_TFRETARGETERNODE_DEBUG_MIN )
 
 add_subdirectory( nodes )

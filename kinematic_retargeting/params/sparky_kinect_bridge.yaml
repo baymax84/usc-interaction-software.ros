@@ -19,3 +19,11 @@ left_arm:
     - wrist_left
     - hand_left
   target: {begin: shoulders, end: lefthand}
+
+# spine:
+#   target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 0.0 } 
+#   source:
+#     - spine
+#     - shoulder_center
+#     - head
+#   target: {begin: hips, end: throat}

@@ -33,8 +33,8 @@
  *
  **************************************************************************/
 
-#ifndef RSSDEMO_TFRETARGETERNODE_H_
-#define RSSDEMO_TFRETARGETERNODE_H_
+#ifndef KINEMATICRETARGETING_TFRETARGETERNODE_H_
+#define KINEMATICRETARGETING_TFRETARGETERNODE_H_
 
 #include <quickdev/node.h>
 #include <quickdev/multi_publisher.h>
@@ -195,11 +195,11 @@ class TFCache
     for( NamedTfStatArray::iterator tf_it = name_frame_map_.begin(); tf_it != name_frame_map_.end(); ++tf_it )
       {
 
-	ROS_INFO("update reached frame: [ %s ]", std::get<0>( *tf_it).c_str());
+	/* ROS_INFO("update reached frame: [ %s ]", std::get<0>( *tf_it).c_str()); */
 	
 	if( tf_listener_.canTransform( "/world", std::get<0>(*tf_it), ros::Time(0) ))
 	  {
-	    ROS_INFO("update can transform: [ %s ]", std::get<0>(*tf_it).c_str());
+	    /* ROS_INFO("update can transform: [ %s ]", std::get<0>(*tf_it).c_str()); */
 	    try
 	      {
 		tf::StampedTransform world_to_joint_tf;
@@ -261,7 +261,7 @@ class TFCache
       {
 	_Frame world_to_joint_kdl;
 	
-	ROS_INFO("FrameArray output joint: [ %s ]", std::get<0>(*tf_it).c_str() );
+	/* ROS_INFO("FrameArray output joint: [ %s ]", std::get<0>(*tf_it).c_str() ); */
 
 	/* tf::transformTFToKDL( tf_it->second, world_to_joint_kdl ); */
 	/* TRANSFORM_TF_TO_KDL( tf_it->second.second, world_to_joint_kdl ); */
@@ -446,19 +446,20 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	  int i = 0;
       	  while(link->name != std::string(target_endpoints["begin"]))
       	    {
+	      // Traverse the chain backwards starting at the end effector
+	      joint = target_model.getJoint(link->parent_joint->name);
+
+	      double upper = 0,lower = 0;
+	      
 	      /**
 	       * We don't apply joint angles to fixed joints when we retarget, so we exclude these.
 	       * It's also worth noting that the KDL FK solvers do not accept joint angles for fixed joints.
 	       */
       	      if(joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
       		{
-      		  double upper = 0,lower = 0;
-		  
-      		  joint = target_model.getJoint(link->parent_joint->name);
-		  
+     		  	  
       		  // get limits
-		  /* TODO: Catch exception if joint angle doesn't exist */
-      		  if (joint->type != urdf::Joint::CONTINUOUS)
+      		  if (joint->type != urdf::Joint::CONTINUOUS )
       		    {
       		      lower = joint->limits->lower;
       		      upper = joint->limits->upper;
@@ -468,14 +469,15 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       		      lower = 0.0;
       		      upper = 0.0;
       		    }
-	    
-      		  ROS_INFO_STREAM( '\t' << joint->name.c_str() << "( " << joint_type_text_map[joint->type] << " ): " << joint->limits->lower << " to " << joint->limits->upper );
-	      
+	  
       		  // Add limits to joint array
 		  target_limits_upper(i) = upper;
 		  target_limits_lower(i) = lower;
 		  ++i;
 		}
+
+	      ROS_INFO_STREAM( '\t' << joint->name.c_str() << "( " << joint_type_text_map[joint->type] << " ): " << lower << " to " << upper );
+
       	      // jump one link lower in the chain
       	      link = target_model.getLink(link->getParent()->name);
       	    }
@@ -569,8 +571,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	  
       	  ++nr_success;
 	  
-#if RSSDEMO_TFRETARGETERNODE_DEBUG
-      	  ROS_INFO("visualizing source chain...");
+#if KINEMATICRETARGETING_TFRETARGETERNODE_DEBUG_ALL
+
+     	  ROS_INFO("visualizing source chain...");
       	  visualizeFrameArray(source_frames, chain_name + "_source", blue_template_);
       	  visualizeFrameArray(rtk::spatial::normalize(source_frames),
       			      chain_name + "_source_normalized", blue_template_);
@@ -584,6 +587,12 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       	  visualizeFrameArray(rtk::spatial::normalize(retargeted_frames),
       			      chain_name + "_retargeted_normalized", red_template_);
       	  /// visualize all of the chains involved in this algorithm
+
+#elif KINEMATICRETARGETING_TFRETARGETERNODE_DEBUG_MIN
+ 	  visualizeFrameArray(rtk::spatial::normalize(source_frames),
+      			      chain_name + "_source_normalized", blue_template_);
+	  visualizeFrameArray(rtk::spatial::normalize(retargeted_frames),
+      			      chain_name + "_retargeted_normalized", red_template_);
 #endif
 	  
       	}
@@ -747,4 +756,4 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
   
 };
 
-#endif // RSSDEMO_TFRETARGETERNODE_H_
+#endif // KINEMATICRETARGETING_TFRETARGETERNODE_H_
