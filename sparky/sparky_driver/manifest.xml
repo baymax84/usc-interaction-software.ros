@@ -1,0 +1,13 @@
+<package>
+  <description brief="sparky_driver">
+
+     sparky_driver
+
+  </description>
+  <author>Edward T. Kaszubski (ekaszubski@gmail.com)</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sparky_driver</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="robot_state_publisher"/>
+</package>

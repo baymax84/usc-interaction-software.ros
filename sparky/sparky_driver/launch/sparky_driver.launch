@@ -1,0 +1,15 @@
+<launch>
+	<arg name="urdf_filename" default="$(find sparky_driver)/urdf/sparky.urdf"/>
+
+    <arg name="pkg" value="sparky_driver" />
+    <arg name="type" default="sparky_driver" />
+    <arg name="name" default="$(arg type)" />
+    <arg name="rate" default="30" />
+    <arg name="args" value="_loop_rate:=$(arg rate) _urdf_filename:=$(arg urdf_filename) _tf_prefix:=sparky" />
+    <node
+        pkg="$(arg pkg)"
+        type="$(arg type)_node"
+        name="$(arg name)"
+        args="$(arg args)"
+        output="screen" />
+</launch>
