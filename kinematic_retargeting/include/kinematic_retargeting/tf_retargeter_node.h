@@ -452,11 +452,12 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	       */
       	      if(joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
       		{
-      		  double upper,lower;
+      		  double upper = 0,lower = 0;
 		  
       		  joint = target_model.getJoint(link->parent_joint->name);
 		  
       		  // get limits
+		  /* TODO: Catch exception if joint angle doesn't exist */
       		  if (joint->type != urdf::Joint::CONTINUOUS)
       		    {
       		      lower = joint->limits->lower;

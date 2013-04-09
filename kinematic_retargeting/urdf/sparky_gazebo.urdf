@@ -668,7 +668,7 @@
 <joint name="RtArmForward" type="revolute">
 	<origin xyz="2.67 -.2 .1" rpy="0 0 0"/>
 	<axis xyz="1 0 0" /> 
-	  <limit upper="4" lower="0" effort="10" velocity="3" />
+	<limit upper="4" lower="0" effort="10" velocity="3" />
 	<parent link="shoulders"/>
 	<child link="rightshoulderball"/>
 </joint>
@@ -796,7 +796,7 @@
 <joint name="LtArmForward" type="revolute">
 	<origin xyz="-2.67 .2 .05" rpy="3.14 0 0"/>
 	<axis xyz="1 0 0" /> 
-		  <limit upper="1.257" lower=".035" effort="10" velocity="3" />
+	<limit upper="1.257" lower=".035" effort="10" velocity="3" />
 	<parent link="shoulders"/>
 	<child link="leftshoulderball"/>
 </joint>
@@ -817,9 +817,10 @@
 	<axis xyz="0 0 1" /> 
 </joint>
 
-<joint name="LtWrist" type="continuous">
+<joint name="LtWrist" type="revolute">
 	<origin xyz="-.18 3.71 .05" rpy="1.57 0 0" />
 	<axis xyz="0 1 0" /> 
+	<limit upper=".785" lower="-1.57" effort="10" velocity="3" />
 	<parent link="leftforearm"/>
 	<child link="lefthand" />
 </joint>
