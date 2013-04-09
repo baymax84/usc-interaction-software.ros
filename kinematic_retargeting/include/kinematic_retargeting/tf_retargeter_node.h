@@ -312,11 +312,13 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
   /// Used in retargeting algorithm 
   double ee_weight_;
-  double cost_weight_;
+  /* double cost_weight_; */
+
+  tf::StampedTransform world_to_head_tf_;
   
   QUICKDEV_DECLARE_NODE_CONSTRUCTOR( TFRetargeter )
   {
-
+    world_to_head_tf_.setData(tf::Transform::getIdentity());
   }
   
   
@@ -332,14 +334,13 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       blue_template_.r = 0.0;
       blue_template_.b = 1.0;
       blue_template_.g = 0.0;
-	
-
+      
       /// Initialize communications
       multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
 
       /// Get end effector weight
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
-      nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
+      /* nh_rel.param<double>("cost_weight", cost_weight_, 0.001); */
       
       /// Get URDF path
       std::string target_urdf_path;
@@ -508,7 +509,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
       /// TODO: Don't check params this often / use dynamic reconfigure
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
-      nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
+      /* nh_rel.param<double>("cost_weight", cost_weight_, 0.001); */
 
       ros::Time now = ros::Time::now();
       
@@ -541,9 +542,10 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       	  	  
       	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
       	  rtk::spatial::translateToOrigin(source_frames);
+	  /* rtk::spatial::translate(source_frames, retargeter_it->target_to_source_.p); */
 	  
       	  /// TODO: Get these values (and maybe retargeting algorithm) from config
-      	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 5000) )
+      	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.00001, 10000) )
       	    {
       	      ROS_WARN("KR solver failed. [ %s ]", chain_name.c_str() );
       	      ROS_WARN("Skipping chain...");
@@ -551,6 +553,20 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       	    }
 
       	  _JntArray retargeted_angles = retargeter_it->retargeter_.getTargetAngles();
+
+	  /// Run the cost function again and publish the final results
+      	  _FrameArray retargeted_frames;
+      	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
+	  
+	  float mse = rtk::cost::LSQUniform(source_frames, retargeted_frames);
+	    
+	  ROS_INFO("Chain MSE: %f", mse);
+	  
+	  /* if(mse > 180) */
+	  /*   { */
+	  /*     ROS_WARN("MSE is too high. Ignoring solution..."); */
+	  /*     continue; */
+	  /*   } */
 
       	  /// A bad way of ignoring the joint state of the end effector
       	  /// The algorith currently optimizes over this angle, which it shoulnd't do as it doesn't affect the position of any
@@ -564,10 +580,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
       	    }
 
-      	  /// Run the cost function again and publish the final results
-      	  _FrameArray retargeted_frames;
-      	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
-	  
+      	    
 	  
       	  ++nr_success;
 	  
@@ -579,7 +592,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       			      chain_name + "_source_normalized", blue_template_);
       	  _JntArray target_zero(target_chain.getNrOfJoints());
 
-      	  ROS_INFO("visualizing untargeted chain...");
+      	  ROS_INFO("visualizing untargeted chain..s.");
       	  visualizeKDLChain(target_chain, target_zero,chain_name + "_untargeted", red_template_);
       	  ROS_INFO("visualizing retargeted chain...");
 
@@ -596,6 +609,34 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 #endif
 	  
       	}
+
+      /* Bad head tracking */
+      tf::TransformListener tf_listener;
+      
+      	if (tf_listener.canTransform( "/world", "head", ros::Time(0) ) )
+	  {
+	    
+	    try
+	      {
+		tf_listener.lookupTransform( "/world", "head", ros::Time(0), world_to_head_tf_);
+	      }
+	    catch(tf::TransformException ex)
+	      {
+		ROS_ERROR( "%s", ex.what() );
+	      }
+	  
+	  }
+
+	double yaw, pitch, roll;
+	world_to_head_tf_.getBasis().getEulerZYX(yaw, pitch, roll);
+
+	retargeted_joint_state.name.push_back("HeadTurn");
+	retargeted_joint_state.position.push_back(yaw);
+
+	/* retargeted_joint_state.name.push_back("HeadNod"); */
+	/* retargeted_joint_state.position.push_back(-pitch); */
+
+	/* End bad head tracking */
 
       if(nr_success > 0)
       	{
