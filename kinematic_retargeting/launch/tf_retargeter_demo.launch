@@ -4,12 +4,19 @@
   <arg name="openni" default="false" />
   <arg name="kinect_bridge" default="false" />
   <arg name="visualize" default="false" />
+  <arg name="sparky" default="false" />
+  <arg name="kb_server_ip" default="192.168.2.199" />
+
+  <arg name="urdf_filename" default="$(find sparky_driver)/urdf/sparky.urdf"/>
+
+  <!-- Direct retargeter output to sparky driver input -->
+  <remap from="sparky_driver/joint_angles" to="tf_retargeter/retargeted_joint_states" />
 
   <group if="$(arg kinect_bridge)" >
 
     <!-- Kinect Bridge Client -->
     <include file="$(find joint_position_publisher)/launch/joint_position_publisher.launch" >
-      <arg name="server_ip" value="192.168.2.199" />
+      <arg name="server_ip" value="$(arg kb_server_ip)" />
     </include>
     
     <!-- Load structural information for the chains that we will be retargeting -->
@@ -39,8 +46,20 @@
 
   </group>
 
+  <group if="$(arg sparky)" >
+
+    <include file="$(find sparky_driver)/launch/sparky_driver.launch" >
+      <arg name="urdf_filename" value="$(arg urdf_filename)" />
+    </include>
+
+    <node pkg="tf" type="static_transform_publisher" name="world_to_sparky_world_tf" args="0 0 0 0 0 0 /world /sparky/world 100" />
+
+  </group>
+  
   <!-- Retargeting node -->  
-  <include file="$(find kinematic_retargeting)/launch/tf_retargeter.launch" />
+  <include file="$(find kinematic_retargeting)/launch/tf_retargeter.launch" >
+    <arg name="target_urdf" value="$(arg urdf_filename)" />
+  </include>
 
   <group if="$(arg visualize)" >
     <node pkg="rviz" type="rviz" name="retargeter_visualization" />
