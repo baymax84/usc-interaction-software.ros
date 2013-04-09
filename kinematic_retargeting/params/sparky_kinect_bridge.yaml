@@ -1,5 +1,5 @@
 right_arm:
-  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 0.0 } 
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: -90.0 } 
 
   # Note: The order of joints in the source field must be sorted from base to end effector
   source:
@@ -12,7 +12,7 @@ right_arm:
   target: {begin: shoulders, end: righthand}
 
 left_arm:
-  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: 0.0 } 
+  target_to_source: { x: 0.0, y: 0.0, z: 0.0, roll: 0.0, pitch: 0.0, yaw: -90.0 } 
   source:
     - shoulder_left
     - elbow_left
