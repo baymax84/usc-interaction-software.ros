@@ -320,6 +320,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
   tf::StampedTransform world_to_head_tf_;
 
   bool button_locked_;
+  bool use_wiimote_;
   
   QUICKDEV_DECLARE_NODE_CONSTRUCTOR( TFRetargeter )
   {
@@ -350,7 +351,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
       /// Get end effector weight
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
-      /* nh_rel.param<double>("cost_weight", cost_weight_, 0.001); */
+
+      /// Whether or not we will use the wiimote to enable
+      nh_rel.param<bool>("use_wiimote", use_wiimote_, true);
       
       /// Get URDF path
       std::string target_urdf_path;
@@ -519,10 +522,11 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
       /// TODO: Don't check params this often / use dynamic reconfigure
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
+      nh_rel.param<bool>("use_wiimote", use_wiimote_, true);
       /* nh_rel.param<double>("cost_weight", cost_weight_, 0.001); */
 
 
-      if ( !getButtonLock() )
+      if ( use_wiimote_ && !getButtonLock() )
 	return;
       
 

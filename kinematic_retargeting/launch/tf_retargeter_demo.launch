@@ -5,6 +5,7 @@
   <arg name="kinect_bridge" default="false" />
   <arg name="visualize" default="false" />
   <arg name="sparky" default="false" />
+  <arg name="wiimote" default="true" />
   
   <arg name="kb_server_ip" default="192.168.2.199" />
 
@@ -65,8 +66,12 @@
   </include>
 
   <!-- Wiimote -->
-  <node pkg="wiimote" type="wiimote_node.py" name="wiimote" output="screen" />
+  <group if="$(arg wiimote)" >
+    <node pkg="wiimote" type="wiimote_node.py" name="wiimote" output="screen" />
+  </group>
 
+  <param name="tf_retargeter/use_wiimote" value="$(arg wiimote)" />
+  
   <!-- RVIZ -->
   <group if="$(arg visualize)" >
     <node pkg="rviz" type="rviz" name="retargeter_visualization" />
