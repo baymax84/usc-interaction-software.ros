@@ -52,6 +52,9 @@
 #include <kdl_parser/kdl_parser.hpp>
 #include <sensor_msgs/JointState.h>
 
+/// wiimote
+#include <sensor_msgs/Joy.h>
+
 /// kinematics
 #include <kdl/jntarray.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -315,10 +318,14 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
   /* double cost_weight_; */
 
   tf::StampedTransform world_to_head_tf_;
+
+  bool button_locked_;
   
   QUICKDEV_DECLARE_NODE_CONSTRUCTOR( TFRetargeter )
   {
     world_to_head_tf_.setData(tf::Transform::getIdentity());
+
+    button_locked_ = false;
   }
   
   
@@ -337,6 +344,9 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       
       /// Initialize communications
       multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
+
+      /// Subscribe to wiimote
+      multi_sub_.addSubscriber( nh_rel, "joy", &TFRetargeterNode::joyCallback, this );
 
       /// Get end effector weight
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
@@ -511,6 +521,11 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
       /* nh_rel.param<double>("cost_weight", cost_weight_, 0.001); */
 
+
+      if ( !getButtonLock() )
+	return;
+      
+
       ros::Time now = ros::Time::now();
       
       /// The message with the retargeted chain joint state that we will publish
@@ -648,6 +663,30 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
 
     }
+
+ public:
+  
+  /// These functions facilitate using a wiimote to enable or disable retargeting
+
+  void joyCallback( const sensor_msgs::Joy::ConstPtr& msg )
+  {
+    /// B button
+    bool const & lock = msg->buttons[3];
+
+    if( lock && !button_locked_ )
+      ROS_INFO( "Aquired button lock." );
+
+    if( !lock && button_locked_ )
+      ROS_INFO( "Released button lock." );
+
+    button_locked_ =  lock;
+  }
+
+  bool getButtonLock()
+  {
+    return button_locked_;
+  }
+  
 
  private:
   
