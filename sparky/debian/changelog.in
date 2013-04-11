@@ -1,0 +1,13 @@
+ros-groovy-interaction-sparky (@version@-1365676917) @platform@; urgency=low
+
+  * Commit 9e8ab31101da86d6b23923894721cd8776014242
+    + Fully implemented sparky_driver using libinteraction-sparky. Added launch file for joint_state_publisher.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 11 Apr 2013 03:41:57 -0700
+
+ros-groovy-interaction-sparky (@version@-1365492201) @platform@; urgency=low
+
+  * Commit 8af2440cf8a84f0898d5ff2455530018580f6b76
+    + Added simple sparky package with simulation mode.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 9 Apr 2013 00:23:21 -0700
