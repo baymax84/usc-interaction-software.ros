@@ -1,3 +1,24 @@
+ros-groovy-interaction-sparky (0.0.1-1365677280) @platform@; urgency=low
+
+  * Commit 170d82db57d32ff835cc19d76d1336ee9042da0a
+    + Corrected build dependency for libinteraction-sparky.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 11 Apr 2013 03:48:00 -0700
+
+ros-groovy-interaction-sparky (0.0.1-1365677038) @platform@; urgency=low
+
+  * Commit 81399188906a035ea2d8c097b5a48c41cb331379
+    + Added buildinfo for sparky.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 11 Apr 2013 03:43:58 -0700
+
+ros-groovy-interaction-sparky (0.0.1-1365676977) @platform@; urgency=low
+
+  * Commit de403d2cd6ea05ec786310d70c6f03a1b9e3acc3
+    + Added changelog to sparky in preparation for debianization.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 11 Apr 2013 03:42:57 -0700
+
 ros-groovy-interaction-sparky (@version@-1365676917) @platform@; urgency=low
 
   * Commit 9e8ab31101da86d6b23923894721cd8776014242
