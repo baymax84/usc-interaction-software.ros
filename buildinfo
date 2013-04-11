@@ -1,2 +1,3 @@
 -s quickdev -t build
 -s bandit -t build
+-s sparky -t build
