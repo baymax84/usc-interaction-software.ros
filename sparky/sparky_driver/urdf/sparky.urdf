@@ -4,9 +4,6 @@
 "/>
 
 
-<!---------------------------Sparky Body ------------------------------>
-
-
 <link name="world" />
 
 
@@ -113,8 +110,6 @@
 </joint>
 
 
-<!-------------------------Sparky NECK -------------------------------->
-
 
 <link name="throat">
 
@@ -157,8 +152,6 @@
 	<child link="throat"/>
 </joint>
 
-
-<!------------------------------Sparky HEAD --------------------------->
 
 
 <link name="head">
@@ -214,8 +207,6 @@
 	<child link="lowerjaw"/>
 </joint>
 
-
-<!-----------------------------Sparky EYES ---------------------------->
 
 <link name="Reye">
 
@@ -570,8 +561,6 @@
 </joint>
 
 
-<!---------------------------Sparky  Right ARM ------------------------>
-
 
 <link name="rightbicep" >
 
@@ -698,8 +687,6 @@
 </joint>
 
 
-<!---------------------------Sparky LEFT ARM -------------------------->
-
 
 <link name="leftbicep" >
 
@@ -825,8 +812,6 @@
 </joint>
 
 
-<!-------------------------Sparky  RIGHT LEG -------------------------->
-
 
 <link name="rightthigh" >
 
@@ -917,8 +902,6 @@
 </joint>
 
 
-<!-------------------------Sparky  LEFT LEG  -------------------------->
-
 
 <link name="leftthigh">
 
@@ -1008,8 +991,6 @@
 	<axis xyz="1 0 0" /> 
 </joint>
 
-
-<!--------------------------Sparky Upper Spine ------------------------>
 
 
 <link name="TS1">
@@ -1842,8 +1823,6 @@
 	<child link="shoulders"/>
 </joint>
 
-
-<!-------------------------Sparky Lower Spine ------------------------->
 
 
 <link name="LS1">

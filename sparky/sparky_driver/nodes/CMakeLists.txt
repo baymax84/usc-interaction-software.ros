@@ -7,5 +7,6 @@ foreach( source ${ALL_SOURCES} )
     set( source_src ${source} )
 
     rosbuild_add_executable( ${source_name} ${source_src} )
+	target_link_libraries( ${source_name} ${SPARKY_LIBRARIES} )
 
 endforeach( source )

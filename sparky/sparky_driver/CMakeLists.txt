@@ -25,4 +25,10 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 # Note: requires "rosbuild_include( quickdev_build dynamic_reconfigure )"
 #quickdev_gencfg()
 
+# import pkg-config stuff
+include( FindPkgConfig )
+pkg_check_modules( SPARKY REQUIRED sparky )
+include_directories( ${SPARKY_INCLUDE_DIRS} )
+link_directories( ${SPARKY_LIBRARY_DIRS} )
+
 add_subdirectory( nodes )

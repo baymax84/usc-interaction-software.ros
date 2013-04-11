@@ -1,5 +1,5 @@
 /***************************************************************************
- *  include/sparky_driver/sparky_driver_node.h
+ *  include/sparky_controller/sparky_controller_node.h
  *  --------------------
  *
  *  Copyright (c) 2011, Edward T. Kaszubski (ekaszubski@gmail.com)
@@ -39,7 +39,7 @@
 #include <quickdev/node.h>
 
 // objects
-//#include <sparky/sparky_controller.h>
+#include <sparky/sparky_controller.h>
 #include <quickdev/multi_subscriber.h>
 #include <quickdev/multi_publisher.h>
 #include <kdl_parser/kdl_parser.hpp>
@@ -76,7 +76,7 @@ protected:
     std::map<std::string, double> joint_states_map_;
     bool simulate_;
 
-//    sparky::SparkyController sparky_controller_;
+    sparky::SparkyController sparky_controller_;
 
     // Variable initializations can be appended to this constructor as a comma-separated list:
     //
@@ -117,6 +117,18 @@ protected:
 
         simulate_ = quickdev::ParamReader::readParam<bool>( nh_rel, "simulate", false );
 
+        if( !simulate_ )
+        {
+            auto const config_filename = quickdev::ParamReader::readParam<std::string>( nh_rel, "config_filename", "/usr/share/sparky/params/params.yaml" );
+
+            std::ifstream fin( config_filename.c_str() );
+            YAML::Parser parser( fin );
+            YAML::Node nodes;
+            parser.GetNextDocument( nodes );
+
+            sparky_controller_.initFromYaml( nodes );
+        }
+
         // -------------------------------------------------------------------------------------------------------------------------------------
         // load URDF and set up robot state publisher
         auto const urdf_filename = quickdev::ParamReader::readParam<std::string>( nh_rel, "urdf_filename", "" );
@@ -155,6 +167,8 @@ protected:
         sparky_state_pub_ptr_ = boost::make_shared<_RobotStatePublisher>( sparky_model_ );
 
         initPolicies<quickdev::policy::ALL>();
+
+        sparky_controller_.connect();
     }
 
     QUICKDEV_DECLARE_MESSAGE_CALLBACK( jointAnglesCB, _JointStateMsg )
@@ -168,6 +182,8 @@ protected:
         for( ; name_it != names.cend() && position_it != positions.cend(); ++name_it, ++position_it )
         {
             joint_states_map_[*name_it] = *position_it;
+
+            if( !simulate_ ) sparky_controller_.setJointAngle( *name_it, *position_it * 180.0 / M_PI );
         }
     }
 
