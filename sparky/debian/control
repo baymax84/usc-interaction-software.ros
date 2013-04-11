@@ -2,7 +2,7 @@ Source: ros-groovy-interaction-sparky
 Section: unknown
 Priority: extra
 Maintainer: Edward T. Kaszubski <ekaszubski@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, pkg-config, ros-groovy-interaction-quickdev, interaction-sparky
+Build-Depends: debhelper (>= 7.0.50~), cmake, pkg-config, ros-groovy-interaction-quickdev, libinteraction-sparky-dev
 Standards-Version: 3.8.4
 Homepage: http://robotics.usc.edu/~ekaszubski/projects/sparky
 Vcs-Git: http://code.google.com/p/usc-interaction-software.ros
