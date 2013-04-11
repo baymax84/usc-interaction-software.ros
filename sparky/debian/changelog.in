@@ -1,3 +1,10 @@
+ros-groovy-interaction-sparky (0.0.1-1365677512) @platform@; urgency=low
+
+  * Commit 2e5fae62adf16ef7daa7332d1e39ed00ea0f0eb3
+    + Added stack CMakeLists.txt to correct issue with dh_installdocs
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 11 Apr 2013 03:51:52 -0700
+
 ros-groovy-interaction-sparky (0.0.1-1365677280) @platform@; urgency=low
 
   * Commit 170d82db57d32ff835cc19d76d1336ee9042da0a
