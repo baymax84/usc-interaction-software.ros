@@ -1,3 +1,10 @@
+ros-groovy-interaction-sparky (0.0.1-1365677770) @platform@; urgency=low
+
+  * Commit 69ca6d0d774340f4727399c8cda27d656baa98c5
+    + Added Makefile to sparky stack.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 11 Apr 2013 03:56:10 -0700
+
 ros-groovy-interaction-sparky (0.0.1-1365677512) @platform@; urgency=low
 
   * Commit 2e5fae62adf16ef7daa7332d1e39ed00ea0f0eb3

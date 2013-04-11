@@ -10,5 +10,5 @@ Vcs-Browser: http://code.google.com/p/usc-interaction-software/source/browse/?re
 
 Package: ros-groovy-interaction-sparky
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-interaction-quickdev
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-interaction-quickdev, libinteraction-sparky
 Description: Drivers for the sparky robot
