@@ -1,0 +1,1 @@
+-a i386 -a amd64 -m ros-groovy -d precise --version 0.0.1
