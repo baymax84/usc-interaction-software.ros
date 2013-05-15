@@ -61,8 +61,8 @@ private:
     std::string service_name_, service_topic_name_;
     bool is_valid_;
 
-    static double const _DEF_callService_wait_time = 2.0;
-    static unsigned int const _DEF_callService_attempts = 1;
+    static constexpr double _DEF_callService_wait_time = 2.0;
+    static constexpr unsigned int _DEF_callService_attempts = 1;
 
     QUICKDEV_DECLARE_POLICY_CONSTRUCTOR( ServiceClient ),
         service_name_( "service" ),
