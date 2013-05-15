@@ -163,7 +163,7 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         auto const & virtual_humanoid_joint_rel_pos_map = getVirtualHumanoidJointRelPosMap();
         auto const & joint_dependency_map = humanoid::getJointDependencyMap();
         auto const & sensor_frame_name = config_.sensor_frame_name;
-        auto const & user_name = config_.name;
+        auto const & user_name = config_.humanoid_name;
 
         auto const now = ros::Time::now();
 
@@ -216,11 +216,11 @@ QUICKDEV_DECLARE_NODE_CLASS( VirtualHumanoid )
         humanoid_state_msg = _Humanoid::estimateExtraJoints( humanoid_state_msg );
 
         // calculate base link frame
-        btTransform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", config_.sensor_frame_name );
+        btTransform const world_to_sensor_tf = _TfTranceiverPolicy::tryLookupTransform( "/world", config_.sensor_frame_name ).asBt();
         btTransform const sensor_to_base_link_tf = _Humanoid::calculateBaseLinkTransform( humanoid_state_msg, world_to_sensor_tf );
 
         // publish base link tf frame
-        _TfTranceiverPolicy::publishTransform( sensor_to_base_link_tf, config_.sensor_frame_name, "/" + config_.name + "/base_link" );
+        _TfTranceiverPolicy::publishTransform( sensor_to_base_link_tf, config_.sensor_frame_name, "/" + config_.humanoid_name + "/base_link" );
 
         // create base link joint
         _HumanoidJointMsg base_link_joint;
