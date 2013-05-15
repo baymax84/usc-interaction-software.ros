@@ -124,7 +124,7 @@ public:
     // =========================================================================================================================================
 
 private:
-    void updateResult( _ResultMsg && result = _ResultMsg(), std::string && result_info = "" );
+    void updateResult( _ResultMsg const & result = _ResultMsg(), std::string const & result_info = "" );
 
 public:
     QUICKDEV_ENABLE_INIT();

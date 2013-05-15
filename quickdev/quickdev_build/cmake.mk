@@ -70,8 +70,7 @@ PACKAGE_NAME=$(shell basename $(PWD))
 
 clean:
 	@echo "-- >> Cleaning project..."
-	@-if [ ! -r build ]; then make init; fi
-	@-cd build && make clean
+	@-if [ -r build ]; then cd build && make clean; fi
 	@-rm -rf build
 	@echo "Removing any auto-generated docs"
 	@-rm -rf docs

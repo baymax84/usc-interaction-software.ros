@@ -229,7 +229,7 @@ public:
         else
         {
             PRINT_INFO( "Registering transform [ %s -> %s ]", from_frame_id.c_str(), to_frame_id.c_str() );
-            tf_manager_.updateTransforms( TfManager::_Transform( btTransform( tf::createIdentityQuaternion() ), ros::Time( 0 ), from_frame_id, to_frame_id ) );
+            tf_manager_.updateTransforms( TfManager::_Transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time( 0 ), from_frame_id, to_frame_id ) );
         }
         registerFrames( std::forward<__Rest>( rest )... );
     }

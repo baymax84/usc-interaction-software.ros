@@ -325,7 +325,7 @@ public:
         auto const & from_frame_id = QUICKDEV_GET_ARG( 0, __Args, args );
         auto const & to_frame_id = QUICKDEV_GET_ARG( 1, __Args, args );
 
-        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         try
         {
@@ -346,7 +346,7 @@ public:
         auto const check_rate = QUICKDEV_GET_ARG( 2, __Args, args );
         auto const max_attempts = QUICKDEV_GET_ARG( 3, __Args, args );
 
-        _StampedTransform transform( btTransform( tf::createIdentityQuaternion() ), ros::Time::now(), from_frame_id, to_frame_id );
+        _StampedTransform transform( btTransform( btQuaternion( 0, 0, 0, 1 ) ), ros::Time::now(), from_frame_id, to_frame_id );
 
         if( waitForTransform( from_frame_id, to_frame_id, check_rate, max_attempts ) )
         {

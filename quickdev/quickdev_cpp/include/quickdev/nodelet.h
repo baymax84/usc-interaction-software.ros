@@ -46,6 +46,7 @@
 #include <functional>
 #include <quickdev/console.h>
 #include <quickdev/auto_bind.h>
+#include <ros/node_handle.h>
 
 QUICKDEV_DECLARE_INTERNAL_NAMESPACE()
 {

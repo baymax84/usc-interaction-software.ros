@@ -284,7 +284,8 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
         {
             joint = model_.getJoint(link->parent_joint->name);
 
-            std::cout << link->parent_joint->name << " pointer: " << &model_.getLink(link->parent_joint->name) << std::endl;
+//            causing compiler issues "-fpermissive"
+//            std::cout << link->parent_joint->name << " pointer: " << &model_.getLink(link->parent_joint->name) << std::endl;
             std::cout << joint->name << " pointer: " << &joint << std::endl;
 
             if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
@@ -334,7 +335,8 @@ QUICKDEV_DECLARE_NODE_CLASS( HumanoidRetargeter )
         {
             joint = model_.getJoint(link->parent_joint->name);
 
-            std::cout << link->parent_joint->name << " pointer: " << &model_.getLink(link->parent_joint->name) << std::endl;
+//            causing compiler issues "-fpermissive"
+//            std::cout << link->parent_joint->name << " pointer: " << &model_.getLink(link->parent_joint->name) << std::endl;
             std::cout << joint->name << " pointer: " << &joint << std::endl;
 
             if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
