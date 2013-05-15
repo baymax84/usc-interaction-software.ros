@@ -1,0 +1,113 @@
+JointCalibrations:
+-
+  JointID: 0
+  Direction: -1
+  TrueZero: 0
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+-
+  JointID: 1
+  Direction: -1
+  TrueZero: 0
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+-
+  JointID: 2
+  Direction: 1
+  TrueZero: -59.3389
+  Offset: 0
+  MaxAngle: 143.525
+  MinAngle: -158.203
+-
+  JointID: 3
+  Direction: 1
+  TrueZero: -77.6943
+  Offset: 0
+  MaxAngle: 93.6035
+  MinAngle: -76.9922
+-
+  JointID: 4
+  Direction: 1
+  TrueZero: -22.1045
+  Offset: 0
+  MaxAngle: 151.611
+  MinAngle: -150.82
+-
+  JointID: 5
+  Direction: -1
+  TrueZero: 54.2041
+  Offset: 0
+  MaxAngle: 54.9316
+  MinAngle: -61.5234
+-
+  JointID: 6
+  Direction: 1
+  TrueZero: -4.47852
+  Offset: 0
+  MaxAngle: 86.9238
+  MinAngle: -82.8809
+-
+  JointID: 7
+  Direction: 1
+  TrueZero: 0
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+-
+  JointID: 8
+  Direction: 1
+  TrueZero: 0
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+-
+  JointID: 9
+  Direction: -1
+  TrueZero: 53.626
+  Offset: 0
+  MaxAngle: 150.205
+  MinAngle: -146.953
+-
+  JointID: 10
+  Direction: -1
+  TrueZero: 90.9658
+  Offset: 0
+  MaxAngle: 78.0469
+  MinAngle: -68.1152
+-
+  JointID: 11
+  Direction: -1
+  TrueZero: 20.6104
+  Offset: 0
+  MaxAngle: 147.744
+  MinAngle: -151.523
+-
+  JointID: 12
+  Direction: 1
+  TrueZero: -54.8193
+  Offset: 0
+  MaxAngle: 62.666
+  MinAngle: -57.3047
+-
+  JointID: 13
+  Direction: -1
+  TrueZero: -40.6094
+  Offset: 0
+  MaxAngle: 84.7266
+  MinAngle: -88.9453
+-
+  JointID: 14
+  Direction: -1
+  TrueZero: 10.0
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0
+-
+  JointID: 15
+  Direction: 1
+  TrueZero: 0
+  Offset: 0
+  MaxAngle: 0
+  MinAngle: 0

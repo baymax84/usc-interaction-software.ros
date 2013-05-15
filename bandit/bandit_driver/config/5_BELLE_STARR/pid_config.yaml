@@ -1,0 +1,50 @@
+#PID gains for Bandit #5, Belle Starr
+JointPIDs:
+- id: 0 	#head_tilt
+  p: 65 
+  i: 0.5 
+  d: 0.5
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0
+- id: 1 	#head_pan
+  p: 300
+  i: 0
+  d: 0
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 1
+- id: 2 	#left shoulder FB
+  p: 35 
+  i: 0 
+  d: 20 
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0
+- id: 6 	#left wrist twist
+  p: 30 
+  i: 0 
+  d: 50 
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0
+- id: 9 	#right shoulder FB
+  p: 50 
+  i: 0
+  d: 0 
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0
+- id: 13 	#right wrist twist
+  p: 35 
+  i: 0 
+  d: 0 
+  i_min: -4000
+  i_max: 4000
+  e_min: 50
+  offset: 0

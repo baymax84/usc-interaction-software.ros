@@ -1,0 +1,17 @@
+<package>
+  <description brief="bandit_mannequin_mode">
+
+     bandit_mannequin_mode
+
+  </description>
+  <author>Edward T. Kaszubski ( ekaszubski@gmail.com )</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bandit_mannequin_mode</url>
+  <depend package="quickdev_cpp"/>
+  <depend package="nodelet"/>
+  <depend package="libbandit"/>
+  <export>
+    <nodelet plugin="${prefix}/nodelets/nodelet_plugins.xml"/>
+  </export>
+</package>

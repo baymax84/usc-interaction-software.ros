@@ -1,0 +1,12 @@
+pub_rate: 1.0 # Optional
+base_path: "" # Optional  
+analyzers:
+  sensors:
+    type: AnalyzerGroup
+    path: Sensors
+    analyzers:
+      bandit:
+        type: GenericAnalyzer
+        path: bandit driver
+        find_and_remove_prefix: bandit_driver
+        num_items: 1
