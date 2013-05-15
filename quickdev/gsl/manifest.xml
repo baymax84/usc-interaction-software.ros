@@ -11,6 +11,6 @@
   <rosdep name="gsl"/>
 
   <export>
-    <cpp cflags="-I/usr/include/gsl" lflags="-lgsl -lgslcblas"/>
+    <cpp cflags="`pkg-config --cflags gsl`" lflags="`pkg-config --libs gsl`"/>
   </export>
 </package>
