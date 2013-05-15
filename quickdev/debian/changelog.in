@@ -1,0 +1,223 @@
+ros-fuerte-interaction-quickdev (0.0.1-1352149244) @platform@; urgency=low
+
+  * Commit b535f7db823ffd54145a24bde96106f876066590
+    + Updated debian and builinfo for fuerte + oneiric/precise builds.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 5 Nov 2012 13:00:44 -0800
+
+ros-fuerte-interaction-quickdev (0.0.1-1351642406) @platform@; urgency=low
+
+  * Commit 57d83c347dee15767a767898c2df7642cd3778f6
+    + Fixed a few tf::Transform/btTransform issues; we should consider switching the default transform type to tf::Transform.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 30 Oct 2012 17:13:26 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1351301253) @platform@; urgency=low
+
+  * Commit 4cc415f0d6359bb3c3b5239526cc90b3e49c1c22
+    + Completed second fuerte compatibility pass for quickdev; quickdev_examples is now fully compiling.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 26 Oct 2012 18:27:33 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1351127042) @platform@; urgency=low
+
+  * Commit e4d4675feea23a9f7c8defe60e48f1b3cc25b45e
+    + Completed initial fuerte compatibility pass for quickdev.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 24 Oct 2012 18:04:02 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1349406769) @platform@; urgency=low
+
+  * Commit ebba7b2beec8bea89b0c5e3ff006e0623fed44e4
+    + Updated rules file to correctly handle shared libraries and dependent binaries within the same stack.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 4 Oct 2012 20:12:49 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1347178659) @platform@; urgency=low
+
+  * Commit 36ad1e19f132eb3ec41d465df2d9d4fbb29d2f9c
+    + Removed some target dependencies in cmake.mk to speed up build times.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 9 Sep 2012 01:17:39 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1347172801) @platform@; urgency=low
+
+  * Commit c5df9fb9a8ce7030c933859726e611b9023ce9ac
+    + Added proprietary target to cmake.mk to allow for the removal of source code in the final package.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 8 Sep 2012 23:40:01 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1347002515) @platform@; urgency=low
+
+  * Commit 791e6b68c507b495e299252638bb5e517039615b
+    + Added stack.xml and rosdep.yaml to debian/install.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 7 Sep 2012 00:21:55 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346991378) @platform@; urgency=low
+
+  * Commit da07f3564248fe383dd2716781d2fe1712860d31
+    + Changed default name parameters in create-pkg.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 6 Sep 2012 21:16:18 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346798163) @platform@; urgency=low
+
+  * Commit 7222307cd0fe49ec62613140abe5f8e8a951fdd9
+    + Added fix for openni+cpp11+i386.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 15:36:03 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346795171) @platform@; urgency=low
+
+  * Commit f297a27b31d3c32d7363ada689a0a774dd3b3dfd
+    + Added file to allow openni-related code to compile with -std=c++0x
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 14:46:11 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346787934) @platform@; urgency=low
+
+  * Commit 69aee4dd8dcd2eacaf9dcae80f311e52465dcfe2
+    + Added dependencies to humanoid/debian/control. Changed install dependency on libgsl0ldbl to libgsl0-dev in quickdev/debian/control.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 4 Sep 2012 12:45:34 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346737603) @platform@; urgency=low
+
+  * Commit 79010122231cb26294fc0254aaa35ea0394e3dba
+    + Removed explicit release number from quickdev/buildinfo.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Mon, 3 Sep 2012 22:46:43 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346594861) @platform@; urgency=low
+
+  * Commit 432a2a77a57aa4d38f663271d2586e9c6467c1a8
+    + Removed source format file.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 2 Sep 2012 07:07:41 -0700
+
+ros-fuerte-interaction-quickdev (0.0.1-1346589774) @platform@; urgency=low
+
+  * Commit 7c32087724aeb4e9af8f86040986828d8c51f9ea
+    + Changed debian package name from ros-electric-interaction-quickdev-0 to ros-electric-interaction-quickdev. Fixed a case in which quickdev-create-pkg could halt if unrecognized options were provided.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sun, 2 Sep 2012 05:42:54 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346560190) @platform@; urgency=low
+
+  * Commit edbe69020ed01fe1637efa4188f1165ec5e3ac3b
+    + Renamed scripts to start with quickdev- prefix. Added install target to quickdev_scripts to actually install scripts to /usr/bin. Removed some unnecessary CMakeLists.txt (ignored when ROS_NOBUILD exists in package dir). Reorganized and improved some build targets.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 1 Sep 2012 21:29:50 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346414301) @platform@; urgency=low
+
+  * Commit 636e22fedc0ac86ace0f913e27195e6a924b64fc
+    + Added buildinfo to quickdev.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 31 Aug 2012 04:58:21 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346407774) @platform@; urgency=low
+
+  * Commit 212fd99486d79e98868ba2dbf57fe2e8887e4959
+    + Added ROS_NOBUILD detection to cmake.mk.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 31 Aug 2012 03:09:34 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346402131) @platform@; urgency=low
+
+  * Commit c7d96f17ea543e87076fc9d45ea43f12c234df3a
+    + Updated depricated .mk files in quickdev_cpp.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 31 Aug 2012 01:35:31 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346401970) @platform@; urgency=low
+
+  * Commit 5fd401f9d6e4065f3504a7181bb023865b2f82da
+    + Simplified logic in cmake.mk and fixed possible build loop.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Fri, 31 Aug 2012 01:32:50 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346334474) @platform@; urgency=low
+
+  * Commit 0b2892d5a4ca7aecdf6510b1e6bda6d58873a0a8
+    + Added installation dependencies to debian/control.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 30 Aug 2012 06:47:54 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346322444) @platform@; urgency=low
+
+  * Commit 2d582cf6ed7e5b83c4ecc7cfdfc8f3e349e01989
+    + Updated rules file and made a slight change to how projects are cleaned.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 30 Aug 2012 03:27:24 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346319577) @platform@; urgency=low
+
+  * Commit 842d2e951a9785aca76564cfb963c8c065cd1569
+    + Switched humanoid_models and humanoid_recognizers to quickdev_build cmake.mk and added ROS_NOBUILD to debclean target.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 30 Aug 2012 02:39:37 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346315645) @platform@; urgency=low
+
+  * Commit bb8fbb6d36b639cb37dd7d1078320522577d6915
+    + Configured quickdev to be packaged into a .deb via pbuilder.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 30 Aug 2012 01:34:05 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1346288015) @platform@; urgency=low
+
+  * Commit a7b06b8a784770e9fa65cbeed293b1e5d67f3ee0
+    + Updated default makefile to be more much robust to errors.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 29 Aug 2012 17:53:35 -0700
+
+ros-electric-interaction-quickdev (0.0.1-1345254174) @platform@; urgency=low
+
+  * Commit d1bf636416db6682e7065ecf81e8ed31738e1a41
+    + Fixed various numeric unit conversions being inverted.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 18 Aug 2012 01:42:54 +0000
+
+ros-electric-interaction-quickdev (0.0.1-1344989037) @platform@; urgency=low
+
+  * Commit 622c756438933a9042d564344663310345b652c3
+    + Updated probability distributions.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 15 Aug 2012 00:03:57 +0000
+
+ros-electric-interaction-quickdev (0.0.1-1344905756) @platform@; urgency=low
+
+  * Commit 33405787a2a588c01fce8f3df9183740eb1ba5da
+    + Added unsigned_normal to quickdev and used pkg-config in gsl.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Tue, 14 Aug 2012 00:55:56 +0000
+
+ros-electric-interaction-quickdev (0.0.1-1344545162) @platform@; urgency=low
+
+  * Commit 18befe5c3270e0d2781d64b3329bd4f28a3e92fe
+    + Imported von mises and wrapped normal distribution functions from code-prototype repo.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Thu, 9 Aug 2012 20:46:02 +0000
+
+ros-electric-interaction-quickdev (0.0.1-1344386324) @platform@; urgency=low
+
+  * Commit 50f4f2f416f9ea5d65c0a6f1a8addeaa928e72a8
+    + Merged new features onto electric/quickdev; merged new unit features onto diamondback/quickdev.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 8 Aug 2012 00:38:44 +0000
+
+ros-electric-interaction-quickdev (0.0.1-1344050298) @platform@; urgency=low
+
+  * Commit 08329d36feed607a8eb00dbc3e971251e494636c
+    + Merged latest stable changes from trunk onto electric.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Sat, 4 Aug 2012 03:18:18 +0000
+
+ros-electric-interaction-quickdev (0.0.1-1343810299) @platform@; urgency=low
+
+  * Commit b419bb4d6b30b8665cff1cc6303703bd72ff78d7
+    + Added tags folder; moved ros-versioned quickdev instances to tags; copied ros-versioned p2os instances to tags.
+
+ -- Edward T. Kaszubski <ekaszubski@gmail.com>  Wed, 1 Aug 2012 08:38:19 +0000
