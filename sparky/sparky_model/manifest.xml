@@ -1,0 +1,20 @@
+<package>
+  <description brief="sparky_model">
+
+     sparky_model
+
+  </description>
+  <author>Gavin McCarter</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sparky_model</url>  
+  <depend package="urdf"/>
+  <depend package="tf"/>
+  <depend package="sensor_msgs"/>
+<!--  <depend package="pr2_gazebo_plugins"/> -->
+  <depend package="gazebo_plugins"/>
+  <depend package="gazebo_tools"/>
+
+  </package>
+
+

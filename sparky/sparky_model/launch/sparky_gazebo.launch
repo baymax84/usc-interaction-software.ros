@@ -1,0 +1,11 @@
+<launch>
+  <!-- start world -->
+  <include file="$(find gazebo_worlds)/launch/empty_world.launch"/>
+
+  <!-- send model.urdf to param server -->
+  <param name="sparky" command="cat $(find sparky_model)/gazebo/sparky_gazebo.urdf" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="sparky" pkg="gazebo_tools" type="gazebo_model" args="-p robot_description spawn" respawn="false" output="screen" />
+
+</launch>
