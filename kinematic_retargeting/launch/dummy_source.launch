@@ -1,10 +1,16 @@
 <launch>
-  
+
+  <!-- Retarget using static transforms -->
+
+  <!-- Define which frames will be retargeted -->
+  <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/dummy_source.yaml" />
+ 
+  <!-- A bunch of static_transform_publishers.  -->  
+  <!-- Frame names should match those in the file loaded above -->  
   <node pkg="tf" type="static_transform_publisher" name="world_to_shoulder_r_tf" args="0 0 0 0 0 0 /world SHOULDER_RIGHT 100" />
   <node pkg="tf" type="static_transform_publisher" name="world_to_elbow_r_tf" args="0 1 0 0 0 0 /world ELBOW_RIGHT 100" />
   <node pkg="tf" type="static_transform_publisher" name="world_to_wrist_r_tf" args="0 1 -1 0 0 0 /world WRIST_RIGHT 100" />
   <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_hand_r_tf" args="0 0 1 0 0 0 /world HAND_RIGHT 100" /> -->
-
   <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_shoulder_l_tf" args="0 0 0 0 0 0 /world SHOULDER_LEFT 100" /> -->
   <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_elbow_l_tf" args="0 0 1 0 0 0 /world ELBOW_LEFT 100" /> -->
   <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_wrist_l_tf" args="0 0 1 0 0 0 /world WRIST_LEFT 100" /> -->

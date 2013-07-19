@@ -1,0 +1,22 @@
+<package>
+  <description brief="kinematic_retargeting_demo">
+
+     kinematic_retargeting_demo
+
+  </description>
+  <author>nalyd</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kinematic_retargeting_demo</url>
+  
+  <depend package="roscpp" />
+  <depend package="uscauv_common" />
+  <depend package="actionlib" />
+  <depend package="pr2_controllers_msgs" />
+  <depend package="sensor_msgs" />
+  <depend package="joint_trajectory_action" />
+  <depend package="dynamic_reconfigure" />
+  
+</package>
+
+

@@ -51,7 +51,7 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: true
@@ -65,7 +65,7 @@ Visualization Manager:
       Update Interval: 0
       Value: false
     - Class: rviz/MarkerArray
-      Enabled: true
+      Enabled: false
       Marker Topic: /tf_retargeter/visualization_marker_array
       Name: MarkerArray
       Namespaces:
@@ -79,7 +79,7 @@ Visualization Manager:
         right_arm_source: false
         right_arm_source_normalized: false
         right_arm_untargeted: false
-      Queue Size: 100
+      Queue Size: 10000
       Value: true
   Enabled: true
   Global Options:

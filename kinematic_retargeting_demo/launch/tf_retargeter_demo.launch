@@ -9,9 +9,6 @@
 
   <arg name="urdf_filename" default="$(find sparky_driver)/urdf/sparky.urdf"/>
 
-  <!-- Direct retargeter output to sparky driver input -->
-  <remap from="sparky_driver/joint_angles" to="tf_retargeter/retargeted_joint_states" />
-
   <group if="$(arg kinect_bridge)" >
 
     <!-- Kinect Bridge Client -->
@@ -29,7 +26,7 @@
     <!-- A bunch of static_transform_publishers -->
     <include file="$(find kinematic_retargeting)/launch/dummy_transforms.launch" />
     
-     <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_dummy.yaml" />
+    <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/sparky_dummy.yaml" />
 
   </group>
   
@@ -62,7 +59,8 @@
   </include>
 
   <group if="$(arg visualize)" >
-    <node pkg="rviz" type="rviz" name="retargeter_visualization" />
+    <node pkg="rviz" type="rviz" name="retargeter_visualization" 
+	  args="--display-config=$(find kinematic_retargeting)/config/tf_retargeter.rviz" />
   </group>
   
 </launch>

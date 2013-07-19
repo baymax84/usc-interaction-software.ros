@@ -1,0 +1,18 @@
+<launch>
+  <!-- Note: Try 'export ROBOT="sim"' at the command line if this fails-->
+  <env name="ROBOT" value="sim" />
+  
+  <arg name="teleop" default="true" />
+  
+  <!-- Gazebo simulator -->
+  <include file="$(find gazebo_worlds)/launch/empty_world.launch" />
+  
+  <!-- PR2 simulation -->
+  <include file="$(find pr2_gazebo)/launch/pr2.launch" />
+  
+  <!-- Keyboard Teleop -->
+  <group if="$(arg teleop)" >
+    <include file="$(find pr2_teleop)/teleop_keyboard.launch" />
+  </group>
+  
+</launch>

@@ -7,7 +7,6 @@
   <arg name="cost_weight" default="50" />
   
   <!-- Node publishes to /tf_retargeter/target_joint_states -->
-  
   <arg name="target_urdf" default="$(find kinematic_retargeting)/urdf/sparky_gazebo.urdf"/>
   
   <arg name="args" value="_loop_rate:=$(arg rate)

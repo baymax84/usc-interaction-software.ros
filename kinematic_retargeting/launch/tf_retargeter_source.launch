@@ -1,0 +1,8 @@
+ <launch>
+
+   <!-- Valid values are "dummy", "kinect_bridge", and "openni" -->
+  <arg name="source_type" default="dummy" />
+
+  <include file="$(find kinematic_retargeting)/launch/$(arg source_type)_source.launch" />
+  
+</launch>

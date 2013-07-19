@@ -1,0 +1,13 @@
+<launch>
+
+  <!-- Make sure this is set correctly -->
+  <arg name="server_ip" default="192.168.2.199" />
+
+  <include file="$(find joint_position_publisher)/launch/joint_position_publisher.launch" >
+    <arg name="server_ip" value="$(arg server_ip)" />
+  </include>
+
+  <!-- Define the chains we will be retargeting -->
+  <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/kinect_bridge_source.yaml" />
+
+</launch>

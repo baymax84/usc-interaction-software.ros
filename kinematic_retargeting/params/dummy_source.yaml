@@ -1,0 +1,13 @@
+right_arm:
+  # Note: The order of joints in the source field must be sorted from base to end effector
+  source:
+    - SHOULDER_RIGHT
+    - ELBOW_RIGHT
+    - WRIST_RIGHT
+
+left_arm:
+  source:
+    - SHOULDER_LEFT
+    - ELBOW_LEFT
+    - WRIST_LEFT
+    - HAND_LEFT

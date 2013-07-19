@@ -529,13 +529,13 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
 	  if ( !retargeter_it->source_frames_.allAvailable() )
 	    {
-	      ROS_WARN( "TF frames for source chain [ %s ] are unavailable.", chain_name.c_str() );
+	      ROS_DEBUG( "TF frames for source chain [ %s ] are unavailable.", chain_name.c_str() );
 	      continue;
 	    }
 
 	  _FrameArray source_frames = retargeter_it->source_frames_;
 
-	  ROS_INFO("Retargeting [ %s ]", chain_name.c_str());
+	  ROS_DEBUG("Retargeting [ %s ]", chain_name.c_str());
 	  
 	  /// Retarget ------------------------------------
       	  	  
@@ -600,7 +600,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       if(nr_success > 0)
       	{
       	  multi_pub_.publish("retargeted_joint_states", retargeted_joint_state);
-      	  ROS_INFO( "Publishing joint states for %d chains.", nr_success );
+      	  ROS_DEBUG( "Publishing joint states for %d chains.", nr_success );
       	}
       
       return;

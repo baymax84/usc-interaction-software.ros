@@ -1,0 +1,15 @@
+<launch>
+
+  <include file="$(find openni_launch)/launch/openni.launch" />
+  
+  <node pkg="openni_tracker" type="openni_tracker" name="openni_tracker" />
+
+  <node pkg="tf" type="static_transform_publisher" name="world_to_openni_tf"
+	args="0 0 0 0 0 0 /world /openni_depth_frame 100" />
+
+  <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/openni_source.yaml" /> 
+
+  <!-- Define the chains we will be retargeting -->
+  <rosparam param="tf_retargeter/chain_info" command="load" file="$(find kinematic_retargeting)/params/openni_source.yaml" />
+
+</launch>
