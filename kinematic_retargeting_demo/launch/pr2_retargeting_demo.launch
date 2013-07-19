@@ -1,0 +1,22 @@
+ <launch>
+   
+   <arg name="source_type" default="dummy" />
+   <arg name="simulate" default="false" />
+   
+   <!-- Source (dummy transforms, openni, kinect bridge) -->
+   <include file="$(find kinematic_retargeting)/launch/tf_retargeter_source.launch" >
+     <arg name="source_type" value="$(arg source_type)" />
+   </include>
+
+  <!-- Retargeting node -->  
+  <include file="$(find kinematic_retargeting)/launch/tf_retargeter.launch" >
+    <!-- Keeping a local copy of the pr2 urdf is pretty hacky -->
+    <arg name="target_urdf" value="$(find kinematic_retargeting_demo)/urdf/pr2.urdf" />
+  </include>
+
+  <!-- PR2 -->
+  <include if="$(arg simulate)" file="$(find kinematic_retargeting_demo)/launch/pr2_simulator.launch" >
+    <arg name="interactive" value="false" />
+  </include >
+
+</launch>
