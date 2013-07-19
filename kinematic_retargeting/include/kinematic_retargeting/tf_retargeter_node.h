@@ -52,6 +52,9 @@
 #include <kdl_parser/kdl_parser.hpp>
 #include <sensor_msgs/JointState.h>
 
+/// wiimote
+#include <sensor_msgs/Joy.h>
+
 /// kinematics
 #include <kdl/jntarray.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -312,11 +315,18 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
   /// Used in retargeting algorithm 
   double ee_weight_;
-  double cost_weight_;
+  /* double cost_weight_; */
+
+  tf::StampedTransform world_to_head_tf_;
+
+  bool button_locked_;
+  bool use_wiimote_;
   
   QUICKDEV_DECLARE_NODE_CONSTRUCTOR( TFRetargeter )
   {
+    world_to_head_tf_.setData(tf::Transform::getIdentity());
 
+    button_locked_ = false;
   }
   
   
@@ -332,14 +342,18 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       blue_template_.r = 0.0;
       blue_template_.b = 1.0;
       blue_template_.g = 0.0;
-	
-
+      
       /// Initialize communications
       multi_pub_.addPublishers<_JointStateMsg, _MarkerArrayMsg>( nh_rel, { "retargeted_joint_states", "visualization_marker_array" } );
 
+      /// Subscribe to wiimote
+      multi_sub_.addSubscriber( nh_rel, "joy", &TFRetargeterNode::joyCallback, this );
+
       /// Get end effector weight
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
-      nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
+
+      /// Whether or not we will use the wiimote to enable
+      nh_rel.param<bool>("use_wiimote", use_wiimote_, false);
       
       /// Get URDF path
       std::string target_urdf_path;
@@ -508,7 +522,13 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
       /// TODO: Don't check params this often / use dynamic reconfigure
       nh_rel.param<double>("ee_weight", ee_weight_, 50.0);
-      nh_rel.param<double>("cost_weight", cost_weight_, 50.0);
+      nh_rel.param<bool>("use_wiimote", use_wiimote_, false);
+      /* nh_rel.param<double>("cost_weight", cost_weight_, 0.001); */
+
+
+      if ( use_wiimote_ && !getButtonLock() )
+	return;
+      
 
       ros::Time now = ros::Time::now();
       
@@ -529,21 +549,22 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
 	  if ( !retargeter_it->source_frames_.allAvailable() )
 	    {
-	      ROS_DEBUG( "TF frames for source chain [ %s ] are unavailable.", chain_name.c_str() );
+	      ROS_WARN( "TF frames for source chain [ %s ] are unavailable.", chain_name.c_str() );
 	      continue;
 	    }
 
 	  _FrameArray source_frames = retargeter_it->source_frames_;
 
-	  ROS_DEBUG("Retargeting [ %s ]", chain_name.c_str());
+	  ROS_INFO("Retargeting [ %s ]", chain_name.c_str());
 	  
 	  /// Retarget ------------------------------------
       	  	  
       	  rtk::spatial::transform(source_frames, retargeter_it->target_to_source_);
       	  rtk::spatial::translateToOrigin(source_frames);
+	  /* rtk::spatial::translate(source_frames, retargeter_it->target_to_source_.p); */
 	  
       	  /// TODO: Get these values (and maybe retargeting algorithm) from config
-      	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.001, 5000) )
+      	  if( !retargeter_it->retargeter_.update(source_frames, ee_weight_, 0.00001, 10000) )
       	    {
       	      ROS_WARN("KR solver failed. [ %s ]", chain_name.c_str() );
       	      ROS_WARN("Skipping chain...");
@@ -551,6 +572,20 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
       	    }
 
       	  _JntArray retargeted_angles = retargeter_it->retargeter_.getTargetAngles();
+
+	  /// Run the cost function again and publish the final results
+      	  _FrameArray retargeted_frames;
+      	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
+	  
+	  float mse = rtk::cost::LSQUniform(source_frames, retargeted_frames);
+	    
+	  ROS_INFO("Chain MSE: %f", mse);
+	  
+	  /* if(mse > 180) */
+	  /*   { */
+	  /*     ROS_WARN("MSE is too high. Ignoring solution..."); */
+	  /*     continue; */
+	  /*   } */
 
       	  /// A bad way of ignoring the joint state of the end effector
       	  /// The algorith currently optimizes over this angle, which it shoulnd't do as it doesn't affect the position of any
@@ -564,10 +599,7 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 
       	    }
 
-      	  /// Run the cost function again and publish the final results
-      	  _FrameArray retargeted_frames;
-      	  rtk::spatial::forwardKinematics(target_chain,retargeted_angles, retargeted_frames);
-	  
+      	    
 	  
       	  ++nr_success;
 	  
@@ -597,16 +629,69 @@ QUICKDEV_DECLARE_NODE_CLASS( TFRetargeter )
 	  
       	}
 
+      /* Bad head tracking */
+      tf::TransformListener tf_listener;
+      
+      	if (tf_listener.canTransform( "/world", "head", ros::Time(0) ) )
+	  {
+	    
+	    try
+	      {
+		tf_listener.lookupTransform( "/world", "head", ros::Time(0), world_to_head_tf_);
+	      }
+	    catch(tf::TransformException ex)
+	      {
+		ROS_ERROR( "%s", ex.what() );
+	      }
+	  
+	  }
+
+	double yaw, pitch, roll;
+	world_to_head_tf_.getBasis().getEulerZYX(yaw, pitch, roll);
+
+	/* Sparky's head joints */
+	/* retargeted_joint_state.name.push_back("HeadTurn"); */
+	/* retargeted_joint_state.position.push_back(yaw); */
+
+	/* retargeted_joint_state.name.push_back("HeadNod"); */
+	/* retargeted_joint_state.position.push_back(-pitch); */
+
+	/* End bad head tracking */
+
       if(nr_success > 0)
       	{
       	  multi_pub_.publish("retargeted_joint_states", retargeted_joint_state);
-      	  ROS_DEBUG( "Publishing joint states for %d chains.", nr_success );
+      	  ROS_INFO( "Publishing joint states for %d chains.", nr_success );
       	}
       
       return;
 
 
     }
+
+ public:
+  
+  /// These functions facilitate using a wiimote to enable or disable retargeting
+
+  void joyCallback( const sensor_msgs::Joy::ConstPtr& msg )
+  {
+    /// B button
+    bool const & lock = msg->buttons[3];
+
+    if( lock && !button_locked_ )
+      ROS_INFO( "Aquired button lock." );
+
+    if( !lock && button_locked_ )
+      ROS_INFO( "Released button lock." );
+
+    button_locked_ =  lock;
+  }
+
+  bool getButtonLock()
+  {
+    return button_locked_;
+  }
+  
 
  private:
   

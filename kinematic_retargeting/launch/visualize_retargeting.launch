@@ -1,0 +1,10 @@
+<launch>
+
+  <arg name="fixed_frame" default="/world" />
+
+  <!-- Launch rviz with our config file -->
+  <node pkg="rviz" type="rviz" name="retargeting_visualization"
+        args="--display-config=$(find kinematic_retargeting)/config/tf_retargeter.vcg                                                                  
+              --fixed-frame=$(arg fixed_frame)" />
+
+</launch>

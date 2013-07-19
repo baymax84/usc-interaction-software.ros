@@ -19,7 +19,9 @@
     <arg name="target_urdf" value="$(find kinematic_retargeting_demo)/urdf/pr2.urdf" />
   </include>
 
-  <!-- PR2 -->
+  <include file="$(find kinematic_retargeting)/launch/visualize_retargeting.launch" />
+
+  <!-- pr2 -->
   <include if="$(arg simulate)" file="$(find kinematic_retargeting_demo)/launch/pr2_simulator.launch" >
   </include >
 
