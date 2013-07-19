@@ -1,5 +1,6 @@
  <launch>
-   
+
+   <!-- kinect_bridge, openni, or dummy -->   
    <arg name="source_type" default="dummy" />
    <arg name="simulate" default="false" />
 
