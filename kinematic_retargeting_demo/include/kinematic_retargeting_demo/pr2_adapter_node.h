@@ -108,8 +108,9 @@ class JointFilter
   {
     double mean = 0;
     
-    for( double const & elem : getStorage()->measurements_ )
-	mean += elem;
+    for( auto elem = getStorage()->measurements_.begin();
+	 elem != getStorage()->measurements_.end(); ++elem)
+	mean += *elem;
 
     mean /= getQueueSize();
     
@@ -121,8 +122,9 @@ class JointFilter
     double const mean = value();
     double var = 0;
     
-    for( double const & elem : getStorage()->measurements_ )
-      var += pow( uscauv::ring_distance( mean, elem, uscauv::TWO_PI ), 2 );
+    for( auto elem = getStorage()->measurements_.begin();
+	 elem != getStorage()->measurements_.end(); ++elem)
+      var += pow( uscauv::ring_distance( mean, *elem, uscauv::TWO_PI ), 2 );
 
     var /= ( getQueueSize() );
     
@@ -161,9 +163,10 @@ class ChainFilter
   double quality() const 
   {
     double max_var = -1;
-    for( _JointMap::value_type const & elem : joints_ )
+    for( _JointMap::const_iterator elem = joints_.begin(); elem != joints_.end();
+	 ++elem)
       {
-	double const elem_var = elem.second.var();
+	double const elem_var = elem->second.var();
 	if( elem_var > max_var )
 	  max_var = elem_var;
       }
@@ -177,18 +180,19 @@ class ChainFilter
 
   ChainFilter( std::vector<std::string> const & joint_names, unsigned int queue_size = 50 )
     {
-      for( std::string const & name : joint_names )
+      for( std::vector<std::string>::const_iterator name = joint_names.begin(); name != joint_names.end(); ++name )
 	{
 	  JointFilter joint = JointFilter();
 	  joint.setQueueSize( queue_size );
-	  joints_[ name ] = joint;
+	  joints_[ *name ] = joint;
 	}
     }
 
   void setQueueSize( unsigned int queue_size )
   {
-    for( _JointMap::value_type & joint : joints_ )
-      joint.second.setQueueSize( queue_size );
+    for( _JointMap::iterator elem = joints_.begin(); elem != joints_.end();
+	 ++elem)
+      elem->second.setQueueSize( queue_size );
   }
   
   bool ready( double const & var_thresh ) const 
@@ -196,9 +200,10 @@ class ChainFilter
     bool ready = joints_.size();
     if (!ready) return false;
     
-    for( _JointMap::value_type const & elem : joints_ )
+    for( _JointMap::const_iterator elem = joints_.begin(); elem != joints_.end();
+	 ++elem)
       {
-	ready &= elem.second.ready();
+	ready &= elem->second.ready();
       }
     if( !ready ) return false;
 
@@ -230,10 +235,12 @@ class ChainFilter
       trajectory_msgs::JointTrajectory trajectory;
       trajectory_msgs::JointTrajectoryPoint point;
 
-      for( _JointMap::value_type const & joint : joints_ )
+
+      for( _JointMap::const_iterator joint = joints_.begin(); joint != joints_.end();
+	 ++joint)
       {
-	trajectory.joint_names.push_back( joint.first );
-	point.positions.push_back( joint.second.value() );
+	trajectory.joint_names.push_back( joint->first );
+	point.positions.push_back( joint->second.value() );
 	point.velocities.push_back (0.0f);
 	
       }

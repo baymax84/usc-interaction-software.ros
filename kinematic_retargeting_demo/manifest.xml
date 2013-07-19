@@ -9,7 +9,9 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/kinematic_retargeting_demo</url>
   
+  <depend package="cpp11" />
   <depend package="roscpp" />
+  <depend package="kinematic_retargeting" />
   <depend package="uscauv_common" />
   <depend package="actionlib" />
   <depend package="pr2_controllers_msgs" />
