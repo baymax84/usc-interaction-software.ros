@@ -222,7 +222,7 @@ class ChainFilter
 	if( !elem->second.enabled() ) continue;
 	
 	ready &= elem->second.ready();
-	ROS_INFO("Joint [ %s ] ready flag: %d", elem->first.c_str(), elem->second.ready() );
+	/* ROS_INFO("Joint [ %s ] ready flag: %d", elem->first.c_str(), elem->second.ready() ); */
       }
     if( !ready ) return false;
 
@@ -400,10 +400,7 @@ class Pr2AdapterNode: public BaseNode, public MultiReconfigure
   // Running spin() will cause this function to be called before the node begins looping the spinOnce() function.
   void spinFirst()
   {
-    /* [r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint, */
-    /*  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint] */
-
-
+    // wrist roll is disable because the arm server expects us to provide all of the joints, but we don't explicitly retarget it
     _JointEnableMap right_arm_names = 
       {
 	{ "r_shoulder_pan_joint", true },
@@ -415,23 +412,22 @@ class Pr2AdapterNode: public BaseNode, public MultiReconfigure
 	{ "r_wrist_roll_joint", false }
       };
 
-    /* std::vector<std::string> left_arm_names =  */
-    /*   { */
-    /* 	"l_shoulder_lift_joint", */
-    /* 	"l_shoulder_pan_joint", */
-    /* 	/\* "l_upper_arm_joint", *\/ */
-    /* 	"l_upper_arm_roll_joint", */
-    /* 	"l_elbow_flex_joint", */
-    /* 	/\* "l_forearm_joint", *\/ */
-    /* 	"l_forearm_roll_joint", */
-    /* 	"l_wrist_flex_joint" */
-    /*   }; */
+    _JointEnableMap left_arm_names = 
+      {
+	{ "l_shoulder_pan_joint", true },
+	{ "l_shoulder_lift_joint", true },
+	{ "l_upper_arm_roll_joint", true },
+	{ "l_elbow_flex_joint", true },
+	{ "l_forearm_roll_joint", true },
+	{ "l_wrist_flex_joint",  true },
+	{ "l_wrist_roll_joint", false }
+      };
     
     right_arm_ = std::make_shared<RobotArm>( "r_arm_controller/joint_trajectory_action", right_arm_names );
-    /* left_arm_ = std::make_shared<RobotArm>( "l_arm_controller/joint_trajectory_action", left_arm_names ); */
+    left_arm_ = std::make_shared<RobotArm>( "l_arm_controller/joint_trajectory_action", left_arm_names );
 
     addReconfigureServer<_RobotArmConfig>("right_arm", &RobotArm::updateConfig, right_arm_.get() );
-    /* addReconfigureServer<_RobotArmConfig>("left_arm", &RobotArm::updateConfig, left_arm_.get() ); */
+    addReconfigureServer<_RobotArmConfig>("left_arm", &RobotArm::updateConfig, left_arm_.get() );
 
     joint_state_sub_ = nh_rel_.subscribe("joint_states", 1, &Pr2AdapterNode::jointStateCallback, this );
     
@@ -446,7 +442,7 @@ class Pr2AdapterNode: public BaseNode, public MultiReconfigure
   void jointStateCallback( _JointStateMsg::ConstPtr const & msg )
   {
     right_arm_->updateJoints( msg );
-    /* left_arm_->updateJoints( msg ); */
+    left_arm_->updateJoints( msg );
   }
 };
 
