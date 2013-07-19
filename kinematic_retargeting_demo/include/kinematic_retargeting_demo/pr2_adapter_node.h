@@ -59,17 +59,19 @@
 
 typedef sensor_msgs::JointState _JointStateMsg;
 typedef kinematic_retargeting_demo::RobotArmConfig _RobotArmConfig;
+typedef std::map<std::string, bool> _JointEnableMap;
 
 class JointFilterStorage
 {
  public:
   std::vector<double> measurements_;
   unsigned int measurement_count_;
+  bool enabled_;
   
- JointFilterStorage(): measurement_count_(0)
-    {
-      measurements_.push_back(0);
-    }
+ JointFilterStorage(bool enable): measurement_count_(0), enabled_(enable)
+  {
+    measurements_.push_back(0);
+  }
 };
 
 class JointFilter
@@ -88,11 +90,21 @@ class JointFilter
     }
   
  public:
-  
+
   JointFilter()
     {
-      storage_ptr_ = std::make_shared<JointFilterStorage>();
+      storage_ptr_ = std::make_shared<JointFilterStorage>(false);
+    }  
+
+  JointFilter(bool enable)
+    {
+      storage_ptr_ = std::make_shared<JointFilterStorage>(enable);
     }
+
+  bool enabled() const
+  {
+    return getStorage()->enabled_;
+  }
 
   void setQueueSize(unsigned int const & queue_size)
   {
@@ -110,7 +122,7 @@ class JointFilter
     
     for( auto elem = getStorage()->measurements_.begin();
 	 elem != getStorage()->measurements_.end(); ++elem)
-	mean += *elem;
+      mean += *elem;
 
     mean /= getQueueSize();
     
@@ -141,12 +153,12 @@ class JointFilter
       }
     
     measurements[0] = angle;
-    ++getStorage()->measurement_count_;
+    ++(getStorage()->measurement_count_);
   }
 
   bool ready() const 
   {
-    return ( getStorage()->measurement_count_ >= getStorage()->measurements_.size() );
+    return ( getStorage()->measurement_count_  >= getStorage()->measurements_.size() );
   }
   
 };
@@ -157,8 +169,8 @@ class ChainFilter
   typedef std::map<std::string, JointFilter> _JointMap;
   
   _JointMap joints_;
-
- private:
+  
+ public:
 
   double quality() const 
   {
@@ -166,25 +178,29 @@ class ChainFilter
     for( _JointMap::const_iterator elem = joints_.begin(); elem != joints_.end();
 	 ++elem)
       {
+	if( !elem->second.enabled() ) continue;
+	
 	double const elem_var = elem->second.var();
+	/* ROS_INFO("Got var %f", elem_var); */
 	if( elem_var > max_var )
 	  max_var = elem_var;
       }
-
-    ROS_ASSERT( max_var > 0 );
+    /* ROS_INFO("Got quality %f with %d joints.", max_var, joints_.size() ); */
+    
+    ROS_ASSERT( max_var >= 0 );
     
     return max_var;
   }
   
  public:
 
-  ChainFilter( std::vector<std::string> const & joint_names, unsigned int queue_size = 50 )
+  ChainFilter( _JointEnableMap const & joint_names, unsigned int queue_size = 50 )
     {
-      for( std::vector<std::string>::const_iterator name = joint_names.begin(); name != joint_names.end(); ++name )
+      for( _JointEnableMap::const_iterator joint_it = joint_names.begin(); joint_it != joint_names.end(); ++joint_it )
 	{
-	  JointFilter joint = JointFilter();
+	  JointFilter joint = JointFilter( joint_it->second );
 	  joint.setQueueSize( queue_size );
-	  joints_[ *name ] = joint;
+	  joints_[ joint_it->first ] = joint;
 	}
     }
 
@@ -203,7 +219,10 @@ class ChainFilter
     for( _JointMap::const_iterator elem = joints_.begin(); elem != joints_.end();
 	 ++elem)
       {
+	if( !elem->second.enabled() ) continue;
+	
 	ready &= elem->second.ready();
+	ROS_INFO("Joint [ %s ] ready flag: %d", elem->first.c_str(), elem->second.ready() );
       }
     if( !ready ) return false;
 
@@ -237,13 +256,13 @@ class ChainFilter
 
 
       for( _JointMap::const_iterator joint = joints_.begin(); joint != joints_.end();
-	 ++joint)
-      {
-	trajectory.joint_names.push_back( joint->first );
-	point.positions.push_back( joint->second.value() );
-	point.velocities.push_back (0.0f);
+	   ++joint)
+	{
+	  trajectory.joint_names.push_back( joint->first );
+	  point.positions.push_back( joint->second.value() );
+	  point.velocities.push_back (0.0f);
 	
-      }
+	}
       point.time_from_start = ros::Duration( 0 );
       trajectory.points.push_back( point );
       
@@ -270,19 +289,22 @@ class RobotArm
 
  public:
 
- RobotArm(std::string path, std::vector<std::string> joint_names = std::vector<std::string>()) :
+ RobotArm(std::string path, _JointEnableMap joint_names) :
   joints_(joint_names), sent_(false)
-  {
-    // tell the action client that we want to spin a thread by default
-    action_client_ = std::make_shared<_JointTrajectoryActionClient>(path, true); //"r_arm_controller/joint_trajectory_action", true);
+    {
+      // tell the action client that we want to spin a thread by default
+      action_client_ = std::make_shared<_JointTrajectoryActionClient>(path, true); //"r_arm_controller/joint_trajectory_action", true);
 
-    // wait for action server to come up
-    while (!action_client_->waitForServer(ros::Duration(5.0)))
-      ROS_INFO("Robot arm action client waiting for server [ %s ].", path.c_str() );
+      // wait for action server to come up
+      while (!action_client_->waitForServer(ros::Duration(5.0)) )
+	{
+	  if( !ros::ok() ) return;
+	  ROS_INFO("Robot arm action client waiting for server [ %s ].", path.c_str() );
+	}
     
-    std::thread action_thread( &RobotArm::actionThread, this );
-    action_thread.detach();    
-  } 
+      std::thread action_thread( &RobotArm::actionThread, this );
+      action_thread.detach();    
+    } 
 
   void updateConfig( _RobotArmConfig const & config )
   {
@@ -312,7 +334,7 @@ class RobotArm
 
 	  /* actionlib::SimpleClientGoalState state = action_client_->getState(); */
 	  bool stable = joints_.ready( config_.var_ceiling );
-	  
+
 	  if( stable && !sent_ )
 	    {
 	      ROS_INFO("Sending new arm trajectory.");
@@ -342,6 +364,7 @@ class RobotArm
   void actionDoneCallback( actionlib::SimpleClientGoalState const & state, pr2_controllers_msgs::JointTrajectoryResultConstPtr const & result )
   {
     std::unique_lock<std::mutex> lock( joints_mutex_ );
+    ROS_INFO("Server says action finished.");
     sent_ = false;
     return;
   }
@@ -363,9 +386,12 @@ class RobotArm
 class Pr2AdapterNode: public BaseNode, public MultiReconfigure
 {
   std::shared_ptr<RobotArm> right_arm_, left_arm_;
+
+  ros::NodeHandle nh_rel_;
+  ros::Subscriber joint_state_sub_;
   
  public:
- Pr2AdapterNode(): BaseNode("Pr2Adapter")
+ Pr2AdapterNode(): BaseNode("Pr2Adapter"), nh_rel_("~")
     {
     }
 
@@ -374,33 +400,41 @@ class Pr2AdapterNode: public BaseNode, public MultiReconfigure
   // Running spin() will cause this function to be called before the node begins looping the spinOnce() function.
   void spinFirst()
   {
-    std::vector<std::string> right_arm_names = 
+    /* [r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint, */
+    /*  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint] */
+
+
+    _JointEnableMap right_arm_names = 
       {
-	"r_shoulder_lift_link",
-	"r_shoulder_pan_link",
-	"r_upper_arm_link",
-	"r_upper_arm_roll_link",
-	"r_elbow_flex_link",
-	"r_forearm_link",
-	"r_forearm_roll_link"
+	{ "r_shoulder_pan_joint", true },
+	{ "r_shoulder_lift_joint", true },
+	{ "r_upper_arm_roll_joint", true },
+	{ "r_elbow_flex_joint", true },
+	{ "r_forearm_roll_joint", true },
+	{ "r_wrist_flex_joint",  true },
+	{ "r_wrist_roll_joint", false }
       };
 
-    std::vector<std::string> left_arm_names = 
-      {
-	"l_shoulder_lift_link",
-	"l_shoulder_pan_link",
-	"l_upper_arm_link",
-	"l_upper_arm_roll_link",
-	"l_elbow_flex_link",
-	"l_forearm_link",
-	"l_forearm_roll_link"
-      };
+    /* std::vector<std::string> left_arm_names =  */
+    /*   { */
+    /* 	"l_shoulder_lift_joint", */
+    /* 	"l_shoulder_pan_joint", */
+    /* 	/\* "l_upper_arm_joint", *\/ */
+    /* 	"l_upper_arm_roll_joint", */
+    /* 	"l_elbow_flex_joint", */
+    /* 	/\* "l_forearm_joint", *\/ */
+    /* 	"l_forearm_roll_joint", */
+    /* 	"l_wrist_flex_joint" */
+    /*   }; */
     
     right_arm_ = std::make_shared<RobotArm>( "r_arm_controller/joint_trajectory_action", right_arm_names );
-    left_arm_ = std::make_shared<RobotArm>( "l_arm_controller/joint_trajectory_action", left_arm_names );
+    /* left_arm_ = std::make_shared<RobotArm>( "l_arm_controller/joint_trajectory_action", left_arm_names ); */
 
     addReconfigureServer<_RobotArmConfig>("right_arm", &RobotArm::updateConfig, right_arm_.get() );
-    addReconfigureServer<_RobotArmConfig>("left_arm", &RobotArm::updateConfig, left_arm_.get() );
+    /* addReconfigureServer<_RobotArmConfig>("left_arm", &RobotArm::updateConfig, left_arm_.get() ); */
+
+    joint_state_sub_ = nh_rel_.subscribe("joint_states", 1, &Pr2AdapterNode::jointStateCallback, this );
+    
   }  
 
   // Running spin() will cause this function to get called at the loop rate until this node is killed.
@@ -409,6 +443,12 @@ class Pr2AdapterNode: public BaseNode, public MultiReconfigure
 
   }
 
+  void jointStateCallback( _JointStateMsg::ConstPtr const & msg )
+  {
+    right_arm_->updateJoints( msg );
+    /* left_arm_->updateJoints( msg ); */
+  }
 };
 
 #endif // USCAUV_KINEMATICRETARGETINGDEMO_PR2ADAPTER
+

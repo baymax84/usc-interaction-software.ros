@@ -8,7 +8,7 @@
   <include file="$(find gazebo_worlds)/launch/empty_world.launch" />
   
   <!-- PR2 simulation -->
-  <include file="$(find pr2_gazebo)/launch/pr2.launch" />
+  <include file="$(find pr2_gazebo)/pr2.launch" />
   
   <!-- Keyboard Teleop -->
   <group if="$(arg teleop)" >

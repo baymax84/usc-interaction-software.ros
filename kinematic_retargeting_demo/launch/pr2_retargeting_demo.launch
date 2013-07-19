@@ -2,7 +2,12 @@
    
    <arg name="source_type" default="dummy" />
    <arg name="simulate" default="false" />
+
+   <remap from="pr2_adapter/joint_states" to="tf_retargeter/retargeted_joint_states" />
    
+   <rosparam param="tf_retargeter/chain_info" command="load"
+	     file="$(find kinematic_retargeting)/params/pr2_target.yaml" />
+
    <!-- Source (dummy transforms, openni, kinect bridge) -->
    <include file="$(find kinematic_retargeting)/launch/tf_retargeter_source.launch" >
      <arg name="source_type" value="$(arg source_type)" />
@@ -16,7 +21,8 @@
 
   <!-- PR2 -->
   <include if="$(arg simulate)" file="$(find kinematic_retargeting_demo)/launch/pr2_simulator.launch" >
-    <arg name="interactive" value="false" />
   </include >
+
+  <include file="$(find kinematic_retargeting_demo)/launch/pr2_adapter.launch" />
 
 </launch>
