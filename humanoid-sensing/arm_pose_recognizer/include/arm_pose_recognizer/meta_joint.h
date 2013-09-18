@@ -38,13 +38,13 @@
 
 #include <map>
 #include <string>
-#include <LinearMath/btTransform.h>
+#include <tf/LinearMath/Transform.h>
 
 class MetaJoint
 {
 public:
     // parent end <- this start
-    btTransform transform_to_parent_;
+    tf::Transform transform_to_parent_;
     // this name
     std::string name_;
     // parent name
@@ -64,7 +64,7 @@ public:
         //
     }
 
-    MetaJoint( btTransform const & transform_to_parent, std::string const & name = "", std::string const & parent_name = "" )
+    MetaJoint( tf::Transform const & transform_to_parent, std::string const & name = "", std::string const & parent_name = "" )
     :
         // the parent transform needs rotation and the unit vector of translation
         // note that if the translation component is ( 0, 0, 0 ) then the normalized translation will be ( nan, nan, nan )
@@ -73,7 +73,7 @@ public:
         name_( name ),
         parent_name_( parent_name )
     {
-        btVector3 const & vec_to_parent = transform_to_parent_.getOrigin();
+        tf::Vector3 const & vec_to_parent = transform_to_parent_.getOrigin();
         printf( "Created meta-joint [ %s ] with parent [ %s ]\n", name_.c_str(), parent_name_.c_str() );
         printf( "and transform [ %f ][ %f ][ %f ]\n", vec_to_parent.x(), vec_to_parent.y(), vec_to_parent.z() );
     }
