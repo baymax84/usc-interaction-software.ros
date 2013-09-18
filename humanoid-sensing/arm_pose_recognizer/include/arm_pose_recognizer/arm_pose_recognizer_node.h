@@ -74,7 +74,7 @@ QUICKDEV_DECLARE_NODE( ArmPoseRecognizer, _EvaluatePoseActionServerPolicy, _TfTr
 //
 QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 {
-    typedef Pose<btVector3> _Pose;
+    typedef Pose<tf::Vector3> _Pose;
 
     // Variable initializations can be appended to this constructor as a comma-separated list:
     //
@@ -116,12 +116,12 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
     }
 
     // climb our unit-humanoid "tree" from the start to the end (or topmost parent) joint, calculating the cumulative transform as we go
-    static btTransform lookupUnitHumanoidTransform( _UnitHumanoid const & unit_humanoid, std::string const & start, std::string const & end = "" )
+    static tf::Transform lookupUnitHumanoidTransform( _UnitHumanoid const & unit_humanoid, std::string const & start, std::string const & end = "" )
     {
         PRINT_INFO( "Looking up unit-humanoid transform [ %s ] -> [ %s ]", start.c_str(), end.c_str() );
 
         // start with a zero transform
-        btTransform cumulative_translation_tf( btQuaternion( 0, 0, 0, 1 ) );
+        tf::Transform cumulative_translation_tf( tf::Quaternion( 0, 0, 0, 1 ) );
 
         // initialize our search with the starting joint
         auto unit_humanoid_it = unit_humanoid.find( start );
@@ -134,8 +134,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 
             // split up the current tf (which will necessarily be normalized) into its translation and rotation components
 //            tf::Transform const & current_tf = meta_joint.internal_transform_;
-//            tf::Transform const current_rotation_tf = btTransform( current_tf.getRotation() );
-//            tf::Transform const current_translation_tf = btTransform( btQuaternion( 0, 0, 0, 1 ), current_tf.getTranslation() );
+//            tf::Transform const current_rotation_tf = tf::Transform( current_tf.getRotation() );
+//            tf::Transform const current_translation_tf = tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), current_tf.getTranslation() );
 
             // transform the current joint's translation into the parent frame's coordinate frame using the inverse of the cumulative rotation transform
             // additionally, since the
@@ -252,9 +252,9 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         }
 
         // a map of transforms from the root meta joint's end frame to the frame stored in the key
-        std::map<std::string, btTransform> transforms_map;
-        transforms_map[root_desired_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ) );
-        transforms_map[root_observed_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ) );
+        std::map<std::string, tf::Transform> transforms_map;
+        transforms_map[root_desired_frame] = tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) );
+        transforms_map[root_observed_frame] = tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) );
 
         // look up all the transforms we'll need, relative to topmost parent; we may not actually use all of these depending on the meta-joints
         PRINT_INFO( "Looking up transforms" );
@@ -294,8 +294,8 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
                 vec1.setY( -vec1.getY() );
                 vec2.setY( -vec2.getY() );
             }
-            transforms_map[joint_start_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), vec1 );
-            transforms_map[joint_end_to_frame] = btTransform( btQuaternion( 0, 0, 0, 1 ), vec2 );
+            transforms_map[joint_start_to_frame] = tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), vec1 );
+            transforms_map[joint_end_to_frame] = tf::Transform( tf::Quaternion( 0, 0, 0, 1 ), vec2 );
         }
 
         // pull transforms and build our unit-humanoids
@@ -307,7 +307,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             // the iterator for the parent meta-joint
             auto const parent_meta_joint_it = meta_joint_map.find( meta_joint_msg.parent_name );
 
-            auto parent_tf = btTransform( btQuaternion( 0, 0, 0, 1 ) );
+            auto parent_tf = tf::Transform( tf::Quaternion( 0, 0, 0, 1 ) );
 
             // does the parent exist?
             if( parent_meta_joint_it != meta_joint_map.cend() )
@@ -326,15 +326,15 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         _EvaluatePoseActionServerPolicy::_ResultMsg result_msg;
 
         // using our unit-humanoid and our lookupUnitHumanoidTransform function, calculate the distances between all the given meta-joints
-        btVector3 const variance_vec = unit::implicit_convert( variance );
+        tf::Vector3 const variance_vec = unit::implicit_convert( variance );
         auto desired_joint_name_it = desired_joint_names.cbegin();
         auto observed_joint_name_it = observed_joint_names.cbegin();
         for( ; desired_joint_name_it != desired_joint_names.cend(); ++desired_joint_name_it, ++observed_joint_name_it )
         {
             auto const & desired_joint_name = *desired_joint_name_it;
             auto const & observed_joint_name = *observed_joint_name_it;
-            btTransform desired_tf = lookupUnitHumanoidTransform( unit_humanoid, desired_joint_name );
-            btTransform observed_tf = lookupUnitHumanoidTransform( unit_humanoid, observed_joint_name );
+            tf::Transform desired_tf = lookupUnitHumanoidTransform( unit_humanoid, desired_joint_name );
+            tf::Transform observed_tf = lookupUnitHumanoidTransform( unit_humanoid, observed_joint_name );
 
             result_msg.match_qualities.push_back( unit::implicit_convert( ( observed_tf.getOrigin() - desired_tf.getOrigin() ) / variance_vec ) );
         }
