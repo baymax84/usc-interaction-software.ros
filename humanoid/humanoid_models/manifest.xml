@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/humanoid_models</url>
   <depend package="quickdev_cpp"/>
-  <depend package="kdl"/>
+  <depend package="orocos_kdl"/>
   <depend package="nodelet"/>
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lhumanoid_models"/>
