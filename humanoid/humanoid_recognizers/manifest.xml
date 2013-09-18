@@ -12,7 +12,7 @@
   <depend package="nodelet"/>
   <depend package="humanoid_models"/>
   <depend package="visualization_msgs"/>
-  <depend package="kdl"/>
+  <depend package="orocos_kdl"/>
   <depend package="kdl_parser"/>
   <depend package="tf_conversions"/>
   <export>
