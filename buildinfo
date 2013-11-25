@@ -1,5 +1,5 @@
--s quickdev -t build
--s bandit -t build
--s sparky -t build
--s humanoid -t build
--s humanoid-sensing -t build
+quickdev --type build
+#bandit --type build
+#sparky --type build
+#humanoid --type build
+#humanoid-sensing --type build
