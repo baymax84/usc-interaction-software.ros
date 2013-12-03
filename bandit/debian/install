@@ -1,1 +1,2 @@
 stack.xml bandit_driver_prototype bandit_calibration_prototype bandit_smooth libbandit bandit_msgs bandit_mannequin_mode bandit_mover bandit_urdf opt/ros/groovy/stacks/bandit/
+bandit_driver_prototype/udev/*.rules lib/udev/rules.d
