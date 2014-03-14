@@ -1,10 +1,14 @@
 <launch>
 
 	<!-- send bandit urdf to param server -->
+	
 	<include file="$(find bandit_urdf)/launch/upload_bandit.launch"/>
 
   <!-- push table_description to factory and spawn robot in gazebo -->
-  <!--<node name="spawn_bandit" pkg="gazebo_tools" type="gazebo_model" args="-z 0.01 -p robot_description spawn" respawn="false" output="screen" />-->
+  
+  <!--
+  <node name="spawn_bandit" pkg="gazebo_tools" type="gazebo_model" args="-z 0.01 -p robot_description spawn" respawn="false" output="screen" />
+  -->
 
 	<include file="$(find bandit_urdf)/controller.launch"/>
 

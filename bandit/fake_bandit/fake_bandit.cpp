@@ -1,8 +1,11 @@
 #include "ros/ros.h"
+#include "ros/console.h"
 #include <bandit_msgs/Params.h>
 #include <bandit_msgs/JointArray.h>
 #include <sensor_msgs/JointState.h>
+
 bandit_msgs::Params::Response param_res;
+
 #define DTOR( a ) a * M_PI / 180.0
 #define RTOD( a ) a * 180.0 / M_PI
 

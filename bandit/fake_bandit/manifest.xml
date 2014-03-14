@@ -8,6 +8,7 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/fake_bandit</url>
+  <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
   <depend package="bandit_msgs"/>
 
