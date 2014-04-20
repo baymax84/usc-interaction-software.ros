@@ -1,7 +1,6 @@
 <robot name="sparky">
 
-<resource type="stl_meshes" location="/home/gavin/usc-cturtle/stacks/interaction_ros_pkg/sparky/sparky_model/meshes
-"/>
+<!--resource type="stl_meshes" location="/home/gavin/usc-cturtle/stacks/interaction_ros_pkg/sparky/sparky_model/meshes"/-->
 
 
 <link name="world" />
