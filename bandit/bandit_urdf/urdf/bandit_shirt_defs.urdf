@@ -62,7 +62,7 @@
   <link name="bandit_logo">
     <inertial>
       <origin rpy="1.5696 0 1.5696" xyz="0 0.15 0"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="bandit_logo_visual">
@@ -87,7 +87,7 @@
   </joint>
   <link name="pupil_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -114,7 +114,7 @@
   </joint>
   <link name="pupil_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -520,7 +520,7 @@
   </joint>
   <link name="screw1_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -545,7 +545,7 @@
   </joint>
   <link name="screw2_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -570,7 +570,7 @@
   </joint>
   <link name="screw3_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -595,7 +595,7 @@
   </joint>
   <link name="screw4_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -620,7 +620,7 @@
   </joint>
   <link name="screw5_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -645,7 +645,7 @@
   </joint>
   <link name="screw6_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -670,7 +670,7 @@
   </joint>
   <link name="screw7_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -695,7 +695,7 @@
   </joint>
   <link name="screw8_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -720,7 +720,7 @@
   </joint>
   <link name="screw9_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -745,7 +745,7 @@
   </joint>
   <link name="screw10_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -770,7 +770,7 @@
   </joint>
   <link name="screw11_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -795,7 +795,7 @@
   </joint>
   <link name="screw12_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -820,7 +820,7 @@
   </joint>
   <link name="screw13_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -845,7 +845,7 @@
   </joint>
   <link name="screw14_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -870,7 +870,7 @@
   </joint>
   <link name="screw15_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -895,7 +895,7 @@
   </joint>
   <link name="screw16_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -920,7 +920,7 @@
   </joint>
   <link name="screw17_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -945,7 +945,7 @@
   </joint>
   <link name="screw18_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -995,7 +995,7 @@
   </joint>
   <link name="screw20_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1020,7 +1020,7 @@
   </joint>
   <link name="screw21_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1045,7 +1045,7 @@
   </joint>
   <link name="screw22_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1070,7 +1070,7 @@
   </joint>
   <link name="screw23_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1095,7 +1095,7 @@
   </joint>
   <link name="screw24_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1120,7 +1120,7 @@
   </joint>
   <link name="screw25_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1145,7 +1145,7 @@
   </joint>
   <link name="screw26_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1170,7 +1170,7 @@
   </joint>
   <link name="screw27_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1195,7 +1195,7 @@
   </joint>
   <link name="screw28_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1220,7 +1220,7 @@
   </joint>
   <link name="screw29_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1245,7 +1245,7 @@
   </joint>
   <link name="screw30_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1270,7 +1270,7 @@
   </joint>
   <link name="screw31_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1295,7 +1295,7 @@
   </joint>
   <link name="screw32_left_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1320,7 +1320,7 @@
   </joint>
   <link name="screw1_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1345,7 +1345,7 @@
   </joint>
   <link name="screw2_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1370,7 +1370,7 @@
   </joint>
   <link name="screw3_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1395,7 +1395,7 @@
   </joint>
   <link name="screw4_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1420,7 +1420,7 @@
   </joint>
   <link name="screw5_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1445,7 +1445,7 @@
   </joint>
   <link name="screw6_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1470,7 +1470,7 @@
   </joint>
   <link name="screw7_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1495,7 +1495,7 @@
   </joint>
   <link name="screw8_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1520,7 +1520,7 @@
   </joint>
   <link name="screw9_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1545,7 +1545,7 @@
   </joint>
   <link name="screw10_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1570,7 +1570,7 @@
   </joint>
   <link name="screw11_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1595,7 +1595,7 @@
   </joint>
   <link name="screw12_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1620,7 +1620,7 @@
   </joint>
   <link name="screw13_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1645,7 +1645,7 @@
   </joint>
   <link name="screw14_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1670,7 +1670,7 @@
   </joint>
   <link name="screw15_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1695,7 +1695,7 @@
   </joint>
   <link name="screw16_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1720,7 +1720,7 @@
   </joint>
   <link name="screw17_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1745,7 +1745,7 @@
   </joint>
   <link name="screw18_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1795,7 +1795,7 @@
   </joint>
   <link name="screw20_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1820,7 +1820,7 @@
   </joint>
   <link name="screw21_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1845,7 +1845,7 @@
   </joint>
   <link name="screw22_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1870,7 +1870,7 @@
   </joint>
   <link name="screw23_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1895,7 +1895,7 @@
   </joint>
   <link name="screw24_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1920,7 +1920,7 @@
   </joint>
   <link name="screw25_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1945,7 +1945,7 @@
   </joint>
   <link name="screw26_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1970,7 +1970,7 @@
   </joint>
   <link name="screw27_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -1995,7 +1995,7 @@
   </joint>
   <link name="screw28_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2020,7 +2020,7 @@
   </joint>
   <link name="screw29_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2045,7 +2045,7 @@
   </joint>
   <link name="screw30_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2070,7 +2070,7 @@
   </joint>
   <link name="screw31_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2095,7 +2095,7 @@
   </joint>
   <link name="screw32_right_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2120,7 +2120,7 @@
   </joint>
   <link name="screwA_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2145,7 +2145,7 @@
   </joint>
   <link name="screwB_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2170,7 +2170,7 @@
   </joint>
   <link name="screwC_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2195,7 +2195,7 @@
   </joint>
   <link name="screwD_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2235,7 +2235,7 @@
   <!--<xacro:pr2_base_v0 name="base"/>-->
   <link name="torso_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2255,7 +2255,7 @@
   </link>
   <link name="stop_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
@@ -2291,7 +2291,7 @@
   <link name="head_pan_link">
     <inertial>
       <origin rpy="183.928 0 -90" xyz="-0.05 0 -0.101"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
     <visual name="head_pan_visual">
@@ -2320,7 +2320,7 @@
   </joint>
   <link name="head_tilt_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="1.5696 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2350,7 +2350,7 @@
   </joint>
   <link name="mouth_top_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="0 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2380,7 +2380,7 @@
   </joint>
   <link name="mouth_bottom_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="1.5696 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2405,7 +2405,7 @@
   </joint>
   <link name="eye_right_camera_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="1.5696 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2432,7 +2432,7 @@
   </joint>
   <link name="eye_left_camera_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="1.5696 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2464,7 +2464,7 @@
   </joint>
   <link name="head_left_brow_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="1.5696 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2494,7 +2494,7 @@
   </joint>
   <link name="head_right_brow_link">
     <inertial>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <origin rpy="1.5696 0 1.5696" xyz="0 0 0"/>
       <inertia ixx="0.00482611007" ixy="-0.000144683999" ixz="0.000110076136" iyy="0.005218991412" iyz="-0.000314239509" izz="0.008618784925"/>
     </inertial>
@@ -2525,7 +2525,7 @@
   <link name="left_shoulder_mounting_link">
     <inertial>
       <origin rpy="3.14159265359 0 0" xyz="-0.035 0.131 0.168"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_shoulder_mounting_link_visual">
@@ -2555,7 +2555,7 @@
   <link name="left_shoulder_link">
     <inertial>
       <origin rpy="0 3.1392 0" xyz="-0.030 -0. -0"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_shoulder_link_visual">
@@ -2585,7 +2585,7 @@
   <link name="left_bicep_link">
     <inertial>
       <origin rpy="0 0 1.5696" xyz="-0.0 0.0 -0.288"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_bicep_link_visual">
@@ -2615,7 +2615,7 @@
   <link name="left_forearm_link">
     <inertial>
       <origin rpy="0 3.1392 3.1392" xyz="-0.028 0.163 -0.372"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_forearm_link_visual">
@@ -2645,7 +2645,7 @@
   <link name="left_wrist_link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.026 0.163 -0.434"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_wrist_link_visual">
@@ -2675,7 +2675,7 @@
   <link name="left_hand_link">
     <inertial>
       <origin rpy="0.99408 0 1.5696" xyz="-0.015 0.163 -0.486"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_hand_link_visual">
@@ -2705,7 +2705,7 @@
   <link name="left_thumb_link">
     <inertial>
       <origin rpy="1.5696 0 1.5696" xyz="0.037 0.163 -0.484"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="left_thumb_link_visual">
@@ -2735,7 +2735,7 @@
   <link name="right_shoulder_mounting_link">
     <inertial>
       <origin rpy="3.14159265359 0 0" xyz="-0.035 0.131 -0.168"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_shoulder_mounting_link_visual">
@@ -2765,7 +2765,7 @@
   <link name="right_shoulder_link">
     <inertial>
       <origin rpy="0 3.1392 0" xyz="-0.030 -0. -0"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_shoulder_link_visual">
@@ -2795,7 +2795,7 @@
   <link name="right_bicep_link">
     <inertial>
       <origin rpy="0 0 1.5696" xyz="-0.0 0.0 -0.288"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_bicep_link_visual">
@@ -2825,7 +2825,7 @@
   <link name="right_forearm_link">
     <inertial>
       <origin rpy="0 3.1392 3.1392" xyz="-0.028 0.163 -0.372"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_forearm_link_visual">
@@ -2855,7 +2855,7 @@
   <link name="right_wrist_link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.026 0.163 -0.434"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_wrist_link_visual">
@@ -2885,7 +2885,7 @@
   <link name="right_hand_link">
     <inertial>
       <origin rpy="0.99408 0 1.5696" xyz="-0.015 0.163 -0.486"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_hand_link_visual">
@@ -2915,7 +2915,7 @@
   <link name="right_thumb_link">
     <inertial>
       <origin rpy="1.5696 0 1.5696" xyz="0.037 0.163 -0.484"/>
-      <mass value="0"/>
+      <mass value="0.01"/>
       <inertia ixx="0.866179142480" ixy="-0.06086507933" ixz="-0.12118061183" iyy="0.87421714893" iyz="-0.05886609911" izz="0.27353821674"/>
     </inertial>
     <visual name="right_thumb_link_visual">
