@@ -39,7 +39,6 @@
 #include <quickdev/node.h>
 
 // policies
-#include <quickdev/action_server_policy.h>
 #include <quickdev/tf_tranceiver_policy.h>
 
 // objects
@@ -47,13 +46,15 @@
 #include <arm_pose_recognizer/meta_joint.h>
 
 // utils
+#include <quickdev/auto_bind.h>
 #include <quickdev/geometry_message_conversions.h>
+#include <actionlib/server/simple_action_server.h>
 
 // actions
 #include <arm_pose_recognizer/EvaluatePoseAction.h>
 
 typedef arm_pose_recognizer::EvaluatePoseAction _EvaluatePoseAction;
-typedef quickdev::ActionServerPolicy<_EvaluatePoseAction> _EvaluatePoseActionServerPolicy;
+typedef actionlib::SimpleActionServer<_EvaluatePoseAction> _EvaluatePoseActionServer;
 
 typedef quickdev::TfTranceiverPolicy _TfTranceiverPolicy;
 
@@ -68,13 +69,15 @@ typedef humanoid_sensing_msgs::MetaJoint _MetaJointMsg;
 //
 // QUICKDEV_DECLARE_NODE( ArmPoseRecognizer, SomePolicy1, SomePolicy2 )
 //
-QUICKDEV_DECLARE_NODE( ArmPoseRecognizer, _EvaluatePoseActionServerPolicy, _TfTranceiverPolicy )
+QUICKDEV_DECLARE_NODE( ArmPoseRecognizer, _TfTranceiverPolicy )
 
 // Declare a class called ArmPoseRecognizerNode
 //
 QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
 {
     typedef Pose<tf::Vector3> _Pose;
+    boost::shared_ptr<_EvaluatePoseActionServer> action_server_ptr_;
+    std::map<std::string, tf::Transform> last_match_result_;
 
     // Variable initializations can be appended to this constructor as a comma-separated list:
     //
@@ -109,9 +112,9 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         // To instead force re-initialization, call forceInitPolicies<...>().
         //
 
-        _EvaluatePoseActionServerPolicy::registerExecuteCB( quickdev::auto_bind( &ArmPoseRecognizerNode::evaluatePoseActionExecuteCB, this ) );
-
-        initPolicies<_EvaluatePoseActionServerPolicy>( "action_name_param", std::string( "evaluate_pose" ) );
+        QUICKDEV_GET_RUNABLE_NODEHANDLE( nh_rel );
+        action_server_ptr_ = boost::make_shared<_EvaluatePoseActionServer>( nh_rel, "evaluate_pose", quickdev::auto_bind( &ArmPoseRecognizerNode::executeActionCB, this ), false );
+        action_server_ptr_->start();
         initPolicies<quickdev::policy::ALL>();
     }
 
@@ -194,12 +197,19 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
     //
     QUICKDEV_SPIN_ONCE()
     {
-        if( !_EvaluatePoseActionServerPolicy::active() ) return;
+        if( last_match_result_.empty() ) return;
 
-        // look up tf frames
+        for( auto joint_it = last_match_result_.cbegin(); joint_it != last_match_result_.cend(); ++joint_it )
+        {
+            auto const & joint_name = joint_it->first;
+            auto const & joint_tf = joint_it->second;
+            _TfTranceiverPolicy::publishTransform( joint_tf, "/arm_pose_recognizer/root", "/arm_pose_recognizer/" + joint_name );
+        }
+    }
 
-        auto const & goal = _EvaluatePoseActionServerPolicy::getGoal();
-
+    void executeActionCB( QUICKDEV_GET_ACTION_GOAL_TYPE( _EvaluatePoseAction )::ConstPtr const & goal_msg )
+    {
+        auto const & goal = *goal_msg;
         auto const & desired_meta_joints = goal.desired_meta_joints;
         auto const & observed_meta_joints = goal.observed_meta_joints;
         auto const & desired_joint_names = goal.desired_joint_names;
@@ -212,7 +222,7 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
         if( desired_joint_names.size() != observed_joint_names.size() )
         {
             PRINT_ERROR( "The number of desired meta-joints must be the same as the number of observed meta-joints; aborting action." );
-            return abortAction();
+            return action_server_ptr_->setAborted();
         }
 
         // build meta-joints by calculating rotation component of transform from start to end frame
@@ -323,12 +333,13 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             unit_humanoid[meta_joint_msg.name] = _MetaJoint( parent_tf, meta_joint_msg.name, meta_joint_msg.parent_name );
         }
 
-        _EvaluatePoseActionServerPolicy::_ResultMsg result_msg;
+        QUICKDEV_GET_ACTION_RESULT_TYPE( _EvaluatePoseAction ) result_msg;
 
         // using our unit-humanoid and our lookupUnitHumanoidTransform function, calculate the distances between all the given meta-joints
-        tf::Vector3 const variance_vec = unit::implicit_convert( variance );
+        tf::Vector3 const stddev_vec( sqrt( variance.x ), sqrt( variance.y ), sqrt( variance.z ) );
         auto desired_joint_name_it = desired_joint_names.cbegin();
         auto observed_joint_name_it = observed_joint_names.cbegin();
+        last_match_result_.clear();
         for( ; desired_joint_name_it != desired_joint_names.cend(); ++desired_joint_name_it, ++observed_joint_name_it )
         {
             auto const & desired_joint_name = *desired_joint_name_it;
@@ -336,16 +347,17 @@ QUICKDEV_DECLARE_NODE_CLASS( ArmPoseRecognizer )
             tf::Transform desired_tf = lookupUnitHumanoidTransform( unit_humanoid, desired_joint_name );
             tf::Transform observed_tf = lookupUnitHumanoidTransform( unit_humanoid, observed_joint_name );
 
-            result_msg.match_qualities.push_back( unit::implicit_convert( ( observed_tf.getOrigin() - desired_tf.getOrigin() ) / variance_vec ) );
+            last_match_result_[desired_joint_name] = desired_tf;
+            last_match_result_[observed_joint_name] = observed_tf;
+
+            PRINT_INFO( "Comparing %s to %s", observed_joint_name.c_str(), desired_joint_name.c_str() );
+
+            result_msg.match_qualities.push_back( unit::implicit_convert( ( observed_tf.getOrigin() - desired_tf.getOrigin() ) / stddev_vec ) );
         }
 
         // complete action
-        _EvaluatePoseActionServerPolicy::completeAction( result_msg );
-    }
-
-    QUICKDEV_DECLARE_ACTION_EXECUTE_CALLBACK( evaluatePoseActionExecuteCB, _EvaluatePoseAction )
-    {
-        if( !_EvaluatePoseActionServerPolicy::waitOnAction( 2 ) ) return;
+        action_server_ptr_->setSucceeded( result_msg );
+        std::cout << "action done" << std::endl;
     }
 };
 
